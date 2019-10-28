@@ -14,4 +14,18 @@ LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 6.1.1
 Imports: 
-    magrittr
+    drake (>= 7.0.0),
+    dplyr,
+    e1071,
+    future.batchtools,
+    here,
+    portalr,
+    rmarkdown,
+    tidyr,
+    magrittr,
+    vegan
+Suggests:
+    testthat
+Remotes: 
+    diazrenata/feasiblesads
+    
