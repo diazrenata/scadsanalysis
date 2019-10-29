@@ -25,7 +25,7 @@ download_data <- function(from_url = FALSE, storage_path = here::here("working-d
 
     download.file(url = "https://raw.githubusercontent.com/weecology/sad-comparison/master/sad-data/fia_spab.csv", destfile = file.path(storage_path, "fia_spab.csv"))
 
-    download.file(url = "https://ndownloader.figshare.com/files/3097079", destfile = file.path(storage_path, "misc_abund.csv"))
+    download.file(url = "https://ndownloader.figshare.com/files/3097079", destfile = file.path(storage_path, "misc_abund_spab.csv"))
 
   } else {
     file.copy(inst_path, storage_path, recursive = T)
@@ -34,15 +34,97 @@ download_data <- function(from_url = FALSE, storage_path = here::here("working-d
 
 #' Load sads
 #'
-#' @param dataset
-#' @param site
-#' @param storage_path
+#' @param dataset_name "bbs", "fia", "gentry", "mcdb", or "misc_abund"
+#' @param site_name which site
+#' @param storage_path where the data is living
 #'
 #' @return something
 #' @export
 #'
-load_sads <- function(storage_path = here::here("working-data", "paper")) {
+load_sad <- function(dataset_name, site_name, storage_path = here::here("working-data", "paper")) {
 
-  ### how
+  dataset_path = file.path(storage_path, paste0(dataset_name, "_spab.csv"))
 
+  if(dataset_name != "misc_abund") {
+    dataset <- read.csv(dataset_path, stringsAsFactors = F, header = F, skip = 2)
+
+    colnames(dataset) <- c("site", "year", "species", "abund")
+  } else {
+    dataset <- read.csv(dataset_path, stringsAsFactors = F)
+
+    dataset <- dataset %>%
+      dplyr::rename(site = Site_ID,
+                    abund = Abundance)
+  }
+
+  dataset <- dataset %>%
+    dplyr::mutate(site = as.character(site),
+                  dat = dataset_name) %>%
+    dplyr::filter(site == site_name) %>%
+    dplyr::select(site, abund, dat) %>%
+    dplyr::filter(abund > 0) %>%
+    dplyr::arrange(abund) %>%
+    dplyr::mutate(rank = dplyr::row_number()) %>%
+    dplyr::select(rank, abund, site, dat) %>%
+    dplyr::mutate(singletons = FALSE,
+                  sim = -99,
+                  source = "observed")
+
+  return(dataset)
+
+}
+
+#' List sites in a dataset
+#'
+#' @param dataset_name "bbs", "fia", "gentry", "mcdb", or "misc_abund"
+#' @param storage_path where the data is living
+#'
+#' @return dataframe of site names
+#' @export
+#' @importFrom dplyr select filter group_by summarize ungroup rename distinct mutate
+list_sites <- function(dataset_name, storage_path = here::here("working-data", "paper")) {
+
+  dataset_path = file.path(storage_path, paste0(dataset_name, "_spab.csv"))
+
+  if(dataset_name != "misc_abund") {
+    dataset <- read.csv(dataset_path, stringsAsFactors = F, header = F, skip = 2)
+
+    colnames(dataset) <- c("site", "year", "species", "abund")
+  } else {
+    dataset <- read.csv(dataset_path, stringsAsFactors = F)
+
+    dataset <- dataset %>%
+      dplyr::select(Abundance, Site_ID) %>%
+      dplyr::filter(!is.na(Abundance)) %>%
+      dplyr::group_by(Site_ID) %>%
+      dplyr::summarize(Abundance = sum(Abundance)) %>%
+      dplyr::ungroup() %>%
+      dplyr::filter(Abundance > 0) %>%
+      dplyr::rename(site = Site_ID,
+                    abund = Abundance)
+  }
+
+  dataset <- dataset %>%
+    dplyr::select(site) %>%
+    dplyr::distinct() %>%
+    dplyr::mutate(dat = dataset_name,
+                  site = as.character(site))
+
+  return(dataset)
+}
+
+#' Retrieve statevars
+#'
+#' @param a_dataset with columns site, dat, singletons, sim, source, abund
+#'
+#' @return summarzied to s0 and n0
+#' @export
+#'
+#' @importFrom dplyr group_by summarize ungroup n
+get_statevars <- function(a_dataset) {
+  a_dataset <- a_dataset %>%
+    dplyr::group_by(site, dat, singletons, sim, source) %>%
+    dplyr::summarize(s0 = n(),
+                     n0 = sum(abund)) %>%
+    dplyr::ungroup()
 }

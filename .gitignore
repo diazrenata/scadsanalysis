@@ -1,3 +1,9 @@
 .Rproj.user
-working-data
-working-data/*
+analysis/drake
+.drake
+.drake/*
+*.drake*
+analysis/drake/drake-cache.sqlite
+analysis/scrap.R
+.DS_Store
+*.DS_Store
