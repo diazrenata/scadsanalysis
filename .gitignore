@@ -1,9 +1,10 @@
 .Rproj.user
-analysis/drake
+analysis/drake/*
 .drake
 .drake/*
 *.drake*
 analysis/drake/drake-cache.sqlite
+analysis/drake/drake-cache-dat.sqlite
 analysis/scrap.R
 .DS_Store
 *.DS_Store
