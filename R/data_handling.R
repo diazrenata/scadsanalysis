@@ -61,8 +61,10 @@ load_dataset <- function(dataset_name, storage_path = here::here("working-data",
                   dat = dataset_name) %>%
     dplyr::select(site, abund, dat) %>%
     dplyr::filter(abund > 0) %>%
+    dplyr::group_by(site) %>%
     dplyr::arrange(abund) %>%
     dplyr::mutate(rank = dplyr::row_number()) %>%
+    dplyr::ungroup() %>%
     dplyr::select(rank, abund, site, dat) %>%
     dplyr::mutate(singletons = FALSE,
                   sim = -99,

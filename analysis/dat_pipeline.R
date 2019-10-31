@@ -4,13 +4,16 @@ library(ggplot2)
 
 expose_imports("scadsanalysis")
 
-datasets <- c("mcdb", "gentry", "bbs", "misc_abund", "fia")
+# datasets <- c("mcdb", "gentry", "bbs", "misc_abund", "fia")
 
 #datasets <- c("mcdb", "gentry", "bbs", "misc_abund")
 
-sites_list <- lapply(as.list(datasets), FUN = list_sites)
+datasets <- c("mcdb")
 
-sites_list <- dplyr::bind_rows(sites_list)
+sites_list <- lapply(as.list(datasets), FUN = list_sites)
+names(sites_list) <- datasets
+ndraws = 100
+sites_list$mcdb <- sites_list$mcdb[1:10, ]
 
 dat_plan <- drake_plan(
   dat = target(load_dataset(dataset_name = d),
@@ -26,11 +29,18 @@ dat_plan <- drake_plan(
                   transform = combine(sv)),
   sv_report = target(render_report(here::here("analysis", "reports", "statevars.Rmd"), dependencies = all_sv),
                      trigger = trigger(condition = T)),
-  mp_wide = target(feasiblesads::fill_ps(max_s = 910,
-                                                 max_n = 3510,
-                                                 storeyn = FALSE)),
-   mp_tall = target(feasiblesads::fill_ps(max_s = 200, max_n = 40720)),
-  mp_mamm = target(feasiblesads::fill_ps(max_s = 62, max_n = 10100))
+  # mp_wide = target(feasiblesads::fill_ps(max_s = 910,
+  #                                                max_n = 3510,
+  #                                                storeyn = FALSE)),
+  #  mp_tall = target(feasiblesads::fill_ps(max_s = 200, max_n = 40720)),
+  # mp_mamm = target(feasiblesads::fill_ps(max_s = 62, max_n = 10100))
+  mp_loaded = target(readRDS(here::here("analysis", "masterp.Rds"))),
+  fs_mcdb = target(sample_fs_wrapper(dataset = dat_s_dat_mcdb, site_name = s, singletonsyn = singletons, n_samples = ndraws, p_table = mp_loaded),
+                   transform = cross(s = !!sites_list$mcdb$site,
+                                     singletons = !!c(TRUE, FALSE))),
+  all_mcdb = target(dplyr::bind_rows(fs_mcdb),
+                       transform = combine(fs_mcdb)),
+  di_mcdb = target(dis_wrapper(all_mcdb))
 )
 
 all <- dat_plan

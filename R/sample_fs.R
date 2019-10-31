@@ -1,4 +1,3 @@
-
 #' Sample the feasible set
 #'
 #' @param dataset SAD df to base on
@@ -13,7 +12,11 @@
 #' @importFrom feasiblesads fill_ps sample_fs
 sample_fs <- function(dataset, nsamples, p_table = NULL) {
 
-  if(is.na(dataset)) {
+  if(is.null(dataset)) {
+    return(NA)
+  }
+
+  if(nrow(dataset) == 0) {
     return(NA)
   }
 
@@ -37,11 +40,31 @@ sample_fs <- function(dataset, nsamples, p_table = NULL) {
     dplyr::mutate(rank = dplyr::row_number()) %>%
     dplyr::ungroup() %>%
     dplyr::mutate(source = "sampled",
-                  season = dataset$season[1],
-                  year = dataset$year[1],
-                  treatment = dataset$treatment[1]) %>%
+                  dat = dataset$dat[1],
+                  site = dataset$site[1],
+                  singletons = dataset$singletons[1]) %>%
     dplyr::bind_rows(dataset)
 
   return(fs_samples)
 
+}
+
+#' Sample fs wrapper
+#'
+#' @param dataset Full dataset
+#' @param site_name Which site within the dataset
+#' @param singletonsyn Singletons?
+#' @param n_samples nb samples
+#' @param p_table P table to pass
+#'
+#' @return df of samples from fs
+#' @export
+#'
+#' @importFrom dplyr filter
+sample_fs_wrapper = function(dataset, site_name, singletonsyn, n_samples, p_table = NULL) {
+  dataset <- dataset %>%
+    dplyr::filter(site == site_name,
+                  singletons == singletonsyn)
+
+  return(sample_fs(dataset, nsamples = n_samples, p_table = p_table))
 }
