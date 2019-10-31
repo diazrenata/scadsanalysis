@@ -2,6 +2,7 @@
 
 export("%>%")
 export(add_singletons)
+export(add_singletons_dataset)
 export(download_data)
 export(get_statevars)
 export(list_sites)
