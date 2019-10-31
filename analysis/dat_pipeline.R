@@ -29,18 +29,20 @@ dat_plan <- drake_plan(
                   transform = combine(sv)),
   sv_report = target(render_report(here::here("analysis", "reports", "statevars.Rmd"), dependencies = all_sv),
                      trigger = trigger(condition = T)),
-  # mp_wide = target(feasiblesads::fill_ps(max_s = 910,
-  #                                                max_n = 3510,
-  #                                                storeyn = FALSE)),
-  #  mp_tall = target(feasiblesads::fill_ps(max_s = 200, max_n = 40720)),
-  # mp_mamm = target(feasiblesads::fill_ps(max_s = 62, max_n = 10100))
-  mp_loaded = target(readRDS(here::here("analysis", "masterp.Rds"))),
-  fs_mcdb = target(sample_fs_wrapper(dataset = dat_s_dat_mcdb, site_name = s, singletonsyn = singletons, n_samples = ndraws, p_table = mp_loaded),
-                   transform = cross(s = !!sites_list$mcdb$site,
-                                     singletons = !!c(TRUE, FALSE))),
-  all_mcdb = target(dplyr::bind_rows(fs_mcdb),
-                       transform = combine(fs_mcdb)),
-  di_mcdb = target(dis_wrapper(all_mcdb))
+  mp_wide = target(feasiblesads::fill_ps(max_s = 910,
+                                                  max_n = 3510,
+                                                  storeyn = FALSE)),
+   mp_tall = target(feasiblesads::fill_ps(max_s = 200, max_n = 40720,
+                                          storeyn = FALSE)),
+   mp_mamm = target(feasiblesads::fill_ps(max_s = 62, max_n = 10100,
+                                          storeyn = FALSE))
+ # mp_loaded = target(readRDS(here::here("analysis", "masterp.Rds"))),
+  # fs_mcdb = target(sample_fs_wrapper(dataset = dat_s_dat_mcdb, site_name = s, singletonsyn = singletons, n_samples = ndraws, p_table = mp_loaded),
+  #                  transform = cross(s = !!sites_list$mcdb$site,
+  #                                    singletons = !!c(TRUE, FALSE))),
+  # all_mcdb = target(dplyr::bind_rows(fs_mcdb),
+  #                      transform = combine(fs_mcdb)),
+  # di_mcdb = target(dis_wrapper(all_mcdb))
 )
 
 all <- dat_plan
