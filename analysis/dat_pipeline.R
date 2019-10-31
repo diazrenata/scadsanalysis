@@ -25,12 +25,12 @@ dat_plan <- drake_plan(
   all_sv = target(dplyr::bind_rows(sv),
                   transform = combine(sv)),
   sv_report = target(render_report(here::here("analysis", "reports", "statevars.Rmd"), dependencies = all_sv),
-                     trigger = trigger(condition = T))#,
-  # mp_wide = target(feasiblesads::fill_ps(max_s = 910,
-  #                                               max_n = 3510,
-  #                                               storeyn = FALSE)),
-  # mp_tall = target(feasiblesads::fill_ps(max_s = 200, max_n = 40720)),
-  # mp_mamm = target(feasiblesads::fill_ps(max_s = 62, max_n = 10100))
+                     trigger = trigger(condition = T)),
+  mp_wide = target(feasiblesads::fill_ps(max_s = 910,
+                                                 max_n = 3510,
+                                                 storeyn = FALSE)),
+   mp_tall = target(feasiblesads::fill_ps(max_s = 200, max_n = 40720)),
+  mp_mamm = target(feasiblesads::fill_ps(max_s = 62, max_n = 10100))
 )
 
 all <- dat_plan
