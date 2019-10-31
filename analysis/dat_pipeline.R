@@ -4,8 +4,8 @@ library(ggplot2)
 
 expose_imports("scadsanalysis")
 
-#sites_list <- lapply(list("mcdb", "gentry", "fia", "bbs", "misc_abund"), FUN = list_sites)
-sites_list <- lapply(list("misc_abund"), FUN = list_sites)
+# sites_list <- lapply(list("mcdb", "gentry", "fia", "bbs", "misc_abund"), FUN = list_sites)
+sites_list <- lapply(list("mcdb", "gentry", "bbs", "misc_abund"), FUN = list_sites)
 
 sites_list <- dplyr::bind_rows(sites_list)
 
