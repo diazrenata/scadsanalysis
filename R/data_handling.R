@@ -32,16 +32,15 @@ download_data <- function(from_url = FALSE, storage_path = here::here("working-d
   }
 }
 
-#' Load sads
+#' Load a dataset
 #'
 #' @param dataset_name "bbs", "fia", "gentry", "mcdb", or "misc_abund"
-#' @param site_name which site
 #' @param storage_path where the data is living
 #'
 #' @return something
 #' @export
 #'
-load_sad <- function(dataset_name, site_name, storage_path = here::here("working-data", "paper")) {
+load_dataset <- function(dataset_name, storage_path = here::here("working-data", "paper")) {
 
   dataset_path = file.path(storage_path, paste0(dataset_name, "_spab.csv"))
 
@@ -60,7 +59,6 @@ load_sad <- function(dataset_name, site_name, storage_path = here::here("working
   dataset <- dataset %>%
     dplyr::mutate(site = as.character(site),
                   dat = dataset_name) %>%
-    dplyr::filter(site == site_name) %>%
     dplyr::select(site, abund, dat) %>%
     dplyr::filter(abund > 0) %>%
     dplyr::arrange(abund) %>%
@@ -111,6 +109,31 @@ list_sites <- function(dataset_name, storage_path = here::here("working-data", "
                   site = as.character(site))
 
   return(dataset)
+}
+
+#' Add singletons to a dataset
+#'
+#' @param dataset the dataset
+#' @param use_max use max?
+#'
+#' @return dataset plus singletons
+#' @export
+#'
+#' @importFrom dplyr filter bind_rows
+add_singletons_dataset <- function(dataset, use_max = TRUE) {
+
+  sites <- as.list(unique(dataset$site))
+
+  site_dats <- lapply(sites, FUN = function(site_name, dataset) return(dplyr::filter(dataset, site == site_name)), dataset = dataset)
+
+  site_singletons <- lapply(site_dats, FUN = add_singletons, use_max = use_max)
+
+  site_singletons <- dplyr::bind_rows(site_singletons)
+
+  dataset <- dplyr::bind_rows(dataset, site_singletons)
+
+  return(dataset)
+
 }
 
 #' Retrieve statevars

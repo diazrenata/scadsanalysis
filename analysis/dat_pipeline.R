@@ -4,24 +4,33 @@ library(ggplot2)
 
 expose_imports("scadsanalysis")
 
-# sites_list <- lapply(list("mcdb", "gentry", "fia", "bbs", "misc_abund"), FUN = list_sites)
-sites_list <- lapply(list("mcdb", "gentry", "bbs", "misc_abund"), FUN = list_sites)
+datasets <- c("mcdb", "gentry", "bbs", "misc_abund", "fia")
+
+#datasets <- c("mcdb", "gentry", "bbs", "misc_abund")
+
+sites_list <- lapply(as.list(datasets), FUN = list_sites)
 
 sites_list <- dplyr::bind_rows(sites_list)
 
 dat_plan <- drake_plan(
-  dat = target(load_sad(dataset_name = d, site_name = s),
+  dat = target(load_dataset(dataset_name = d),
                transform = map(
-                 d = !!sites_list$dat,
-                 s = !!sites_list$site
+                 d = !!datasets
                )
   ),
-  singles = target(add_singletons(dat),
-                   transform = map(dat)),
-  all_dat = target(dplyr::bind_rows(dat, singles),
-                   transform = combine(dat, singles)),
-  statevars = target(get_statevars(all_dat)),
-  statevars_report = target(render_report(here::here("analysis", "reports", "statevars.Rmd"), dependencies = statevars))
+  dat_s = target(add_singletons_dataset(dat),
+                 transform = map(dat)),
+  sv = target(get_statevars(dat_s),
+              transform = map(dat_s)),
+  all_sv = target(dplyr::bind_rows(sv),
+                  transform = combine(sv)),
+  sv_report = target(render_report(here::here("analysis", "reports", "statevars.Rmd"), dependencies = all_sv),
+                     trigger = trigger(condition = T)),
+  mp_wide = target(feasiblesads::fill_ps(max_s = 910,
+                                                max_n = 3510,
+                                                storeyn = FALSE)),
+  mp_tall = target(feasiblesads::fill_ps(max_s = 200, max_n = 40720)),
+  mp_mamm = target(feasiblesads::fill_ps(max_s = 62, max_n = 10100))
 )
 
 all <- dat_plan
@@ -51,7 +60,7 @@ if(grepl("ufhpc", nodename)) {
        cache_log_file = here::here("analysis", "drake", "cache_log_dat.txt"),
        verbose = 2,
        parallelism = "future",
-       jobs = 200,
+       jobs = 10,
        caching = "master") # Important for DBI caches!
 } else {
   # Run the pipeline on a single local core
