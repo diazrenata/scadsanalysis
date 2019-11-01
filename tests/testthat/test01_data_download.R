@@ -1,7 +1,11 @@
 context("Check that data handling is okay")
 
+test_that("download_data", {
+  download_data(from_url = FALSE)
+})
 
 test_that("load_dataset", {
+
   mcdb <- load_dataset("mcdb")
   expect_true(is.data.frame(mcdb))
   expect_true(ncol(mcdb) == 7)
