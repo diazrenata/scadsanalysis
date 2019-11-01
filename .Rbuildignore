@@ -5,5 +5,5 @@
 ^working-data/*$
 ^analysis$
 ^analysis/*$
-*.sbatch
-*.tmpl
+^submit_*.sbatch$
+^slurm_batchtools.tmpl$

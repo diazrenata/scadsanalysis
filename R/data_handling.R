@@ -7,7 +7,7 @@
 #' @export
 #'
 #' @importFrom here here
-download_data <- function(from_url = FALSE, storage_path = here::here("working-data", "paper")) {
+download_data <- function(from_url = FALSE, storage_path = here::here("working-data")) {
 
   inst_path = file.path(system.file(package= "scadsanalysis"), "data")
 
@@ -40,7 +40,7 @@ download_data <- function(from_url = FALSE, storage_path = here::here("working-d
 #' @return something
 #' @export
 #'
-load_dataset <- function(dataset_name, storage_path = here::here("working-data", "paper")) {
+load_dataset <- function(dataset_name, storage_path = here::here("working-data")) {
 
   dataset_path = file.path(storage_path, paste0(dataset_name, "_spab.csv"))
 
@@ -82,7 +82,7 @@ load_dataset <- function(dataset_name, storage_path = here::here("working-data",
 #' @return dataframe of site names
 #' @export
 #' @importFrom dplyr select filter group_by summarize ungroup rename distinct mutate
-list_sites <- function(dataset_name, storage_path = here::here("working-data", "paper")) {
+list_sites <- function(dataset_name, storage_path = here::here("working-data")) {
 
   dataset_path = file.path(storage_path, paste0(dataset_name, "_spab.csv"))
 
