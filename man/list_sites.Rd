@@ -4,7 +4,8 @@
 \alias{list_sites}
 \title{List sites in a dataset}
 \usage{
-list_sites(dataset_name, storage_path = here::here("working-data"))
+list_sites(dataset_name, storage_path = here::here("working-data",
+  "data"))
 }
 \arguments{
 \item{dataset_name}{"bbs", "fia", "gentry", "mcdb", or "misc_abund"}

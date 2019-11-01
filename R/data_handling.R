@@ -17,15 +17,19 @@ download_data <- function(from_url = FALSE, storage_path = here::here("working-d
 
   if(from_url) {
 
-    download.file(url = "https://raw.githubusercontent.com/weecology/sad-comparison/master/sad-data/mcdb_spab.csv", destfile = file.path(storage_path, "mcdb_spab.csv"))
+    if(!dir.exists(file.path(storage_path, "data"))) {
+      dir.create(file.path(storage_path, "data"))
+    }
 
-    download.file(url = "https://raw.githubusercontent.com/weecology/sad-comparison/master/sad-data/bbs_spab.csv", destfile = file.path(storage_path, "bbs_spab.csv"))
+    download.file(url = "https://raw.githubusercontent.com/weecology/sad-comparison/master/sad-data/mcdb_spab.csv", destfile = file.path(storage_path,"data", "mcdb_spab.csv"))
 
-    download.file(url = "https://raw.githubusercontent.com/weecology/sad-comparison/master/sad-data/gentry_spab.csv", destfile = file.path(storage_path, "gentry_spab.csv"))
+    download.file(url = "https://raw.githubusercontent.com/weecology/sad-comparison/master/sad-data/bbs_spab.csv", destfile = file.path(storage_path, "data","bbs_spab.csv"))
 
-    download.file(url = "https://raw.githubusercontent.com/weecology/sad-comparison/master/sad-data/fia_spab.csv", destfile = file.path(storage_path, "fia_spab.csv"))
+    download.file(url = "https://raw.githubusercontent.com/weecology/sad-comparison/master/sad-data/gentry_spab.csv", destfile = file.path(storage_path, "data","gentry_spab.csv"))
 
-    download.file(url = "https://ndownloader.figshare.com/files/3097079", destfile = file.path(storage_path, "misc_abund_spab.csv"))
+    download.file(url = "https://raw.githubusercontent.com/weecology/sad-comparison/master/sad-data/fia_spab.csv", destfile = file.path(storage_path, "data","fia_spab.csv"))
+
+    download.file(url = "https://ndownloader.figshare.com/files/3097079", destfile = file.path(storage_path,"data", "misc_abund_spab.csv"))
 
   } else {
     file.copy(inst_path, storage_path, recursive = T)
@@ -40,7 +44,7 @@ download_data <- function(from_url = FALSE, storage_path = here::here("working-d
 #' @return something
 #' @export
 #'
-load_dataset <- function(dataset_name, storage_path = here::here("working-data")) {
+load_dataset <- function(dataset_name, storage_path = here::here("working-data", "data")) {
 
   dataset_path = file.path(storage_path, paste0(dataset_name, "_spab.csv"))
 
@@ -82,7 +86,7 @@ load_dataset <- function(dataset_name, storage_path = here::here("working-data")
 #' @return dataframe of site names
 #' @export
 #' @importFrom dplyr select filter group_by summarize ungroup rename distinct mutate
-list_sites <- function(dataset_name, storage_path = here::here("working-data")) {
+list_sites <- function(dataset_name, storage_path = here::here("working-data", "data")) {
 
   dataset_path = file.path(storage_path, paste0(dataset_name, "_spab.csv"))
 
