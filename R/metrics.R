@@ -58,9 +58,9 @@ add_dis <- function(fs_samples_df) {
 
   sampled_percentile <- sim_dis %>%
     dplyr::filter(source == "observed", sim < 0) %>%
-    dplyr::mutate(skew_percentile = get_percentile(skew, a_vector = sim_percentiles$skew_percentile),
-                  shannon_percentile = get_percentile(shannon, a_vector = sim_percentiles$shannon_percentile),
-                  simpson_percentile = get_percentile(simpson, a_vector = sim_percentiles$simpson_percentile))
+    dplyr::mutate(skew_percentile = get_percentile(skew, a_vector = sim_percentiles$skew),
+                  shannon_percentile = get_percentile(shannon, a_vector = sim_percentiles$shannon),
+                  simpson_percentile = get_percentile(simpson, a_vector = sim_percentiles$simpson))
 
 
   sim_dis <- dplyr::bind_rows(sim_percentiles, sampled_percentile)

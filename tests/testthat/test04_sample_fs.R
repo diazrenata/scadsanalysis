@@ -33,4 +33,10 @@ test_that("sampling fs works", {
   expect_true(all(fs_samples_sv$n0 == sv$n0))
   expect_true(all(fs_samples_sv$s0 == sv$s0))
 
+  sampled <- fs_samples %>%
+    dplyr::filter(sim > 0)
+
+  expect_true(all(sampled$source == "sampled"))
+  expect_true(all(sampled$dat == "mcdb"))
+
 })
