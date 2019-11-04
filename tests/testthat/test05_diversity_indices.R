@@ -1,6 +1,6 @@
 context("Check diversity indices")
 
-test_that("individual DIs work", {
+test_that("individual and site DIs work", {
 
   dat <- load_dataset("mcdb")
   dat <- dat %>%
@@ -31,4 +31,49 @@ test_that("individual DIs work", {
   expect_true(di_many$skew_percentile[6] == 80)
   expect_true(di_many$shannon_percentile[6] == 0)
   expect_true(di_many$simpson_percentile[6] == 0)
+})
+
+test_that("dataset DIs work" {
+
+  dat <- load_dataset("mcdb")
+  dat <- dat %>%
+    dplyr::filter(site %in% c("1001", "1003"))
+
+  set.seed(1)
+  fs_samples1 <- sample_fs_wrapper(dat, site_name = "1001", singletons = F, n_samples = 5, p_table = NULL)
+  fs_samples2 <- sample_fs_wrapper(dat, site_name = "1003", singletons = F, n_samples = 5, p_table = NULL)
+  all_fs_samples <- dplyr::bind_rows(fs_samples1, fs_samples2)
+
+  dis <- dis_wrapper(all_fs_samples)
+
+  expect_true(anyNA(dis$skew_percentile))
+  expect_false(anyNA(dis$shannon_percentile))
+  expect_false(anyNA(dis$simpson_percentile))
+
+  expect_true(length(unique(dplyr::filter(dis, source == "observed")$skew)) == 2)
+
+  fs_no_obs <- dplyr::filter(all_fs_samples, source == "sampled")
+
+  di_no_obs <- dis_wrapper(fs_no_obs)
+
+  expect_equivalent(di_no_obs, dplyr::filter(dis, source == "sampled"))
+
+  })
+
+test_that("get percentiles work", {
+
+  foo <- seq(1, 100, by = 5)
+
+  foo_percentiles <- get_percentiles(foo)
+
+  expect_equivalent(foo_percentiles, seq(0, 95, by = 5))
+
+  a_val <- 17
+
+  a_per <- get_percentile(a_val, foo)
+
+  by_hand <- 100 * sum(foo <= a_val) / length(foo)
+
+  expect_equivalent(by_hand, a_per)
+
 })

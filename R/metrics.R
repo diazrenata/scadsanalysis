@@ -13,10 +13,15 @@ dis_wrapper <- function(fs_df) {
   fs_singletons <- lapply(fs_sites, FUN = function(fs_site_name, dataset)
     return(dplyr::filter(dataset, site == fs_site_name, singletons == T)), dataset = fs_df)
   fs_singletons_f <- lapply(fs_sites, FUN = function(fs_site_name, dataset)
-      return(dplyr::filter(dataset, site == fs_site_name, singletons == F)), dataset = fs_df)
+    return(dplyr::filter(dataset, site == fs_site_name, singletons == F)), dataset = fs_df)
+
+  if(any(fs_df$singletons)) {
 
   all_fs_sites <- c(fs_singletons, fs_singletons_f)
 
+  } else {
+    all_fs_sites <- fs_singletons_f
+  }
   all_dis <- lapply(all_fs_sites, FUN = add_dis)
 
   all_dis <- dplyr::bind_rows(all_dis)
@@ -79,12 +84,17 @@ add_dis <- function(fs_samples_df) {
 #'
 get_percentiles <- function(a_vector) {
 
-  nvals <- length(a_vector)
+  nvals <- sum(!(is.na(a_vector)))
 
   percentile_vals <- vapply(as.matrix(a_vector), FUN = count_below, a_vector = a_vector, FUN.VALUE = 100)
 
-  percentile_vals <- 100 * (percentile_vals / nvals)
-
+  for(i in 1:length(a_vector)) {
+    if(!(is.nan(a_vector[i]))) {
+      percentile_vals[i] <- 100 * (percentile_vals[i] / nvals)
+    } else {
+      percentile_vals[i] <- NA
+    }
+  }
   return(percentile_vals)
 }
 
@@ -98,7 +108,7 @@ get_percentiles <- function(a_vector) {
 #' @export
 #'
 count_below <- function(a_value, a_vector) {
-  return(sum(a_vector < a_value))
+  return(sum(a_vector < a_value, na.rm = T))
 }
 
 #' Get one percentile value
@@ -110,7 +120,7 @@ count_below <- function(a_value, a_vector) {
 #' @export
 get_percentile <- function(a_value, a_vector) {
 
-  count_below <- sum(a_vector < a_value)
+  count_below <- sum(a_vector < a_value, na.rm = T)
 
   nvals <- length(a_vector)
 
