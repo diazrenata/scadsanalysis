@@ -28,14 +28,14 @@ dat_plan <- drake_plan(
   all_sv = target(dplyr::bind_rows(sv),
                   transform = combine(sv)),
   sv_report = target(render_report(here::here("analysis", "reports", "statevars.Rmd"), dependencies = all_sv),
-                     trigger = trigger(condition = T))
- # mp_loaded = target(readRDS(here::here("analysis", "masterp.Rds"))),
-  # fs_mcdb = target(sample_fs_wrapper(dataset = dat_s_dat_mcdb, site_name = s, singletonsyn = singletons, n_samples = ndraws, p_table = mp_loaded),
-  #                  transform = cross(s = !!sites_list$mcdb$site,
-  #                                    singletons = !!c(TRUE, FALSE))),
-  # all_mcdb = target(dplyr::bind_rows(fs_mcdb),
-  #                      transform = combine(fs_mcdb)),
-  # di_mcdb = target(dis_wrapper(all_mcdb))
+                     trigger = trigger(condition = T)),
+ mamm_p = target(readRDS(here::here("analysis", "masterp_mamm.Rds"))),
+  fs_mcdb = target(sample_fs_wrapper(dataset = dat_s_dat_mcdb, site_name = s, singletonsyn = singletons, n_samples = ndraws, p_table = mp_loaded),
+                   transform = cross(s = !!sites_list$mcdb$site,
+                                      singletons = !!c(TRUE, FALSE))),
+   all_mcdb = target(dplyr::bind_rows(fs_mcdb),
+                        transform = combine(fs_mcdb)),
+   di_mcdb = target(dis_wrapper(all_mcdb))
 )
 
 all <- dat_plan
