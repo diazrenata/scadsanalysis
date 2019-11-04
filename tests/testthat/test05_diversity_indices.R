@@ -33,7 +33,7 @@ test_that("individual and site DIs work", {
   expect_true(di_many$simpson_percentile[6] == 0)
 })
 
-test_that("dataset DIs work" {
+test_that("dataset DIs work", {
 
   dat <- load_dataset("mcdb")
   dat <- dat %>%
