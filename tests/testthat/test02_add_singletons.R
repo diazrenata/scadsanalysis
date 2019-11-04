@@ -40,3 +40,18 @@ test_that("add singletons dataset agrees with individually", {
   expect_true(all(ind_dat_s == whole_dat_s))
 
 })
+
+test_that("add singletons edge cases", {
+
+  dat <- load_dataset("mcdb")
+  dat <- dat %>%
+    dplyr::filter(site == "1001") %>%
+    dplyr::mutate(abund = c(1, 1000, 10000))
+
+  s <- add_singletons(dat)
+
+  expect_true(nrow(dat) == nrow(s))
+
+  expect_true(sum(dat$abund) == sum(s$abund))
+
+  })
