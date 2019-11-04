@@ -62,6 +62,15 @@ sample_fs <- function(dataset, nsamples, p_table = NULL) {
 #'
 #' @importFrom dplyr filter
 sample_fs_wrapper = function(dataset, site_name, singletonsyn, n_samples, p_table = NULL) {
+
+  if(is.null(dataset)) {
+    return(NA)
+  }
+
+  if(nrow(dataset) == 0) {
+    return(NA)
+  }
+
   dataset <- dataset %>%
     dplyr::filter(site == site_name,
                   singletons == singletonsyn)
