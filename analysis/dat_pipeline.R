@@ -30,7 +30,7 @@ dat_plan <- drake_plan(
   sv_report = target(render_report(here::here("analysis", "reports", "statevars.Rmd"), dependencies = all_sv),
                      trigger = trigger(condition = T)),
  mamm_p = target(readRDS(here::here("analysis", "masterp_mamm.Rds"))),
-  fs_mcdb = target(sample_fs_wrapper(dataset = dat_s_dat_mcdb, site_name = s, singletonsyn = singletons, n_samples = ndraws, p_table = mp_loaded),
+  fs_mcdb = target(sample_fs_wrapper(dataset = dat_s_dat_mcdb, site_name = s, singletonsyn = singletons, n_samples = ndraws, p_table = mamm_p),
                    transform = cross(s = !!sites_list$mcdb$site,
                                       singletons = !!c(TRUE, FALSE))),
    all_mcdb = target(dplyr::bind_rows(fs_mcdb),
