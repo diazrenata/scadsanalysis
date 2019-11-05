@@ -65,7 +65,7 @@ if(grepl("ufhpc", nodename)) {
        cache_log_file = here::here("analysis", "drake", "cache_log_dat.txt"),
        verbose = 2,
        parallelism = "future",
-       jobs = 10,
+       jobs = 50,
        caching = "master") # Important for DBI caches!
 } else {
   # Run the pipeline on a single local core

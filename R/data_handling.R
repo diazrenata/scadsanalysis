@@ -9,7 +9,7 @@
 #' @importFrom here here
 download_data <- function(from_url = FALSE, storage_path = here::here("working-data")) {
 
-  inst_path = file.path(system.file(package= "scadsanalysis"), "data")
+  inst_path = file.path(system.file(package= "scadsanalysis"), "abund_data")
 
   if(!dir.exists(file.path(storage_path))) {
     dir.create(file.path(storage_path), recursive = T)
@@ -17,19 +17,19 @@ download_data <- function(from_url = FALSE, storage_path = here::here("working-d
 
   if(from_url) {
 
-    if(!dir.exists(file.path(storage_path, "data"))) {
-      dir.create(file.path(storage_path, "data"))
+    if(!dir.exists(file.path(storage_path, "abund_data"))) {
+      dir.create(file.path(storage_path, "abund_data"))
     }
 
-    download.file(url = "https://raw.githubusercontent.com/weecology/sad-comparison/master/sad-data/mcdb_spab.csv", destfile = file.path(storage_path,"data", "mcdb_spab.csv"))
+    download.file(url = "https://raw.githubusercontent.com/weecology/sad-comparison/master/sad-data/mcdb_spab.csv", destfile = file.path(storage_path,"abund_data", "mcdb_spab.csv"))
 
-    download.file(url = "https://raw.githubusercontent.com/weecology/sad-comparison/master/sad-data/bbs_spab.csv", destfile = file.path(storage_path, "data","bbs_spab.csv"))
+    download.file(url = "https://raw.githubusercontent.com/weecology/sad-comparison/master/sad-data/bbs_spab.csv", destfile = file.path(storage_path, "abund_data","bbs_spab.csv"))
 
-    download.file(url = "https://raw.githubusercontent.com/weecology/sad-comparison/master/sad-data/gentry_spab.csv", destfile = file.path(storage_path, "data","gentry_spab.csv"))
+    download.file(url = "https://raw.githubusercontent.com/weecology/sad-comparison/master/sad-data/gentry_spab.csv", destfile = file.path(storage_path, "abund_data","gentry_spab.csv"))
 
-    download.file(url = "https://raw.githubusercontent.com/weecology/sad-comparison/master/sad-data/fia_spab.csv", destfile = file.path(storage_path, "data","fia_spab.csv"))
+    download.file(url = "https://raw.githubusercontent.com/weecology/sad-comparison/master/sad-data/fia_spab.csv", destfile = file.path(storage_path, "abund_data","fia_spab.csv"))
 
-    download.file(url = "https://ndownloader.figshare.com/files/3097079", destfile = file.path(storage_path,"data", "misc_abund_spab.csv"))
+    download.file(url = "https://ndownloader.figshare.com/files/3097079", destfile = file.path(storage_path,"abund_data", "misc_abund_spab.csv"))
 
   } else {
     file.copy(inst_path, storage_path, recursive = T)
@@ -44,7 +44,7 @@ download_data <- function(from_url = FALSE, storage_path = here::here("working-d
 #' @return something
 #' @export
 #'
-load_dataset <- function(dataset_name, storage_path = here::here("working-data", "data")) {
+load_dataset <- function(dataset_name, storage_path = here::here("working-data", "abund_data")) {
 
   dataset_path = file.path(storage_path, paste0(dataset_name, "_spab.csv"))
 
@@ -86,7 +86,7 @@ load_dataset <- function(dataset_name, storage_path = here::here("working-data",
 #' @return dataframe of site names
 #' @export
 #' @importFrom dplyr select filter group_by summarize ungroup rename distinct mutate
-list_sites <- function(dataset_name, storage_path = here::here("working-data", "data")) {
+list_sites <- function(dataset_name, storage_path = here::here("working-data", "abund_data")) {
 
   dataset_path = file.path(storage_path, paste0(dataset_name, "_spab.csv"))
 
