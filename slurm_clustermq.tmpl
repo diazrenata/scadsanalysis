@@ -1,4 +1,21 @@
 #!/bin/sh
+
+<%
+# relative paths are not handled well by Slurm
+log.file = fs::path_expand(log.file)
+
+if (!"ncpus" %in% names(resources)) {
+  resources$ncpus = 1
+}
+if (!"walltime" %in% names(resources)) {
+  resources$walltime<-"4:00:00"
+}
+if (!"memory" %in% names(resources)) {
+  resources$memory <- "2GB"
+}
+
+-%>
+
 # Job name and who to send updates to
   #SBATCH --mail-user=diaz.renata@ufl.edu
   #SBATCH --mail-type=FAIL
