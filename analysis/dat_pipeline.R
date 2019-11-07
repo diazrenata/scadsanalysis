@@ -12,7 +12,7 @@ datasets <- c("mcdb")
 
 sites_list <- lapply(as.list(datasets), FUN = list_sites)
 names(sites_list) <- datasets
-ndraws = 1000
+ndraws = 10000
 
 dat_plan <- drake_plan(
   dat = target(load_dataset(dataset_name = d),
