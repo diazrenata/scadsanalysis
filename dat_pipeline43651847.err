@@ -1,6 +1,0 @@
-Error in file(file, "rt") : cannot open the connection
-Calls: lapply -> FUN -> read.csv -> read.table -> file
-In addition: Warning message:
-In file(file, "rt") :
-  cannot open file '/home/diaz.renata/scadsanalysis/working-data/abund_data/mcdb_spab.csv': No such file or directory
-Execution halted
