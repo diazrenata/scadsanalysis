@@ -39,8 +39,10 @@ dat_plan <- drake_plan(
                    transform = cross(s = !!sites_list$mcdb$site,
                                      singletons = !!c(TRUE, FALSE))),
   all_mcdb = target(dplyr::bind_rows(fs_mcdb),
-                    transform = combine(fs_mcdb)),
-  di_mcdb = target(dis_wrapper(all_mcdb))
+                    transform = combine(fs_mcdb),
+                    hpc = F),
+  di_mcdb = target(dis_wrapper(all_mcdb),
+                   hpc = F)
 )
 
 all <- dat_plan
