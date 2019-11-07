@@ -12,6 +12,7 @@ datasets <- c("mcdb")
 
 sites_list <- lapply(as.list(datasets), FUN = list_sites)
 names(sites_list) <- datasets
+#sites_list$mcdb <- sites_list$mcdb[1:10, ]
 ndraws = 10000
 
 dat_plan <- drake_plan(
@@ -38,11 +39,11 @@ dat_plan <- drake_plan(
   fs_mcdb = target(sample_fs_wrapper(dataset = dat_s_dat_mcdb, site_name = s, singletonsyn = singletons, n_samples = ndraws, p_table = mamm_p),
                    transform = cross(s = !!sites_list$mcdb$site,
                                      singletons = !!c(TRUE, FALSE))),
-  all_mcdb = target(dplyr::bind_rows(fs_mcdb),
-                    transform = combine(fs_mcdb),
-                    hpc = F),
-  di_mcdb = target(dis_wrapper(all_mcdb),
-                   hpc = F)
+  di = target(add_dis(fs_mcdb),
+              transform = map(fs_mcdb)),
+  all_di = target(dplyr::bind_rows(di),
+                    transform = combine(di),
+                    hpc = F)
 )
 
 all <- dat_plan
