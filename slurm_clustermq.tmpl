@@ -1,37 +1,11 @@
 #!/bin/sh
-
-<%
-# relative paths are not handled well by Slurm
-log.file = fs::path_expand(log.file)
-
-if (!"ncpus" %in% names(resources)) {
-  resources$ncpus = 1
-}
-if (!"walltime" %in% names(resources)) {
-  resources$walltime<-"4:00:00"
-}
-if (!"memory" %in% names(resources)) {
-  resources$memory <- "2GB"
-}
-
--%>
-
-# Job name and who to send updates to
-  #SBATCH --mail-user=diaz.renata@ufl.edu
-  #SBATCH --mail-type=FAIL
-  #SBATCH --account=ewhite
-  #SBATCH --partition=hpg2-compute
-  #SBATCH --qos=ewhite-b   # Remove the `-b` if the script will take more than 4 days; see "bursting" below
-
-#SBATCH --job-name=<%= "sa-make" %>
-#SBATCH --output=<%= log.file %>
-#SBATCH --error=<%= log.file %>
-#SBATCH --ntasks=1
-#SBATCH --time=<%= 480 %>
-#SBATCH --cpus-per-task=<%= 1 %>
-#SBATCH --mem-per-cpu=<%= "8GB" %>
-source /etc/profile
-CMQ_AUTH={{ auth }}
-module load R                             # Uncomment if R is an environment module.
+# From https://github.com/mschubert/clustermq/wiki/SLURM
+#SBATCH --job-name={{ job_name }}           # job name
+#SBATCH --partition=default                 # partition
+#SBATCH --output={{ log_file | /dev/null }} # you can add .%a for array index
+#SBATCH --error={{ log_file | /dev/null }}  # log file
+#SBATCH --mem-per-cpu={{ memory | 4096 }}   # memory
+#SBATCH --array=1-{{ n_jobs }}              # job array
+# module load R                             # Uncomment if R is an environment module.
 ulimit -v $(( 1024 * {{ memory | 4096 }} ))
-Rscript --no-save --no-restore -e 'clustermq:::worker("<%= master %>")'
+CMQ_AUTH={{ auth }} R --no-save --no-restore -e 'clustermq:::worker("{{ master }}")'

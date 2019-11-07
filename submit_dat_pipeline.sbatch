@@ -11,8 +11,6 @@
 #SBATCH --output dat_pipeline%j.out
 #SBATCH --error dat_pipeline%j.err
 
-rm -f -r .future
-
 #This is a generic R submission script
 module load R
 Rscript analysis/dat_pipeline.R
