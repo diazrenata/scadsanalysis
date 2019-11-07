@@ -6,7 +6,7 @@
 #SBATCH --error={{ log_file | dat_pipeline%j_%a.err}}  # log file
 #SBATCH --mem-per-cpu={{ memory | 4096 }}   # memory
 #SBATCH --array=1-{{ n_jobs }}              # job array
-
+#SBATCH --time=<%= 480 %>
 source /etc/profile
 
 module load R              # Uncomment if R is an environment module.
