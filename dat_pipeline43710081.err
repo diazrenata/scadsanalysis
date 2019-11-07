@@ -1,143 +1,0 @@
-Loading required package: future
-
-Attaching package: ‘future’
-
-The following object is masked from ‘package:drake’:
-
-    plan
-
-
-...............................................................................
-.......................................................target fs_mcdb_1164_TRUE
-.target fs_mcdb_1342_FALSE
-.target fs_mcdb_1399_TRUE
-.target fs_mcdb_1778_FALSE
-.target fs_mcdb_1706_FALSE
-.target fs_mcdb_1002_FALSE
-.target fs_mcdb_1198_TRUE
-.target fs_mcdb_1790_TRUE
-.target fs_mcdb_1480_FALSE
-.target fs_mcdb_1417_TRUE
-.target fs_mcdb_1844_FALSE
-.target fs_mcdb_1683_FALSE
-.target fs_mcdb_1885_TRUE
-.target fs_mcdb_1370_TRUE
-.target fs_mcdb_1438_FALSE
-.target fs_mcdb_1205_FALSE
-.target fs_mcdb_1277_FALSE
-.target fs_mcdb_1341_TRUE
-.target fs_mcdb_1592_FALSE
-.target fs_mcdb_1704_TRUE
-.target fs_mcdb_1891_FALSE
-.target fs_mcdb_1743_FALSE
-.target fs_mcdb_1684_TRUE
-.target fs_mcdb_1337_FALSE
-.
-target fs_mcdb_1615_TRUE
-.target fs_mcdb_1252_FALSE
-.target fs_mcdb_1007_TRUE
-.target fs_mcdb_1465_TRUE
-.target fs_mcdb_1738_TRUE
-.target fs_mcdb_1503_TRUE
-.target fs_mcdb_1889_FALSE
-.target fs_mcdb_1790_FALSE
-.target fs_mcdb_1403_FALSE
-.target fs_mcdb_1537_TRUE
-.target fs_mcdb_1387_TRUE
-.target fs_mcdb_1318_TRUE
-.target fs_mcdb_1616_FALSE
-.target fs_mcdb_1264_TRUE
-.target fs_mcdb_1312_FALSE
-.target fs_mcdb_1499_TRUE
-.target fs_mcdb_1788_FALSE
-.target fs_mcdb_1298_TRUE
-.target fs_mcdb_1515_FALSE
-.target fs_mcdb_1890_TRUE
-.target fs_mcdb_1450_FALSE
-.target fs_mcdb_1786_TRUE
-.target fs_mcdb_1814_FALSE
-.target fs_mcdb_1653_FALSE
-.target fs_mcdb_1585_TRUE
-.target fs_mcdb_1196_FALSE
-
-Attaching package: ‘future’
-
-The following object is masked from ‘package:drake’:
-
-    plan
-
-..target fs_mcdb_1470_TRUE
-
-Attaching package: ‘future’
-
-The following object is masked from ‘package:drake’:
-
-    plan
-
-..target fs_mcdb_1448_FALSE
-
-Attaching package: ‘future’
-
-The following object is masked from ‘package:drake’:
-
-    plan
-
-..target fs_mcdb_1516_TRUE
-
-Attaching package: ‘future’
-
-The following object is masked from ‘package:drake’:
-
-    plan
-
-..target fs_mcdb_1441_TRUE
-
-Attaching package: ‘future’
-
-The following object is masked from ‘package:drake’:
-
-    plan
-
-..target fs_mcdb_1366_TRUE
-
-Attaching package: ‘future’
-
-The following object is masked from ‘package:drake’:
-
-    plan
-
-..target fs_mcdb_1804_TRUE
-
-Attaching package: ‘future’
-
-The following object is masked from ‘package:drake’:
-
-    plan
-
-..target fs_mcdb_1713_FALSE
-
-Attaching package: ‘future’
-
-The following object is masked from ‘package:drake’:
-
-    plan
-
-..target fs_mcdb_1347_FALSE
-
-Attaching package: ‘future’
-
-The following object is masked from ‘package:drake’:
-
-    plan
-
-..target fs_mcdb_1240_TRUE
-.fail fs_mcdb_1417_TRUE
-.Error: Target `fs_mcdb_1417_TRUE` failed. Call `diagnose(fs_mcdb_1417_TRUE)` for details. Error message:
-  Worker terminated unexpectedly before the target could complete. Is something wrong with your system or job scheduler?
-In addition: Warning message:
-No checksum available for target fs_mcdb_1417_TRUE. 
-Execution halted
-Error : BatchtoolsExpiration: Future ('fs_mcdb_1684_TRUE') expired (registry path /home/diaz.renata/scadsanalysis/.future/20191106_164903-6HiNrJ/fs_mcdb_1684_TRUE_700975871).. The last few lines of the logged output:
-Fatal error: cannot create 'R_TempDir'
-Error : BatchtoolsExpiration: Future ('fs_mcdb_1417_TRUE') expired (registry path /home/diaz.renata/scadsanalysis/.future/20191106_164903-6HiNrJ/fs_mcdb_1417_TRUE_1803707231).. The last few lines of the logged output:
-Fatal error: cannot create 'R_TempDir'

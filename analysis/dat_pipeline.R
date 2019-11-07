@@ -12,30 +12,36 @@ datasets <- c("mcdb")
 
 sites_list <- lapply(as.list(datasets), FUN = list_sites)
 names(sites_list) <- datasets
-ndraws = 10000
-#sites_list$mcdb <- sites_list$mcdb[1:10, ]
+ndraws = 1000
+sites_list$mcdb <- sites_list$mcdb[1:10, ]
 
 dat_plan <- drake_plan(
   dat = target(load_dataset(dataset_name = d),
                transform = map(
                  d = !!datasets
-               )
+               ),
+               hpc = F
   ),
   dat_s = target(add_singletons_dataset(dat),
-                 transform = map(dat)),
+                 transform = map(dat),
+                 hpc = F),
   sv = target(get_statevars(dat_s),
-              transform = map(dat_s)),
+              transform = map(dat_s),
+              hpc = F),
   all_sv = target(dplyr::bind_rows(sv),
-                  transform = combine(sv)),
+                  transform = combine(sv),
+                  hpc = F),
   sv_report = target(render_report(here::here("analysis", "reports", "statevars.Rmd"), dependencies = all_sv),
-                     trigger = trigger(condition = T)),
- mamm_p = target(readRDS(here::here("analysis", "masterp_mamm.Rds"))),
+                     trigger = trigger(condition = T),
+                     hpc = F),
+  mamm_p = target(readRDS(here::here("analysis", "masterp_mamm.Rds")),
+                  hpc = F),
   fs_mcdb = target(sample_fs_wrapper(dataset = dat_s_dat_mcdb, site_name = s, singletonsyn = singletons, n_samples = ndraws, p_table = mamm_p),
                    transform = cross(s = !!sites_list$mcdb$site,
-                                      singletons = !!c(TRUE, FALSE))),
-   all_mcdb = target(dplyr::bind_rows(fs_mcdb),
-                        transform = combine(fs_mcdb)),
-   di_mcdb = target(dis_wrapper(all_mcdb))
+                                     singletons = !!c(TRUE, FALSE))),
+  all_mcdb = target(dplyr::bind_rows(fs_mcdb),
+                    transform = combine(fs_mcdb)),
+  di_mcdb = target(dis_wrapper(all_mcdb))
 )
 
 all <- dat_plan
@@ -55,21 +61,23 @@ if (interactive())
 ## Run the pipeline
 nodename <- Sys.info()["nodename"]
 if(grepl("ufhpc", nodename)) {
-  library(future.batchtools)
-  print("I know I am on SLURM!")
+  print("I know I am on the HiPerGator!")
+  library(clustermq)
+  options(clustermq.scheduler = "slurm", clustermq.template = "slurm_clustermq.tmpl")
   ## Run the pipeline parallelized for HiPerGator
-  future::plan(batchtools_slurm, template = "slurm_batchtools.tmpl")
   make(all,
        force = TRUE,
        cache = cache,
        cache_log_file = here::here("analysis", "drake", "cache_log_dat.txt"),
        verbose = 2,
-       parallelism = "future",
-       jobs = 50,
+       parallelism = "clustermq",
+       jobs = 10,
        caching = "master") # Important for DBI caches!
 } else {
-  # Run the pipeline on a single local core
-  system.time(make(all, cache = cache, cache_log_file = here::here("analysis", "drake", "cache_log_dat.txt")))
+  library(clustermq)
+  options(clustermq.scheduler = "multicore")
+  # Run the pipeline on multiple local cores
+  system.time(make(all, cache = cache, cache_log_file = here::here("analysis", "drake", "cache_log_dat.txt"), parallelism = "clustermq", jobs = 2))
 }
 
 
