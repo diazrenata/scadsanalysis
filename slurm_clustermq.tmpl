@@ -2,11 +2,11 @@
 # From https://github.com/mschubert/clustermq/wiki/SLURM
 #SBATCH --job-name={{ job_name }}           # job name
 #SBATCH --partition=hpg2-compute                 # partition
-#SBATCH --output={{ log_file | /dev/null }} # you can add .%a for array index
-#SBATCH --error={{ log_file | /dev/null }}  # log file
+#SBATCH --output={{ log_file | dat_pipeline%a.out }} # you can add .%a for array index
+#SBATCH --error={{ log_file | /dev/null dat_pipeline%a.err}}  # log file
 #SBATCH --mem-per-cpu={{ memory | 4096 }}   # memory
 #SBATCH --array=1-{{ n_jobs }}              # job array
 
 module load R                             # Uncomment if R is an environment module.
 ulimit -v $(( 1024 * {{ memory | 4096 }} ))
-CMQ_AUTH={{ auth }} Rscript --no-save --no-restore -e 'clustermq:::worker("{{ master }}")'
+CMQ_AUTH={{ auth }} Rscript -e 'clustermq:::worker("{{ master }}")'
