@@ -1,0 +1,28 @@
+2019-11-08 18:14:54.311865 | Master: tcp://c5a-s2:6961
+2019-11-08 18:14:54.360681 | WORKER_UP to: tcp://c5a-s2:6961
+2019-11-08 18:14:57.425970 | > DO_SETUP (3.014s wait)
+2019-11-08 18:14:57.426631 | token from msg: set_common_data_token
+2019-11-08 18:14:59.648905 | > WORKER_WAIT (0.000s wait)
+2019-11-08 18:14:59.649797 | waiting 1.00s
+2019-11-08 18:15:00.762516 | > WORKER_WAIT (0.000s wait)
+2019-11-08 18:15:00.762921 | waiting 1.00s
+2019-11-08 18:15:01.785275 | > WORKER_WAIT (0.000s wait)
+2019-11-08 18:15:01.785653 | waiting 1.00s
+2019-11-08 18:15:02.808032 | > WORKER_WAIT (0.000s wait)
+2019-11-08 18:15:02.808459 | waiting 1.00s
+2019-11-08 18:15:03.839620 | > WORKER_WAIT (0.000s wait)
+2019-11-08 18:15:03.840142 | waiting 1.00s
+2019-11-08 18:15:04.862317 | > WORKER_WAIT (0.000s wait)
+2019-11-08 18:15:04.862741 | waiting 1.00s
+2019-11-08 18:15:05.898035 | > WORKER_WAIT (0.000s wait)
+2019-11-08 18:15:05.898962 | waiting 1.00s
+2019-11-08 18:15:09.282092 | > DO_CALL (1.492s wait)
+.* Option 'clustermq.scheduler' not set, defaulting to ‘SLURM’
+--- see: https://mschubert.github.io/clustermq/articles/userguide.html#configuration
+2019-11-08 18:15:53.498978 | eval'd: drake::cmq_buildtargetmetadepslayoutconfig
+2019-11-08 18:15:56.040922 | > DO_CALL (0.338s wait)
+.2019-11-08 18:16:38.217522 | eval'd: drake::cmq_buildtargetmetadepslayoutconfig
+2019-11-08 18:16:44.946165 | > DO_CALL (0.351s wait)
+.2019-11-08 18:16:58.159055 | eval'd: drake::cmq_buildtargetmetadepslayoutconfig
+2019-11-08 18:17:04.828439 | > DO_CALL (0.332s wait)
+.
