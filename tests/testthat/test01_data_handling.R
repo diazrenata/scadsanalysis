@@ -4,10 +4,16 @@ test_that("download_data", {
   expect_true(download_data(from_url = FALSE))
 })
 
+test_that("filter misc abund", {
+
+  expect_silent(filter_miscabund(save = F))
+
+})
+
 test_that("load_dataset", {
   datasets <- c("mcdb", "misc_abund", "bbs", "fia", "gentry", "misc_abund_short")
 
-  for(i in 1:5) {
+  for(i in 1:6) {
     thisdat <- load_dataset(datasets[i])
     expect_true(is.data.frame(thisdat))
     expect_true(ncol(thisdat) == 7)

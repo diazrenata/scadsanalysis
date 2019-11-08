@@ -4,13 +4,14 @@
 #'
 #' @param max_s currently 200
 #' @param max_n currently 40720
-#' @param storage_path
+#' @param storage_path where to put it
+#' @param save save it?
 #'
 #' @return nothing
 #' @export
 #'
 #' @importFrom dplyr filter mutate
-filter_miscabund <- function(max_s = 200, max_n = 40720, storage_path = here::here("working-data", "abund_data")) {
+filter_miscabund <- function(max_s = 200, max_n = 40720, storage_path = here::here("working-data", "abund_data"), save = TRUE) {
 
   misc_abund <- load_dataset("misc_abund")
 
@@ -21,8 +22,11 @@ filter_miscabund <- function(max_s = 200, max_n = 40720, storage_path = here::he
     dplyr::filter(site %in% misc_abund_sv$site) %>%
     dplyr::mutate(dat = "misc_abund_short")
 
+  if(save) {
+
   write.csv(misc_abund, file.path(storage_path, "misc_abund_short_spab.csv"), row.names = F)
 
+  }
 }
 
 #' Download SAD data
@@ -79,6 +83,9 @@ load_dataset <- function(dataset_name, storage_path = here::here("working-data",
     if(dataset_name == "misc_abund_short") {
 
       dataset <- read.csv(dataset_path, stringsAsFactors = F)
+
+      dataset <- dataset %>%
+        dplyr::mutate(site = as.character(site))
 
       return(dataset)
 

@@ -5,14 +5,16 @@
 \title{Filter misc abund data}
 \usage{
 filter_miscabund(max_s = 200, max_n = 40720,
-  storage_path = here::here("working-data", "abund_data"))
+  storage_path = here::here("working-data", "abund_data"), save = TRUE)
 }
 \arguments{
 \item{max_s}{currently 200}
 
 \item{max_n}{currently 40720}
 
-\item{storage_path}{}
+\item{storage_path}{where to put it}
+
+\item{save}{save it?}
 }
 \value{
 nothing
