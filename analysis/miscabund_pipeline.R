@@ -53,7 +53,7 @@ nodename <- Sys.info()["nodename"]
 if(grepl("ufhpc", nodename)) {
   print("I know I am on the HiPerGator!")
   library(clustermq)
-  options(clustermq.scheduler = "slurm", clustermq.template = "slurm_clustermq_tall.tmpl")
+  options(clustermq.scheduler = "slurm", clustermq.template = "slurm_clustermql.tmpl")
   ## Run the pipeline parallelized for HiPerGator
   make(all,
        force = TRUE,
@@ -61,7 +61,7 @@ if(grepl("ufhpc", nodename)) {
        cache_log_file = here::here("analysis", "drake", "cache_log_miscabund.txt"),
        verbose = 2,
        parallelism = "clustermq",
-       jobs = 10,
+       jobs = 20,
        caching = "master") # Important for DBI caches!
 } else {
   library(clustermq)
