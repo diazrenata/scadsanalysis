@@ -93,8 +93,8 @@ samples_hist <- ggplot(data = site_samples, aes(x = nsamples)) +
   geom_histogram(binwidth = 10) +
   theme_bw() +
   facet_wrap(vars(singletons), nrow = 1) +
-  ggtitle("Number of samples achieved") +
-  xlim = c(-11, max(site_samples$nsamples) + 11)
+  ggtitle("Number of samples achieved")  +
+  xlim(c(-11, max(site_samples$nsamples) + 11))
 
 samples_hist
 
