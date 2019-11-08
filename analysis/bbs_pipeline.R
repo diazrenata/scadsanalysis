@@ -29,7 +29,7 @@ dat_plan <- drake_plan(
   all_di = target(dplyr::bind_rows(di),
                   transform = combine(di),
                   hpc = F),
-  report = target(render_report(here::here("analysis", "reports", paste0(datasets, "_report.Rmd")), dependencies = all_di),
+  report = target(render_report(here::here("analysis", "reports", "dat_report_template.Rmd"), dependencies = all_di, is_template = TRUE, dat_name = !!datasets),
                   trigger = trigger(condition = T),
                   hpc = F)
 )

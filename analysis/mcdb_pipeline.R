@@ -7,9 +7,10 @@ expose_imports("scadsanalysis")
 datasets <- "mcdb"
 
 sites_list <- list_sites("mcdb")
-ndraws = 100
-sites_list <- sites_list[1:15, ]
-dat_plan <- drake_plan(
+ndraws = 10000
+#sites_list <- sites_list[1:15, ]
+
+all <- drake_plan(
   dat = target(load_dataset(dataset_name = d),
                transform = map(
                  d = !!datasets
@@ -29,12 +30,10 @@ dat_plan <- drake_plan(
   all_di = target(dplyr::bind_rows(di),
                   transform = combine(di),
                   hpc = F),
-  report = target(render_report(here::here("analysis", "reports", paste0(datasets, "_report.Rmd")), dependencies = all_di),
+  report = target(render_report(here::here("analysis", "reports", "dat_report_template.Rmd"), dependencies = all_di, is_template = TRUE, dat_name = !!datasets),
                   trigger = trigger(condition = T),
                   hpc = F)
 )
-
-all <- dat_plan
 
 ## Set up the cache and config
 db <- DBI::dbConnect(RSQLite::SQLite(), here::here("analysis", "drake", "drake-cache-mcdb.sqlite"))

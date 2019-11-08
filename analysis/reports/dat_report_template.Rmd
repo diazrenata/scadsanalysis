@@ -1,8 +1,7 @@
 ---
 title: "Dataset-level report"
 output: 
-  github_document:
-    html_preview: false
+  github_document
 params:
   dataset_name: ["mcdb"]
 ---
@@ -66,6 +65,40 @@ sv_change_plot <- ggplot(data = sv_change, aes(x = s0, y = n0, color = log(s0_ch
   ggtitle("State variable change")
 
 sv_change_plot
+```
+
+## Number of samples achieved
+
+```{r number of samples}
+
+site_samples <- all_di %>%
+  select(sim, source, site, singletons) %>%
+  group_by(source, site, singletons) %>%
+  summarize(nsamples = length(unique(sim))) %>%
+  ungroup() %>%
+  filter(source == "sampled") %>%
+  left_join(select(sv, -source, -sim), by = c("site", "singletons"))
+```
+
+#### The maximum number of samples achieved is `r max(site_samples$nsamples)`.
+
+```{r plot nb samples}
+samples_hist <- ggplot(data = site_samples, aes(x = nsamples)) +
+  geom_histogram(binwidth = 10) +
+  theme_bw() +
+  facet_wrap(vars(singletons), nrow = 1) +
+  ggtitle("Number of samples achieved")
+
+samples_hist
+
+sv_samples_plot <- ggplot(data = site_samples, aes(x = s0, y = n0, color = nsamples)) +
+  geom_point(alpha = .5) +
+  theme_bw() +
+  facet_wrap(vars(singletons), nrow = 1) +
+  scale_color_viridis_c(option = "magma", end = .75) +
+  ggtitle("Number of samples achieved by state variables")
+sv_samples_plot
+
 ```
 
 ## Position (%ile) of empirical SADs within FS
