@@ -4,12 +4,17 @@
 \alias{render_report}
 \title{Render a report}
 \usage{
-render_report(report_path, dependencies = list())
+render_report(report_path, dependencies = list(), is_template = FALSE,
+  dat_name = NULL)
 }
 \arguments{
 \item{report_path}{file path for report}
 
 \item{dependencies}{dependencies for drake}
+
+\item{is_template}{is this a template?}
+
+\item{dat_name}{if this is a template, need to pass the dataset name to customize the report}
 }
 \value{
 nothing

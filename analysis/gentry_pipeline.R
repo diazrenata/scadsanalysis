@@ -29,9 +29,11 @@ dat_plan <- drake_plan(
               transform = map(fs)),
   all_di = target(dplyr::bind_rows(di),
                   transform = combine(di),
-                  hpc = F)
+                  hpc = F),
+  report = target(render_report(here::here("analysis", "reports", paste0(datasets, "_report.Rmd")), dependencies = all_di),
+                     trigger = trigger(condition = T),
+                     hpc = F)
 )
-
 all <- dat_plan
 
 ## Set up the cache and config
