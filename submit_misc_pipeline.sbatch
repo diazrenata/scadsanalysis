@@ -8,8 +8,8 @@
 #SBATCH --cpus-per-task=1            # Number of cores per MPI rank
 #SBATCH --mem-per-cpu=8GB
 #SBATCH --time=24:00:00       #Time limit hrs:min:sec
-#SBATCH --output dat_pipeline%j.out
-#SBATCH --error dat_pipeline%j.err
+#SBATCH --output logs/misc_pipeline%j.out
+#SBATCH --error logs/misc_pipeline%j.err
 
 #This is a generic R submission script
 module load R
