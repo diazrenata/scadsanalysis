@@ -8,7 +8,7 @@ datasets <- "gentry"
 
 sites_list <- list_sites("gentry")
 ndraws = 100
-sites_list <- sites_list[1:15, ]
+#sites_list <- sites_list[1:15, ]
 
 all <- drake_plan(
   dat = target(load_dataset(dataset_name = d),

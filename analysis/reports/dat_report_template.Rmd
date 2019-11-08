@@ -87,7 +87,8 @@ samples_hist <- ggplot(data = site_samples, aes(x = nsamples)) +
   geom_histogram(binwidth = 10) +
   theme_bw() +
   facet_wrap(vars(singletons), nrow = 1) +
-  ggtitle("Number of samples achieved")
+  ggtitle("Number of samples achieved") +
+  xlim = c(-11, max(site_samples$nsamples) + 11)
 
 samples_hist
 
@@ -95,7 +96,7 @@ sv_samples_plot <- ggplot(data = site_samples, aes(x = s0, y = n0, color = nsamp
   geom_point(alpha = .5) +
   theme_bw() +
   facet_wrap(vars(singletons), nrow = 1) +
-  scale_color_viridis_c(option = "magma", end = .75) +
+  scale_color_viridis_c(option = "magma", end = .75, limits = c(0, max(site_samples$nsamples))) +
   ggtitle("Number of samples achieved by state variables")
 sv_samples_plot
 
