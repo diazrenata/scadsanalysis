@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=sa-toplevel   # Job name
+#SBATCH --job-name=bbs-toplevel   # Job name
 #SBATCH --mail-type=ALL               # Mail events (NONE, BEGIN, END, FAIL, AL$
 #SBATCH --mail-user=diaz.renata@ufl.edu   # Where to send mail
 #SBATCH --account=ewhite
@@ -8,9 +8,9 @@
 #SBATCH --cpus-per-task=1            # Number of cores per MPI rank
 #SBATCH --mem-per-cpu=8GB
 #SBATCH --time=24:00:00       #Time limit hrs:min:sec
-#SBATCH --output pipeline%j.out
-#SBATCH --error pipeline%j.err
+#SBATCH --output dat_pipeline%j.out
+#SBATCH --error dat_pipeline%j.err
 
 #This is a generic R submission script
 module load R
-Rscript analysis/pipeline.R
+Rscript analysis/bbs_pipeline.R

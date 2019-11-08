@@ -3,12 +3,12 @@ analysis/drake/*
 .drake
 .drake/*
 *.drake*
-analysis/drake/drake-cache.sqlite
-analysis/drake/drake-cache-dat.sqlite
+analysis/drake/drake-cache*
 analysis/scrap.R
 analysis/masterp.Rds
 analysis/masterp_mamm.Rds
 analysis/masterp_wide.Rds
+analysis/masterp_tall.Rds
 .future
 .future/*
 .DS_Store

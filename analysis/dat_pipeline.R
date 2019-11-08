@@ -4,9 +4,9 @@ library(ggplot2)
 
 expose_imports("scadsanalysis")
 
-# datasets <- c("mcdb", "gentry", "bbs", "misc_abund", "fia")
+datasets <- c("mcdb", "gentry", "bbs", "misc_abund", "fia")
 
-datasets <- c("mcdb", "bbs")
+#datasets <- c("mcdb", "bbs")
 
 sites_list <- lapply(as.list(datasets), FUN = list_sites)
 names(sites_list) <- datasets

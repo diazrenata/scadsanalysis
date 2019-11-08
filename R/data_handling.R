@@ -1,3 +1,30 @@
+#' Filter misc abund data
+#'
+#' Misc abund dataset has some very large communities, which I am removing for now to keep the p table tractable. This function is to make that filtering documented.
+#'
+#' @param max_s currently 200
+#' @param max_n currently 40720
+#' @param storage_path
+#'
+#' @return nothing
+#' @export
+#'
+#' @importFrom dplyr filter mutate
+filter_miscabund <- function(max_s = 200, max_n = 40720, storage_path = here::here("working-data", "abund_data")) {
+
+  misc_abund <- load_dataset("misc_abund")
+
+  misc_abund_sv <- get_statevars(misc_abund) %>%
+    dplyr::filter(s0 <= max_s, n0 <= max_n)
+
+  misc_abund <- misc_abund %>%
+    dplyr::filter(site %in% misc_abund_sv$site) %>%
+    dplyr::mutate(dat = "misc_abund_short")
+
+  write.csv(misc_abund, file.path(storage_path, "misc_abund_short_spab.csv"), row.names = F)
+
+}
+
 #' Download SAD data
 #'
 #' @param from_url defaults FALSE. If true, downloads White/Baldridge data directly from GitHub and figshare. Otherwise, loads data from storage internal to the package
@@ -49,10 +76,18 @@ load_dataset <- function(dataset_name, storage_path = here::here("working-data",
   dataset_path = file.path(storage_path, paste0(dataset_name, "_spab.csv"))
 
   if(dataset_name != "misc_abund") {
-    dataset <- read.csv(dataset_path, stringsAsFactors = F, header = F, skip = 2)
+    if(dataset_name == "misc_abund_short") {
 
-    colnames(dataset) <- c("site", "year", "species", "abund")
-  } else {
+      dataset <- read.csv(dataset_path, stringsAsFactors = F)
+
+      return(dataset)
+
+    } else {
+      dataset <- read.csv(dataset_path, stringsAsFactors = F, header = F, skip = 2)
+
+      colnames(dataset) <- c("site", "year", "species", "abund")
+    }
+  } else  {
     dataset <- read.csv(dataset_path, stringsAsFactors = F)
 
     dataset <- dataset %>%
@@ -91,9 +126,17 @@ list_sites <- function(dataset_name, storage_path = here::here("working-data", "
   dataset_path = file.path(storage_path, paste0(dataset_name, "_spab.csv"))
 
   if(dataset_name != "misc_abund") {
-    dataset <- read.csv(dataset_path, stringsAsFactors = F, header = F, skip = 2)
 
-    colnames(dataset) <- c("site", "year", "species", "abund")
+    if(dataset_name == "misc_abund_short") {
+
+      dataset <- read.csv(dataset_path, stringsAsFactors = F)
+
+    } else {
+
+      dataset <- read.csv(dataset_path, stringsAsFactors = F, header = F, skip = 2)
+
+      colnames(dataset) <- c("site", "year", "species", "abund")
+    }
   } else {
     dataset <- read.csv(dataset_path, stringsAsFactors = F)
 
