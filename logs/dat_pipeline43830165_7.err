@@ -1,0 +1,37 @@
+2019-11-08 18:14:53.776508 | Master: tcp://c5a-s2:6961
+2019-11-08 18:14:53.798827 | WORKER_UP to: tcp://c5a-s2:6961
+2019-11-08 18:14:55.964520 | > DO_SETUP (1.778s wait)
+2019-11-08 18:14:55.964967 | token from msg: set_common_data_token
+2019-11-08 18:14:58.302083 | > WORKER_WAIT (0.000s wait)
+2019-11-08 18:14:58.302748 | waiting 1.00s
+2019-11-08 18:14:59.733619 | > WORKER_WAIT (0.000s wait)
+2019-11-08 18:14:59.733968 | waiting 1.00s
+2019-11-08 18:15:00.828238 | > WORKER_WAIT (0.000s wait)
+2019-11-08 18:15:00.828594 | waiting 1.00s
+2019-11-08 18:15:01.853151 | > WORKER_WAIT (0.000s wait)
+2019-11-08 18:15:01.853515 | waiting 1.00s
+2019-11-08 18:15:02.875492 | > WORKER_WAIT (0.001s wait)
+2019-11-08 18:15:02.875852 | waiting 1.00s
+2019-11-08 18:15:04.031495 | > WORKER_WAIT (0.001s wait)
+2019-11-08 18:15:04.031848 | waiting 1.00s
+2019-11-08 18:15:05.089630 | > WORKER_WAIT (0.000s wait)
+2019-11-08 18:15:05.090263 | waiting 1.00s
+2019-11-08 18:15:06.216084 | > WORKER_WAIT (0.000s wait)
+2019-11-08 18:15:06.216451 | waiting 1.00s
+2019-11-08 18:15:07.407467 | > WORKER_WAIT (0.001s wait)
+2019-11-08 18:15:07.407822 | waiting 1.00s
+2019-11-08 18:15:10.868234 | > DO_CALL (1.111s wait)
+.* Option 'clustermq.scheduler' not set, defaulting to ‘SLURM’
+--- see: https://mschubert.github.io/clustermq/articles/userguide.html#configuration
+2019-11-08 18:15:17.935457 | eval'd: drake::cmq_buildtargetmetadepslayoutconfig
+2019-11-08 18:15:18.699026 | > DO_CALL (0.239s wait)
+.2019-11-08 18:15:22.944324 | eval'd: drake::cmq_buildtargetmetadepslayoutconfig
+2019-11-08 18:15:23.724507 | > DO_CALL (0.239s wait)
+.2019-11-08 18:15:25.810000 | eval'd: drake::cmq_buildtargetmetadepslayoutconfig
+2019-11-08 18:15:26.589103 | > DO_CALL (0.232s wait)
+.2019-11-08 18:15:29.547694 | eval'd: drake::cmq_buildtargetmetadepslayoutconfig
+2019-11-08 18:15:30.272778 | > DO_CALL (0.220s wait)
+.
+2019-11-08 18:15:40.529286 | eval'd: drake::cmq_buildtargetmetadepslayoutconfig
+2019-11-08 18:15:41.577842 | > DO_CALL (0.277s wait)
+.
