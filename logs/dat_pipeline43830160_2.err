@@ -1,7 +1,0 @@
-2019-11-08 18:14:54.995811 | Master: tcp://c5a-s2:6961
-2019-11-08 18:14:55.033105 | WORKER_UP to: tcp://c5a-s2:6961
-2019-11-08 18:14:57.702957 | > DO_SETUP (2.644s wait)
-2019-11-08 18:14:57.703888 | token from msg: set_common_data_token
-2019-11-08 18:14:59.836927 | > DO_CALL (1.039s wait)
-.* Option 'clustermq.scheduler' not set, defaulting to ‘SLURM’
---- see: https://mschubert.github.io/clustermq/articles/userguide.html#configuration
