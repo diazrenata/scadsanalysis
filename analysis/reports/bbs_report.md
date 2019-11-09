@@ -20,6 +20,8 @@ Number of samples achieved
 
 #### The maximum number of samples achieved is 100.
 
+    ## Warning: Removed 4 rows containing missing values (geom_bar).
+
 ![](bbs_report_files/figure-markdown_github/plot%20nb%20samples-1.png)![](bbs_report_files/figure-markdown_github/plot%20nb%20samples-2.png)
 
 Position (%ile) of empirical SADs within FS
