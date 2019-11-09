@@ -10,7 +10,7 @@ sites_list <- list_sites("portal_plants")
 ndraws = 100
 sites_list <- sites_list[1:15, ]
 
-dat_plan <- drake_plan(
+all <- drake_plan(
   dat = target(load_dataset(dataset_name = d),
                transform = map(
                  d = !!datasets
@@ -20,9 +20,9 @@ dat_plan <- drake_plan(
   dat_s = target(add_singletons_dataset(dat),
                  transform = map(dat),
                  hpc = F),
-  wide_p = target(readRDS(here::here("analysis", "masterp_wide.Rds")),
+  tall_p = target(readRDS(here::here("analysis", "masterp_tall.Rds")),
                   hpc = F),
-  fs = target(sample_fs_wrapper(dataset = dat_s_dat_portal_plants, site_name = s, singletonsyn = singletons, n_samples = ndraws, p_table = wide_p),
+  fs = target(sample_fs_wrapper(dataset = dat_s_dat_portal_plants, site_name = s, singletonsyn = singletons, n_samples = ndraws, p_table = tall_p),
                    transform = cross(s = !!sites_list$site,
                                      singletons = !!c(TRUE, FALSE))),
   di = target(add_dis(fs),
@@ -34,8 +34,6 @@ dat_plan <- drake_plan(
                   trigger = trigger(condition = T),
                   hpc = F)
 )
-
-all <- dat_plan
 
 ## Set up the cache and config
 db <- DBI::dbConnect(RSQLite::SQLite(), here::here("analysis", "drake", "drake-cache-portal_plants.sqlite"))
