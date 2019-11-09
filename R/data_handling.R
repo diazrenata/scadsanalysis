@@ -24,7 +24,7 @@ filter_miscabund <- function(max_s = 200, max_n = 40720, storage_path = here::he
 
   if(save) {
 
-  write.csv(misc_abund, file.path(storage_path, "misc_abund_short_spab.csv"), row.names = F)
+    write.csv(misc_abund, file.path(storage_path, "misc_abund_short_spab.csv"), row.names = F)
 
   }
 }
@@ -62,14 +62,54 @@ download_data <- function(from_url = FALSE, storage_path = here::here("working-d
 
     download.file(url = "https://ndownloader.figshare.com/files/3097079", destfile = file.path(storage_path,"abund_data", "misc_abund_spab.csv"))
 
+    download_portal_plants(storage_path = file.path(storage_path, "abund_data"))
+
   } else {
     file.copy(inst_path, storage_path, recursive = T)
   }
 }
 
+
+
+#' Download Portal plants
+#'
+#' @param storage_path where it goes
+#'
+#' @return nothing
+#' @export
+#'
+#' @importFrom portalr plant_abundance
+#' @importFrom dplyr filter select mutate rename bind_rows
+download_portal_plants <- function(storage_path = here::here("working-data", "abund_data")) {
+
+  portal_plants_summer <- portalr::plant_abundance(level = "Treatment", type = "Summer Annuals", plots = "All", unknowns = F, correct_sp = T, shape = "flat", min_quads = 16) %>%
+    dplyr::filter(treatment == "control") %>%
+    dplyr::select(year, species, abundance) %>%
+    dplyr::mutate(site = paste0(year, "_summer"),
+                  dat = "portal_plants",
+                  species = as.character(species)) %>%
+    dplyr::rename(abund = abundance) %>%
+    dplyr::select(site, year, species, abund) %>%
+    dplyr::filter(!(year %in% c(1989, 1990)))
+
+  portal_plants_winter <- portalr::plant_abundance(level = "Treatment", type = "Winter Annuals", plots = "All", unknowns = F, correct_sp = T, shape = "flat", min_quads = 16) %>%
+    dplyr::filter(treatment == "control") %>%
+    dplyr::select(year, species, abundance) %>%
+    dplyr::mutate(site = paste0(year, "_winter"),
+                  dat = "portal_plants",
+                  species = as.character(species)) %>%
+    dplyr::rename(abund = abundance) %>%
+    dplyr::select(site, year, species, abund) %>%
+    dplyr::filter(!(year %in% c(1989, 1984)))
+
+  portal_plants <- dplyr::bind_rows(portal_plants_summer, portal_plants_winter)
+
+  write.csv(portal_plants, file = file.path(storage_path, "portal_plants_spab.csv"), row.names = F)
+
+}
 #' Load a dataset
 #'
-#' @param dataset_name "bbs", "fia", "gentry", "mcdb", or "misc_abund"
+#' @param dataset_name "bbs", "fia", "gentry", "mcdb", "portal_plants", "misc_abund_short", or "misc_abund"
 #' @param storage_path where the data is living
 #'
 #' @return something
@@ -88,6 +128,10 @@ load_dataset <- function(dataset_name, storage_path = here::here("working-data",
         dplyr::mutate(site = as.character(site))
 
       return(dataset)
+
+    } else if (dataset_name == "portal_plants") {
+
+      dataset <- read.csv(dataset_path, stringsAsFactors = F, header = T)
 
     } else {
       dataset <- read.csv(dataset_path, stringsAsFactors = F, header = F, skip = 2)
@@ -137,6 +181,10 @@ list_sites <- function(dataset_name, storage_path = here::here("working-data", "
     if(dataset_name == "misc_abund_short") {
 
       dataset <- read.csv(dataset_path, stringsAsFactors = F)
+
+    } else if (dataset_name == "portal_plants") {
+
+      dataset <- read.csv(dataset_path, stringsAsFactors = F, header = T)
 
     } else {
 
@@ -207,3 +255,4 @@ get_statevars <- function(a_dataset) {
                      n0 = sum(abund)) %>%
     dplyr::ungroup()
 }
+
