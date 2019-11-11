@@ -5,9 +5,6 @@ sudo: required
 dist: "trusty"
 warnings_are_errors: false
 
-
-CODECOV_TOKEN="9e281dfe-e7e6-4605-be52-507fab3ce9b8"
-
 r_packages:
   - covr
   - devtools
