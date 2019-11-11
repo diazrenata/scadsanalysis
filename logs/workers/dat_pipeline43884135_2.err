@@ -1,0 +1,11 @@
+2019-11-11 08:15:00.689253 | Master: tcp://c23a-s22:6912
+2019-11-11 08:15:00.711160 | WORKER_UP to: tcp://c23a-s22:6912
+2019-11-11 08:15:03.052395 | > DO_SETUP (2.313s wait)
+2019-11-11 08:15:03.052846 | token from msg: set_common_data_token
+2019-11-11 08:15:55.778589 | > DO_CALL (21.863s wait)
+.* Option 'clustermq.scheduler' not set, defaulting to ‘SLURM’
+--- see: https://mschubert.github.io/clustermq/articles/userguide.html#configuration
+2019-11-11 08:46:20.939793 | eval'd: drake::cmq_buildtargetmetadepslayoutconfig
+Error in clustermq:::worker("tcp://c23a-s22:6912") : 
+  Timeout reached, terminating
+Execution halted

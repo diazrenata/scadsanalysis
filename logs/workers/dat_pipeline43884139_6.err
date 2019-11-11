@@ -1,0 +1,10 @@
+2019-11-11 08:15:00.708889 | Master: tcp://c23a-s22:6912
+2019-11-11 08:15:00.734287 | WORKER_UP to: tcp://c23a-s22:6912
+2019-11-11 08:15:03.303407 | > DO_SETUP (2.345s wait)
+2019-11-11 08:15:03.303860 | token from msg: set_common_data_token
+2019-11-11 08:16:17.666171 | > DO_CALL (22.512s wait)
+.* Option 'clustermq.scheduler' not set, defaulting to ‘SLURM’
+--- see: https://mschubert.github.io/clustermq/articles/userguide.html#configuration
+2019-11-11 08:36:11.893995 | eval'd: drake::cmq_buildtargetmetadepslayoutconfig
+Error: cannot allocate vector of size 824.9 Mb
+Execution halted
