@@ -1,0 +1,22 @@
+* Option 'clustermq.scheduler' not set, defaulting to ‘SLURM’
+--- see: https://mschubert.github.io/clustermq/articles/userguide.html#configuration
+
+...............................................................................
+......................................target fs_2013_winter_FALSE
+.target fs_2018_winter_FALSE
+..target di_fs_2013_winter_FALSE
+..target di_fs_2018_winter_FALSE
+..target all_di
+..target report
+...Target report messages:
+  
+
+processing file: dat_report_template.Rmd
+  output file: dat_report_template.knit.md
+
+  
+Preview created: portal_plants_report.html
+  
+Output created: portal_plants_report.md
+Master: [127.7s 67.5% CPU]; Worker: [avg 5.4% CPU, max 2746.1 Mb]
+.
