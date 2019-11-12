@@ -7,7 +7,7 @@ expose_imports("scadsanalysis")
 datasets <- "misc_abund_short"
 
 sites_list <- list_sites("misc_abund_short")
-ndraws = 100
+ndraws = 10000
 #sites_list <- sites_list[1:15, ]
 dat_plan <- drake_plan(
   dat = target(load_dataset(dataset_name = d),
@@ -62,7 +62,8 @@ if(grepl("ufhpc", nodename)) {
        verbose = 2,
        parallelism = "clustermq",
        jobs = 20,
-       caching = "master") # Important for DBI caches!
+       caching = "master",
+       memory_strategy = "autoclean") # Important for DBI caches!
 } else {
   library(clustermq)
   options(clustermq.scheduler = "multicore")
