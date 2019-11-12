@@ -1,0 +1,64 @@
+2019-11-12 16:44:41.331423 | Master: tcp://c32a-s27:6496
+2019-11-12 16:44:41.372037 | WORKER_UP to: tcp://c32a-s27:6496
+2019-11-12 16:45:02.122133 | > DO_SETUP (17.663s wait)
+2019-11-12 16:45:02.122677 | token from msg: set_common_data_token
+2019-11-12 16:45:15.212924 | > DO_CALL (10.179s wait)
+.* Option 'clustermq.scheduler' not set, defaulting to ‘SLURM’
+--- see: https://mschubert.github.io/clustermq/articles/userguide.html#configuration
+2019-11-12 16:45:28.648126 | eval'd: drake::cmq_buildtargetmetadepslayoutconfig
+2019-11-12 16:46:02.334414 | > DO_CALL (5.693s wait)
+.2019-11-12 16:46:06.366803 | eval'd: drake::cmq_buildtargetmetadepslayoutconfig
+2019-11-12 16:46:45.312735 | > DO_CALL (5.457s wait)
+.2019-11-12 16:46:45.565385 | eval'd: drake::cmq_buildtargetmetadepslayoutconfig
+2019-11-12 16:47:29.527587 | > DO_CALL (5.812s wait)
+.2019-11-12 16:47:33.489464 | eval'd: drake::cmq_buildtargetmetadepslayoutconfig
+2019-11-12 16:48:13.350470 | > DO_CALL (5.528s wait)
+.2019-11-12 16:48:15.932590 | eval'd: drake::cmq_buildtargetmetadepslayoutconfig
+2019-11-12 16:48:57.107063 | > DO_CALL (6.954s wait)
+.2019-11-12 16:48:57.892519 | eval'd: drake::cmq_buildtargetmetadepslayoutconfig
+2019-11-12 16:49:38.902925 | > DO_CALL (4.709s wait)
+.2019-11-12 16:50:02.498698 | eval'd: drake::cmq_buildtargetmetadepslayoutconfig
+2019-11-12 16:50:22.387373 | > DO_CALL (4.933s wait)
+.2019-11-12 16:50:26.257598 | eval'd: drake::cmq_buildtargetmetadepslayoutconfig
+2019-11-12 16:51:07.900852 | > DO_CALL (5.428s wait)
+.2019-11-12 16:51:09.812273 | eval'd: drake::cmq_buildtargetmetadepslayoutconfig
+2019-11-12 16:51:15.872550 | > DO_CALL (0.000s wait)
+.2019-11-12 16:51:15.898097 | eval'd: drake::cmq_buildtargetmetadepslayoutconfig
+2019-11-12 16:51:16.101590 | > DO_CALL (0.001s wait)
+.2019-11-12 16:51:18.224120 | eval'd: drake::cmq_buildtargetmetadepslayoutconfig
+2019-11-12 16:51:18.278387 | > DO_CALL (0.000s wait)
+.2019-11-12 16:51:18.294972 | eval'd: drake::cmq_buildtargetmetadepslayoutconfig
+2019-11-12 16:51:18.341312 | > DO_CALL (0.000s wait)
+2019-11-12 16:51:18.358166 | eval'd: drake::cmq_buildtargetmetadepslayoutconfig
+2019-11-12 16:51:18.405332 | > DO_CALL (0.001s wait)
+.2019-11-12 16:51:18.424434 | eval'd: drake::cmq_buildtargetmetadepslayoutconfig
+2019-11-12 16:51:18.544256 | > DO_CALL (0.001s wait)
+.2019-11-12 16:51:18.563161 | eval'd: drake::cmq_buildtargetmetadepslayoutconfig
+2019-11-12 16:51:18.812637 | > DO_CALL (0.000s wait)
+.2019-11-12 16:51:18.830536 | eval'd: drake::cmq_buildtargetmetadepslayoutconfig
+2019-11-12 16:51:19.368618 | > DO_CALL (0.001s wait)
+.2019-11-12 16:51:19.387590 | eval'd: drake::cmq_buildtargetmetadepslayoutconfig
+2019-11-12 16:51:19.891689 | > DO_CALL (0.001s wait)
+.2019-11-12 16:51:19.910569 | eval'd: drake::cmq_buildtargetmetadepslayoutconfig
+2019-11-12 16:51:20.381680 | > DO_CALL (0.000s wait)
+.2019-11-12 16:51:20.400067 | eval'd: drake::cmq_buildtargetmetadepslayoutconfig
+2019-11-12 16:51:20.932016 | > DO_CALL (0.001s wait)
+.2019-11-12 16:51:20.948944 | eval'd: drake::cmq_buildtargetmetadepslayoutconfig
+2019-11-12 16:51:22.057568 | > DO_CALL (0.001s wait)
+.2019-11-12 16:51:22.076781 | eval'd: drake::cmq_buildtargetmetadepslayoutconfig
+2019-11-12 16:51:22.548177 | > DO_CALL (0.000s wait)
+.2019-11-12 16:51:22.565359 | eval'd: drake::cmq_buildtargetmetadepslayoutconfig
+2019-11-12 16:51:23.034601 | > WORKER_WAIT (0.000s wait)
+2019-11-12 16:51:23.035052 | waiting 0.75s
+2019-11-12 16:51:23.787127 | > WORKER_WAIT (0.000s wait)
+2019-11-12 16:51:23.787555 | waiting 0.75s
+2019-11-12 16:51:24.539626 | > WORKER_WAIT (0.000s wait)
+2019-11-12 16:51:24.540071 | waiting 0.75s
+2019-11-12 16:51:25.292072 | > WORKER_WAIT (0.000s wait)
+2019-11-12 16:51:25.292539 | waiting 0.75s
+2019-11-12 16:51:26.044631 | > WORKER_WAIT (0.000s wait)
+2019-11-12 16:51:26.045080 | waiting 0.75s
+2019-11-12 16:51:41.909704 | > WORKER_STOP (0.000s wait)
+2019-11-12 16:51:41.910158 | shutting down worker
+2019-11-12 16:51:43.962373 | 
+Total: 22 in 120.15s [user], 15.51s [system], 420.54s [elapsed]

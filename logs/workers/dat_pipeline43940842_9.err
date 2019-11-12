@@ -1,0 +1,56 @@
+2019-11-12 16:44:41.416383 | Master: tcp://c32a-s27:6496
+2019-11-12 16:44:41.443655 | WORKER_UP to: tcp://c32a-s27:6496
+2019-11-12 16:45:11.789004 | > DO_SETUP (17.528s wait)
+2019-11-12 16:45:11.789560 | token from msg: set_common_data_token
+2019-11-12 16:45:52.647784 | > DO_CALL (10.272s wait)
+.* Option 'clustermq.scheduler' not set, defaulting to ‘SLURM’
+--- see: https://mschubert.github.io/clustermq/articles/userguide.html#configuration
+2019-11-12 16:45:57.498630 | eval'd: drake::cmq_buildtargetmetadepslayoutconfig
+2019-11-12 16:46:32.050114 | > DO_CALL (6.087s wait)
+.2019-11-12 16:46:32.153696 | eval'd: drake::cmq_buildtargetmetadepslayoutconfig
+2019-11-12 16:47:14.650619 | > DO_CALL (6.056s wait)
+.2019-11-12 16:47:14.697048 | eval'd: drake::cmq_buildtargetmetadepslayoutconfig
+2019-11-12 16:47:58.968044 | > DO_CALL (6.481s wait)
+.2019-11-12 16:48:02.634052 | eval'd: drake::cmq_buildtargetmetadepslayoutconfig
+2019-11-12 16:48:41.907059 | > DO_CALL (5.467s wait)
+.2019-11-12 16:48:42.441090 | eval'd: drake::cmq_buildtargetmetadepslayoutconfig
+2019-11-12 16:49:27.007297 | > DO_CALL (6.772s wait)
+.2019-11-12 16:49:27.015503 | eval'd: drake::cmq_buildtargetmetadepslayoutconfig
+2019-11-12 16:50:08.134866 | > DO_CALL (4.564s wait)
+.2019-11-12 16:50:09.582632 | eval'd: drake::cmq_buildtargetmetadepslayoutconfig
+2019-11-12 16:50:53.552475 | > DO_CALL (5.438s wait)
+.2019-11-12 16:50:56.025943 | eval'd: drake::cmq_buildtargetmetadepslayoutconfig
+2019-11-12 16:51:14.906511 | > DO_CALL (0.001s wait)
+.2019-11-12 16:51:14.928383 | eval'd: drake::cmq_buildtargetmetadepslayoutconfig
+2019-11-12 16:51:16.336443 | > DO_CALL (0.002s wait)
+.2019-11-12 16:51:18.433583 | eval'd: drake::cmq_buildtargetmetadepslayoutconfig
+2019-11-12 16:51:18.503953 | > DO_CALL (0.001s wait)
+.2019-11-12 16:51:18.521302 | eval'd: drake::cmq_buildtargetmetadepslayoutconfig
+2019-11-12 16:51:18.773099 | > DO_CALL (0.001s wait)
+.2019-11-12 16:51:18.790212 | eval'd: drake::cmq_buildtargetmetadepslayoutconfig
+2019-11-12 16:51:19.328573 | > DO_CALL (0.002s wait)
+.2019-11-12 16:51:19.346153 | eval'd: drake::cmq_buildtargetmetadepslayoutconfig
+2019-11-12 16:51:19.850990 | > DO_CALL (0.001s wait)
+.2019-11-12 16:51:19.867656 | eval'd: drake::cmq_buildtargetmetadepslayoutconfig
+2019-11-12 16:51:20.343056 | > DO_CALL (0.001s wait)
+.2019-11-12 16:51:20.362399 | eval'd: drake::cmq_buildtargetmetadepslayoutconfig
+2019-11-12 16:51:20.889753 | > DO_CALL (0.001s wait)
+.2019-11-12 16:51:20.909649 | eval'd: drake::cmq_buildtargetmetadepslayoutconfig
+2019-11-12 16:51:22.015511 | > DO_CALL (0.001s wait)
+.2019-11-12 16:51:22.033790 | eval'd: drake::cmq_buildtargetmetadepslayoutconfig
+2019-11-12 16:51:22.512013 | > DO_CALL (0.001s wait)
+.2019-11-12 16:51:22.531631 | eval'd: drake::cmq_buildtargetmetadepslayoutconfig
+2019-11-12 16:51:23.007551 | > WORKER_WAIT (0.000s wait)
+2019-11-12 16:51:23.007975 | waiting 0.75s
+2019-11-12 16:51:23.760072 | > WORKER_WAIT (0.000s wait)
+2019-11-12 16:51:23.760518 | waiting 0.75s
+2019-11-12 16:51:24.512597 | > WORKER_WAIT (0.000s wait)
+2019-11-12 16:51:24.513028 | waiting 0.75s
+2019-11-12 16:51:25.265110 | > WORKER_WAIT (0.000s wait)
+2019-11-12 16:51:25.265564 | waiting 0.75s
+2019-11-12 16:51:26.017706 | > WORKER_WAIT (0.000s wait)
+2019-11-12 16:51:26.018145 | waiting 0.75s
+2019-11-12 16:51:41.911144 | > WORKER_STOP (0.000s wait)
+2019-11-12 16:51:41.911613 | shutting down worker
+2019-11-12 16:51:43.704393 | 
+Total: 18 in 76.84s [user], 13.16s [system], 420.47s [elapsed]
