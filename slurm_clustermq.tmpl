@@ -10,5 +10,4 @@
 source /etc/profile
 
 module load R              # Uncomment if R is an environment module.
-ulimit -v $(( 1024 * {{ memory | 4096 }} ))
 CMQ_AUTH={{ auth }} Rscript -e 'clustermq:::worker("{{ master }}")'
