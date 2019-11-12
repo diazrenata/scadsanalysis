@@ -90,7 +90,7 @@ download_portal_plants <- function(storage_path = here::here("working-data", "ab
                   species = as.character(species)) %>%
     dplyr::rename(abund = abundance) %>%
     dplyr::select(site, year, species, abund) %>%
-    dplyr::filter(!(year %in% c(1989, 1990)))
+    dplyr::filter(!(year %in% c(1987, 1992, 1989, 1990)))
 
   portal_plants_winter <- portalr::plant_abundance(level = "Treatment", type = "Winter Annuals", plots = "All", unknowns = F, correct_sp = T, shape = "flat", min_quads = 16) %>%
     dplyr::filter(treatment == "control") %>%
@@ -100,7 +100,7 @@ download_portal_plants <- function(storage_path = here::here("working-data", "ab
                   species = as.character(species)) %>%
     dplyr::rename(abund = abundance) %>%
     dplyr::select(site, year, species, abund) %>%
-    dplyr::filter(!(year %in% c(1989, 1984)))
+    dplyr::filter(!(year %in% c(1987, 1992, 1993, 1989, 1984)))
 
   portal_plants <- dplyr::bind_rows(portal_plants_summer, portal_plants_winter)
 
