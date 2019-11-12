@@ -8,7 +8,7 @@ datasets <- "fia"
 
 sites_list <- list_sites("fia")
 ndraws = 100
-sites_list <- sites_list[1:2000, ]
+sites_list <- sites_list[1:50000, ]
 
 dat_plan <- drake_plan(
   dat = target(load_dataset(dataset_name = d),
@@ -62,7 +62,7 @@ if(grepl("ufhpc", nodename)) {
        cache_log_file = here::here("analysis", "drake", "cache_log_fia.txt"),
        verbose = 2,
        parallelism = "clustermq",
-       jobs = 20,
+       jobs = 50,
        caching = "master") # Important for DBI caches!
 } else {
   library(clustermq)
