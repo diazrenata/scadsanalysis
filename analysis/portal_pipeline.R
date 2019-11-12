@@ -7,7 +7,7 @@ expose_imports("scadsanalysis")
 datasets <- "portal_plants"
 
 sites_list <- list_sites("portal_plants")
-ndraws = 10000
+ndraws = 100
 #sites_list <- sites_list[1:15, ]
 
 all <- drake_plan(
