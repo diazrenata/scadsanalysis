@@ -61,7 +61,8 @@ if(grepl("ufhpc", nodename)) {
        verbose = 2,
        parallelism = "clustermq",
        jobs = 20,
-       caching = "master") # Important for DBI caches!
+       caching = "master",
+       memory_strategy = "autoclean") # Important for DBI caches!
 } else {
   library(clustermq)
   options(clustermq.scheduler = "multicore")

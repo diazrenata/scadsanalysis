@@ -2,7 +2,6 @@
 title: "Between-dataset comparisons"
 output: 
   github_document
-params:
 ---
 
 ```{r setup, include=FALSE}
@@ -14,9 +13,11 @@ library(scadsanalysis)
 
 all_statevars <- list() 
 
-datasets <- c("bbs", "fia", "gentry", "mcdb", "misc_abund_short", "portal_plants")
+# datasets <- c("bbs", "fia", "gentry", "mcdb", "misc_abund_short", "portal_plants")
 
-for(i in 1:6) {
+datasets <- c("fia", "gentry", "mcdb", "misc_abund_short", "portal_plants")
+
+for(i in 1:length(datasets)) {
   
   this_dataset = datasets[i]
   if(this_dataset == "misc_abund_short") {
@@ -29,12 +30,12 @@ for(i in 1:6) {
   db <- DBI::dbConnect(RSQLite::SQLite(), here::here("analysis", "drake", paste0("drake-cache-", cache_loc, ".sqlite")))
   cache <- storr::storr_dbi("datatable", "keystable", db)
   
- this_dat <- readd(paste0("dat_s_dat_", this_dataset), cache = cache, character_only = T)
+  this_dat <- readd(paste0("dat_s_dat_", this_dataset), cache = cache, character_only = T)
   
- all_statevars[[i]] <- get_statevars(this_dat)
- 
- all_statevars[[i]]$site <- as.character(all_statevars[[i]]$site)
- 
+  all_statevars[[i]] <- get_statevars(this_dat)
+  
+  all_statevars[[i]]$site <- as.character(all_statevars[[i]]$site)
+  
   DBI::dbDisconnect(db)
   rm(cache)
   rm(db)
@@ -76,13 +77,25 @@ extrema_plot
 
 all_statevars <- all_statevars %>%
   filter(!singletons) %>%
-  mutate(in_bbs = between(s0, all_extremes$min_s0[1], all_extremes$max_s0[1]) + between(n0, all_extremes$min_n0[1], all_extremes$max_n0[1]) == 2,
-         in_fia = between(s0, all_extremes$min_s0[3], all_extremes$max_s0[3]) + between(n0, all_extremes$min_n0[3], all_extremes$max_n0[3]) == 2,
-         in_gentry = between(s0, all_extremes$min_s0[5], all_extremes$max_s0[5]) + between(n0, all_extremes$min_n0[5], all_extremes$max_n0[5]) == 2,
-         in_mcdb = between(s0, all_extremes$min_s0[7], all_extremes$max_s0[7]) + between(n0, all_extremes$min_n0[7], all_extremes$max_n0[7]) == 2,
-         in_misc = between(s0, all_extremes$min_s0[9], all_extremes$max_s0[9]) + between(n0, all_extremes$min_n0[9], all_extremes$max_n0[9]) == 2,
-         in_portal = between(s0, all_extremes$min_s0[11], all_extremes$max_s0[11]) + between(n0, all_extremes$min_n0[11], all_extremes$max_n0[11]) == 2) %>%
-  mutate(total_in = in_bbs + in_fia + in_gentry + in_mcdb + in_misc + in_portal)
+  mutate(
+    # in_bbs = between(s0, filter(all_extremes, dat == "bbs", singletons == F)$min_s0[1], filter(all_extremes, dat == "bbs", singletons == F)$max_s0[1]) + between(n0, filter(all_extremes, dat == "bbs", singletons == F)$min_n0[1], filter(all_extremes, dat == "bbs", singletons == F)$max_n0[1]) == 2,
+    in_fia = between(s0, filter(all_extremes, dat == "fia", singletons == F)$min_s0[1], filter(all_extremes, dat == "fia", singletons == F)$max_s0[1]) + between(n0, filter(all_extremes, dat == "fia", singletons == F)$min_n0[1], filter(all_extremes, dat == "fia", singletons == F)$max_n0[1]) == 2,
+    in_gentry = between(s0, filter(all_extremes, dat == "gentry", singletons == F)$min_s0[1], filter(all_extremes, dat == "gentry", singletons == F)$max_s0[1]) + between(n0, filter(all_extremes, dat == "gentry", singletons == F)$min_n0[1], filter(all_extremes, dat == "gentry", singletons == F)$max_n0[1]) == 2,
+    in_mcdb = between(s0, filter(all_extremes, dat == "mcdb", singletons == F)$max_s0[1], filter(all_extremes, dat == "mcdb", singletons == F)$max_s0[1]) + between(n0, filter(all_extremes, dat == "mcdb", singletons == F)$min_n0[1], filter(all_extremes, dat == "mcdb", singletons == F)$max_n0[1]) == 2,
+    in_misc = between(s0, filter(all_extremes, dat == "misc_abund_short", singletons == F)$max_s0[1], filter(all_extremes, dat == "misc_abund_short", singletons == F)$max_s0[1]) + between(n0, filter(all_extremes, dat == "misc_abund_short", singletons == F)$min_n0[1], filter(all_extremes, dat == "misc_abund_short", singletons == F)$max_n0[1]) == 2,
+    in_portal = between(s0, filter(all_extremes, dat == "portal_plants", singletons == F)$max_s0[1], filter(all_extremes, dat == "portal_plants", singletons == F)$max_s0[1]) + between(n0, filter(all_extremes, dat == "portal_plants", singletons == F)$min_n0[1], filter(all_extremes, dat == "portal_plants", singletons == F)$max_n0[1]) == 2
+    ) %>%
+  # mutate(total_in = in_bbs + in_fia + in_gentry + in_mcdb + in_misc + in_portal)
+  mutate(total_in =in_fia + in_gentry + in_mcdb + in_misc + in_portal)
 
 ```
 
+```{r intersection plot}
+
+intersection_plot <- ggplot(data = filter(all_statevars, singletons == FALSE, total_in > 1), aes(x = s0, y = n0, color = as.factor(total_in))) +
+  geom_point(alpha = .2) +
+  theme_bw() +
+  scale_color_viridis_d(option = "plasma", end = .9)
+intersection_plot
+
+```
