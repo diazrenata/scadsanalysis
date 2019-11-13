@@ -7,8 +7,8 @@ expose_imports("scadsanalysis")
 datasets <- "mcdb"
 
 sites_list <- list_sites("mcdb")
-ndraws = 2500
-#sites_list <- sites_list[1:15, ]
+ndraws = 100
+sites_list <- sites_list[1:15, ]
 
 all <- drake_plan(
   dat = target(load_dataset(dataset_name = d),

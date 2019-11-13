@@ -7,8 +7,8 @@ expose_imports("scadsanalysis")
 datasets <- "fia_short"
 
 sites_list <- list_sites("fia_short")
-ndraws = 2500
-#sites_list <- sites_list[1:1000, ]
+ndraws = 100
+sites_list <- sites_list[1:1000, ]
 
 dat_plan <- drake_plan(
   dat = target(load_dataset(dataset_name = d),

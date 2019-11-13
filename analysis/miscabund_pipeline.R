@@ -7,8 +7,8 @@ expose_imports("scadsanalysis")
 datasets <- "misc_abund_short"
 
 sites_list <- list_sites("misc_abund_short")
-ndraws = 2500
-#sites_list <- sites_list[1:15, ]
+ndraws = 100
+sites_list <- sites_list[1:15, ]
 dat_plan <- drake_plan(
   dat = target(load_dataset(dataset_name = d),
                transform = map(
