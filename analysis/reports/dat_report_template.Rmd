@@ -26,7 +26,16 @@ db <- DBI::dbConnect(RSQLite::SQLite(), here::here("analysis", "drake", paste0("
 cache <- storr::storr_dbi("datatable", "keystable", db)
 
 dat <- readd(paste0("dat_s_dat_", this_dataset), cache = cache, character_only = T)
-loadd(all_di, cache = cache)
+if(this_dataset == "bbs") {
+  loadd(all_di_FALSE, cache = cache)
+  loadd(all_di_TRUE, cache = cache)
+  all_di = bind_rows(all_di_FALSE, all_di_TRUE)
+  rm(all_di_FALSE)
+  rm(all_di_TRUE)
+  
+  } else {
+    loadd(all_di, cache = cache)
+  }
 
 ```
 # This dataset is `r this_dataset`.

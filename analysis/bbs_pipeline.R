@@ -9,7 +9,7 @@ datasets <- "bbs"
 sites_list <- list_sites("bbs")
 ndraws = 10000
 sites_list <- sites_list[1:15, ]
-all <- drake_plan(
+dat_plan <- drake_plan(
   dat = target(load_dataset(dataset_name = d),
                transform = map(
                  d = !!datasets
@@ -26,14 +26,15 @@ all <- drake_plan(
                                      singletons = !!c(TRUE, FALSE))),
   di = target(add_dis(fs),
               transform = map(fs)),
-  all_di_list = target(list(di),
-                  transform = combine(di),
+  all_di = target(dplyr::bind_rows(di),
+                  transform = combine(di, .by = singletons),
                   hpc = F),
-  all_di_save = target(saveRDS(all_di_list, file = "bbs_di_list.Rds"), hpc = F)
-  #report = target(render_report(here::here("analysis", "reports", "dat_report_template.Rmd"), dependencies = all_di, is_template = TRUE, dat_name = !!datasets),
-  #                trigger = trigger(condition = T),
-   #               hpc = F)
+  report = target(render_report(here::here("analysis", "reports", "dat_report_template.Rmd"), dependencies = all_di, is_template = TRUE, dat_name = !!datasets),
+                  trigger = trigger(condition = T),
+                  hpc = F)
 )
+
+all <- dat_plan
 
 ## Set up the cache and config
 db <- DBI::dbConnect(RSQLite::SQLite(), here::here("analysis", "drake", "drake-cache-bbs.sqlite"))
