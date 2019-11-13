@@ -29,6 +29,34 @@ filter_miscabund <- function(max_s = 200, max_n = 40720, storage_path = here::he
   }
 }
 
+#' Filter FIA data
+#'
+#' Following White et al 2012, filtering FIA data to sites with > 10 species. This brings it from 103343 sites to 10355.
+#'
+#' @param storage_path where to put it
+#' @param save save it?
+#'
+#' @return nothing
+#' @export
+#'
+#' @importFrom dplyr filter mutate
+filter_fia <- function(storage_path = here::here("working-data", "abund_data"), save = TRUE) {
+
+  fia <- load_dataset("fia", storage_path = storage_path)
+
+  fia_sv <- get_statevars(fia) %>%
+    dplyr::filter(s0 >= 10)
+
+  fia <- fia %>%
+    dplyr::filter(site %in% fia_sv$site) %>%
+    dplyr::mutate(dat = "fia_short")
+
+  if(save) {
+
+    write.csv(fia, file.path(storage_path, "fia_short_spab.csv"), row.names = F)
+
+  }
+}
 #' Download SAD data
 #'
 #' @param from_url defaults FALSE. If true, downloads White/Baldridge data directly from GitHub and figshare. Otherwise, loads data from storage internal to the package
@@ -64,8 +92,14 @@ download_data <- function(from_url = FALSE, storage_path = here::here("working-d
 
     download_portal_plants(storage_path = file.path(storage_path, "abund_data"))
 
+    filter_miscabund(storage_path = file.path(storage_path, "abund_data"))
+    filter_fia(storage_path = file.path(storage_path, "abund_data"))
+
   } else {
     file.copy(inst_path, storage_path, recursive = T)
+
+    filter_miscabund(storage_path = file.path(storage_path, "abund_data"))
+    filter_fia(storage_path = file.path(storage_path, "abund_data"))
   }
 }
 
@@ -120,7 +154,7 @@ load_dataset <- function(dataset_name, storage_path = here::here("working-data",
   dataset_path = file.path(storage_path, paste0(dataset_name, "_spab.csv"))
 
   if(dataset_name != "misc_abund") {
-    if(dataset_name == "misc_abund_short") {
+    if(dataset_name  %in% c("misc_abund_short", "fia_short")) {
 
       dataset <- read.csv(dataset_path, stringsAsFactors = F)
 
@@ -178,7 +212,7 @@ list_sites <- function(dataset_name, storage_path = here::here("working-data", "
 
   if(dataset_name != "misc_abund") {
 
-    if(dataset_name == "misc_abund_short") {
+    if(dataset_name %in% c("misc_abund_short", "fia_short")) {
 
       dataset <- read.csv(dataset_path, stringsAsFactors = F)
 

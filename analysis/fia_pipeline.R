@@ -4,11 +4,11 @@ library(ggplot2)
 
 expose_imports("scadsanalysis")
 
-datasets <- "fia"
+datasets <- "fia_short"
 
-sites_list <- list_sites("fia")
+sites_list <- list_sites("fia_short")
 ndraws = 2500
-sites_list <- sites_list[1:1000, ]
+#sites_list <- sites_list[1:1000, ]
 
 dat_plan <- drake_plan(
   dat = target(load_dataset(dataset_name = d),
@@ -22,7 +22,7 @@ dat_plan <- drake_plan(
                  hpc = F),
   wide_p = target(readRDS(here::here("analysis", "masterp_wide.Rds")),
                   hpc = F),
-  fs = target(sample_fs_wrapper(dataset = dat_s_dat_fia, site_name = s, singletonsyn = singletons, n_samples = ndraws, p_table = wide_p),
+  fs = target(sample_fs_wrapper(dataset = dat_s_dat_fia_short, site_name = s, singletonsyn = singletons, n_samples = ndraws, p_table = wide_p),
                    transform = cross(s = !!sites_list$site,
                                      singletons = !!c(TRUE, FALSE))),
   di = target(add_dis(fs),

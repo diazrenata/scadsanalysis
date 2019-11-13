@@ -1,19 +1,20 @@
 context("Check that data handling is okay")
 
 test_that("download_data", {
-  expect_true(download_data(from_url = FALSE))
+  expect_silent(download_data(from_url = FALSE))
 })
 
 test_that("filter misc abund", {
 
   expect_silent(filter_miscabund(save = F))
+  expect_silent(filter_fia(save = F))
 
 })
 
 test_that("load_dataset", {
-  datasets <- c("mcdb", "misc_abund", "bbs", "fia", "gentry", "misc_abund_short", "portal_plants")
+  datasets <- c("mcdb", "misc_abund", "bbs", "fia", "gentry", "misc_abund_short", "portal_plants", "fia_short")
 
-  for(i in 1:7) {
+  for(i in 1:8) {
     thisdat <- load_dataset(datasets[i])
     expect_true(is.data.frame(thisdat))
     expect_true(ncol(thisdat) == 7)
@@ -31,8 +32,8 @@ test_that("load_dataset", {
 })
 
 test_that("list_sites", {
-  datasets <- c("mcdb", "misc_abund", "bbs", "fia", "gentry", "misc_abund_short", "portal_plants")
-  for(i in 1:7) {
+  datasets <- c("mcdb", "misc_abund", "bbs", "fia", "gentry", "misc_abund_short", "portal_plants", "fia_short")
+  for(i in 1:8) {
     sitelist <- list_sites(datasets[i])
     expect_true(is.data.frame(sitelist))
     expect_true(ncol(sitelist) == 2)
