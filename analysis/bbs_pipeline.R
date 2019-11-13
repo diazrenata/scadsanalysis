@@ -26,12 +26,13 @@ dat_plan <- drake_plan(
                                      singletons = !!c(TRUE, FALSE))),
   di = target(add_dis(fs),
               transform = map(fs)),
-  all_di = target(dplyr::bind_rows(di),
-                  transform = combine(di, .by = singletons),
+  all_di = target(list(di),
+                  transform = combine(di),
                   hpc = F),
-  report = target(render_report(here::here("analysis", "reports", "dat_report_template.Rmd"), dependencies = all_di, is_template = TRUE, dat_name = !!datasets),
-                  trigger = trigger(condition = T),
-                  hpc = F)
+  all_di_save = target(saveRDS(all_di, file = "bbs_di.Rds"))
+  #report = target(render_report(here::here("analysis", "reports", "dat_report_template.Rmd"), dependencies = all_di, is_template = TRUE, dat_name = !!datasets),
+               #   trigger = trigger(condition = T),
+             #     hpc = F)
 )
 
 all <- dat_plan
