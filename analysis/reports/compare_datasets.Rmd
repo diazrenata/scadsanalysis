@@ -13,9 +13,9 @@ library(scadsanalysis)
 
 all_statevars <- list() 
 
-# datasets <- c("bbs", "fia", "gentry", "mcdb", "misc_abund_short", "portal_plants")
+datasets <- c("bbs", "fia", "gentry", "mcdb", "misc_abund_short", "portal_plants")
 
-datasets <- c("fia", "gentry", "mcdb", "misc_abund_short", "portal_plants")
+#datasets <- c("fia", "gentry", "mcdb", "misc_abund_short", "portal_plants")
 
 for(i in 1:length(datasets)) {
   
@@ -56,6 +56,18 @@ all_extremes <- all_statevars %>%
 
 ```
 
+## Overall dataset spaces
+
+```{r overall spaces}
+
+overall <- ggplot(data = filter(all_statevars, !singletons), aes(x = s0, y = n0)) +
+  geom_point(alpha = .3) +
+  theme_bw() +
+  facet_wrap(vars(dat), scales = "fixed")
+overall
+```
+
+
 ## Extremes by dataset
 
 Here are the spaces occupied by each dataset
@@ -78,15 +90,15 @@ extrema_plot
 all_statevars <- all_statevars %>%
   filter(!singletons) %>%
   mutate(
-    # in_bbs = between(s0, filter(all_extremes, dat == "bbs", singletons == F)$min_s0[1], filter(all_extremes, dat == "bbs", singletons == F)$max_s0[1]) + between(n0, filter(all_extremes, dat == "bbs", singletons == F)$min_n0[1], filter(all_extremes, dat == "bbs", singletons == F)$max_n0[1]) == 2,
+     in_bbs = between(s0, filter(all_extremes, dat == "bbs", singletons == F)$min_s0[1], filter(all_extremes, dat == "bbs", singletons == F)$max_s0[1]) + between(n0, filter(all_extremes, dat == "bbs", singletons == F)$min_n0[1], filter(all_extremes, dat == "bbs", singletons == F)$max_n0[1]) == 2,
     in_fia = between(s0, filter(all_extremes, dat == "fia", singletons == F)$min_s0[1], filter(all_extremes, dat == "fia", singletons == F)$max_s0[1]) + between(n0, filter(all_extremes, dat == "fia", singletons == F)$min_n0[1], filter(all_extremes, dat == "fia", singletons == F)$max_n0[1]) == 2,
     in_gentry = between(s0, filter(all_extremes, dat == "gentry", singletons == F)$min_s0[1], filter(all_extremes, dat == "gentry", singletons == F)$max_s0[1]) + between(n0, filter(all_extremes, dat == "gentry", singletons == F)$min_n0[1], filter(all_extremes, dat == "gentry", singletons == F)$max_n0[1]) == 2,
     in_mcdb = between(s0, filter(all_extremes, dat == "mcdb", singletons == F)$max_s0[1], filter(all_extremes, dat == "mcdb", singletons == F)$max_s0[1]) + between(n0, filter(all_extremes, dat == "mcdb", singletons == F)$min_n0[1], filter(all_extremes, dat == "mcdb", singletons == F)$max_n0[1]) == 2,
     in_misc = between(s0, filter(all_extremes, dat == "misc_abund_short", singletons == F)$max_s0[1], filter(all_extremes, dat == "misc_abund_short", singletons == F)$max_s0[1]) + between(n0, filter(all_extremes, dat == "misc_abund_short", singletons == F)$min_n0[1], filter(all_extremes, dat == "misc_abund_short", singletons == F)$max_n0[1]) == 2,
     in_portal = between(s0, filter(all_extremes, dat == "portal_plants", singletons == F)$max_s0[1], filter(all_extremes, dat == "portal_plants", singletons == F)$max_s0[1]) + between(n0, filter(all_extremes, dat == "portal_plants", singletons == F)$min_n0[1], filter(all_extremes, dat == "portal_plants", singletons == F)$max_n0[1]) == 2
     ) %>%
-  # mutate(total_in = in_bbs + in_fia + in_gentry + in_mcdb + in_misc + in_portal)
-  mutate(total_in =in_fia + in_gentry + in_mcdb + in_misc + in_portal)
+   mutate(total_in = in_bbs + in_fia + in_gentry + in_mcdb + in_misc + in_portal)
+  # mutate(total_in =in_fia + in_gentry + in_mcdb + in_misc + in_portal)
 
 ```
 
@@ -98,4 +110,28 @@ intersection_plot <- ggplot(data = filter(all_statevars, singletons == FALSE, to
   scale_color_viridis_d(option = "plasma", end = .9)
 intersection_plot
 
+```
+I don't trust that occupancy. Here's another approach.
+
+```{r new occupancy}
+
+max_min_s0 = max(all_extremes$min_s0)
+max_min_n0 = max(all_extremes$min_n0)
+
+min_max_s0 = min(all_extremes$max_s0)
+min_max_n0 = min(all_extremes$max_n0)
+
+all_statevars_within <- all_statevars %>%
+  filter(s0 > max_min_s0, s0 < min_max_s0, n0 > max_min_n0, n0 < min_max_n0, !singletons) %>%
+  select(site, dat, s0, n0) %>%
+  group_by(s0, n0) %>%
+  mutate(ndats = length(unique(dat)),
+         nsites = dplyr::n()) %>%
+  ungroup()
+
+new_occ <- ggplot(data = all_statevars_within, aes(x = s0,y = n0, color = as.factor(ndats))) +
+  geom_point(alpha = .3) +
+  scale_color_viridis_d(option = "plasma", end = .9, direction = -1) +
+  theme_bw()
+new_occ
 ```
