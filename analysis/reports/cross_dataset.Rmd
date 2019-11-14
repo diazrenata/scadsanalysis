@@ -59,124 +59,6 @@ write.csv(all_di, "all_di.csv", row.names = F)
 }
 ```
 
-```{r overall percentile heatmap}
-
-overall_heatmap_skew <- ggplot(data = all_di, aes(x = s0, y = n0, color = skew_percentile)) +
-  geom_point(alpha = .2) +
-  theme_bw() +
-  scale_color_viridis_c(option = "plasma", begin = .1, end = .8, direction = -1) +
-  facet_wrap(vars(singletons)) +
-  ggtitle("Skewness Percentile") +
-  theme(legend.position = "bottom")
-
-
-overall_heatmap_simpson <- ggplot(data = all_di, aes(x = s0, y = n0, color = simpson_percentile)) +
-  geom_point(alpha = .2) +
-  theme_bw() +
-  scale_color_viridis_c(option = "plasma", begin = .1, end = .8)+
-  facet_wrap(vars(singletons)) +
-  ggtitle("Simpson's Percentile")+
-  theme(legend.position = "bottom")
-
-
-overall_heatmap_skew_zoomed <- overall_heatmap_skew +
-  ylim(0, 5000) +
-  xlim(0, 250)+
-  theme(legend.position = "none")
-
-
-
-overall_heatmap_simpson_zoomed <- overall_heatmap_simpson +
-  ylim(0, 5000) +
-  xlim(0, 250)+
-  theme(legend.position = "none")
-
-gridExtra::grid.arrange(grobs = list(overall_heatmap_skew, overall_heatmap_skew_zoomed), nrow= 1)
-gridExtra::grid.arrange(grobs = list(overall_heatmap_simpson, overall_heatmap_simpson_zoomed), nrow= 1)
-
-```
-
-Broken out by dataset
-
-```{r dataset heatmaps, fig.width = 30, fig.height = 20}
-
-dat_heatmap_skew <-  ggplot(data = filter(all_di, !singletons), aes(x = s0, y = n0, color = skew_percentile)) +
-  geom_point(alpha = .4) +
-  theme_bw() +
-  scale_color_viridis_c(option = "plasma", begin = .1, end = .8, direction = -1)+
-  facet_wrap(vars(dat), scales = "free") +
-  ggtitle("Skew Percentile")+
-  theme(legend.position = "bottom")
-dat_heatmap_skew
-
-dat_heatmap_simpson <-  ggplot(data = filter(all_di, !singletons), aes(x = s0, y = n0, color = simpson_percentile)) +
-  geom_point(alpha = .4) +
-  theme_bw() +
-  scale_color_viridis_c(option = "plasma", begin = .1, end = .8)+
-  facet_wrap(vars(dat), scales = "free") +
-  ggtitle("Simpson's Percentile")+
-  theme(legend.position = "bottom")
-dat_heatmap_simpson
-```
-
-Against S0
-
-```{r s0 percentile}
-
-overall_s0_skew <- ggplot(data = filter(all_di, !singletons), aes(x = s0, y = skew_percentile)) +
-  geom_point(alpha = .1) +
-  geom_smooth(method = "lm", se = F, color = "pink") +
-  theme_bw() +
-  ggtitle("Skew percentile")
-overall_s0_skew
-
-dat_s0_skew <- overall_s0_skew +
-  facet_wrap(vars(dat), scales = "free")
-dat_s0_skew
-
-
-overall_s0_simpson <- ggplot(data = filter(all_di, !singletons), aes(x = s0, y = simpson_percentile)) +
-  geom_point(alpha = .1) +
-  geom_smooth(method = "lm", se = F, color = "pink") +
-  theme_bw() +
-  ggtitle("Simpson percentile")
-overall_s0_simpson
-
-dat_s0_simpson <- overall_s0_simpson +
-  facet_wrap(vars(dat), scales = "free")
-dat_s0_simpson
-
-```
-
-
-Against nsamples
-
-```{r nsamples}
-
-skew_nsamples <- ggplot(data = filter(all_di, !singletons), aes(x = nsamples, y = skew_percentile)) +
-  geom_point(alpha = .1) +
-    geom_smooth(method = "lm", se = F, color = "pink") +
-
-  theme_bw() +
-  ggtitle("Skew percentile v. nsamples") 
-
-skew_nsamples
-
-dat_skew_nsamples <- skew_nsamples +
-  facet_wrap(vars(dat))
-
-dat_skew_nsamples
-
-simp_nsamples <- ggplot(data = filter(all_di, !singletons), aes(x = nsamples, y = simpson_percentile)) +
-  geom_point(alpha = .1) + 
-    geom_smooth(method = "lm", se = F, color = "pink") +
-
-  theme_bw() +
-  ggtitle("Simpson percentile v. nsamples")
-
-simp_nsamples
-```
-
 ```{r histograms, fig.height = 6, fig.width =6}
 
 skewhists <- ggplot(data = all_di, aes(x = skew_percentile)) +
@@ -197,3 +79,91 @@ simpsonhists <- ggplot(data = all_di, aes(x = simpson_percentile)) +
 simpsonhists
 
 ```
+ 
+Observations from these histograms:
+
+* FIA really struggles to get 2500 samples
+* Portal is the *most* concentrated of all the datasets.
+* Then MCDB and misc, then gentry, then bbs. FIA is hard to place but looks idiosyncratic.
+* Curious about how variation in %ile maps on to S and N, *particularly* for Gentry and BBS. 
+* Skewness is less extreme than Simpson (more density in the in-between). 
+* Singletons doesn't appear to be terrifically impactful. From now on filtering to *unaltered* vectors.
+
+```{r s and n mapping, fig.width = 12, fig.height = 10}
+
+all_di <- filter(all_di, !singletons)
+
+skew_s_n_maps <- ggplot(data = all_di, aes(x = s0, y = n0, color = skew_percentile)) +
+  geom_point(alpha = .3) +
+  theme_bw() +
+  facet_wrap(vars(dat), scales = "free") + 
+  ggtitle("Skewness") +
+  scale_color_viridis_c(option = "plasma", end= .75)
+
+skew_s_n_maps
+
+
+simpson_s_n_maps <- ggplot(data = all_di, aes(x = s0, y = n0, color = simpson_percentile)) +
+  geom_point(alpha = .3) +
+  theme_bw() +
+  facet_wrap(vars(dat), scales = "free") + 
+  ggtitle("Simpson") +
+  scale_color_viridis_c(option = "plasma", end= .75, direction = -1)
+
+simpson_s_n_maps
+
+```
+
+The less extreme (low skew, high simpson) vectors appear vaguely collected in the lower right for Gentry and BBS. Those are the regions with relatively high N/S, aka low average abundance, aka a relatively small feasible set. 
+
+
+Conversely, for MCDB and Misc, it almost looks like the very least skewed elements are way down at tiny abundances?
+
+Do percentiles scan with S/N?
+
+```{r avg abund}
+
+all_di <- mutate(all_di, avg_abund = n0/s0)
+
+skew_avgabund <- ggplot(data = all_di, aes(x = avg_abund, y = skew_percentile)) +
+  geom_point(alpha = .3) +
+  theme_bw() +
+  ggtitle("Skew") +
+  facet_wrap(vars(dat), scales = "free")
+
+skew_avgabund
+
+
+simpson_avgabund <- ggplot(data = all_di, aes(x = avg_abund, y = simpson_percentile)) +
+  geom_point(alpha = .3) +
+  theme_bw() +
+  ggtitle("Simpson") +
+  facet_wrap(vars(dat), scales = "free")
+
+simpson_avgabund
+
+```
+There is perhaps a constraint, but that might be because you rarely get v high average abundances. You seem to rarely get low skewness or high Simpson at high average abundance, which scans with the heatmaps. 
+
+Do Simpson and skewness correspond?
+```{r do skew and simp correlate}
+
+ss_plot <- ggplot(data = all_di, aes(x= skew_percentile, y = simpson_percentile, color = dat)) +
+  geom_point(alpha = .1) +
+  scale_color_viridis_d(end = .8) +
+  theme_bw() +
+  ggtitle("Skew v Simp")
+
+ss_plot
+
+ss_facet_plot <- ss_plot +
+  facet_wrap(vars(dat))
+
+ss_facet_plot
+```
+
+There's a weak relationship between Simpson and skewness, but a lot of noise. They are not substitutable. 
+
+Why is Gentry so strangely bimodal? It's like a U, when all the others tend towards one end or the other. 
+
+Why are BBS and mammals less frequently squished than Portal?
