@@ -24,7 +24,7 @@ for(i in 1:length(datasets)) {
   } else if(this_dataset == "fia_short") {
     
     cache_loc = "fia"
-    } else {
+  } else {
     cache_loc = this_dataset
   }
   
@@ -32,14 +32,23 @@ for(i in 1:length(datasets)) {
   db <- DBI::dbConnect(RSQLite::SQLite(), here::here("analysis", "drake", paste0("drake-cache-", cache_loc, ".sqlite")))
   cache <- storr::storr_dbi("datatable", "keystable", db)
   
- all_di[[i]] <- readd(all_di, cache = cache)
- all_di[[i]] <- filter(all_di[[i]], source == "observed")
+  if("all_di" %in% cached(cache = cache)) {
+    all_di[[i]] <- readd(all_di, cache = cache)
+  } else {
+    all_di_names <- cached(cache = cache)[ which(grepl(cached(cache = cache), pattern = "all_di_s_"))]
+    all_di_list <- lapply(all_di_names, FUN = readd, cache = cache, character_only =T)
+    names(all_di_list) <- all_di_names
+    all_di[[i]] <- bind_rows(all_di_list)
+    rm(all_di_names)
+    rm(all_di_list)
+  }
+  all_di[[i]] <- filter(all_di[[i]], source == "observed")
   
-   this_dat <- readd(paste0("dat_s_dat_", this_dataset), cache = cache, character_only = T)
-sv <- get_statevars(this_dat)
-all_di[[i]] <- left_join(all_di[[i]], sv, by = c("sim", "site", "source", "singletons", "dat"))
-
- 
+  this_dat <- readd(paste0("dat_s_dat_", this_dataset), cache = cache, character_only = T)
+  sv <- get_statevars(this_dat)
+  all_di[[i]] <- left_join(all_di[[i]], sv, by = c("sim", "site", "source", "singletons", "dat"))
+  
+  
   DBI::dbDisconnect(db)
   rm(cache)
   rm(db)
@@ -129,7 +138,7 @@ dat_s0_skew
 
 overall_s0_simpson <- ggplot(data = filter(all_di, !singletons), aes(x = s0, y = simpson_percentile)) +
   geom_point(alpha = .1) +
-    geom_smooth(method = "lm", se = F, color = "pink") +
+  geom_smooth(method = "lm", se = F, color = "pink") +
   theme_bw() +
   ggtitle("Simpson percentile")
 overall_s0_simpson
