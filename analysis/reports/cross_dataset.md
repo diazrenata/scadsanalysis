@@ -16,3 +16,7 @@ Broken out by dataset
 Against S0
 
 ![](cross_dataset_files/figure-markdown_github/s0%20percentile-1.png)![](cross_dataset_files/figure-markdown_github/s0%20percentile-2.png)![](cross_dataset_files/figure-markdown_github/s0%20percentile-3.png)![](cross_dataset_files/figure-markdown_github/s0%20percentile-4.png)
+
+Against nsamples
+
+![](cross_dataset_files/figure-markdown_github/nsamples-1.png)![](cross_dataset_files/figure-markdown_github/nsamples-2.png)
