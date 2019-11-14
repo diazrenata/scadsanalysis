@@ -2,6 +2,7 @@ context("Check that data handling is okay")
 
 test_that("download_data", {
   expect_silent(download_data(from_url = FALSE))
+  expect_silent(download_portal_plants)
 })
 
 test_that("filter misc abund", {
