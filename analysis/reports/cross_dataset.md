@@ -19,4 +19,6 @@ Against S0
 
 Against nsamples
 
-![](cross_dataset_files/figure-markdown_github/nsamples-1.png)![](cross_dataset_files/figure-markdown_github/nsamples-2.png)
+![](cross_dataset_files/figure-markdown_github/nsamples-1.png)![](cross_dataset_files/figure-markdown_github/nsamples-2.png)![](cross_dataset_files/figure-markdown_github/nsamples-3.png)
+
+![](cross_dataset_files/figure-markdown_github/histograms-1.png)![](cross_dataset_files/figure-markdown_github/histograms-2.png)

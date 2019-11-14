@@ -2,6 +2,8 @@
 title: "Between-dataset comparisons"
 output: 
   github_document
+params:
+  on_hpg: [FALSE]
 ---
 
 ```{r setup, include=FALSE}
@@ -10,6 +12,8 @@ library(drake)
 library(dplyr)
 library(ggplot2)
 library(scadsanalysis)
+
+if(params$on_hpg) {
 
 all_di <- list() 
 datasets <- c("bbs", "fia_short", "gentry", "mcdb", "misc_abund_short", "portal_plants")
@@ -50,6 +54,9 @@ for(i in 1:length(datasets)) {
 all_di <- bind_rows(all_di)
 
 write.csv(all_di, "all_di.csv", row.names = F)
+} else {
+  all_di <- read.csv(here::here("analysis", "reports", "all_di.csv"), stringsAsFactors = F)
+}
 ```
 
 ```{r overall percentile heatmap}
@@ -155,6 +162,11 @@ skew_nsamples <- ggplot(data = filter(all_di, !singletons), aes(x = nsamples, y 
 
 skew_nsamples
 
+dat_skew_nsamples <- skew_nsamples +
+  facet_wrap(vars(dat))
+
+dat_skew_nsamples
+
 simp_nsamples <- ggplot(data = filter(all_di, !singletons), aes(x = nsamples, y = simpson_percentile)) +
   geom_point(alpha = .1) + 
     geom_smooth(method = "lm", se = F, color = "pink") +
@@ -163,4 +175,25 @@ simp_nsamples <- ggplot(data = filter(all_di, !singletons), aes(x = nsamples, y 
   ggtitle("Simpson percentile v. nsamples")
 
 simp_nsamples
+```
+
+```{r histograms, fig.height = 6, fig.width =6}
+
+skewhists <- ggplot(data = all_di, aes(x = skew_percentile)) +
+  geom_histogram(binwidth = 5, alpha = .3) +
+  geom_histogram(binwidth = 5, data = filter(all_di, nsamples == 2500)) +
+  theme_bw() +
+  facet_grid(rows = vars(dat), cols = vars(singletons), scales = "free_y") +
+  ggtitle("Skewness")
+skewhists
+
+
+simpsonhists <- ggplot(data = all_di, aes(x = simpson_percentile)) +
+  geom_histogram(binwidth = 5, alpha = .3) +
+  geom_histogram(binwidth = 5, data = filter(all_di, nsamples == 2500)) +
+  theme_bw() +
+  facet_grid(rows = vars(dat), cols = vars(singletons), scales = "free_y") +
+  ggtitle("Simpson")
+simpsonhists
+
 ```

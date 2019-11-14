@@ -8,7 +8,7 @@ datasets <- "fia_short"
 
 sites_list <- list_sites("fia_short")
 ndraws = 2500
-sites_list <- sites_list[1:4000, ]
+sites_list <- sites_list[1:6000, ]
 
 dat_plan <- drake_plan(
   dat = target(load_dataset(dataset_name = d),
