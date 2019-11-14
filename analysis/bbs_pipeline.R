@@ -29,8 +29,8 @@ dat_plan <- drake_plan(
   all_di_s = target(dplyr::bind_rows(di),
                   transform = combine(di, .by = singletons),
                   hpc = F),
-  all_di = target(dplyr::bind_rows(all_di_s_TRUE, all_di_s_FALSE), hpc = F),
-  report = target(render_report(here::here("analysis", "reports", "dat_report_template.Rmd"), dependencies = all_di, is_template = TRUE, dat_name = !!datasets),
+  #all_di = target(dplyr::bind_rows(all_di_s_TRUE, all_di_s_FALSE), hpc = F),
+  report = target(render_report(here::here("analysis", "reports", "dat_report_template.Rmd"), dependencies = list(all_di_s_FALSE, all_di_s_TRUE), is_template = TRUE, dat_name = !!datasets),
                   trigger = trigger(condition = T),
                   hpc = F)
 )
