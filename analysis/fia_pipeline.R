@@ -8,7 +8,7 @@ datasets <- "fia_short"
 
 sites_list <- list_sites("fia_short")
 ndraws = 2500
-sites_list <- sites_list[1:2000, ]
+sites_list <- sites_list[1:4000, ]
 
 dat_plan <- drake_plan(
   dat = target(load_dataset(dataset_name = d),
@@ -27,10 +27,12 @@ dat_plan <- drake_plan(
                                      singletons = !!c(TRUE, FALSE))),
   di = target(add_dis(fs),
               transform = map(fs)),
-  all_di = target(dplyr::bind_rows(di),
-                  transform = combine(di),
-                  hpc = F),
-  report = target(render_report(here::here("analysis", "reports", "dat_report_template.Rmd"), dependencies = all_di, is_template = TRUE, dat_name = !!datasets),
+  di_obs = target(pull_di(di),
+                  transform = map(di)),
+  di_obs_s = target(dplyr::bind_rows(di_obs),
+                    transform = combine(di_obs, .by = singletons)),
+  all_di_obs = target(dplyr::bind_rows(di_obs_s_TRUE, di_obs_s_FALSE)),
+  report = target(render_report(here::here("analysis", "reports", "dat_report_template.Rmd"), dependencies = all_di_obs, is_template = TRUE, dat_name = !!datasets),
                   trigger = trigger(condition = T),
                   hpc = F)
 )
