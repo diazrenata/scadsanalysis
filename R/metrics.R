@@ -128,3 +128,21 @@ get_percentile <- function(a_value, a_vector) {
 
   return(percentile_val)
 }
+
+#' Pull observed diversity indices and nb samples achieved
+#'
+#' @param di_df result of di_wrapper
+#'
+#' @return di_df for observed + n samples
+#' @export
+#'
+#' @importFrom dplyr filter mutate
+pull_di <- function(di_df) {
+
+  di_df <- di_df  %>%
+    dplyr::mutate(nsamples = length(unique(dplyr::filter(di_df, source == "sampled")$sim))) %>%
+    dplyr::filter(source == "observed")
+
+  return(di_df)
+
+}

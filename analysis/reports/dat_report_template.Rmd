@@ -29,16 +29,7 @@ cache <- storr::storr_dbi("datatable", "keystable", db)
 
 dat <- readd(paste0("dat_s_dat_", this_dataset), cache = cache, character_only = T) 
 
-if("all_di" %in% cached(cache = cache)) {
-loadd(all_di, cache = cache)
-} else {
-  all_di_names <- cached(cache = cache)[ which(grepl(cached(cache = cache), pattern = "all_di_s_"))]
-  all_di_list <- lapply(all_di_names, FUN = readd, cache = cache, character_only =T)
-  names(all_di_list) <- all_di_names
-  all_di <- bind_rows(all_di_list)
-  rm(all_di_names)
-  rm(all_di_list)
-}
+all_di <- readd(all_di_obs, cache = cache)
 
 
 ```
@@ -91,11 +82,6 @@ sv_change_plot
 ```{r number of samples}
 
 site_samples <- all_di %>%
-  select(sim, source, site, singletons) %>%
-  group_by(source, site, singletons) %>%
-  summarize(nsamples = length(unique(sim))) %>%
-  ungroup() %>%
-  filter(source == "sampled") %>%
   left_join(select(sv, -source, -sim), by = c("site", "singletons"))
 ```
 

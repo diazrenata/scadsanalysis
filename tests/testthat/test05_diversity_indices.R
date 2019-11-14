@@ -31,6 +31,15 @@ test_that("individual and site DIs work", {
   expect_true(di_many$skew_percentile[6] == 80)
   expect_true(di_many$shannon_percentile[6] == 0)
   expect_true(di_many$simpson_percentile[6] == 0)
+
+  di_obs <- pull_di(di_many)
+
+  expect_true(is.data.frame(di_obs))
+  expect_true(ncol(di_obs) == ncol(di_many) + 1)
+  expect_true(nrow(di_obs) == 1)
+  expect_true(di_obs$nsamples == nrow(di_many) - 1)
+  expect_true(di_obs$source[1] == "observed")
+
 })
 
 test_that("dataset DIs work", {

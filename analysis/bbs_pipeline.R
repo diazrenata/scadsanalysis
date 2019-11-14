@@ -26,7 +26,7 @@ dat_plan <- drake_plan(
                                      singletons = !!c(TRUE, FALSE))),
   di = target(add_dis(fs),
               transform = map(fs)),
-  di_obs = target(dplyr::filter(di, source == "observed"),
+  di_obs = target(pull_di(di),
                   transform = map(di)),
   all_di_obs = target(dplyr::bind_rows(di_obs),
                       transform = combine(di_obs)),
