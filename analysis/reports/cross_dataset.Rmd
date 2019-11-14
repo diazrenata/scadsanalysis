@@ -91,7 +91,7 @@ gridExtra::grid.arrange(grobs = list(overall_heatmap_simpson, overall_heatmap_si
 
 Broken out by dataset
 
-```{r dataset heatmaps}
+```{r dataset heatmaps, fig.width = 30, fig.height = 20}
 
 dat_heatmap_skew <-  ggplot(data = filter(all_di, !singletons), aes(x = s0, y = n0, color = skew_percentile)) +
   geom_point(alpha = .4) +
@@ -139,4 +139,24 @@ dat_s0_simpson <- overall_s0_simpson +
   facet_wrap(vars(dat), scales = "free")
 dat_s0_simpson
 
+```
+
+
+Against nsamples
+
+```{r nsamples}
+
+skew_nsamples <- ggplot(data = filter(all_di, !singletons), aes(x = nsamples, y = skew_percentile)) +
+  geom_point(alpha = .1) +
+  theme_bw() +
+  ggtitle("Skew percentile v. nsamples") 
+
+skew_nsamples
+
+simp_nsamples <- ggplot(data = filter(all_di, !singletons), aes(x = nsamples, y = simpson_percentile)) +
+  geom_point(alpha = .1) + 
+  theme_bw() +
+  ggtitle("Simpson percentile v. nsamples")
+
+simp_nsamples
 ```
