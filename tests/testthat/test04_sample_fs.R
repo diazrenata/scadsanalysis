@@ -8,8 +8,7 @@ test_that("sampling fs works", {
 
   sv <- get_statevars(dat)
 
-  set.seed(1)
-  fs_samples <- sample_fs_wrapper(dat, site_name = "1001", singletonsyn = F, n_samples = 2, p_table = NULL)
+  fs_samples <- sample_fs_wrapper(dat, site_name = "1001", singletonsyn = F, n_samples = 2, p_table = NULL, seed = 1)
 
   expect_true(ncol(fs_samples) == 7)
   expect_true(all(
@@ -24,6 +23,12 @@ test_that("sampling fs works", {
   expect_false(anyNA(fs_samples))
 
   expect_true(min(fs_samples$abund) > 0)
+
+  expect_equivalent(fs_samples$abund[1:5], c(4, 8, 15, 28, 28))
+  expect_equivalent(fs_samples$rank[1:5], c(1, 1, 2, 2, 3))
+  expect_equivalent(fs_samples$sim[1:5], c(1, 2, 1, 2, 2))
+
+
 
   fs_samples_sv <- fs_samples %>%
     dplyr::group_by(sim) %>%

@@ -56,12 +56,13 @@ sample_fs <- function(dataset, nsamples, p_table = NULL) {
 #' @param singletonsyn Singletons?
 #' @param n_samples nb samples
 #' @param p_table P table to pass
+#' @param seed pass a seed for reproducibility
 #'
 #' @return df of samples from fs
 #' @export
 #'
 #' @importFrom dplyr filter
-sample_fs_wrapper = function(dataset, site_name, singletonsyn, n_samples, p_table = NULL) {
+sample_fs_wrapper = function(dataset, site_name, singletonsyn, n_samples, p_table = NULL, seed = NULL) {
 
   if(is.null(dataset)) {
     return(NA)
@@ -69,6 +70,10 @@ sample_fs_wrapper = function(dataset, site_name, singletonsyn, n_samples, p_tabl
 
   if(nrow(dataset) == 0) {
     return(NA)
+  }
+
+  if(!is.null(seed)) {
+    set.seed(seed)
   }
 
   dataset <- dataset %>%

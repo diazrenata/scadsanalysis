@@ -5,7 +5,7 @@
 \title{Sample fs wrapper}
 \usage{
 sample_fs_wrapper(dataset, site_name, singletonsyn, n_samples,
-  p_table = NULL)
+  p_table = NULL, seed = NULL)
 }
 \arguments{
 \item{dataset}{Full dataset}
@@ -17,6 +17,8 @@ sample_fs_wrapper(dataset, site_name, singletonsyn, n_samples,
 \item{n_samples}{nb samples}
 
 \item{p_table}{P table to pass}
+
+\item{seed}{pass a seed for reproducibility}
 }
 \value{
 df of samples from fs
