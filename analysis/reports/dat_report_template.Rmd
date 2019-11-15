@@ -139,7 +139,8 @@ fs_heatmap <- ggplot(data = fs_samples, aes(x = rank, y = abund, group = sim, co
   geom_line(alpha = .01) +
   geom_line(data = filter(fs_samples, source == "observed")) +
   theme_bw() +
-  scale_color_viridis_d(end = .8)
+  scale_color_viridis_d(end = .8) +
+  ggtitle(a_fs_name)
 
 fs_heatmap
 
