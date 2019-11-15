@@ -10,7 +10,6 @@ sites_list <- list_sites("portal_plants")
 ndraws = 2500
 #sites_list <- sites_list[1:15, ]
 set.seed(1977)
-seeds <- sample.int(n = 10^10, size = nrow(sites_list) * 2, replace = F)
 
 all <- drake_plan(
   dat = target(load_dataset(dataset_name = d),
@@ -24,22 +23,21 @@ all <- drake_plan(
                  hpc = F),
   tall_p = target(readRDS(here::here("analysis", "masterp_tall.Rds")),
                   hpc = F),
-  fs_TRUE = target(sample_fs_wrapper(dataset = dat_s_dat_portal_plants, site_name = s, singletonsyn = TRUE, n_samples = ndraws, p_table = tall_p, seed = seed),
-                   transform =  map(s = !!sites_list$site,
-                                     seed = !!seeds)),
-  fs_FALSE = target(sample_fs_wrapper(dataset = dat_s_dat_portal_plants, site_name = s, singletonsyn = FALSE, n_samples = ndraws, p_table = tall_p, seed = seed),
-                    transform =  map(s = !!sites_list$site,
-                                     seed = !!seeds)),
+  fs = target(sample_fs_wrapper(dataset = dat_s_dat_portal_plants, site_name = s, singletonsyn = singletons, n_samples = ndraws, p_table = tall_p, seed = !!sample.int(10^10, size = 1)),
+              transform = cross(s = !!sites_list$site,
+                                singletons = !!c(TRUE, FALSE)), .id = seed),
   di = target(add_dis(fs),
-              transform = map(fs_TRUE, fs_FALSE)),
+              transform = map(fs)),
   di_obs = target(pull_di(di),
                   transform = map(di)),
-  all_di_obs = target(dplyr::bind_rows(di_obs),
-                    transform = combine(di_obs)),
+  di_obs_s = target(dplyr::bind_rows(di_obs),
+                    transform = combine(di_obs, .by = singletons)),
+  all_di_obs = target(dplyr::bind_rows(di_obs_s_TRUE, di_obs_s_FALSE)),
   report = target(render_report(here::here("analysis", "reports", "dat_report_template.Rmd"), dependencies = all_di_obs, is_template = TRUE, dat_name = !!datasets),
                   trigger = trigger(condition = T),
                   hpc = F)
 )
+
 
 ## Set up the cache and config
 db <- DBI::dbConnect(RSQLite::SQLite(), here::here("analysis", "drake", "drake-cache-portal_plants.sqlite"))
