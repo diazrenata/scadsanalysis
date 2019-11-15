@@ -11,6 +11,9 @@ Observations from these histograms:
 -   Curious about how variation in %ile maps on to S and N, *particularly* for Gentry and BBS.
 -   Skewness is less extreme than Simpson (more density in the in-between).
 -   Singletons doesn't appear to be terrifically impactful. From now on filtering to *unaltered* vectors.
+-   I think it's best to filter to at least 2000 samples.
+
+Some summary statistics: ![](cross_dataset_files/figure-markdown_github/summary%20stats-1.png)![](cross_dataset_files/figure-markdown_github/summary%20stats-2.png)
 
 ![](cross_dataset_files/figure-markdown_github/s%20and%20n%20mapping-1.png)![](cross_dataset_files/figure-markdown_github/s%20and%20n%20mapping-2.png)
 

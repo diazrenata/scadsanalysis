@@ -8,7 +8,7 @@ datasets <- "fia_short"
 
 sites_list <- list_sites("fia_short")
 ndraws = 2500
-sites_list <- sites_list[1:2000, ]
+#sites_list <- sites_list[1:2000, ]
 set.seed(1978)
 
 dat_plan <- drake_plan(
