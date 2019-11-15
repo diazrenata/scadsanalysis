@@ -136,11 +136,18 @@ get_percentile <- function(a_value, a_vector) {
 #' @return di_df for observed + n samples
 #' @export
 #'
-#' @importFrom dplyr filter mutate
+#' @importFrom dplyr filter mutate group_by ungroup
 pull_di <- function(di_df) {
 
   di_df <- di_df  %>%
-    dplyr::mutate(nsamples = length(unique(dplyr::filter(di_df, source == "sampled")$sim))) %>%
+    dplyr::group_by(source) %>%
+    dplyr::mutate(skew_range = max(skew, na.rm = T) - min(skew, na.rm = T),
+                  simpson_range = max(simpson, na.rm = T) - min(simpson, na.rm = T),
+                  nsamples = length(unique(sim))) %>%
+    dplyr::ungroup() %>%
+    dplyr::mutate(skew_range = max(skew_range, na.rm = T),
+                  simpson_range = max(simpson_range, na.rm = T),
+                  nsamples = max(nsamples, na.rm = T)) %>%
     dplyr::filter(source == "observed")
 
   return(di_df)
