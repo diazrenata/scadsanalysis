@@ -9,6 +9,8 @@ datasets <- "mcdb"
 sites_list <- list_sites("mcdb")
 ndraws = 2500
 #sites_list <- sites_list[1:15, ]
+set.seed(1980)
+
 
 all <- drake_plan(
   dat = target(load_dataset(dataset_name = d),
@@ -22,7 +24,7 @@ all <- drake_plan(
                  hpc = F),
   mamm_p = target(readRDS(here::here("analysis", "masterp_mamm.Rds")),
                   hpc = F),
-  fs = target(sample_fs_wrapper(dataset = dat_s_dat_mcdb, site_name = s, singletonsyn = singletons, n_samples = ndraws, p_table = mamm_p),
+  fs = target(sample_fs_wrapper(dataset = dat_s_dat_mcdb, site_name = s, singletonsyn = singletons, n_samples = ndraws, p_table = mamm_p, seed = !!sample.int(10^6, size = 1)),
                    transform = cross(s = !!sites_list$site,
                                      singletons = !!c(TRUE, FALSE))),
   di = target(add_dis(fs),

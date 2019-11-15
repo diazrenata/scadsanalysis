@@ -9,6 +9,8 @@ datasets <- "bbs"
 sites_list <- list_sites("bbs")
 ndraws = 2500
 #sites_list <- sites_list[1:15, ]
+set.seed(1982)
+
 dat_plan <- drake_plan(
   dat = target(load_dataset(dataset_name = d),
                transform = map(
@@ -21,7 +23,7 @@ dat_plan <- drake_plan(
                  hpc = F),
   wide_p = target(readRDS(here::here("analysis", "masterp_wide.Rds")),
                   hpc = F),
-  fs = target(sample_fs_wrapper(dataset = dat_s_dat_bbs, site_name = s, singletonsyn = singletons, n_samples = ndraws, p_table = wide_p),
+  fs = target(sample_fs_wrapper(dataset = dat_s_dat_bbs, site_name = s, singletonsyn = singletons, n_samples = ndraws, p_table = wide_p, seed = !!sample.int(10^6, size = 1)),
                    transform = cross(s = !!sites_list$site,
                                      singletons = !!c(TRUE, FALSE))),
   di = target(add_dis(fs),
