@@ -167,3 +167,35 @@ There's a weak relationship between Simpson and skewness, but a lot of noise. Th
 Why is Gentry so strangely bimodal? It's like a U, when all the others tend towards one end or the other. 
 
 Why are BBS and mammals less frequently squished than Portal?
+
+
+Looking at range of skewness and Simpsons:
+
+```{r ranges}
+
+skew_range_hist <- ggplot(data = filter(all_di, nsamples > 2000), aes(x = skew_range, y = skew_percentile, color = dat)) +
+  geom_point(alpha = .2) +
+  geom_smooth(method = "lm", se =F) +
+  theme_bw() +
+  scale_color_viridis_d(end = .8) +
+  facet_wrap(vars(dat), scales = "free") + 
+  ggtitle("Skewness")
+
+skew_range_hist
+
+
+
+simpson_range_hist <- ggplot(data = filter(all_di, nsamples > 2000), aes(x = simpson_range, y = simpson_percentile, color = dat)) +
+  geom_point(alpha = .2) +
+    geom_smooth(method = "lm", se =F) +
+
+  theme_bw() +
+  scale_color_viridis_d(end = .8) +
+  facet_wrap(vars(dat), scales = "free") +
+  ggtitle("Simpson")
+
+simpson_range_hist
+
+```
+
+I added the ranges because I thought the percentiles might be constrained somewhat by the range of values represented in the feasible set. It doesn't look to me like there is a strong relationship between range and %ile. 

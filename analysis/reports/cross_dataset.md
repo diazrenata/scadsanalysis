@@ -29,3 +29,9 @@ There's a weak relationship between Simpson and skewness, but a lot of noise. Th
 Why is Gentry so strangely bimodal? It's like a U, when all the others tend towards one end or the other.
 
 Why are BBS and mammals less frequently squished than Portal?
+
+Looking at range of skewness and Simpsons:
+
+![](cross_dataset_files/figure-markdown_github/ranges-1.png)![](cross_dataset_files/figure-markdown_github/ranges-2.png)
+
+I added the ranges because I thought the percentiles might be constrained somewhat by the range of values represented in the feasible set. It doesn't look to me like there is a strong relationship between range and %ile.
