@@ -126,6 +126,26 @@ simpson_plot <- ggplot(data = filter(all_di, source == "observed"), aes(x= singl
 gridExtra::grid.arrange(grobs = list(skew_plot, simpson_plot), ncol = 2)
 ```
 
+
+Here is a heatmap of an observed + sampled FS:
+
+```{r example heatmap}
+
+a_fs_name <- cached(cache = cache)[ which(substr(cached(cache = cache), 0, 3) == "fs_")[1]]
+
+fs_samples <- readd(a_fs_name, cache = cache, character_only = TRUE)
+
+fs_heatmap <- ggplot(data = fs_samples, aes(x = rank, y = abund, group = sim, color = source)) +
+  geom_line(alpha = .01) +
+  geom_line(data = filter(fs_samples, source == "observed")) +
+  theme_bw() +
+  scale_color_viridis_d(end = .8)
+
+fs_heatmap
+
+```
+
+
 ```{r cleanup}
 
 DBI::dbDisconnect(db)
