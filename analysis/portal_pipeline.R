@@ -25,7 +25,7 @@ all <- drake_plan(
                   hpc = F),
   fs = target(sample_fs_wrapper(dataset = dat_s_dat_portal_plants, site_name = s, singletonsyn = singletons, n_samples = ndraws, p_table = tall_p, seed = !!sample.int(10^10, size = 1)),
               transform = cross(s = !!sites_list$site,
-                                singletons = !!c(TRUE, FALSE)), .id = seed),
+                                singletons = !!c(TRUE, FALSE))),
   di = target(add_dis(fs),
               transform = map(fs)),
   di_obs = target(pull_di(di),
