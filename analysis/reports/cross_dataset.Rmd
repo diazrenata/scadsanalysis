@@ -61,12 +61,14 @@ if(params$on_hpg) {
 
 ```{r histograms, fig.height = 6, fig.width =6}
 
+
 skewhists <- ggplot(data = all_di, aes(x = skew_percentile)) +
   geom_histogram(binwidth = 5, alpha = .3) +
   geom_histogram(binwidth = 5, data = filter(all_di, nsamples == 2500)) +
   theme_bw() +
   facet_grid(rows = vars(dat), cols = vars(singletons), scales = "free_y") +
-  ggtitle("Skewness")
+  ggtitle("Skewness") +
+  geom_vline(xintercept = 95, color = "red")
 skewhists
 
 
@@ -75,7 +77,9 @@ simpsonhists <- ggplot(data = all_di, aes(x = simpson_percentile)) +
   geom_histogram(binwidth = 5, data = filter(all_di, nsamples == 2500)) +
   theme_bw() +
   facet_grid(rows = vars(dat), cols = vars(singletons), scales = "free_y") +
-  ggtitle("Simpson")
+  ggtitle("Simpson") +
+    geom_vline(xintercept = 5, color = "red")
+
 simpsonhists
 
 ```
@@ -101,7 +105,9 @@ di_summary <- all_di %>%
             mean_simpson = mean(simpson_percentile, na.rm = T),
             sd_simpson = sd(simpson_percentile, na.rm = T),
             mean_nsamples = mean(nsamples),
-            nsites = length(unique(site))) %>%
+            nsites = length(unique(site)),
+            prop_skew_high = mean(skew_percentile >= 95),
+            prop_simpson_low = mean(simpson_percentile <= 5)) %>%
   ungroup()
   
 
@@ -128,6 +134,7 @@ simpson_summary_plot <- ggplot(data = di_summary, aes(x = singletons, y = mean_s
   ggtitle("Simpson's, >= 2000 samples")
 simpson_summary_plot
 
+print(di_summary)
 
 ```
 
