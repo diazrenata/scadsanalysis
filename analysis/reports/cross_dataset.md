@@ -13,25 +13,25 @@ Observations from these histograms:
 -   Singletons doesn't appear to be terrifically impactful. From now on filtering to *unaltered* vectors.
 -   I think it's best to filter to at least 2000 samples.
 
-Some summary statistics: ![](cross_dataset_files/figure-markdown_github/summary%20stats-1.png)![](cross_dataset_files/figure-markdown_github/summary%20stats-2.png)
+Some summary statistics:
 
-    ## # A tibble: 12 x 10
-    ##    dat   singletons mean_skew sd_skew mean_simpson sd_simpson mean_nsamples
-    ##    <chr> <lgl>          <dbl>   <dbl>        <dbl>      <dbl>         <dbl>
-    ##  1 bbs   FALSE           59.2    29.5       33.7        30.7          2500.
-    ##  2 bbs   TRUE            60.3    29.6       28.0        28.6          2500.
-    ##  3 fia_… FALSE           59.6    27.9       34.0        25.6          2310.
-    ##  4 fia_… TRUE            63.1    26.5       27.1        22.7          2326.
-    ##  5 gent… FALSE           57.2    35.2       55.6        38.7          2497.
-    ##  6 gent… TRUE            56.7    35.6       53.7        39.6          2497.
-    ##  7 mcdb  FALSE           68.7    29.0       19.1        25.1          2456.
-    ##  8 mcdb  TRUE            73.6    27.5       12.9        20.8          2457.
-    ##  9 misc… FALSE           78.1    25.4       12.6        21.6          2487.
-    ## 10 misc… TRUE            81.9    23.3        8.96       18.2          2491.
-    ## 11 port… FALSE           90.6    15.8        1.97        7.94         2500.
-    ## 12 port… TRUE            93.4    12.2        0.615       2.04         2500.
-    ## # … with 3 more variables: nsites <int>, prop_skew_high <dbl>,
-    ## #   prop_simpson_low <dbl>
+![](cross_dataset_files/figure-markdown_github/summary%20stats-1.png)![](cross_dataset_files/figure-markdown_github/summary%20stats-2.png)
+
+    ## # A tibble: 12 x 6
+    ##    dat      singletons mean_nsamples nsites prop_skew_high prop_simpson_low
+    ##    <chr>    <lgl>              <dbl>  <int>          <dbl>            <dbl>
+    ##  1 bbs      FALSE              2500.   2772          0.130            0.261
+    ##  2 bbs      TRUE               2500.   2772          0.141            0.323
+    ##  3 fia_sho… FALSE              2310.   2608          0.112            0.146
+    ##  4 fia_sho… TRUE               2326.   2946          0.127            0.192
+    ##  5 gentry   FALSE              2497.    221          0.195            0.154
+    ##  6 gentry   TRUE               2497.    222          0.194            0.189
+    ##  7 mcdb     FALSE              2456.    324          0.238            0.469
+    ##  8 mcdb     TRUE               2457.    371          0.302            0.606
+    ##  9 misc_ab… FALSE              2487.    448          0.373            0.638
+    ## 10 misc_ab… TRUE               2491.    453          0.430            0.704
+    ## 11 portal_… FALSE              2500.     58          0.569            0.914
+    ## 12 portal_… TRUE               2500.     59          0.644            0.966
 
 ![](cross_dataset_files/figure-markdown_github/s%20and%20n%20mapping-1.png)![](cross_dataset_files/figure-markdown_github/s%20and%20n%20mapping-2.png)
 

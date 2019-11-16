@@ -95,6 +95,7 @@ Observations from these histograms:
 * I think it's best to filter to at least 2000 samples. 
 
 Some summary statistics:
+
 ```{r summary stats}
 
 di_summary <- all_di %>%
@@ -134,7 +135,7 @@ simpson_summary_plot <- ggplot(data = di_summary, aes(x = singletons, y = mean_s
   ggtitle("Simpson's, >= 2000 samples")
 simpson_summary_plot
 
-print(di_summary)
+print(select(di_summary, dat, singletons, mean_nsamples, nsites, prop_skew_high, prop_simpson_low))
 
 ```
 
