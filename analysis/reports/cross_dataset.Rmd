@@ -147,6 +147,7 @@ skew_summary_plot <- ggplot(data = di_summary, aes(x = dat, y = prop_skew_high, 
   ggtitle("Skew") +
   scale_color_viridis_d(end = .8) +
   ylim(0, 1) +
+  geom_hline(yintercept = .05, color = "red") +
   theme(legend.position = "none")
 
 simpson_summary_plot <- ggplot(data = di_summary, aes(x = dat, y = prop_simpson_low, color = singletons, size = as.factor(nsites))) +
@@ -155,6 +156,8 @@ simpson_summary_plot <- ggplot(data = di_summary, aes(x = dat, y = prop_simpson_
   ggtitle("Simpson") +
   scale_color_viridis_d(end = .8)+
   ylim(0, 1) +
+    geom_hline(yintercept = .05, color = "red") +
+
   theme(legend.position = "none")
 
 gridExtra::grid.arrange(grobs = list(skew_summary_plot, simpson_summary_plot), nrow = 1)
