@@ -63,8 +63,8 @@ if(params$on_hpg) {
 
 
 skewhists <- ggplot(data = all_di, aes(x = skew_percentile)) +
-  geom_histogram(binwidth = 5, alpha = .3) +
-  geom_histogram(binwidth = 5, data = filter(all_di, nsamples == 2500)) +
+  geom_histogram(binwidth = 5, alpha = .3, boundary = 0) +
+  geom_histogram(binwidth = 5, data = filter(all_di, nsamples == 2500), boundary = 0) +
   theme_bw() +
   facet_grid(rows = vars(dat), cols = vars(singletons), scales = "free_y") +
   ggtitle("Skewness") +
@@ -73,12 +73,12 @@ skewhists
 
 
 simpsonhists <- ggplot(data = all_di, aes(x = simpson_percentile)) +
-  geom_histogram(binwidth = 5, alpha = .3) +
-  geom_histogram(binwidth = 5, data = filter(all_di, nsamples == 2500)) +
+  geom_histogram(binwidth = 5, alpha = .3, boundary = 0) +
+  geom_histogram(binwidth = 5, data = filter(all_di, nsamples == 2500), boundary = 0) +
   theme_bw() +
   facet_grid(rows = vars(dat), cols = vars(singletons), scales = "free_y") +
   ggtitle("Simpson") +
-    geom_vline(xintercept = 5, color = "red")
+  geom_vline(xintercept = 5, color = "red")
 
 simpsonhists
 
@@ -108,34 +108,56 @@ di_summary <- all_di %>%
             mean_nsamples = mean(nsamples),
             nsites = length(unique(site)),
             prop_skew_high = mean(skew_percentile >= 95),
-            prop_simpson_low = mean(simpson_percentile <= 5)) %>%
+            prop_simpson_low = mean(simpson_percentile <= 5),
+            med_skew = median(skew_percentile, na.rm = T),
+            med_simpson = median(simpson_percentile, na.rm = T),
+            skew_25 = quantile(skew_percentile, probs = .25),
+            simpson_75 = quantile(simpson_percentile, probs = .75)) %>%
   ungroup()
-  
 
-skew_summary_plot <- ggplot(data = di_summary, aes(x = singletons, y = mean_skew, group = singletons)) +
-  geom_point() +
-  geom_errorbar(aes(x = singletons, ymin = mean_skew - sd_skew, ymax = mean_skew + sd_skew)) +
-  geom_label(aes(x = singletons, y = 10, label = signif(mean_skew, digits = 4))) +
+
+skew_boxplot <- ggplot(data = filter(all_di, nsamples >= 2000), aes(x = singletons, y = skew_percentile, group = singletons)) +
+  # geom_point() +
+  # geom_errorbar(aes(x = singletons, ymin = skew_25, ymax = med_skew)) +
+  # geom_point(data = all_di, aes(x = singletons, y = skew_percentile), size = .5, alpha = .05) +
+  # geom_label(aes(x = singletons, y = 10, label = signif(med_skew, digits = 4))) +
+  geom_boxplot() +
   theme_bw() +
   facet_wrap(vars(dat)) +
   geom_hline(yintercept = 100, linetype = 2, color = "red") +
   ylim(0, 110) +
   ggtitle("Skewness, >= 2000 samples")
-skew_summary_plot
+skew_boxplot
 
 
-simpson_summary_plot <- ggplot(data = di_summary, aes(x = singletons, y = mean_simpson, group = singletons)) +
-  geom_point() +
-  geom_errorbar(aes(x = singletons, ymin = mean_simpson - sd_simpson, ymax = mean_simpson + sd_simpson)) +
-    geom_label(aes(x = singletons, y = 90, label = signif(mean_simpson, digits = 4))) +
+simpson_boxplot <- ggplot(data = filter(all_di, nsamples >= 2000), aes(x = singletons, y = simpson_percentile, group = singletons)) +
+  geom_boxplot() +
   theme_bw() +
   facet_wrap(vars(dat)) +
   geom_hline(yintercept = 0, linetype = 2, color = "red") +
   ylim(-10, 100) +
   ggtitle("Simpson's, >= 2000 samples")
-simpson_summary_plot
+simpson_boxplot
 
 print(select(di_summary, dat, singletons, mean_nsamples, nsites, prop_skew_high, prop_simpson_low))
+
+skew_summary_plot <- ggplot(data = di_summary, aes(x = dat, y = prop_skew_high, color = singletons, size = as.factor(nsites))) +
+  geom_point() +
+  theme_bw() +
+  ggtitle("Skew") +
+  scale_color_viridis_d(end = .8) +
+  ylim(0, 1) +
+  theme(legend.position = "none")
+
+simpson_summary_plot <- ggplot(data = di_summary, aes(x = dat, y = prop_simpson_low, color = singletons, size = as.factor(nsites))) +
+  geom_point() +
+  theme_bw() +
+  ggtitle("Simpson") +
+  scale_color_viridis_d(end = .8)+
+  ylim(0, 1) +
+  theme(legend.position = "none")
+
+gridExtra::grid.arrange(grobs = list(skew_summary_plot, simpson_summary_plot), nrow = 1)
 
 ```
 
@@ -219,8 +241,8 @@ ss_facet_plot
 
 
 There's a weak relationship between Simpson and skewness, but a lot of noise. They are not substitutable. 
-
-Why is Gentry so strangely bimodal? It's like a U, when all the others tend towards one end or the other. 
+                
+                Why is Gentry so strangely bimodal? It's like a U, when all the others tend towards one end or the other. 
 
 Why are BBS and mammals less frequently squished than Portal?
 
@@ -255,3 +277,4 @@ simpson_range_hist
 ```
 
 I added the ranges because I thought the percentiles might be constrained somewhat by the range of values represented in the feasible set. It doesn't look to me like there is a strong relationship between range and %ile. 
+                

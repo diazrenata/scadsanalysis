@@ -33,6 +33,12 @@ Some summary statistics:
     ## 11 portal_… FALSE              2500.     58          0.569            0.914
     ## 12 portal_… TRUE               2500.     59          0.644            0.966
 
+    ## Warning: Using size for a discrete variable is not advised.
+
+    ## Warning: Using size for a discrete variable is not advised.
+
+![](cross_dataset_files/figure-markdown_github/summary%20stats-3.png)
+
 ![](cross_dataset_files/figure-markdown_github/s%20and%20n%20mapping-1.png)![](cross_dataset_files/figure-markdown_github/s%20and%20n%20mapping-2.png)
 
 The less extreme (low skew, high simpson) vectors appear vaguely collected in the lower right for Gentry and BBS. Those are the regions with relatively high N/S, aka low average abundance, aka a relatively small feasible set.
@@ -47,7 +53,7 @@ Do Simpson and skewness correspond? ![](cross_dataset_files/figure-markdown_gith
 
 There's a weak relationship between Simpson and skewness, but a lot of noise. They are not substitutable.
 
-Why is Gentry so strangely bimodal? It's like a U, when all the others tend towards one end or the other.
+                Why is Gentry so strangely bimodal? It's like a U, when all the others tend towards one end or the other. 
 
 Why are BBS and mammals less frequently squished than Portal?
 
