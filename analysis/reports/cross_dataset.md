@@ -15,7 +15,7 @@ Observations from these histograms:
 
 Some summary statistics:
 
-![](cross_dataset_files/figure-markdown_github/summary%20stats-1.png)![](cross_dataset_files/figure-markdown_github/summary%20stats-2.png)
+![](cross_dataset_files/figure-markdown_github/summary%20plots-1.png)![](cross_dataset_files/figure-markdown_github/summary%20plots-2.png)
 
     ## # A tibble: 12 x 6
     ##    dat      singletons mean_nsamples nsites prop_skew_high prop_simpson_low
@@ -37,7 +37,7 @@ Some summary statistics:
 
     ## Warning: Using size for a discrete variable is not advised.
 
-![](cross_dataset_files/figure-markdown_github/summary%20stats-3.png)
+![](cross_dataset_files/figure-markdown_github/summary%20plots-3.png)
 
 ![](cross_dataset_files/figure-markdown_github/s%20and%20n%20mapping-1.png)![](cross_dataset_files/figure-markdown_github/s%20and%20n%20mapping-2.png)
 

@@ -96,7 +96,7 @@ Observations from these histograms:
 
 Some summary statistics:
 
-```{r summary stats}
+```{r summary plots}
 
 di_summary <- all_di %>%
   filter(nsamples >= 2000) %>%
