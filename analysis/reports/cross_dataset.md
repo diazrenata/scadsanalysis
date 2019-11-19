@@ -62,3 +62,19 @@ Looking at range of skewness and Simpsons:
 ![](cross_dataset_files/figure-markdown_github/ranges-1.png)![](cross_dataset_files/figure-markdown_github/ranges-2.png)
 
 I added the ranges because I thought the percentiles might be constrained somewhat by the range of values represented in the feasible set. It doesn't look to me like there is a strong relationship between range and %ile.
+
+    ## Warning: Duplicated aesthetics after name standardisation: pad
+
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+    ## Warning: Removed 23 rows containing non-finite values (stat_bin).
+
+![](cross_dataset_files/figure-markdown_github/nyears%20in%20mcdb-1.png)
+
+    ## Warning: Removed 23 rows containing missing values (geom_point).
+
+![](cross_dataset_files/figure-markdown_github/nyears%20in%20mcdb-2.png)
+
+    ## Warning: Removed 23 rows containing missing values (geom_point).
+
+![](cross_dataset_files/figure-markdown_github/nyears%20in%20mcdb-3.png)

@@ -279,4 +279,52 @@ simpson_range_hist
 ```
 
 I added the ranges because I thought the percentiles might be constrained somewhat by the range of values represented in the feasible set. It doesn't look to me like there is a strong relationship between range and %ile. 
+
+
+```{r nyears in mcdb}
+
+mcdb_di <- filter(all_di, dat == "mcdb")
+
+mcdb_sites <- read.csv(here::here("working-data/site_data/mammal_community_db_sites.csv"), stringsAsFactors = F)
+
+mcdb_sites <- mcdb_sites %>%
+  select(site_id, n_years, study_duration) %>%
+  rename(site = site_id) %>%
+  mutate(site = as.character(site))
+
+mcdb_di <- left_join(mcdb_di, mcdb_sites, by = "site")
+
+nyears_hist <- ggplot(data = distinct(select(mcdb_di, site, n_years)), aes(x = n_years)) +
+  geom_histogram(pad = T, boundary = 0) +
+  theme_bw() +
+  ggtitle("Nyears in MCDB")
+
+nyears_hist
+# 
+# duration_hist <-  ggplot(data = distinct(select(mcdb_di, site, study_duration)), aes(x = study_duration)) +
+#   geom_histogram(pad = T, boundary = 0) +
+#   theme_bw() +
+#   ggtitle("Duration in MCDB")
+# 
+# duration_hist
+
+nyears_skew <- ggplot(data = mcdb_di, aes(x = n_years, y = skew_percentile)) +
+  geom_point(alpha = .2) +
+  #facet_wrap(vars(singletons)) +
+  theme_bw() +
+  ggtitle("Skew v nyears (MCDB)")
+
+nyears_skew
+
+
+nyears_simpson <- ggplot(data = mcdb_di, aes(x = n_years, y = simpson_percentile)) +
+  geom_point(alpha = .2) +
+  #facet_wrap(vars(singletons)) +
+  theme_bw() +
+  ggtitle("Simpson v nyears (MCDB)")
+
+nyears_simpson
+```
+
+
                 
