@@ -82,3 +82,44 @@ download_portal_plants <- function(storage_path = here::here("working-data", "ab
   write.csv(portal_plants, file = file.path(storage_path, "portal_plants_spab.csv"), row.names = F)
 
 }
+
+#' Download MACDB data
+#'
+#' @param from_url defaults FALSE. If true, from figshare. Otherwise, loads data from storage internal to the package
+#' @param storage_path where to put the data. Defaults to working-data/macdb_data.
+#'
+#' @return nothing
+#' @export
+#'
+#' @importFrom here here
+download_macdb <- function(from_url = FALSE, storage_path = here::here("working-data")) {
+
+  inst_path = file.path(system.file(package= "scadsanalysis"), "macdb_data")
+
+  if(!dir.exists(file.path(storage_path))) {
+    dir.create(file.path(storage_path), recursive = T)
+  }
+
+  if(from_url) {
+
+    if(!dir.exists(file.path(storage_path, "macdb_data"))) {
+      dir.create(file.path(storage_path, "macdb_data"))
+    }
+
+    download.file(url = "https://ndownloader.figshare.com/files/3156878", destfile = file.path(storage_path,"macdb_data", "community_analysis_data.csv"))
+
+    download.file(url = "https://ndownloader.figshare.com/files/3156887", destfile = file.path(storage_path,"macdb_data", "orderedcomparisons.csv"))
+
+    download.file(url = "https://ndownloader.figshare.com/files/3156893", destfile = file.path(storage_path,"macdb_data", "sites_analysis_data.csv"))
+
+    download.file(url = "https://ndownloader.figshare.com/files/3156884", destfile = file.path(storage_path,"macdb_data", "experiments_analysis_data.csv"))
+
+    download.file(url = "https://ndownloader.figshare.com/files/3156890", destfile = file.path(storage_path,"macdb_data", "ref_analysis_data.csv"))
+
+    download.file(url = "https://ndownloader.figshare.com/files/1429961", destfile = file.path(storage_path,"macdb_data", "MACD_metadata.pdf"))
+
+
+  } else {
+    file.copy(inst_path, storage_path, recursive = T)
+  }
+}
