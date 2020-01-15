@@ -7,7 +7,7 @@ expose_imports("scadsanalysis")
 datasets <- "macdb"
 
 sites_list <- list_sites("macdb") %>%
-  dplyr::filter(site != 167)
+  dplyr::filter(!(site %in% c(164, 166, 167)))
 ndraws = 2500
 #sites_list <- sites_list[1:5, ]
 set.seed(1981)
