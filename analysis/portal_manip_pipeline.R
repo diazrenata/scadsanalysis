@@ -7,8 +7,8 @@ expose_imports("scadsanalysis")
 datasets <- "portal_plants_manip"
 
 sites_list <- list_sites("portal_plants_manip")
-ndraws = 20
-sites_list <- sites_list[1:10, ]
+ndraws = 2500
+#sites_list <- sites_list[1:10, ]
 set.seed(1977)
 
 all <- drake_plan(
