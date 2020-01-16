@@ -80,7 +80,7 @@ load_dataset <- function(dataset_name, storage_path = here::here("working-data",
 
       return(dataset)
 
-    } else if (dataset_name %in% c("portal_plants", "macdb")) {
+    } else if (dataset_name %in% c("portal_plants", "macdb", "portal_plants_manip")) {
 
       dataset <- read.csv(dataset_path, stringsAsFactors = F, header = T)
 
