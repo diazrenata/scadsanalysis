@@ -1,0 +1,131 @@
+---
+title: "Regressions"
+output: 
+  github_document
+params:
+  on_hpg: [FALSE]
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(drake)
+library(dplyr)
+library(ggplot2)
+library(scadsanalysis)
+
+if(params$on_hpg) {
+  
+  all_di <- list() 
+  datasets <- c("bbs", "fia_short", "gentry", "mcdb", "misc_abund_short", "portal_plants")
+  
+  #datasets <- c("fia", "gentry", "mcdb", "misc_abund_short", "portal_plants")
+  
+  for(i in 1:length(datasets)) {
+    
+    this_dataset = datasets[i]
+    if(this_dataset == "misc_abund_short") {
+      cache_loc = "miscabund"
+    } else if(this_dataset == "fia_short") {
+      
+      cache_loc = "fia"
+    } else {
+      cache_loc = this_dataset
+    }
+    
+    ## Set up the cache and config
+    db <- DBI::dbConnect(RSQLite::SQLite(), here::here("analysis", "drake", paste0("drake-cache-", cache_loc, ".sqlite")))
+    cache <- storr::storr_dbi("datatable", "keystable", db)
+    
+    all_di[[i]] <- readd(all_di_obs, cache = cache)
+    
+    all_di[[i]] <- filter(all_di[[i]], source == "observed")
+    
+    this_dat <- readd(paste0("dat_s_dat_", this_dataset), cache = cache, character_only = T)
+    sv <- get_statevars(this_dat)
+    all_di[[i]] <- left_join(all_di[[i]], sv, by = c("sim", "site", "source", "singletons", "dat"))
+    
+    
+    DBI::dbDisconnect(db)
+    rm(cache)
+    rm(db)
+  }
+  
+  
+  all_di <- bind_rows(all_di)
+  
+  write.csv(all_di, "all_di.csv", row.names = F)
+} else {
+  all_di <- read.csv(here::here("analysis", "reports", "all_di.csv"), stringsAsFactors = F)
+}
+```
+
+```{r histograms, fig.height = 6, fig.width =6}
+
+
+skewhists <- ggplot(data = all_di, aes(x = skew_percentile)) +
+  geom_histogram(binwidth = 5, alpha = .3, boundary = 0) +
+  geom_histogram(binwidth = 5, data = filter(all_di, nsamples == 2500), boundary = 0) +
+  theme_bw() +
+  facet_grid(rows = vars(dat), cols = vars(singletons), scales = "free_y") +
+  ggtitle("Skewness") +
+  geom_vline(xintercept = 95, color = "red")
+skewhists
+
+
+simpsonhists <- ggplot(data = all_di, aes(x = simpson_percentile)) +
+  geom_histogram(binwidth = 5, alpha = .3, boundary = 0) +
+  geom_histogram(binwidth = 5, data = filter(all_di, nsamples == 2500), boundary = 0) +
+  theme_bw() +
+  facet_grid(rows = vars(dat), cols = vars(singletons), scales = "free_y") +
+  ggtitle("Simpson") +
+  geom_vline(xintercept = 5, color = "red")
+
+simpsonhists
+
+```
+
+Observations from these histograms:
+
+* FIA really struggles to get 2500 samples
+* Portal is the *most* concentrated of all the datasets.
+* Then MCDB and misc, then gentry, then bbs. FIA is hard to place but looks idiosyncratic.
+* Curious about how variation in %ile maps on to S and N, *particularly* for Gentry and BBS. 
+* Skewness is less extreme than Simpson (more density in the in-between). 
+* Singletons doesn't appear to be terrifically impactful. From now on filtering to *unaltered* vectors.
+* I think it's best to filter to at least 2000 samples. 
+
+Some summary statistics:
+
+```{r summary plots}
+
+di_summary <- all_di %>%
+  filter(nsamples >= 2000) %>%
+  mutate(avg_n = n0 / s0,
+         skew_pp = skew_percentile / 100,
+         simp_pp = simpson_percentile/100)
+```
+
+### Avg abundance
+
+```{r avg abundance regression}
+
+avgn_skew <- ggplot(data = di_summary, aes(x = avg_n, y = skew_pp)) +
+  geom_point() +
+  stat_smooth(method = "glm",method.args = list(family = binomial)) + 
+  facet_wrap(vars(dat), scales = "free") +
+  theme_bw()
+
+avgn_skew
+
+summary(glm(di_summary, formula = skew_pp ~ avg_n * dat, family = binomial))
+
+for(i in unique(di_summary$dat)) {
+  this_dat <- filter(di_summary, dat==i)
+  print(i)
+  print(summary(glm(skew_pp ~ avg_n, family = binomial,
+          data = this_dat)))
+}
+
+```
+
+                
