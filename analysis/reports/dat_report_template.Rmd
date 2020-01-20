@@ -147,6 +147,27 @@ fs_heatmap
 ```
 
 
+```{r manip}
+
+if(this_dataset == "macdb") {
+  all_di_manip <- readd(all_di_manip, cache = cache) 
+  
+  manip_skew_plot <- ggplot(data = all_di_manip, aes(x = treatment, y = skew_percentile, group = studyID)) +
+    geom_line() +
+    theme_bw()
+  
+  manip_skew_plot
+ 
+  manip_simpson_plot <- ggplot(data = all_di_manip, aes(x = treatment, y = simpson_percentile, group = studyID)) +
+    geom_line() +
+    theme_bw()
+  
+  manip_simpson_plot
+   
+}
+
+```
+
 ```{r cleanup}
 
 DBI::dbDisconnect(db)
