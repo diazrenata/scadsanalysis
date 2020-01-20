@@ -26,3 +26,22 @@ return(comparisons_di)
 
 }
 
+
+#' Parse portal site names for manips
+#'
+#' @param all_di all di
+#'
+#' @return all di with cols for year, plot, season, trtmt
+#' @export
+#'
+#' @importFrom purrr map_int
+assign_portal_manips <- function(all_di) {
+
+  all_di$year <- purrr::map_int(all_di$site,.f = function(sitename) return(as.integer(strsplit(sitename, split = "_")[[1]][1])))
+  all_di$plot <- purrr::map_int(all_di$site,.f = function(sitename) return(as.integer(strsplit(sitename, split = "_")[[1]][2])))
+  all_di$treatment <- purrr::map_chr(all_di$site,.f = function(sitename) return(strsplit(sitename, split = "_")[[1]][3]))
+  all_di$season <- purrr::map_chr(all_di$site,.f = function(sitename) return(strsplit(sitename, split = "_")[[1]][4]))
+
+  return(all_di)
+
+}

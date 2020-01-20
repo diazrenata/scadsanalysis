@@ -7,8 +7,8 @@ expose_imports("scadsanalysis")
 datasets <- "portal_plants_manip"
 
 sites_list <- list_sites("portal_plants_manip")
-ndraws = 2500
-#sites_list <- sites_list[1:10, ]
+ndraws = 25
+sites_list <- sites_list[1:2, ]
 set.seed(1977)
 
 all <- drake_plan(
@@ -33,7 +33,8 @@ all <- drake_plan(
   di_obs_s = target(dplyr::bind_rows(di_obs),
                     transform = combine(di_obs, .by = singletons)),
   all_di_obs = target(dplyr::bind_rows(di_obs_s_TRUE, di_obs_s_FALSE)),
-  report = target(render_report(here::here("analysis", "reports", "dat_report_template.Rmd"), dependencies = all_di_obs, is_template = TRUE, dat_name = !!datasets),
+  all_di_manip = target(assign_portal_manips(all_di_obs)),
+  report = target(render_report(here::here("analysis", "reports", "dat_report_template.Rmd"), dependencies = all_di_manip, is_template = TRUE, dat_name = !!datasets),
                   trigger = trigger(condition = T),
                   hpc = F)
 )
