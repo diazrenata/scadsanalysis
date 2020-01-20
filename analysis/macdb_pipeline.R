@@ -55,8 +55,8 @@ if (interactive())
 
 ## Run the pipeline
 nodename <- Sys.info()["nodename"]
-#if(grepl("ufhpc", nodename)) {
-if(FALSE){
+if(grepl("ufhpc", nodename)) {
+#if(FALSE){
   print("I know I am on the HiPerGator!")
   library(clustermq)
   options(clustermq.scheduler = "slurm", clustermq.template = "slurm_clustermq.tmpl")
