@@ -18,7 +18,7 @@ Here is a plot of how many species were added to each dataset by estimating the 
 Number of samples achieved
 --------------------------
 
-#### The maximum number of samples achieved is 20.
+#### The maximum number of samples achieved is 2500.
 
     ## Warning: Removed 4 rows containing missing values (geom_bar).
 

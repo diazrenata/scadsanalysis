@@ -32,3 +32,5 @@ Position (%ile) of empirical SADs within FS
 Here is a heatmap of an observed + sampled FS:
 
 ![](macdb_report_files/figure-markdown_github/example%20heatmap-1.png)
+
+![](macdb_report_files/figure-markdown_github/manip-1.png)
