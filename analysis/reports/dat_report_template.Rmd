@@ -171,14 +171,14 @@ if(this_dataset == "portal_plants_manip") {
   all_di_manip <- readd(all_di_manip, cache = cache) 
   
   manip_skew_plot <- ggplot(data = all_di_manip, aes(x = treatment, y = skew_percentile)) +
-    geom_point() +
+    geom_boxplot() +
     facet_wrap(vars(season, singletons)) +
     theme_bw()
   
   print(manip_skew_plot)
   
   manip_simpson_plot <- ggplot(data = all_di_manip, aes(x = treatment, y = simpson_percentile)) +
-    geom_point() +
+    geom_boxplot() +
     facet_wrap(vars(season, singletons)) +
     theme_bw() 
   
