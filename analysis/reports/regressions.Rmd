@@ -57,75 +57,152 @@ if(params$on_hpg) {
 } else {
   all_di <- read.csv(here::here("analysis", "reports", "all_di.csv"), stringsAsFactors = F)
 }
-```
-
-```{r histograms, fig.height = 6, fig.width =6}
-
-
-skewhists <- ggplot(data = all_di, aes(x = skew_percentile)) +
-  geom_histogram(binwidth = 5, alpha = .3, boundary = 0) +
-  geom_histogram(binwidth = 5, data = filter(all_di, nsamples == 2500), boundary = 0) +
-  theme_bw() +
-  facet_grid(rows = vars(dat), cols = vars(singletons), scales = "free_y") +
-  ggtitle("Skewness") +
-  geom_vline(xintercept = 95, color = "red")
-skewhists
-
-
-simpsonhists <- ggplot(data = all_di, aes(x = simpson_percentile)) +
-  geom_histogram(binwidth = 5, alpha = .3, boundary = 0) +
-  geom_histogram(binwidth = 5, data = filter(all_di, nsamples == 2500), boundary = 0) +
-  theme_bw() +
-  facet_grid(rows = vars(dat), cols = vars(singletons), scales = "free_y") +
-  ggtitle("Simpson") +
-  geom_vline(xintercept = 5, color = "red")
-
-simpsonhists
-
-```
-
-Observations from these histograms:
-
-* FIA really struggles to get 2500 samples
-* Portal is the *most* concentrated of all the datasets.
-* Then MCDB and misc, then gentry, then bbs. FIA is hard to place but looks idiosyncratic.
-* Curious about how variation in %ile maps on to S and N, *particularly* for Gentry and BBS. 
-* Skewness is less extreme than Simpson (more density in the in-between). 
-* Singletons doesn't appear to be terrifically impactful. From now on filtering to *unaltered* vectors.
-* I think it's best to filter to at least 2000 samples. 
-
-Some summary statistics:
-
-```{r summary plots}
 
 di_summary <- all_di %>%
-  filter(nsamples >= 2000) %>%
+  filter(nsamples >= 2000, !singletons) %>%
   mutate(avg_n = n0 / s0,
-         skew_pp = skew_percentile / 100,
-         simp_pp = simpson_percentile/100)
+         skew_pp = skew_percentile / 100.01,
+         simp_pp = simpson_percentile/100.01)
+
 ```
 
-### Avg abundance
 
-```{r avg abundance regression}
+Filtering to nsamples >= 2000, not singletons.
 
-avgn_skew <- ggplot(data = di_summary, aes(x = avg_n, y = skew_pp)) +
-  geom_point() +
-  stat_smooth(method = "glm",method.args = list(family = binomial)) + 
+### Supposed correlates
+
+#### Average abundance (N/S)
+
+```{r avg n}
+
+avg_n_plot <- ggplot(data = di_summary, aes(x = avg_n)) +
+  geom_histogram() +
   facet_wrap(vars(dat), scales = "free") +
+  theme_bw() +
+  ggtitle("Average abundance")
+print(avg_n_plot)
+
+avg_n_boxplot <- ggplot(data = di_summary, aes(x= dat, y = avg_n)) +
+  geom_boxplot() +
+  theme_bw() +
+  ggtitle("Average abundance") 
+
+print(avg_n_boxplot)
+
+
+avg_n_boxplot_log <- ggplot(data = di_summary, aes(x= dat, y = log(avg_n))) +
+  geom_boxplot() +
+  theme_bw() +
+  ggtitle("Average abundance") 
+
+print(avg_n_boxplot_log)
+```
+
+```{r means and sds}
+skew_mean_plot <- ggplot(data = di_summary, aes(x = dat, y = skew_mean)) +
+  geom_boxplot() +
+  theme_bw()
+skew_sd_plot <- ggplot(data = di_summary, aes(x = dat, y = skew_sd)) +
+  geom_boxplot() +
+  theme_bw()
+skew_m_sd_plot <- ggplot(data = di_summary, aes(x = skew_mean, y = skew_sd, color = dat)) +
+  geom_point(alpha = .2) +
   theme_bw()
 
-avgn_skew
+skew_mean_plot
+skew_sd_plot
+skew_m_sd_plot
 
-summary(glm(di_summary, formula = skew_pp ~ avg_n * dat, family = binomial))
+simpson_mean_plot <- ggplot(data = di_summary, aes(x = dat, y = simpson_mean)) +
+  geom_boxplot() +
+  theme_bw()
+simpson_sd_plot <- ggplot(data = di_summary, aes(x = dat, y = simpson_sd)) +
+  geom_boxplot() +
+  theme_bw()
+simpson_m_sd_plot <- ggplot(data = di_summary, aes(x = simpson_mean, y = simpson_sd, color = dat)) +
+  geom_point(alpha = .2) +
+  theme_bw()
 
-for(i in unique(di_summary$dat)) {
-  this_dat <- filter(di_summary, dat==i)
-  print(i)
-  print(summary(glm(skew_pp ~ avg_n, family = binomial,
-          data = this_dat)))
-}
+simpson_mean_plot
+simpson_sd_plot
+simpson_m_sd_plot
 
 ```
 
-                
+The different datasets are on dramatically different scales of average abundance, although it looks like a lot of that is outliers in misc_abund.
+
+### Correlation plots
+
+#### Average abundance
+```{r avg n vis, fig.dim = c(8,8)}
+
+skew_avgn_plot <- ggplot(data = di_summary, aes(x = avg_n, y = skew_percentile)) +
+  geom_point(size = 1, alpha = .2) +
+  facet_wrap(vars(dat), scales = "free_x") +
+  theme_bw() +
+  ggtitle("Skew v Avg N")
+print(skew_avgn_plot)
+
+
+simpson_avgn_plot <- ggplot(data = di_summary, aes(x = avg_n, y = simpson_percentile)) +
+  geom_point(size = 1, alpha = .2) +
+  facet_wrap(vars(dat), scales = "free_x") +
+  theme_bw() +
+  ggtitle("Simpson v Avg N")
+print(simpson_avgn_plot)
+
+```
+
+#### Mean and sd
+
+```{r mean sd vis, fix.dim = c(8, 8)}
+
+skew_mean_plot <- ggplot(data = di_summary, aes(x = skew_mean, y = skew_percentile)) +
+  geom_point(size = 1, alpha = .2) +
+  facet_wrap(vars(dat), scales = "free") +
+  theme_bw() +
+  ggtitle("Skew v Mean skew")
+print(skew_mean_plot)
+
+
+skew_sd_plot <- ggplot(data = di_summary, aes(x = skew_sd, y = skew_percentile)) +
+  geom_point(size = 1, alpha = .2) +
+  facet_wrap(vars(dat), scales = "free") +
+  theme_bw() +
+  ggtitle("Skew v sd skew")
+print(skew_sd_plot)
+
+simpson_mean_plot <- ggplot(data = di_summary, aes(x = simpson_mean, y = simpson_percentile)) +
+  geom_point(size = 1, alpha = .2) +
+  facet_wrap(vars(dat), scales = "free") +
+  theme_bw() +
+  ggtitle("simpson v Mean simpson")
+print(simpson_mean_plot)
+
+
+simpson_sd_plot <- ggplot(data = di_summary, aes(x = simpson_sd, y = simpson_percentile)) +
+  geom_point(size = 1, alpha = .2) +
+  facet_wrap(vars(dat), scales = "free") +
+  theme_bw() +
+  ggtitle("simpson v sd simpson")
+print(simpson_sd_plot)
+
+
+```
+
+
+### Beta regression
+
+#### Average abundance
+
+```{r betareg avg n}
+library(betareg)
+
+di_summary$skew_pp[ which(di_summary$skew_pp == 0)] <- .00000001
+di_summary$simp_pp[ which(di_summary$simp_pp == 0)] <- .00000001
+
+avgn_br_skew <- betareg(skew_pp ~ avg_n + dat, data = di_summary)
+summary(avgn_br_skew)
+plot(avgn_br_skew)
+
+```
