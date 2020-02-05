@@ -44,6 +44,8 @@ Overall percentile results
 
 ![](vetting_files/figure-markdown_github/overall-1.png)![](vetting_files/figure-markdown_github/overall-2.png)
 
+    ## [1] 0.1514539
+
 Effect of singletons
 
 ![](vetting_files/figure-markdown_github/singletons%20overall-1.png)![](vetting_files/figure-markdown_github/singletons%20overall-2.png)
@@ -59,6 +61,19 @@ Effect of singletons
 
 ![](vetting_files/figure-markdown_github/singletons%20dataset-1.png)![](vetting_files/figure-markdown_github/singletons%20dataset-2.png)
 
+S and N v percentiles
+---------------------
+
+![](vetting_files/figure-markdown_github/sn%20percentiles-1.png)![](vetting_files/figure-markdown_github/sn%20percentiles-2.png)![](vetting_files/figure-markdown_github/sn%20percentiles-3.png)![](vetting_files/figure-markdown_github/sn%20percentiles-4.png)
+
+Even when you get &gt;2k samples, it looks to me like you get *less unusual* observed SADs in the relatively low N/S region, which is also the region I expect to be most even.
+
+![](vetting_files/figure-markdown_github/avg%20n%20percentile-1.png)![](vetting_files/figure-markdown_github/avg%20n%20percentile-2.png)
+
+You really don't get non-extreme percentiles in the high n/s region.
+
+These scatterplots are good for seeing where the variation is but not the density; there's a *lot* of points on top of each other down at 0/up at 100.
+
 MACD
 ====
 
@@ -70,16 +85,34 @@ By treatment - overall
 
 ![](vetting_files/figure-markdown_github/macd%20trtmt%20overall-1.png)![](vetting_files/figure-markdown_github/macd%20trtmt%20overall-2.png)
 
-\*\* I AM REALLY NOT CONFIDENT IN THE DATA HANDLING HERE, NEED TO REVISIT WHEN SHARPER \*\*
-
-    ## Warning: Removed 4 rows containing missing values (geom_point).
-
-![](vetting_files/figure-markdown_github/macd%20ctrlcomp-1.png)
-
-    ## Warning: Removed 4 rows containing missing values (geom_point).
-
-![](vetting_files/figure-markdown_github/macd%20ctrlcomp-2.png)
-
+<!-- ** I AM REALLY NOT CONFIDENT IN THE DATA HANDLING HERE, NEED TO REVISIT WHEN SHARPER ** -->
+<!-- ```{r macd ctrlcomp} -->
+<!-- macd_comparisons <- read.csv(here::here("working-data", "macdb_data", "orderedcomparisons.csv"), header = F, stringsAsFactors = F) -->
+<!-- colnames(macd_comparisons) <- c("studyID", "control", "site") -->
+<!-- macd_comparisons <- macd_comparisons %>% -->
+<!--   mutate(site = as.character(site), control = as.character(control)) -->
+<!-- cc_di <- all_di_macd %>% -->
+<!--   filter(singletons == FALSE, treatment == "comparison") %>% -->
+<!--   left_join(macd_comparisons, by = c("studyID", "site")) %>% -->
+<!--   select(dat, site, skew_percentile, simpson_percentile, studyID, control) %>% -->
+<!--   rename(comparison = site) %>% -->
+<!--  left_join(select(all_di_macd, skew_percentile, simpson_percentile, site, singletons, nsamples), by = c("control" = "site")) %>% -->
+<!--   distinct() %>% -->
+<!--   rename(comp_skew = skew_percentile.x, comp_simp = simpson_percentile.x, -->
+<!--          control_skew = skew_percentile.y, control_simp = simpson_percentile.y) -->
+<!-- ggplot(data = cc_di, aes(x = comp_skew, y = control_skew)) + -->
+<!--   geom_point(alpha = .5) + -->
+<!-- #  xlim(0, 100) + -->
+<!--  # ylim(0, 100) + -->
+<!--   theme_bw() + -->
+<!--   geom_abline(intercept = 0, slope = 1, color = "green") -->
+<!-- ggplot(data = cc_di, aes(x = comp_simp, y = control_simp)) + -->
+<!--   geom_point(alpha = .5) + -->
+<!--  xlim(0, 100) + -->
+<!--  ylim(0, 100) + -->
+<!--   theme_bw() + -->
+<!--   geom_abline(intercept = 0, slope = 1, color = "green") -->
+<!-- ``` -->
 Portal plant manips
 ===================
 

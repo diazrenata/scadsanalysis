@@ -133,13 +133,17 @@ FIA, dramatically more than any other dataset, struggles to get even 2000 sample
 ```{r overall}
 
 ggplot(data = filter(all_di, nsamples >= 2000, singletons == FALSE), aes(x = skew_percentile)) +
-  geom_histogram(bins = 100) +
-  theme_bw()
+  geom_histogram(bins = 100, aes(y = stat(count / sum(count)))) +
+  theme_bw() +
+  geom_hline(yintercept = .01, linetype = 3)
 
 ggplot(data = filter(all_di, nsamples >= 2000, singletons == FALSE), aes(x = simpson_percentile)) +
-  geom_histogram(bins = 100) +
-  theme_bw() 
+  geom_histogram(bins = 100, aes(y = stat(count / sum(count)))) +
+  theme_bw() +
+    geom_hline(yintercept = .01, linetype = 3)
 
+
+sum(filter(all_di, nsamples >= 2000, singletons == F)$skew_percentile >= 95) / nrow(filter(all_di, nsamples >= 2000, singletons == F))
 ```
 
 Effect of singletons
@@ -172,13 +176,13 @@ Adding singletons makes skewness more skewed and simpson less even.
 ```{r dataset}
 
 ggplot(data = filter(all_di, nsamples >= 2000, singletons == FALSE), aes(x = skew_percentile)) +
-  geom_histogram(bins = 100) +
+   geom_histogram(bins = 100) +
   theme_bw() +
   facet_wrap(vars(dat), scales = "free_y")
 
 ggplot(data = filter(all_di, nsamples >= 2000, singletons == FALSE), aes(x = simpson_percentile)) +
-  geom_histogram(bins = 100) +
-  theme_bw()  +
+   geom_histogram(bins = 100) +
+  theme_bw() +
   facet_wrap(vars(dat), scales = "free_y")
 
 ```
@@ -208,6 +212,51 @@ ggplot(data = singletons_effect, aes(x = simpson_percentile_FALSE, y = simpson_p
 
 ```
 
+## S and N v percentiles
+
+```{r sn percentiles}
+
+ggplot(data = filter(all_di, singletons == FALSE), aes(x = log(s0), y = log(n0), color = skew_percentile)) +
+  geom_point(alpha = .1) +
+  theme_bw() +
+  scale_color_viridis_c(option = "plasma", end = .8)
+
+ggplot(data = filter(all_di, singletons == FALSE, nsamples >= 2000), aes(x = log(s0), y = log(n0), color = skew_percentile)) +
+  geom_point(alpha = .25) +
+  theme_bw() +
+  scale_color_viridis_c(option = "plasma", end = .8)
+
+
+ggplot(data = filter(all_di, singletons == FALSE), aes(x = log(s0), y = log(n0), color = simpson_percentile)) +
+  geom_point(alpha = .1) +
+  theme_bw() +
+  scale_color_viridis_c(option = "plasma", end = .8, direction = -1)
+
+ggplot(data = filter(all_di, singletons == FALSE, nsamples >= 2000), aes(x = log(s0), y = log(n0), color = simpson_percentile)) +
+  geom_point(alpha = .25) +
+  theme_bw() +
+  scale_color_viridis_c(option = "plasma", end = .8, direction = -1)
+```
+
+Even when you get >2k samples, it looks to me like you get *less unusual* observed SADs in the relatively low N/S region, which is also the region I expect to be most even. 
+
+```{r avg n percentile}
+
+ggplot(data = filter(all_di, nsamples >= 2000, singletons == F), aes(x = log(n0/s0), y = skew_percentile)) +
+  geom_point(alpha = .1) +
+  theme_bw()
+
+
+ggplot(data = filter(all_di, nsamples >= 2000, singletons == F), aes(x = log(n0/s0), y = simpson_percentile)) +
+  geom_point(alpha = .1) +
+  theme_bw()
+```
+
+
+You really don't get non-extreme percentiles in the high n/s region.
+
+These scatterplots are good for seeing where the variation is but not the density; there's a *lot* of points on top of each other down at 0/up at 100.
+
 # MACD
 
 ```{r load macd}
@@ -235,12 +284,14 @@ ggplot(data = all_di_macd, aes(x = nsamples)) +
 all_di_macd <- filter(all_di_macd, nsamples >= 2000)
 
 ggplot(data = all_di_macd, aes(x = skew_percentile)) +
-  geom_histogram(bins = 100) +
-  theme_bw()
+   geom_histogram(bins = 100, aes(y = stat(count / sum(count)))) +
+  theme_bw() +
+    geom_hline(yintercept = .01, linetype = 3)
 
 ggplot(data = all_di_macd, aes(x = simpson_percentile)) +
-  geom_histogram(bins = 100) +
-  theme_bw()
+  geom_histogram(bins = 100, aes(y = stat(count / sum(count)))) +
+  theme_bw() +
+    geom_hline(yintercept = .01, linetype = 3)
 ```
 
 By treatment - overall
@@ -249,53 +300,53 @@ By treatment - overall
 
 
 ggplot(data = all_di_macd, aes(x = skew_percentile)) +
-  geom_histogram(bins = 100) +
+    geom_histogram(bins = 100) +
   theme_bw() +
-  facet_wrap(vars(treatment), scales = "free_y")
+  facet_wrap(vars(dat), scales = "free_y")
 
 ggplot(data = all_di_macd, aes(x = simpson_percentile)) +
   geom_histogram(bins = 100) +
   theme_bw() +
-  facet_wrap(vars(treatment), scales = "free_y")
+  facet_wrap(vars(dat), scales = "free_y")
 
 ```
 
-** I AM REALLY NOT CONFIDENT IN THE DATA HANDLING HERE, NEED TO REVISIT WHEN SHARPER **
+<!-- ** I AM REALLY NOT CONFIDENT IN THE DATA HANDLING HERE, NEED TO REVISIT WHEN SHARPER ** -->
 
-```{r macd ctrlcomp}
+<!-- ```{r macd ctrlcomp} -->
 
-macd_comparisons <- read.csv(here::here("working-data", "macdb_data", "orderedcomparisons.csv"), header = F, stringsAsFactors = F)
+<!-- macd_comparisons <- read.csv(here::here("working-data", "macdb_data", "orderedcomparisons.csv"), header = F, stringsAsFactors = F) -->
 
-colnames(macd_comparisons) <- c("studyID", "control", "site")
-macd_comparisons <- macd_comparisons %>%
-  mutate(site = as.character(site), control = as.character(control))
+<!-- colnames(macd_comparisons) <- c("studyID", "control", "site") -->
+<!-- macd_comparisons <- macd_comparisons %>% -->
+<!--   mutate(site = as.character(site), control = as.character(control)) -->
 
-cc_di <- all_di_macd %>%
-  filter(singletons == FALSE, treatment == "comparison") %>%
-  left_join(macd_comparisons, by = c("studyID", "site")) %>%
-  select(dat, site, skew_percentile, simpson_percentile, studyID, control) %>%
-  rename(comparison = site) %>%
- left_join(select(all_di_macd, skew_percentile, simpson_percentile, site, singletons, nsamples), by = c("control" = "site")) %>%
-  distinct() %>%
-  rename(comp_skew = skew_percentile.x, comp_simp = simpson_percentile.x,
-         control_skew = skew_percentile.y, control_simp = simpson_percentile.y)
+<!-- cc_di <- all_di_macd %>% -->
+<!--   filter(singletons == FALSE, treatment == "comparison") %>% -->
+<!--   left_join(macd_comparisons, by = c("studyID", "site")) %>% -->
+<!--   select(dat, site, skew_percentile, simpson_percentile, studyID, control) %>% -->
+<!--   rename(comparison = site) %>% -->
+<!--  left_join(select(all_di_macd, skew_percentile, simpson_percentile, site, singletons, nsamples), by = c("control" = "site")) %>% -->
+<!--   distinct() %>% -->
+<!--   rename(comp_skew = skew_percentile.x, comp_simp = simpson_percentile.x, -->
+<!--          control_skew = skew_percentile.y, control_simp = simpson_percentile.y) -->
 
-ggplot(data = cc_di, aes(x = comp_skew, y = control_skew)) +
-  geom_point(alpha = .5) +
-#  xlim(0, 100) +
- # ylim(0, 100) +
-  theme_bw() +
-  geom_abline(intercept = 0, slope = 1, color = "green")
+<!-- ggplot(data = cc_di, aes(x = comp_skew, y = control_skew)) + -->
+<!--   geom_point(alpha = .5) + -->
+<!-- #  xlim(0, 100) + -->
+<!--  # ylim(0, 100) + -->
+<!--   theme_bw() + -->
+<!--   geom_abline(intercept = 0, slope = 1, color = "green") -->
 
 
-ggplot(data = cc_di, aes(x = comp_simp, y = control_simp)) +
-  geom_point(alpha = .5) +
- xlim(0, 100) +
- ylim(0, 100) +
-  theme_bw() +
-  geom_abline(intercept = 0, slope = 1, color = "green")
+<!-- ggplot(data = cc_di, aes(x = comp_simp, y = control_simp)) + -->
+<!--   geom_point(alpha = .5) + -->
+<!--  xlim(0, 100) + -->
+<!--  ylim(0, 100) + -->
+<!--   theme_bw() + -->
+<!--   geom_abline(intercept = 0, slope = 1, color = "green") -->
 
-```
+<!-- ``` -->
 
 # Portal plant manips
 
@@ -324,12 +375,14 @@ ggplot(data = all_di_p, aes(x = nsamples)) +
 all_di_p <- filter(all_di_p, nsamples >= 2000)
 
 ggplot(data = all_di_p, aes(x = skew_percentile)) +
-  geom_histogram(bins = 100) +
-  theme_bw()
+  geom_histogram(bins = 100, aes(y = stat(count / sum(count)))) +
+  theme_bw() +
+    geom_hline(yintercept = .01, linetype = 3)
 
 ggplot(data = all_di_p, aes(x = simpson_percentile)) +
-  geom_histogram(bins = 100) +
-  theme_bw()
+   geom_histogram(bins = 100, aes(y = stat(count / sum(count)))) +
+  theme_bw() +
+    geom_hline(yintercept = .01, linetype = 3)
 
 pp_singletons_effect <- all_di_p %>%
   select(singletons, skew_percentile, simpson_percentile, year, plot, treatment, season) %>%
@@ -351,9 +404,9 @@ By treatment, season
 
 ```{r portal trtmt}
 ggplot(data = filter(all_di_p, singletons == F), aes(x = skew_percentile)) +
-  geom_histogram(bins = 100) +
+    geom_histogram(bins = 100) +
   theme_bw() +
-  facet_wrap(vars(season, treatment), scales = "free_y") 
+  facet_wrap(vars(dat), scales = "free_y")
 
 ggplot(data = filter(all_di_p, singletons == F), aes(x = treatment, y = skew_percentile)) +
   geom_boxplot() +
@@ -363,7 +416,7 @@ ggplot(data = filter(all_di_p, singletons == F), aes(x = treatment, y = skew_per
 ggplot(data = filter(all_di_p, singletons == F), aes(x = simpson_percentile)) +
   geom_histogram(bins = 100) +
   theme_bw() +
-  facet_wrap(vars(season, treatment), scales = "free_y") 
+  facet_wrap(vars(dat), scales = "free_y")
 
 ggplot(data = filter(all_di_p, singletons == F), aes(x = treatment, y = simpson_percentile)) +
   geom_boxplot() +
