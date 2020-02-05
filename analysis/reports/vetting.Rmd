@@ -70,22 +70,20 @@ For low values of S and N, we expect to get considerably fewer than 2500 unique 
 
 It's not clear a priori what actual values of S and N will push us into small-community problems. Again, beyond the really small communities, it really depends on the ratio. Early on I just filtered out anything that gave fewer than 2000 unique draws. This has the advantage that we only end up comparing %ile values with reasonably comparable precision, but it might artificially exclude an important region on S*N space. 
 
-```{r draws v sn plots, fig.dim = c(8,8)}
+```{r draws v sn plots, fig.dim = c(5,5)}
 
-ndraws_plot <- ggplot(data = all_di, aes(x = log(s0), y = log(n0), color = log(nsamples))) +
+ggplot(data = all_di, aes(x = log(s0), y = log(n0), color = log(nsamples))) +
   geom_point(data = filter(all_di, nsamples >= 2000), color = "grey", alpha = .25) +
     geom_point(data = filter(all_di, nsamples <2000), alpha = .1) + 
   theme_bw() +
   scale_color_viridis_c(option = "plasma", end = .9)
 
-ndraws_plot
-
-ndraws_onlysmol_plot <- ggplot(data = all_di, aes(x = log(s0), y = log(n0), color = log(nsamples))) +
+ ggplot(data = all_di, aes(x = log(s0), y = log(n0), color = log(nsamples))) +
     geom_point(data = filter(all_di, nsamples <2000), alpha = .1) + 
   theme_bw() +
   scale_color_viridis_c(option = "plasma", end = .9)
 
-ndraws_onlysmol_plot
+
 ```
 
 In these plots, the grey region is nsamples >= 2000. It looks like removing communities with nsamples < 2000 is basically filtering out N < about 100-150. For more nuance we could dip down into lower n for intermediate S (S between 5 and 50), and still be getting pretty good sampling? 
@@ -96,26 +94,147 @@ Leaving it be for now.
 
 This is really hard to get traction on. S and N affect everything. 
 
-```{r percent v rov}
+```{r Simpson rov, fig.dim=c(4,4)}
 
-ggplot(data = filter(all_di, nsamples >= 2000), aes(x = simpson_sd, y =simpson_percentile, color = simpson_mean)) +
-  geom_point(alpha = .05) +
-  theme_bw() +  scale_color_viridis_c(option = "plasma", end = .9)
+ggplot(data = all_di, aes(x = log(s0), y = log(n0), color = simpson_mean)) +
+  geom_point(alpha = .07) +
+  theme_bw() +
+  scale_color_viridis_c(option = "plasma", end = .9) +
+  theme(legend.position = "none") +
+  ggtitle("Simpson mean")
+ggplot(data = all_di, aes(x = log(s0), y = log(n0), color = simpson_sd)) +
+  geom_point(alpha = .07) +
+  theme_bw() +
+  scale_color_viridis_c(option = "plasma", end = .9)+
+  theme(legend.position = "none") +
+  ggtitle("Simpson sd")
+ggplot(data = all_di, aes(x = log(s0), y = log(n0), color = simpson_range)) +
+  geom_point(alpha = .07) +
+  theme_bw() +
+  scale_color_viridis_c(option = "plasma", end = .9)+
+  theme(legend.position = "none") +
+  ggtitle("Simpson range")
+ggplot(data = all_di, aes(x = log(s0), y = log(n0), color = simpson_percentile)) +
+  geom_point(alpha = .07) +
+  theme_bw() +
+  scale_color_viridis_c(option = "plasma", end = .9, direction = -1)+
+  theme(legend.position = "none") +
+  ggtitle("Simpson percentile")
 
-ggplot(data = filter(all_di, nsamples >= 2000), aes(x = skew_sd, y =skew_percentile, color = skew_mean)) +
-  geom_point(alpha = .05) +
-  theme_bw() +  scale_color_viridis_c(option = "plasma", end = .9)
 
+ggplot(data = filter(all_di, nsamples >= 2000), aes(x = log(s0), y = log(n0), color = simpson_mean)) +
+  geom_point(alpha = .07) +
+  theme_bw() +
+  scale_color_viridis_c(option = "plasma", end = .9) +
+  theme(legend.position = "none") +
+  ggtitle("Simpson mean")
+ggplot(data = filter(all_di, nsamples >= 2000), aes(x = log(s0), y = log(n0), color = simpson_sd)) +
+  geom_point(alpha = .07) +
+  theme_bw() +
+  scale_color_viridis_c(option = "plasma", end = .9)+
+  theme(legend.position = "none") +
+  ggtitle("Simpson sd")
+ggplot(data = filter(all_di, nsamples >= 2000), aes(x = log(s0), y = log(n0), color = simpson_range)) +
+  geom_point(alpha = .07) +
+  theme_bw() +
+  scale_color_viridis_c(option = "plasma", end = .9)+
+  theme(legend.position = "none") +
+  ggtitle("Simpson range")
+ggplot(data = filter(all_di, nsamples >= 2000), aes(x = log(s0), y = log(n0), color = simpson_percentile)) +
+  geom_point(alpha = .07) +
+  theme_bw() +
+  scale_color_viridis_c(option = "plasma", end = .9, direction = -1)+
+  theme(legend.position = "none") +
+  ggtitle("Simpson percentile")
 
 ```
 
+So for Simpson's, the mean, sd, and range of values within the feasible set all clearly vary with S and N. There seems to be an edge situation with the percentiles. The really high values are all out along the arm and, to a lesser extent, where N/S is relatively small. This is *not* a region of pronounced variation in the FS characteristics. Also, there is variation that clearly does not map on to the gradients in the FS characteristics. 
+
+```{r skew rov, fig.dim=c(4,4)}
+
+ggplot(data = all_di, aes(x = log(s0), y = log(n0), color = skew_mean)) +
+  geom_point(alpha = .07) +
+  theme_bw() +
+  scale_color_viridis_c(option = "plasma", end = .9, direction = -1) +
+  theme(legend.position = "none") +
+  ggtitle("Skew mean")
+ggplot(data = all_di, aes(x = log(s0), y = log(n0), color = skew_sd)) +
+  geom_point(alpha = .07) +
+  theme_bw() +
+  scale_color_viridis_c(option = "plasma", end = .9, direction = -1)+
+  theme(legend.position = "none") +
+  ggtitle("Skew sd")
+ggplot(data = all_di, aes(x = log(s0), y = log(n0), color = skew_range)) +
+  geom_point(alpha = .07) +
+  theme_bw() +
+  scale_color_viridis_c(option = "plasma", end = .9, direction = -1)+
+  theme(legend.position = "none") +
+  ggtitle("Skew range")
+ggplot(data = all_di, aes(x = log(s0), y = log(n0), color = skew_percentile)) +
+  geom_point(alpha = .07) +
+  theme_bw() +
+  scale_color_viridis_c(option = "plasma", end = .9)+
+  theme(legend.position = "none") +
+  ggtitle("Skew percentile")
+
+
+ggplot(data = filter(all_di, nsamples >= 2000), aes(x = log(s0), y = log(n0), color = skew_mean)) +
+  geom_point(alpha = .07) +
+  theme_bw() +
+  scale_color_viridis_c(option = "plasma", end = .9, direction = -1) +
+  theme(legend.position = "none") +
+  ggtitle("Skew mean")
+ggplot(data = filter(all_di, nsamples >= 2000), aes(x = log(s0), y = log(n0), color = skew_sd)) +
+  geom_point(alpha = .07) +
+  theme_bw() +
+  scale_color_viridis_c(option = "plasma", end = .9, direction = -1)+
+  theme(legend.position = "none") +
+  ggtitle("Skew sd")
+ggplot(data = filter(all_di, nsamples >= 2000), aes(x = log(s0), y = log(n0), color = skew_range)) +
+  geom_point(alpha = .07) +
+  theme_bw() +
+  scale_color_viridis_c(option = "plasma", end = .9, direction = -1)+
+  theme(legend.position = "none") +
+  ggtitle("Skew range")
+ggplot(data = filter(all_di, nsamples >= 2000), aes(x = log(s0), y = log(n0), color = skew_percentile)) +
+  geom_point(alpha = .07) +
+  theme_bw() +
+  scale_color_viridis_c(option = "plasma", end = .9)+
+  theme(legend.position = "none") +
+  ggtitle("Skew percentile")
+
+```
+
+There are similar, if less strong, gradients in skewness over the range of S and N; it's particularly low up the low N/S arm. The percentile values are *not* as different in that arm than the rest of the space (unlike with Simpson's). The variation in skewness percentile doesn't appear to track the gradients in the characteristics of the feasible set. Maybe it does a little? But no argument that there's a lot of variation over and above.
+
+I feel like it might be *good* to find some way to test these statements quantitatively, but it's very tricky. Absolutely everything depends on S and N and moves in weird nonlinear ways. 
+
+
+```{r avg n percentile}
+
+ggplot(data = filter(all_di, nsamples >= 2000, singletons == F), aes(x = log(n0/s0), y = skew_percentile)) +
+  geom_point(alpha = .1) +
+  theme_bw()
+
+
+ggplot(data = filter(all_di, nsamples >= 2000, singletons == F), aes(x = log(n0/s0), y = simpson_percentile)) +
+  geom_point(alpha = .1) +
+  theme_bw()
+```
+
+
+You really don't get non-extreme percentiles in the high n/s region.
+
+These scatterplots are good for seeing where the variation is but not the density; there's a *lot* of points on top of each other down at 0/up at 100.
 ## Where the datasets fall
 
 ```{r dataset space}
 ggplot(data = all_di, aes(x = log(s0), y = log(n0), color = dat)) + 
   geom_point(alpha = .2) +
   scale_color_viridis_d() +
-  theme_bw()
+  theme_bw() +
+  geom_point(data = filter(all_di, dat == "I don't exist!")) # for a legend with alpha = 1
 
 ggplot(data = all_di, aes(x = nsamples)) +
   geom_histogram() +
@@ -124,7 +243,11 @@ ggplot(data = all_di, aes(x = nsamples)) +
   geom_vline(xintercept = 2000)
 ```
 
-The datasets overlap but do occupy broadly different regions of S*N space.
+The datasets overlap but do occupy broadly different regions of S*N space. The arm - which is the weirdest region of the percentile values - is, unfortunately, 100% one dataset (Gentry).
+
+For the vast majority of S*N space here, I don't think we can really use dataset as a predictor of percentile, because of the way they occupy different parts of what we know to be a very important range of variation.
+
+We *could* narrow in on the region of maximum overlap/minimum variation and make comparison based on the sites only within that. 
 
 FIA, dramatically more than any other dataset, struggles to get even 2000 samples. 
 
@@ -142,9 +265,13 @@ ggplot(data = filter(all_di, nsamples >= 2000, singletons == FALSE), aes(x = sim
   theme_bw() +
     geom_hline(yintercept = .01, linetype = 3)
 
-
-sum(filter(all_di, nsamples >= 2000, singletons == F)$skew_percentile >= 95) / nrow(filter(all_di, nsamples >= 2000, singletons == F))
 ```
+
+Here, the dotted lines mark the 1%; at random, percentile values should be uniformly distributed with 1% per bin on these histograms. 
+
+Both Simpson's and skewness are disproportiately in the extremes: from about the 75th percentile on up for skewness, and maybe the 10th percentile and below for evenness.
+
+It's not ubiquitous! Often things are unremarkable compared to the feasible set. That said, *more often than we'd expect*, real distributions are highly skewed/highly uneven compared to their feasible sets. 
 
 Effect of singletons
 
@@ -169,23 +296,44 @@ ggplot(data = singletons_effect, aes(x = simpson_percentile_FALSE, y = simpson_p
 
 ```
 
-Adding singletons makes skewness more skewed and simpson less even.
+The rarefaction-inflated datasets are strongly // the raw vectors. They have more extreme skewness and evenness values, relative to their feasible sets, than the raw vectors. This is almost always true for evenness, with a little more noise in the skewness signal. But either way, very strong. 
 
 ## Broken out by dataset
 
-```{r dataset}
+```{r dataset, fig.dim = c(10,10)}
 
-ggplot(data = filter(all_di, nsamples >= 2000, singletons == FALSE), aes(x = skew_percentile)) +
-   geom_histogram(bins = 100) +
+make_dat_hist <- function(datname, varname, data) {
+  
+  if(varname == "skew") {
+  
+  dat_hist <- ggplot(data = filter(data, nsamples >= 2000, singletons == FALSE, dat == datname), aes(x = skew_percentile)) 
+  } else if (varname == "simpson") {
+       dat_hist <- ggplot(data = filter(data, nsamples >= 2000, singletons == FALSE, dat == datname), aes(x = simpson_percentile)) 
+    }
+  
+  dat_hist <- dat_hist +
+ geom_histogram(bins = 100, aes(y = stat(count / sum(count)))) +
   theme_bw() +
-  facet_wrap(vars(dat), scales = "free_y")
+  geom_hline(yintercept = .01, linetype = 3) +
+    ggtitle(paste0(datname, ": ", varname))
+  
+  return(dat_hist)
+}
 
-ggplot(data = filter(all_di, nsamples >= 2000, singletons == FALSE), aes(x = simpson_percentile)) +
-   geom_histogram(bins = 100) +
-  theme_bw() +
-  facet_wrap(vars(dat), scales = "free_y")
+simp_hists <- lapply(as.list(unique(all_di$dat)), FUN = make_dat_hist, varname = "simpson", data = all_di)
+
+skew_hists <- lapply(as.list(unique(all_di$dat)), FUN = make_dat_hist, varname = "skew", data = all_di)
+
+gridExtra::grid.arrange(grobs = simp_hists)
+
+gridExtra::grid.arrange(grobs = skew_hists)
 
 ```
+
+
+Evennes is consistently more concentrated in the extremes than skewness. 
+
+Gentry has a weird U going on, where it has a lot of weirdly *low*/*high* values. All the others are concentrated as low (evenness) or high (skew). BBS and FIA have the most that are in the intermediate zone.
 
 Effect of singletons
 
@@ -212,50 +360,8 @@ ggplot(data = singletons_effect, aes(x = simpson_percentile_FALSE, y = simpson_p
 
 ```
 
-## S and N v percentiles
+There's some fuzz, most pronouncedly for BBS and FIA. Those are also the ones with 1) the most points and 2) the most fuzz/uniform-distributed percentile values. 
 
-```{r sn percentiles}
-
-ggplot(data = filter(all_di, singletons == FALSE), aes(x = log(s0), y = log(n0), color = skew_percentile)) +
-  geom_point(alpha = .1) +
-  theme_bw() +
-  scale_color_viridis_c(option = "plasma", end = .8)
-
-ggplot(data = filter(all_di, singletons == FALSE, nsamples >= 2000), aes(x = log(s0), y = log(n0), color = skew_percentile)) +
-  geom_point(alpha = .25) +
-  theme_bw() +
-  scale_color_viridis_c(option = "plasma", end = .8)
-
-
-ggplot(data = filter(all_di, singletons == FALSE), aes(x = log(s0), y = log(n0), color = simpson_percentile)) +
-  geom_point(alpha = .1) +
-  theme_bw() +
-  scale_color_viridis_c(option = "plasma", end = .8, direction = -1)
-
-ggplot(data = filter(all_di, singletons == FALSE, nsamples >= 2000), aes(x = log(s0), y = log(n0), color = simpson_percentile)) +
-  geom_point(alpha = .25) +
-  theme_bw() +
-  scale_color_viridis_c(option = "plasma", end = .8, direction = -1)
-```
-
-Even when you get >2k samples, it looks to me like you get *less unusual* observed SADs in the relatively low N/S region, which is also the region I expect to be most even. 
-
-```{r avg n percentile}
-
-ggplot(data = filter(all_di, nsamples >= 2000, singletons == F), aes(x = log(n0/s0), y = skew_percentile)) +
-  geom_point(alpha = .1) +
-  theme_bw()
-
-
-ggplot(data = filter(all_di, nsamples >= 2000, singletons == F), aes(x = log(n0/s0), y = simpson_percentile)) +
-  geom_point(alpha = .1) +
-  theme_bw()
-```
-
-
-You really don't get non-extreme percentiles in the high n/s region.
-
-These scatterplots are good for seeing where the variation is but not the density; there's a *lot* of points on top of each other down at 0/up at 100.
 
 # MACD
 

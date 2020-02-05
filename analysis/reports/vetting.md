@@ -24,10 +24,21 @@ Percentile value vs. range of variation of FS
 
 This is really hard to get traction on. S and N affect everything.
 
-![](vetting_files/figure-markdown_github/percent%20v%20rov-1.png)![](vetting_files/figure-markdown_github/percent%20v%20rov-2.png)
+![](vetting_files/figure-markdown_github/Simpson%20rov-1.png)![](vetting_files/figure-markdown_github/Simpson%20rov-2.png)![](vetting_files/figure-markdown_github/Simpson%20rov-3.png)![](vetting_files/figure-markdown_github/Simpson%20rov-4.png)![](vetting_files/figure-markdown_github/Simpson%20rov-5.png)![](vetting_files/figure-markdown_github/Simpson%20rov-6.png)![](vetting_files/figure-markdown_github/Simpson%20rov-7.png)![](vetting_files/figure-markdown_github/Simpson%20rov-8.png)
 
-Where the datasets fall
------------------------
+So for Simpson's, the mean, sd, and range of values within the feasible set all clearly vary with S and N. There seems to be an edge situation with the percentiles. The really high values are all out along the arm and, to a lesser extent, where N/S is relatively small. This is *not* a region of pronounced variation in the FS characteristics. Also, there is variation that clearly does not map on to the gradients in the FS characteristics.
+
+![](vetting_files/figure-markdown_github/skew%20rov-1.png)![](vetting_files/figure-markdown_github/skew%20rov-2.png)![](vetting_files/figure-markdown_github/skew%20rov-3.png)![](vetting_files/figure-markdown_github/skew%20rov-4.png)![](vetting_files/figure-markdown_github/skew%20rov-5.png)![](vetting_files/figure-markdown_github/skew%20rov-6.png)![](vetting_files/figure-markdown_github/skew%20rov-7.png)![](vetting_files/figure-markdown_github/skew%20rov-8.png)
+
+There are similar, if less strong, gradients in skewness over the range of S and N; it's particularly low up the low N/S arm. The percentile values are *not* as different in that arm than the rest of the space (unlike with Simpson's). The variation in skewness percentile doesn't appear to track the gradients in the characteristics of the feasible set. Maybe it does a little? But no argument that there's a lot of variation over and above.
+
+I feel like it might be *good* to find some way to test these statements quantitatively, but it's very tricky. Absolutely everything depends on S and N and moves in weird nonlinear ways.
+
+![](vetting_files/figure-markdown_github/avg%20n%20percentile-1.png)![](vetting_files/figure-markdown_github/avg%20n%20percentile-2.png)
+
+You really don't get non-extreme percentiles in the high n/s region.
+
+These scatterplots are good for seeing where the variation is but not the density; there's a *lot* of points on top of each other down at 0/up at 100. \#\# Where the datasets fall
 
 ![](vetting_files/figure-markdown_github/dataset%20space-1.png)
 
@@ -35,7 +46,11 @@ Where the datasets fall
 
 ![](vetting_files/figure-markdown_github/dataset%20space-2.png)
 
-The datasets overlap but do occupy broadly different regions of S\*N space.
+The datasets overlap but do occupy broadly different regions of S\*N space. The arm - which is the weirdest region of the percentile values - is, unfortunately, 100% one dataset (Gentry).
+
+For the vast majority of S\*N space here, I don't think we can really use dataset as a predictor of percentile, because of the way they occupy different parts of what we know to be a very important range of variation.
+
+We *could* narrow in on the region of maximum overlap/minimum variation and make comparison based on the sites only within that.
 
 FIA, dramatically more than any other dataset, struggles to get even 2000 samples.
 
@@ -44,35 +59,32 @@ Overall percentile results
 
 ![](vetting_files/figure-markdown_github/overall-1.png)![](vetting_files/figure-markdown_github/overall-2.png)
 
-    ## [1] 0.1514539
+Here, the dotted lines mark the 1%; at random, percentile values should be uniformly distributed with 1% per bin on these histograms.
+
+Both Simpson's and skewness are disproportiately in the extremes: from about the 75th percentile on up for skewness, and maybe the 10th percentile and below for evenness.
+
+It's not ubiquitous! Often things are unremarkable compared to the feasible set. That said, *more often than we'd expect*, real distributions are highly skewed/highly uneven compared to their feasible sets.
 
 Effect of singletons
 
 ![](vetting_files/figure-markdown_github/singletons%20overall-1.png)![](vetting_files/figure-markdown_github/singletons%20overall-2.png)
 
-Adding singletons makes skewness more skewed and simpson less even.
+The rarefaction-inflated datasets are strongly // the raw vectors. They have more extreme skewness and evenness values, relative to their feasible sets, than the raw vectors. This is almost always true for evenness, with a little more noise in the skewness signal. But either way, very strong.
 
 Broken out by dataset
 ---------------------
 
 ![](vetting_files/figure-markdown_github/dataset-1.png)![](vetting_files/figure-markdown_github/dataset-2.png)
 
+Evennes is consistently more concentrated in the extremes than skewness.
+
+Gentry has a weird U going on, where it has a lot of weirdly *low*/*high* values. All the others are concentrated as low (evenness) or high (skew). BBS and FIA have the most that are in the intermediate zone.
+
 Effect of singletons
 
 ![](vetting_files/figure-markdown_github/singletons%20dataset-1.png)![](vetting_files/figure-markdown_github/singletons%20dataset-2.png)
 
-S and N v percentiles
----------------------
-
-![](vetting_files/figure-markdown_github/sn%20percentiles-1.png)![](vetting_files/figure-markdown_github/sn%20percentiles-2.png)![](vetting_files/figure-markdown_github/sn%20percentiles-3.png)![](vetting_files/figure-markdown_github/sn%20percentiles-4.png)
-
-Even when you get &gt;2k samples, it looks to me like you get *less unusual* observed SADs in the relatively low N/S region, which is also the region I expect to be most even.
-
-![](vetting_files/figure-markdown_github/avg%20n%20percentile-1.png)![](vetting_files/figure-markdown_github/avg%20n%20percentile-2.png)
-
-You really don't get non-extreme percentiles in the high n/s region.
-
-These scatterplots are good for seeing where the variation is but not the density; there's a *lot* of points on top of each other down at 0/up at 100.
+There's some fuzz, most pronouncedly for BBS and FIA. Those are also the ones with 1) the most points and 2) the most fuzz/uniform-distributed percentile values.
 
 MACD
 ====
