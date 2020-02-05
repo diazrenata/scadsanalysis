@@ -79,3 +79,40 @@ By treatment - overall
     ## Warning: Removed 4 rows containing missing values (geom_point).
 
 ![](vetting_files/figure-markdown_github/macd%20ctrlcomp-2.png)
+
+Portal plant manips
+===================
+
+Nsamples, singletons
+
+![](vetting_files/figure-markdown_github/pp%20overall-1.png)![](vetting_files/figure-markdown_github/pp%20overall-2.png)![](vetting_files/figure-markdown_github/pp%20overall-3.png)
+
+    ## Warning: Removed 17 rows containing missing values (geom_point).
+
+![](vetting_files/figure-markdown_github/pp%20overall-4.png)
+
+    ## Warning: Removed 17 rows containing missing values (geom_point).
+
+![](vetting_files/figure-markdown_github/pp%20overall-5.png)
+
+By treatment, season
+
+![](vetting_files/figure-markdown_github/portal%20trtmt-1.png)![](vetting_files/figure-markdown_github/portal%20trtmt-2.png)![](vetting_files/figure-markdown_github/portal%20trtmt-3.png)![](vetting_files/figure-markdown_github/portal%20trtmt-4.png)
+
+By year
+
+![](vetting_files/figure-markdown_github/plants%20year-1.png)![](vetting_files/figure-markdown_github/plants%20year-2.png)
+
+Trying median
+
+    ## Warning: Removed 3 rows containing missing values (geom_point).
+
+    ## Warning: Removed 1 rows containing missing values (geom_point).
+
+![](vetting_files/figure-markdown_github/pp%20median-1.png)
+
+    ## Warning: Removed 2 rows containing missing values (geom_point).
+
+    ## Warning: Removed 1 rows containing missing values (geom_point).
+
+![](vetting_files/figure-markdown_github/pp%20median-2.png)
