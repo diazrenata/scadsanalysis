@@ -1,0 +1,150 @@
+2020-01-20 14:26:17.194504 | Master: tcp://c23a-s23:7746
+2020-01-20 14:26:17.214849 | WORKER_UP to: tcp://c23a-s23:7746
+2020-01-20 14:26:19.918024 | > DO_SETUP (2.603s wait)
+2020-01-20 14:26:19.918513 | token from msg: set_common_data_token
+2020-01-20 14:27:32.674914 | > DO_CALL (23.101s wait)
+.* Option 'clustermq.scheduler' not set, defaulting to ‘SLURM’
+--- see: https://mschubert.github.io/clustermq/articles/userguide.html#configuration
+2020-01-20 14:28:00.191876 | eval'd: drake::cmq_buildtargetmetadepsspecht_is_subtargetconfig
+2020-01-20 14:28:21.855721 | > DO_CALL (5.281s wait)
+.2020-01-20 14:28:30.597915 | eval'd: drake::cmq_buildtargetmetadepsspecht_is_subtargetconfig
+2020-01-20 14:29:09.421008 | > DO_CALL (5.249s wait)
+.2020-01-20 14:29:16.290809 | eval'd: drake::cmq_buildtargetmetadepsspecht_is_subtargetconfig
+2020-01-20 14:30:06.573488 | > DO_CALL (5.308s wait)
+.2020-01-20 14:31:06.456537 | eval'd: drake::cmq_buildtargetmetadepsspecht_is_subtargetconfig
+2020-01-20 14:31:32.227136 | > DO_CALL (5.373s wait)
+.2020-01-20 14:31:42.014377 | eval'd: drake::cmq_buildtargetmetadepsspecht_is_subtargetconfig
+2020-01-20 14:32:04.496575 | > DO_CALL (5.281s wait)
+.2020-01-20 14:32:10.565766 | eval'd: drake::cmq_buildtargetmetadepsspecht_is_subtargetconfig
+2020-01-20 14:33:04.103753 | > DO_CALL (5.225s wait)
+.2020-01-20 14:33:05.988562 | eval'd: drake::cmq_buildtargetmetadepsspecht_is_subtargetconfig
+2020-01-20 14:34:01.271865 | > DO_CALL (5.255s wait)
+.2020-01-20 14:34:12.263067 | eval'd: drake::cmq_buildtargetmetadepsspecht_is_subtargetconfig
+2020-01-20 14:34:57.242247 | > DO_CALL (7.189s wait)
+.2020-01-20 14:35:03.862784 | eval'd: drake::cmq_buildtargetmetadepsspecht_is_subtargetconfig
+2020-01-20 14:35:56.759136 | > DO_CALL (5.549s wait)
+.2020-01-20 14:36:12.750555 | eval'd: drake::cmq_buildtargetmetadepsspecht_is_subtargetconfig
+2020-01-20 14:36:50.664418 | > DO_CALL (5.324s wait)
+.2020-01-20 14:36:55.488958 | eval'd: drake::cmq_buildtargetmetadepsspecht_is_subtargetconfig
+2020-01-20 14:37:52.201997 | > DO_CALL (5.354s wait)
+.2020-01-20 14:38:30.834320 | eval'd: drake::cmq_buildtargetmetadepsspecht_is_subtargetconfig
+2020-01-20 14:38:56.844646 | > DO_CALL (5.903s wait)
+.2020-01-20 14:39:03.687270 | eval'd: drake::cmq_buildtargetmetadepsspecht_is_subtargetconfig
+2020-01-20 14:39:58.076707 | > DO_CALL (5.390s wait)
+.2020-01-20 14:40:06.062873 | eval'd: drake::cmq_buildtargetmetadepsspecht_is_subtargetconfig
+2020-01-20 14:40:55.852209 | > DO_CALL (5.262s wait)
+.2020-01-20 14:41:08.369892 | eval'd: drake::cmq_buildtargetmetadepsspecht_is_subtargetconfig
+2020-01-20 14:42:02.581840 | > DO_CALL (5.208s wait)
+.2020-01-20 14:42:09.003764 | eval'd: drake::cmq_buildtargetmetadepsspecht_is_subtargetconfig
+2020-01-20 14:43:05.301967 | > DO_CALL (9.065s wait)
+.2020-01-20 14:43:11.014843 | eval'd: drake::cmq_buildtargetmetadepsspecht_is_subtargetconfig
+2020-01-20 14:44:00.562073 | > DO_CALL (8.704s wait)
+.2020-01-20 14:44:04.549113 | eval'd: drake::cmq_buildtargetmetadepsspecht_is_subtargetconfig
+2020-01-20 14:45:02.286461 | > DO_CALL (5.261s wait)
+.2020-01-20 14:46:12.950964 | eval'd: drake::cmq_buildtargetmetadepsspecht_is_subtargetconfig
+2020-01-20 14:46:39.067227 | > DO_CALL (5.263s wait)
+.2020-01-20 14:47:01.710543 | eval'd: drake::cmq_buildtargetmetadepsspecht_is_subtargetconfig
+2020-01-20 14:47:15.327713 | > DO_CALL (5.164s wait)
+.2020-01-20 14:48:31.162399 | eval'd: drake::cmq_buildtargetmetadepsspecht_is_subtargetconfig
+2020-01-20 14:48:31.774163 | > DO_CALL (0.050s wait)
+.2020-01-20 14:48:32.247260 | eval'd: drake::cmq_buildtargetmetadepsspecht_is_subtargetconfig
+2020-01-20 14:48:32.310580 | > DO_CALL (0.001s wait)
+.2020-01-20 14:48:32.316623 | eval'd: drake::cmq_buildtargetmetadepsspecht_is_subtargetconfig
+2020-01-20 14:48:32.354203 | > WORKER_WAIT (0.001s wait)
+2020-01-20 14:48:32.354672 | waiting 1.00s
+2020-01-20 14:48:33.357232 | > WORKER_WAIT (0.001s wait)
+2020-01-20 14:48:33.357699 | waiting 1.00s
+2020-01-20 14:48:34.360166 | > WORKER_WAIT (0.000s wait)
+2020-01-20 14:48:34.360637 | waiting 1.00s
+2020-01-20 14:48:35.363220 | > WORKER_WAIT (0.001s wait)
+2020-01-20 14:48:35.363728 | waiting 1.00s
+2020-01-20 14:48:36.366226 | > WORKER_WAIT (0.001s wait)
+2020-01-20 14:48:36.366695 | waiting 1.00s
+2020-01-20 14:48:37.369198 | > WORKER_WAIT (0.001s wait)
+2020-01-20 14:48:37.369697 | waiting 1.00s
+2020-01-20 14:48:38.372154 | > WORKER_WAIT (0.000s wait)
+2020-01-20 14:48:38.372629 | waiting 1.00s
+2020-01-20 14:48:39.375147 | > WORKER_WAIT (0.000s wait)
+2020-01-20 14:48:39.375636 | waiting 1.00s
+2020-01-20 14:48:40.378125 | > WORKER_WAIT (0.000s wait)
+2020-01-20 14:48:40.378587 | waiting 1.00s
+2020-01-20 14:48:41.381041 | > WORKER_WAIT (0.000s wait)
+2020-01-20 14:48:41.381525 | waiting 1.00s
+2020-01-20 14:48:42.383988 | > WORKER_WAIT (0.000s wait)
+2020-01-20 14:48:42.384473 | waiting 1.00s
+2020-01-20 14:48:43.386995 | > WORKER_WAIT (0.000s wait)
+2020-01-20 14:48:43.387469 | waiting 1.00s
+2020-01-20 14:48:44.389955 | > WORKER_WAIT (0.000s wait)
+2020-01-20 14:48:44.390441 | waiting 1.00s
+2020-01-20 14:48:45.392954 | > WORKER_WAIT (0.000s wait)
+2020-01-20 14:48:45.393446 | waiting 1.00s
+2020-01-20 14:48:46.395944 | > WORKER_WAIT (0.000s wait)
+2020-01-20 14:48:46.396430 | waiting 1.00s
+2020-01-20 14:48:47.398896 | > WORKER_WAIT (0.000s wait)
+2020-01-20 14:48:47.399395 | waiting 1.00s
+2020-01-20 14:48:48.401929 | > WORKER_WAIT (0.000s wait)
+2020-01-20 14:48:48.402411 | waiting 1.00s
+2020-01-20 14:48:49.404902 | > WORKER_WAIT (0.000s wait)
+2020-01-20 14:48:49.405398 | waiting 1.00s
+2020-01-20 14:48:50.407851 | > WORKER_WAIT (0.000s wait)
+2020-01-20 14:48:50.408333 | waiting 1.00s
+2020-01-20 14:48:51.410824 | > WORKER_WAIT (0.000s wait)
+2020-01-20 14:48:51.411319 | waiting 1.00s
+2020-01-20 14:48:52.413787 | > WORKER_WAIT (0.000s wait)
+2020-01-20 14:48:52.414272 | waiting 1.00s
+2020-01-20 14:48:53.416728 | > WORKER_WAIT (0.000s wait)
+2020-01-20 14:48:53.417203 | waiting 1.00s
+2020-01-20 14:48:54.419706 | > WORKER_WAIT (0.000s wait)
+2020-01-20 14:48:54.420181 | waiting 1.00s
+2020-01-20 14:48:55.422609 | > WORKER_WAIT (0.000s wait)
+2020-01-20 14:48:55.423085 | waiting 1.00s
+2020-01-20 14:48:56.425585 | > WORKER_WAIT (0.000s wait)
+2020-01-20 14:48:56.426052 | waiting 1.00s
+2020-01-20 14:48:57.428480 | > WORKER_WAIT (0.000s wait)
+2020-01-20 14:48:57.428958 | waiting 1.00s
+2020-01-20 14:48:58.431465 | > WORKER_WAIT (0.000s wait)
+2020-01-20 14:48:58.431933 | waiting 1.00s
+2020-01-20 14:48:59.434368 | > WORKER_WAIT (0.000s wait)
+2020-01-20 14:48:59.434834 | waiting 1.00s
+2020-01-20 14:49:00.437245 | > WORKER_WAIT (0.000s wait)
+2020-01-20 14:49:00.437717 | waiting 1.00s
+2020-01-20 14:49:01.440186 | > WORKER_WAIT (0.001s wait)
+2020-01-20 14:49:01.440651 | waiting 1.00s
+2020-01-20 14:49:02.443102 | > WORKER_WAIT (0.000s wait)
+2020-01-20 14:49:02.443565 | waiting 1.00s
+2020-01-20 14:49:03.446033 | > WORKER_WAIT (0.000s wait)
+2020-01-20 14:49:03.446512 | waiting 1.00s
+2020-01-20 14:49:04.448975 | > WORKER_WAIT (0.000s wait)
+2020-01-20 14:49:04.449454 | waiting 1.00s
+2020-01-20 14:49:05.451940 | > WORKER_WAIT (0.000s wait)
+2020-01-20 14:49:05.452418 | waiting 1.00s
+2020-01-20 14:49:06.454871 | > WORKER_WAIT (0.000s wait)
+2020-01-20 14:49:06.455347 | waiting 1.00s
+2020-01-20 14:49:07.457803 | > WORKER_WAIT (0.000s wait)
+2020-01-20 14:49:07.458288 | waiting 1.00s
+2020-01-20 14:49:08.460769 | > WORKER_WAIT (0.000s wait)
+2020-01-20 14:49:08.461247 | waiting 1.00s
+2020-01-20 14:49:09.463687 | > WORKER_WAIT (0.000s wait)
+2020-01-20 14:49:09.464161 | waiting 1.00s
+2020-01-20 14:49:10.466608 | > WORKER_WAIT (0.000s wait)
+2020-01-20 14:49:10.467080 | waiting 1.00s
+2020-01-20 14:49:11.469525 | > WORKER_WAIT (0.000s wait)
+2020-01-20 14:49:11.469979 | waiting 1.00s
+2020-01-20 14:49:12.472459 | > WORKER_WAIT (0.000s wait)
+2020-01-20 14:49:12.472937 | waiting 1.00s
+2020-01-20 14:49:13.475418 | > WORKER_WAIT (0.000s wait)
+2020-01-20 14:49:13.475918 | waiting 1.00s
+2020-01-20 14:49:16.239729 | > WORKER_WAIT (0.000s wait)
+2020-01-20 14:49:16.240667 | waiting 1.00s
+2020-01-20 14:49:17.243788 | > WORKER_WAIT (0.000s wait)
+2020-01-20 14:49:17.244240 | waiting 1.00s
+2020-01-20 14:49:18.467604 | > WORKER_WAIT (0.000s wait)
+2020-01-20 14:49:18.468077 | waiting 1.00s
+2020-01-20 14:49:19.474981 | > WORKER_WAIT (0.000s wait)
+2020-01-20 14:49:19.475406 | waiting 1.00s
+2020-01-20 14:49:21.475793 | > WORKER_WAIT (0.000s wait)
+2020-01-20 14:49:21.476244 | waiting 1.00s
+2020-01-20 14:49:48.041292 | > WORKER_STOP (0.000s wait)
+2020-01-20 14:49:48.045412 | shutting down worker
+2020-01-20 14:49:50.192042 | 
+Total: 23 in 537.38s [user], 30.66s [system], 1410.83s [elapsed]

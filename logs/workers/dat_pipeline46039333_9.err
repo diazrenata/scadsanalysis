@@ -1,0 +1,14 @@
+2020-01-20 16:56:53.146646 | Master: tcp://c30a-s4:7746
+2020-01-20 16:56:53.165209 | WORKER_UP to: tcp://c30a-s4:7746
+2020-01-20 16:56:55.537212 | > DO_SETUP (2.357s wait)
+2020-01-20 16:56:55.537871 | token from msg: set_common_data_token
+2020-01-20 16:56:55.565033 | > DO_CALL (0.000s wait)
+.* Option 'clustermq.scheduler' not set, defaulting to ‘SLURM’
+--- see: https://mschubert.github.io/clustermq/articles/userguide.html#configuration
+2020-01-20 16:56:55.811999 | eval'd: drake::cmq_buildtargetmetadepsspecht_is_subtargetconfig
+2020-01-20 16:56:55.867610 | > WORKER_WAIT (0.000s wait)
+2020-01-20 16:56:55.868044 | waiting 1.00s
+2020-01-20 16:57:18.581592 | > WORKER_STOP (0.000s wait)
+2020-01-20 16:57:18.582563 | shutting down worker
+2020-01-20 16:57:18.812161 | 
+Total: 1 in 2.06s [user], 0.19s [system], 25.42s [elapsed]

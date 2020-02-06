@@ -1,0 +1,30 @@
+2020-01-21 10:07:01.051432 | Master: tcp://c27a-s1:7632
+2020-01-21 10:07:01.143547 | WORKER_UP to: tcp://c27a-s1:7632
+2020-01-21 10:07:05.858596 | > DO_SETUP (4.673s wait)
+2020-01-21 10:07:05.859040 | token from msg: set_common_data_token
+2020-01-21 10:07:07.691222 | > DO_CALL (0.001s wait)
+.* Option 'clustermq.scheduler' not set, defaulting to ‘SLURM’
+--- see: https://mschubert.github.io/clustermq/articles/userguide.html#configuration
+2020-01-21 10:07:07.863816 | eval'd: drake::cmq_buildtargetmetadepsspecht_is_subtargetconfig
+2020-01-21 10:07:09.499932 | > DO_CALL (0.001s wait)
+.2020-01-21 10:07:09.686518 | eval'd: drake::cmq_buildtargetmetadepsspecht_is_subtargetconfig
+2020-01-21 10:07:10.392157 | > DO_CALL (0.001s wait)
+.2020-01-21 10:07:10.397552 | eval'd: drake::cmq_buildtargetmetadepsspecht_is_subtargetconfig
+2020-01-21 10:07:11.769613 | > DO_CALL (0.000s wait)
+.2020-01-21 10:07:11.774752 | eval'd: drake::cmq_buildtargetmetadepsspecht_is_subtargetconfig
+2020-01-21 10:07:15.810157 | > DO_CALL (0.001s wait)
+.2020-01-21 10:07:15.815168 | eval'd: drake::cmq_buildtargetmetadepsspecht_is_subtargetconfig
+2020-01-21 10:07:19.523439 | > DO_CALL (0.001s wait)
+.2020-01-21 10:07:19.529397 | eval'd: drake::cmq_buildtargetmetadepsspecht_is_subtargetconfig
+2020-01-21 10:07:20.358143 | > DO_CALL (0.001s wait)
+.2020-01-21 10:07:20.363676 | eval'd: drake::cmq_buildtargetmetadepsspecht_is_subtargetconfig
+2020-01-21 10:07:21.146090 | > DO_CALL (0.001s wait)
+.2020-01-21 10:07:21.148814 | eval'd: drake::cmq_buildtargetmetadepsspecht_is_subtargetconfig
+2020-01-21 10:07:21.217085 | > DO_CALL (0.000s wait)
+2020-01-21 10:07:21.218822 | eval'd: drake::cmq_buildtargetmetadepsspecht_is_subtargetconfig
+2020-01-21 10:07:21.260034 | > WORKER_WAIT (0.000s wait)
+2020-01-21 10:07:21.260317 | waiting 0.75s
+2020-01-21 10:07:42.307661 | > WORKER_STOP (0.000s wait)
+2020-01-21 10:07:42.308612 | shutting down worker
+2020-01-21 10:07:42.500714 | 
+Total: 9 in 2.06s [user], 0.17s [system], 41.16s [elapsed]

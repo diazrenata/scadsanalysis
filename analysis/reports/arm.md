@@ -54,3 +54,5 @@ FS in the arm
 Let's look at what the actual feasible sets look like up the arm vs. elsewhere.
 
 ![](arm_files/figure-markdown_github/fs%20in%20the%20arm-1.png)![](arm_files/figure-markdown_github/fs%20in%20the%20arm-2.png)
+
+    ## [1] 2500

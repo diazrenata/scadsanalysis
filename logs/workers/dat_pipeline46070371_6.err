@@ -1,0 +1,26 @@
+2020-01-21 10:07:00.979041 | Master: tcp://c27a-s1:7632
+2020-01-21 10:07:01.174937 | WORKER_UP to: tcp://c27a-s1:7632
+2020-01-21 10:07:05.858209 | > DO_SETUP (4.671s wait)
+2020-01-21 10:07:05.858647 | token from msg: set_common_data_token
+2020-01-21 10:07:07.140793 | > DO_CALL (0.001s wait)
+.* Option 'clustermq.scheduler' not set, defaulting to ‘SLURM’
+--- see: https://mschubert.github.io/clustermq/articles/userguide.html#configuration
+2020-01-21 10:07:07.332484 | eval'd: drake::cmq_buildtargetmetadepsspecht_is_subtargetconfig
+2020-01-21 10:07:09.253965 | > DO_CALL (0.000s wait)
+.2020-01-21 10:07:09.439265 | eval'd: drake::cmq_buildtargetmetadepsspecht_is_subtargetconfig
+2020-01-21 10:07:10.114209 | > DO_CALL (0.001s wait)
+.2020-01-21 10:07:10.119242 | eval'd: drake::cmq_buildtargetmetadepsspecht_is_subtargetconfig
+2020-01-21 10:07:11.027136 | > DO_CALL (0.000s wait)
+.2020-01-21 10:07:11.030878 | eval'd: drake::cmq_buildtargetmetadepsspecht_is_subtargetconfig
+2020-01-21 10:07:14.701927 | > DO_CALL (0.001s wait)
+.2020-01-21 10:07:14.707008 | eval'd: drake::cmq_buildtargetmetadepsspecht_is_subtargetconfig
+2020-01-21 10:07:18.996116 | > DO_CALL (0.001s wait)
+.2020-01-21 10:07:19.001180 | eval'd: drake::cmq_buildtargetmetadepsspecht_is_subtargetconfig
+2020-01-21 10:07:20.141393 | > DO_CALL (0.001s wait)
+.2020-01-21 10:07:20.146652 | eval'd: drake::cmq_buildtargetmetadepsspecht_is_subtargetconfig
+2020-01-21 10:07:20.700263 | > WORKER_WAIT (0.000s wait)
+2020-01-21 10:07:20.700678 | waiting 0.75s
+2020-01-21 10:07:42.307667 | > WORKER_STOP (0.001s wait)
+2020-01-21 10:07:42.308579 | shutting down worker
+2020-01-21 10:07:42.497283 | 
+Total: 7 in 2.01s [user], 0.18s [system], 41.13s [elapsed]
