@@ -13,38 +13,34 @@ For low values of S and N, we expect to get considerably fewer than 2500 unique 
 
 It's not clear a priori what actual values of S and N will push us into small-community problems. Again, beyond the really small communities, it really depends on the ratio. Early on I just filtered out anything that gave fewer than 2000 unique draws. This has the advantage that we only end up comparing %ile values with reasonably comparable precision, but it might artificially exclude an important region on S\*N space.
 
-![](vetting_files/figure-markdown_github/draws%20v%20sn%20plots-1.png)![](vetting_files/figure-markdown_github/draws%20v%20sn%20plots-2.png)
+![](vetting_files/figure-markdown_github/draws%20v%20sn%20plots-1.png)![](vetting_files/figure-markdown_github/draws%20v%20sn%20plots-2.png)![](vetting_files/figure-markdown_github/draws%20v%20sn%20plots-3.png)![](vetting_files/figure-markdown_github/draws%20v%20sn%20plots-4.png)![](vetting_files/figure-markdown_github/draws%20v%20sn%20plots-5.png)![](vetting_files/figure-markdown_github/draws%20v%20sn%20plots-6.png)
 
-In these plots, the grey region is nsamples &gt;= 2000. It looks like removing communities with nsamples &lt; 2000 is basically filtering out N &lt; about 100-150. For more nuance we could dip down into lower n for intermediate S (S between 5 and 50), and still be getting pretty good sampling?
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 
-Leaving it be for now.
+![](vetting_files/figure-markdown_github/draws%20v%20sn%20plots-7.png)
 
-Percentile value vs. range of variation of FS
----------------------------------------------
+In the first plot, the grey region is nsamples &gt;= 2000. In the histogram, the light grey is all the samples and the bold is samples where nsamples &lt;= 2000.
 
-This is really hard to get traction on. S and N affect everything.
+Looking at log(n0/s0) vs. nsamples,
 
-![](vetting_files/figure-markdown_github/Simpson%20rov-1.png)![](vetting_files/figure-markdown_github/Simpson%20rov-2.png)![](vetting_files/figure-markdown_github/Simpson%20rov-3.png)![](vetting_files/figure-markdown_github/Simpson%20rov-4.png)![](vetting_files/figure-markdown_github/Simpson%20rov-5.png)![](vetting_files/figure-markdown_github/Simpson%20rov-6.png)![](vetting_files/figure-markdown_github/Simpson%20rov-7.png)![](vetting_files/figure-markdown_github/Simpson%20rov-8.png)
+-   the low-sampled points (bold in histogram) are for the most part down where n0/s0 is low.
+-   if S or N is very low, even having a high ratio doesn't help.
+-   if S is very high (meaning N can also be fairly high, without having a very high ratio), even if the ratio is low, you might get good sampling.
 
-So for Simpson's, the mean, sd, and range of values within the feasible set all clearly vary with S and N. There seems to be an edge situation with the percentiles. The really high values are all out along the arm and, to a lesser extent, where N/S is relatively small. This is *not* a region of pronounced variation in the FS characteristics. Also, there is variation that clearly does not map on to the gradients in the FS characteristics.
-
-![](vetting_files/figure-markdown_github/skew%20rov-1.png)![](vetting_files/figure-markdown_github/skew%20rov-2.png)![](vetting_files/figure-markdown_github/skew%20rov-3.png)![](vetting_files/figure-markdown_github/skew%20rov-4.png)![](vetting_files/figure-markdown_github/skew%20rov-5.png)![](vetting_files/figure-markdown_github/skew%20rov-6.png)![](vetting_files/figure-markdown_github/skew%20rov-7.png)![](vetting_files/figure-markdown_github/skew%20rov-8.png)
-
-There are similar, if less strong, gradients in skewness over the range of S and N; it's particularly low up the low N/S arm. The percentile values are *not* as different in that arm than the rest of the space (unlike with Simpson's). The variation in skewness percentile doesn't appear to track the gradients in the characteristics of the feasible set. Maybe it does a little? But no argument that there's a lot of variation over and above.
-
-I feel like it might be *good* to find some way to test these statements quantitatively, but it's very tricky. Absolutely everything depends on S and N and moves in weird nonlinear ways.
-
-![](vetting_files/figure-markdown_github/avg%20n%20percentile-1.png)![](vetting_files/figure-markdown_github/avg%20n%20percentile-2.png)
-
-You really don't get non-extreme percentiles in the high n/s region.
-
-These scatterplots are good for seeing where the variation is but not the density; there's a *lot* of points on top of each other down at 0/up at 100. \#\# Where the datasets fall
+Where the datasets fall
+-----------------------
 
 ![](vetting_files/figure-markdown_github/dataset%20space-1.png)
 
     ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 
 ![](vetting_files/figure-markdown_github/dataset%20space-2.png)
+
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+![](vetting_files/figure-markdown_github/dataset%20space-3.png)
 
 The datasets overlap but do occupy broadly different regions of S\*N space. The arm - which is the weirdest region of the percentile values - is, unfortunately, 100% one dataset (Gentry).
 
@@ -53,6 +49,21 @@ For the vast majority of S\*N space here, I don't think we can really use datase
 We *could* narrow in on the region of maximum overlap/minimum variation and make comparison based on the sites only within that.
 
 FIA, dramatically more than any other dataset, struggles to get even 2000 samples.
+
+Percentile value vs. range of variation of FS
+---------------------------------------------
+
+![](vetting_files/figure-markdown_github/Simpson%20rov-1.png)![](vetting_files/figure-markdown_github/Simpson%20rov-2.png)![](vetting_files/figure-markdown_github/Simpson%20rov-3.png)![](vetting_files/figure-markdown_github/Simpson%20rov-4.png)![](vetting_files/figure-markdown_github/Simpson%20rov-5.png)![](vetting_files/figure-markdown_github/Simpson%20rov-6.png)![](vetting_files/figure-markdown_github/Simpson%20rov-7.png)![](vetting_files/figure-markdown_github/Simpson%20rov-8.png)![](vetting_files/figure-markdown_github/Simpson%20rov-9.png)
+
+So for Simpson's, the mean, sd, and range of values within the feasible set all clearly vary with S and N. There seems to be an edge situation with the percentiles. The really high values are all out along the arm and, to a lesser extent, where N/S is relatively small. This is *not* a region of pronounced variation in the FS characteristics. Also, there is variation that clearly does not map on to the gradients in the FS characteristics.
+
+![](vetting_files/figure-markdown_github/skew%20rov-1.png)![](vetting_files/figure-markdown_github/skew%20rov-2.png)![](vetting_files/figure-markdown_github/skew%20rov-3.png)![](vetting_files/figure-markdown_github/skew%20rov-4.png)![](vetting_files/figure-markdown_github/skew%20rov-5.png)![](vetting_files/figure-markdown_github/skew%20rov-6.png)![](vetting_files/figure-markdown_github/skew%20rov-7.png)![](vetting_files/figure-markdown_github/skew%20rov-8.png)![](vetting_files/figure-markdown_github/skew%20rov-9.png)
+
+There are similar, if less strong, gradients in skewness over the range of S and N; it's particularly low up the low N/S arm. The percentile values are *not* as different in that arm than the rest of the space (unlike with Simpson's). The variation in skewness percentile doesn't appear to track the gradients in the characteristics of the feasible set. Maybe it does a little? But no argument that there's a lot of variation over and above.
+
+I feel like it might be *good* to find some way to test these statements quantitatively, but it's very tricky. Absolutely everything depends on S and N and moves in weird nonlinear ways.
+
+These scatterplots are good for seeing where the variation is but not the density; there's a *lot* of points on top of each other down at 0/up at 100.
 
 Overall percentile results
 --------------------------
