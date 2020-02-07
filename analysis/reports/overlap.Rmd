@@ -1,0 +1,166 @@
+---
+title: "Comparing within overlapping s0-n0 space"
+output: 
+  github_document
+params:
+  on_hpg: [FALSE]
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(drake)
+library(dplyr)
+library(ggplot2)
+library(scadsanalysis)
+
+if(params$on_hpg) {
+  
+  all_di <- list() 
+  datasets <- c("bbs", "fia_short", "gentry", "mcdb", "misc_abund_short", "portal_plants")
+  
+  #datasets <- c("fia", "gentry", "mcdb", "misc_abund_short", "portal_plants")
+  
+  for(i in 1:length(datasets)) {
+    
+    this_dataset = datasets[i]
+    if(this_dataset == "misc_abund_short") {
+      cache_loc = "miscabund"
+    } else if(this_dataset == "fia_short") {
+      
+      cache_loc = "fia"
+    } else {
+      cache_loc = this_dataset
+    }
+    
+    ## Set up the cache and config
+    db <- DBI::dbConnect(RSQLite::SQLite(), here::here("analysis", "drake", paste0("drake-cache-", cache_loc, ".sqlite")))
+    cache <- storr::storr_dbi("datatable", "keystable", db)
+    
+    all_di[[i]] <- readd(all_di_obs, cache = cache)
+    
+    all_di[[i]] <- filter(all_di[[i]], source == "observed")
+    
+    this_dat <- readd(paste0("dat_s_dat_", this_dataset), cache = cache, character_only = T)
+    sv <- get_statevars(this_dat)
+    all_di[[i]] <- left_join(all_di[[i]], sv, by = c("sim", "site", "source", "singletons", "dat"))
+    
+    
+    DBI::dbDisconnect(db)
+    rm(cache)
+    rm(db)
+  }
+  
+  
+  all_di <- bind_rows(all_di)
+  
+  write.csv(all_di, "all_di.csv", row.names = F)
+} else {
+  all_di <- read.csv(here::here("analysis", "reports", "all_di.csv"), stringsAsFactors = F)
+}
+```
+
+## Where the datasets fall
+
+```{r dataset space}
+ggplot(data = all_di, aes(x = log(s0), y = log(n0), color = dat)) + 
+  geom_point(alpha = .2) +
+  scale_color_viridis_d() +
+  theme_bw() +
+  geom_point(data = filter(all_di, dat == "I don't exist!")) # for a legend with alpha = 1
+
+ggplot(data = filter(all_di, singletons == F), aes(x = log(s0), y = log(n0), color = dat)) + 
+  geom_point(alpha = .5) +
+  scale_color_viridis_d() +
+  theme_bw() +
+  xlim(2.75, 3.25) +
+  ylim(4.5, 6) +
+  geom_point(data = filter(all_di, dat == "I don't exist!")) # for a legend with alpha = 1 
+ggplot(data = filter(all_di, singletons == F), aes(x = log(s0), y = log(n0), color = dat)) + 
+  geom_point(alpha = .5) +
+  scale_color_viridis_d() +
+  theme_bw() +
+  xlim(2.75, 3.25) +
+  ylim(4.5, 6) +
+  facet_wrap(vars(dat)) +
+  geom_point(data = filter(all_di, dat == "I don't exist!")) # for a legend with alpha = 1 
+
+overlap_di <- filter(all_di,
+                     log(s0) > 2.75,
+                     log(s0) < 3.25,
+                     log(n0) > 4.5,
+                     log(n0) < 6)
+summary_overlap <- overlap_di %>%
+  filter(singletons == F) %>%
+  group_by(dat) %>%
+  summarize(count = dplyr::n()) %>%
+  ungroup() %>%
+  mutate(prop = count / sum(count))
+
+summary_overlap
+
+```
+
+The datasets overlap but do occupy broadly different regions of S*N space. The arm - which is the weirdest region of the percentile values - is, unfortunately, 100% one dataset (Gentry).
+
+For the vast majority of S*N space here, I don't think we can really use dataset as a predictor of percentile, because of the way they occupy different parts of what we know to be a very important range of variation.
+
+We *could* narrow in on the region of maximum overlap/minimum variation and make comparison based on the sites only within that. 
+
+I think there's a plausible comparison between bbs and misc_abund in the subset depicted above. You could find other regions of pairwise intersection between the other datasets, but I don't love going down that road (of maximum comparisons).
+
+```{r overlap plots}
+
+overlap_di <- overlap_di %>%
+  filter(!singletons,
+         dat %in% c("bbs", "misc_abund_short"))
+
+
+ggplot(data = overlap_di, aes(x = log(s0), y = log(n0), color = log(n0 / s0))) +
+  geom_point(alpha = .5) +
+  scale_color_viridis_c(option = "plasma", end = .9) +
+  facet_wrap(vars(dat)) +
+  theme_bw()
+
+ggplot(data = overlap_di, aes(x = skew_percentile)) + 
+  geom_histogram(bins = 100) + 
+  theme_bw() +
+  facet_wrap(vars(dat), scales = "free_y")
+
+ggplot(data = overlap_di, aes(x = log(s0), y = log(n0), color = skew_percentile)) +
+  geom_point(alpha = .5) +
+  scale_color_viridis_c(option = "plasma", end = .9) +
+  facet_wrap(vars(dat)) +
+  theme_bw()
+
+
+ggplot(data = overlap_di, aes(x = simpson_percentile)) + 
+  geom_histogram(bins = 100) + 
+  theme_bw() +
+  facet_wrap(vars(dat), scales = "free_y")
+
+ggplot(data = overlap_di, aes(x = log(s0), y = log(n0), color = simpson_percentile)) +
+  geom_point(alpha = .5) +
+  scale_color_viridis_c(option = "plasma", end = .9, direction = -1) +
+  facet_wrap(vars(dat)) +
+  theme_bw()
+
+ggplot(data = overlap_di, aes(x = log(n0/s0))) +
+  geom_histogram() +
+  facet_wrap(vars(dat), scales = "free_y") +
+  theme_bw()
+
+ggplot(data = overlap_di, aes(x = log(n0 / s0), y = skew_percentile, color = dat)) +
+  geom_point(alpha = .5) +
+  scale_color_viridis_d(end = .8) +
+  theme_bw() +
+  geom_smooth(method = "lm", se =F)
+
+
+ggplot(data = overlap_di, aes(x = log(n0 / s0), y = simpson_percentile, color = dat)) +
+  geom_point(alpha = .5) +
+  scale_color_viridis_d(end = .8) +
+  theme_bw() +
+  geom_smooth(method = "lm", se =F)
+```
+
+This is a rough comparison all around, but I am not seeing a pronounced difference in behavior between the datasets.

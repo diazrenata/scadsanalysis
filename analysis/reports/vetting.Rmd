@@ -83,6 +83,18 @@ ggplot(data = all_di, aes(x = log(s0), y = log(n0), color = log(nsamples))) +
   theme_bw() +
   scale_color_viridis_c(option = "plasma", end = .9)
 
+ggplot(data=all_di, aes(x = log(s0), y = log(n0), color = log(n0/s0))) +    geom_point(alpha = .5) + 
+  theme_bw() +
+  scale_color_viridis_c(option = "plasma", end = .9)
+
+ggplot(data=all_di, aes(x = log(s0), y = log(n0), color = log(n0/s0))) +    geom_point(alpha = .5) + 
+  geom_point(data = filter(all_di, nsamples >= 2000), color = 'grey', alpha = .1) +
+  theme_bw() +
+  scale_color_viridis_c(option = "plasma", end = .9)
+
+ggplot(data = all_di, aes(x = log(n0/s0), y = nsamples)) +
+  geom_point(alpha = .1) +
+  theme_bw()
 
 ```
 
