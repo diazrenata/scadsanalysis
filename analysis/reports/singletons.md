@@ -32,3 +32,12 @@ Gentry makes things hard to look at and is not the focus here, so I'm removing i
 Compared to original skew
 
 ![](singletons_files/figure-markdown_github/skewFALSE-1.png)![](singletons_files/figure-markdown_github/skewFALSE-2.png)
+
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+![](singletons_files/figure-markdown_github/remove%20high%20skew-1.png)
+
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+![](singletons_files/figure-markdown_github/remove%20high%20skew-2.png) With the possible exception of gentry, removing the highly skewed sites does not recenter the difference on 0. So the reason bbs and fia have so many down below 0 is not "shifting below zero is only possible if skew starts out lowish; bbs and fia are the only ones with a lot of intermediate starting skew values; if we constrain the others to only their intermediate starting skew values, they too will have proportionally lots below zero".

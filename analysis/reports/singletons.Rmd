@@ -235,3 +235,18 @@ ggplot(data = singletons_effect, aes(x = skew_percentile_FALSE, y = skewdiff)) +
 
 
 ```
+
+```{r remove high skew}
+
+ggplot(data = filter(singletons_effect), aes(x = skewdiff)) +
+  geom_histogram() +
+  theme_bw()
+ggplot(data = filter(singletons_effect, skew_percentile_FALSE <= 75), aes(x = skewdiff)) +
+  geom_histogram() +
+    geom_histogram(data = singletons_effect, alpha = .2) +
+  theme_bw() +
+  facet_wrap(vars(dat), scales = "free_y") +
+  geom_vline(xintercept = 0)
+
+```
+With the possible exception of gentry, removing the highly skewed sites does not recenter the difference on 0. So the reason bbs and fia have so many down below 0 is not "shifting below zero is only possible if skew starts out lowish; bbs and fia are the only ones with a lot of intermediate starting skew values; if we constrain the others to only their intermediate starting skew values, they too will have proportionally lots below zero". 
