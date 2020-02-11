@@ -112,34 +112,74 @@ By treatment - overall
 
 ![](vetting_files/figure-markdown_github/macd%20trtmt%20overall-1.png)![](vetting_files/figure-markdown_github/macd%20trtmt%20overall-2.png)
 
-<!-- ** I AM REALLY NOT CONFIDENT IN THE DATA HANDLING HERE, NEED TO REVISIT WHEN SHARPER ** -->
-<!-- ```{r macd ctrlcomp} -->
-<!-- macd_comparisons <- read.csv(here::here("working-data", "macdb_data", "orderedcomparisons.csv"), header = F, stringsAsFactors = F) -->
-<!-- colnames(macd_comparisons) <- c("studyID", "control", "site") -->
-<!-- macd_comparisons <- macd_comparisons %>% -->
-<!--   mutate(site = as.character(site), control = as.character(control)) -->
-<!-- cc_di <- all_di_macd %>% -->
-<!--   filter(singletons == FALSE, treatment == "comparison") %>% -->
-<!--   left_join(macd_comparisons, by = c("studyID", "site")) %>% -->
-<!--   select(dat, site, skew_percentile, simpson_percentile, studyID, control) %>% -->
-<!--   rename(comparison = site) %>% -->
-<!--  left_join(select(all_di_macd, skew_percentile, simpson_percentile, site, singletons, nsamples), by = c("control" = "site")) %>% -->
-<!--   distinct() %>% -->
-<!--   rename(comp_skew = skew_percentile.x, comp_simp = simpson_percentile.x, -->
-<!--          control_skew = skew_percentile.y, control_simp = simpson_percentile.y) -->
-<!-- ggplot(data = cc_di, aes(x = comp_skew, y = control_skew)) + -->
-<!--   geom_point(alpha = .5) + -->
-<!-- #  xlim(0, 100) + -->
-<!--  # ylim(0, 100) + -->
-<!--   theme_bw() + -->
-<!--   geom_abline(intercept = 0, slope = 1, color = "green") -->
-<!-- ggplot(data = cc_di, aes(x = comp_simp, y = control_simp)) + -->
-<!--   geom_point(alpha = .5) + -->
-<!--  xlim(0, 100) + -->
-<!--  ylim(0, 100) + -->
-<!--   theme_bw() + -->
-<!--   geom_abline(intercept = 0, slope = 1, color = "green") -->
-<!-- ``` -->
+    ## Warning: Removed 4 rows containing missing values (geom_point).
+
+![](vetting_files/figure-markdown_github/macd%20ctrlcomp-1.png)
+
+    ## Warning: Removed 4 rows containing missing values (geom_point).
+
+![](vetting_files/figure-markdown_github/macd%20ctrlcomp-2.png)
+
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+    ## Warning: Removed 4 rows containing non-finite values (stat_bin).
+
+![](vetting_files/figure-markdown_github/macd%20ctrlcomp-3.png)
+
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+    ## Warning: Removed 4 rows containing non-finite values (stat_bin).
+
+![](vetting_files/figure-markdown_github/macd%20ctrlcomp-4.png)
+
+    ## Warning: Removed 4 rows containing missing values (geom_point).
+
+![](vetting_files/figure-markdown_github/macd%20ctrlcomp-5.png)
+
+    ## Warning: Removed 4 rows containing missing values (geom_point).
+
+![](vetting_files/figure-markdown_github/macd%20ctrlcomp-6.png)
+
+    ## 
+    ##  Paired t-test
+    ## 
+    ## data:  cc_di$skew_percentile and cc_di$ctrl_skew_percentile
+    ## t = 1.5924, df = 96, p-value = 0.1146
+    ## alternative hypothesis: true difference in means is not equal to 0
+    ## 95 percent confidence interval:
+    ##  -1.223516 11.149568
+    ## sample estimates:
+    ## mean of the differences 
+    ##                4.963026
+
+    ## 
+    ##  Paired t-test
+    ## 
+    ## data:  cc_di$simpson_percentile and cc_di$ctrl_simpson_percentile
+    ## t = -0.61475, df = 96, p-value = 0.5402
+    ## alternative hypothesis: true difference in means is not equal to 0
+    ## 95 percent confidence interval:
+    ##  -6.435332  3.391834
+    ## sample estimates:
+    ## mean of the differences 
+    ##               -1.521749
+
+    ## 
+    ##  Wilcoxon signed rank test with continuity correction
+    ## 
+    ## data:  cc_di$skew_percentile and cc_di$ctrl_skew_percentile
+    ## V = 2418, p-value = 0.199
+    ## alternative hypothesis: true location shift is not equal to 0
+
+    ## 
+    ##  Wilcoxon signed rank test with continuity correction
+    ## 
+    ## data:  cc_di$simpson_percentile and cc_di$ctrl_simpson_percentile
+    ## V = 1803, p-value = 0.773
+    ## alternative hypothesis: true location shift is not equal to 0
+
+-   change is going to be bounded at 100 and 0: you can't go up or down from there. (Another argument for increasing the number of samples?)
+
 Portal plant manips
 ===================
 

@@ -74,18 +74,18 @@ It's not clear a priori what actual values of S and N will push us into small-co
 
 ggplot(data = all_di, aes(x = log(s0), y = log(n0), color = log(nsamples))) +
   geom_point(data = filter(all_di, nsamples >= 2000), color = "grey", alpha = .25) +
-    geom_point(data = filter(all_di, nsamples <2000), alpha = .1) + 
+  geom_point(data = filter(all_di, nsamples <2000), alpha = .1) + 
   theme_bw() +
   scale_color_viridis_c(option = "plasma", end = .9)
 
 ggplot(data=all_di, aes(x = log(s0), y = log(n0), color = log(n0/s0))) +    geom_point(alpha = .5) + 
   theme_bw() +
   scale_color_viridis_c(option = "plasma", end = .9)
- # ggplot(data = all_di, aes(x = log(s0), y = log(n0), color = log(nsamples))) +
- #    geom_point(data = filter(all_di, nsamples <2000), alpha = .1) + 
- #  theme_bw() +
- #  scale_color_viridis_c(option = "plasma", end = .9)
- # 
+# ggplot(data = all_di, aes(x = log(s0), y = log(n0), color = log(nsamples))) +
+#    geom_point(data = filter(all_di, nsamples <2000), alpha = .1) + 
+#  theme_bw() +
+#  scale_color_viridis_c(option = "plasma", end = .9)
+# 
 
 
 ggplot(data = all_di, aes(x = log(n0/s0), y = nsamples, color = log(s0))) +
@@ -302,7 +302,7 @@ ggplot(data = filter(all_di, nsamples >= 2000, singletons == FALSE), aes(x = ske
 ggplot(data = filter(all_di, nsamples >= 2000, singletons == FALSE), aes(x = simpson_percentile)) +
   geom_histogram(bins = 100, aes(y = stat(count / sum(count)))) +
   theme_bw() +
-    geom_hline(yintercept = .01, linetype = 3)
+  geom_hline(yintercept = .01, linetype = 3)
 
 ```
 
@@ -351,7 +351,7 @@ ggplot(data = singletons_effect, aes(x = skew_percentile_FALSE, y = skew_percent
   geom_abline(intercept = 0, slope = 1, color = "green")
 
 ggplot(data = singletons_effect, aes(x = simpson_percentile_FALSE, y = simpson_percentile_TRUE)) +
-    geom_point(alpha = .2) +
+  geom_point(alpha = .2) +
   theme_bw() +
   geom_abline(intercept = 0, slope = 1, color = "green")
 
@@ -366,16 +366,16 @@ The rarefaction-inflated datasets are strongly // the raw vectors. They have mor
 make_dat_hist <- function(datname, varname, data) {
   
   if(varname == "skew") {
-  
-  dat_hist <- ggplot(data = filter(data, nsamples >= 2000, singletons == FALSE, dat == datname), aes(x = skew_percentile)) 
+    
+    dat_hist <- ggplot(data = filter(data, nsamples >= 2000, singletons == FALSE, dat == datname), aes(x = skew_percentile)) 
   } else if (varname == "simpson") {
-       dat_hist <- ggplot(data = filter(data, nsamples >= 2000, singletons == FALSE, dat == datname), aes(x = simpson_percentile)) 
-    }
+    dat_hist <- ggplot(data = filter(data, nsamples >= 2000, singletons == FALSE, dat == datname), aes(x = simpson_percentile)) 
+  }
   
   dat_hist <- dat_hist +
- geom_histogram(bins = 100, aes(y = stat(count / sum(count)))) +
-  theme_bw() +
-  geom_hline(yintercept = .01, linetype = 3) +
+    geom_histogram(bins = 100, aes(y = stat(count / sum(count)))) +
+    theme_bw() +
+    geom_hline(yintercept = .01, linetype = 3) +
     ggtitle(paste0(datname, ": ", varname))
   
   return(dat_hist)
@@ -468,7 +468,7 @@ ggplot(data = singletons_effect, aes(x = skew_percentile_FALSE, y = skew_percent
   facet_wrap(vars(dat))
 
 ggplot(data = singletons_effect, aes(x = simpson_percentile_FALSE, y = simpson_percentile_TRUE)) +
-    geom_point(alpha = .2) +
+  geom_point(alpha = .2) +
   theme_bw() +
   geom_abline(intercept = 0, slope = 1, color = "green") +
   facet_wrap(vars(dat))
@@ -481,7 +481,7 @@ There's some fuzz, most pronouncedly for BBS and FIA. Those are also the ones wi
 # MACD
 
 ```{r load macd}
-  cache_loc = "macdb"
+cache_loc = "macdb"
 
 ## Set up the cache and config
 db <- DBI::dbConnect(RSQLite::SQLite(), here::here("analysis", "drake", paste0("drake-cache-", cache_loc, ".sqlite")))
@@ -505,14 +505,14 @@ ggplot(data = all_di_macd, aes(x = nsamples)) +
 all_di_macd <- filter(all_di_macd, nsamples >= 2000)
 
 ggplot(data = all_di_macd, aes(x = skew_percentile)) +
-   geom_histogram(bins = 100, aes(y = stat(count / sum(count)))) +
+  geom_histogram(bins = 100, aes(y = stat(count / sum(count)))) +
   theme_bw() +
-    geom_hline(yintercept = .01, linetype = 3)
+  geom_hline(yintercept = .01, linetype = 3)
 
 ggplot(data = all_di_macd, aes(x = simpson_percentile)) +
   geom_histogram(bins = 100, aes(y = stat(count / sum(count)))) +
   theme_bw() +
-    geom_hline(yintercept = .01, linetype = 3)
+  geom_hline(yintercept = .01, linetype = 3)
 ```
 
 By treatment - overall
@@ -521,7 +521,7 @@ By treatment - overall
 
 
 ggplot(data = all_di_macd, aes(x = skew_percentile)) +
-    geom_histogram(bins = 100) +
+  geom_histogram(bins = 100) +
   theme_bw() +
   facet_wrap(vars(dat), scales = "free_y")
 
@@ -532,47 +532,90 @@ ggplot(data = all_di_macd, aes(x = simpson_percentile)) +
 
 ```
 
-<!-- ** I AM REALLY NOT CONFIDENT IN THE DATA HANDLING HERE, NEED TO REVISIT WHEN SHARPER ** -->
 
-<!-- ```{r macd ctrlcomp} -->
+```{r macd ctrlcomp}
 
-<!-- macd_comparisons <- read.csv(here::here("working-data", "macdb_data", "orderedcomparisons.csv"), header = F, stringsAsFactors = F) -->
+macd_comparisons <- read.csv(here::here("working-data", "macdb_data", "orderedcomparisons.csv"), header = F, stringsAsFactors = F)
 
-<!-- colnames(macd_comparisons) <- c("studyID", "control", "site") -->
-<!-- macd_comparisons <- macd_comparisons %>% -->
-<!--   mutate(site = as.character(site), control = as.character(control)) -->
+colnames(macd_comparisons) <- c("studyID", "control", "site")
+macd_comparisons <- macd_comparisons %>%
+  mutate(site = as.character(site), control = as.character(control))
 
-<!-- cc_di <- all_di_macd %>% -->
-<!--   filter(singletons == FALSE, treatment == "comparison") %>% -->
-<!--   left_join(macd_comparisons, by = c("studyID", "site")) %>% -->
-<!--   select(dat, site, skew_percentile, simpson_percentile, studyID, control) %>% -->
-<!--   rename(comparison = site) %>% -->
-<!--  left_join(select(all_di_macd, skew_percentile, simpson_percentile, site, singletons, nsamples), by = c("control" = "site")) %>% -->
-<!--   distinct() %>% -->
-<!--   rename(comp_skew = skew_percentile.x, comp_simp = simpson_percentile.x, -->
-<!--          control_skew = skew_percentile.y, control_simp = simpson_percentile.y) -->
+cc_di <- all_di_macd %>%
+  filter(singletons == FALSE, treatment == "comparison") %>%
+  left_join(macd_comparisons, by = c("studyID", "site")) %>%
+  select(dat, site, skew_percentile, simpson_percentile, studyID, control) %>%
+  rename(comparison = site) %>%
+  mutate(ctrl_skew_percentile = NA,
+         ctrl_simpson_percentile = NA)
 
-<!-- ggplot(data = cc_di, aes(x = comp_skew, y = control_skew)) + -->
-<!--   geom_point(alpha = .5) + -->
-<!-- #  xlim(0, 100) + -->
-<!--  # ylim(0, 100) + -->
-<!--   theme_bw() + -->
-<!--   geom_abline(intercept = 0, slope = 1, color = "green") -->
+for(i in 1:nrow(cc_di)) {
+  
+  control_row <- filter(all_di_macd, site == cc_di$control[i], singletons == F) %>%
+    unique()
+  if(nrow(control_row) >0 ) {
+    cc_di$ctrl_simpson_percentile[i] <- control_row$simpson_percentile
+    cc_di$ctrl_skew_percentile[i] <- control_row$skew_percentile
+  }
+}
+
+cc_di <- cc_di %>%
+  mutate(simpson_change = simpson_percentile - ctrl_simpson_percentile,
+         skew_change = skew_percentile - ctrl_skew_percentile)
+
+ggplot(data = cc_di, aes(x = skew_percentile, y = ctrl_skew_percentile)) +
+  geom_point(alpha = .5) +
+  #  xlim(0, 100) +
+  # ylim(0, 100) +
+  theme_bw() +
+  geom_abline(intercept = 0, slope = 1, color = "green")
+
+ggplot(data = cc_di, aes(x = simpson_percentile, y = ctrl_skew_percentile)) +
+  geom_point(alpha = .5) +
+  xlim(0, 100) +
+  ylim(0, 100) +
+  theme_bw() +
+  geom_abline(intercept = 0, slope = 1, color = "green")
 
 
-<!-- ggplot(data = cc_di, aes(x = comp_simp, y = control_simp)) + -->
-<!--   geom_point(alpha = .5) + -->
-<!--  xlim(0, 100) + -->
-<!--  ylim(0, 100) + -->
-<!--   theme_bw() + -->
-<!--   geom_abline(intercept = 0, slope = 1, color = "green") -->
+ggplot(data = cc_di, aes(x = simpson_change)) +
+  geom_histogram() +
+  theme_bw()
 
-<!-- ``` -->
+ggplot(data = cc_di, aes(x = skew_change)) +
+  geom_histogram() +
+  theme_bw()
+
+ggplot(data = cc_di, aes(x = ctrl_simpson_percentile, y = simpson_change)) +
+  geom_point(alpha = .3) +
+  geom_hline(yintercept = 0) +
+  theme_bw()
+
+
+ggplot(data = cc_di, aes(x = ctrl_skew_percentile, y = skew_change)) +
+  geom_point(alpha = .3) +
+  geom_hline(yintercept = 0) +
+  theme_bw()
+
+
+print(t.test(cc_di$skew_percentile, cc_di$ctrl_skew_percentile, paired = T)
+)
+print(t.test(cc_di$simpson_percentile, cc_di$ctrl_simpson_percentile, paired = T)
+)
+
+print(wilcox.test(cc_di$skew_percentile, cc_di$ctrl_skew_percentile, paired = T))
+print(wilcox.test(cc_di$simpson_percentile, cc_di$ctrl_simpson_percentile, paired = T))
+
+```
+
+Change is going to be bounded at 100 and 0: you can't go up or down from there. (Another argument for increasing the number of samples?)
+
+
 
 # Portal plant manips
 
 ```{r load pp}
-  cache_loc = "portal_plants_manip"
+cache_loc = "portal_plants_manip"
 
 ## Set up the cache and config
 db <- DBI::dbConnect(RSQLite::SQLite(), here::here("analysis", "drake", paste0("drake-cache-", cache_loc, ".sqlite")))
@@ -598,12 +641,12 @@ all_di_p <- filter(all_di_p, nsamples >= 2000)
 ggplot(data = all_di_p, aes(x = skew_percentile)) +
   geom_histogram(bins = 100, aes(y = stat(count / sum(count)))) +
   theme_bw() +
-    geom_hline(yintercept = .01, linetype = 3)
+  geom_hline(yintercept = .01, linetype = 3)
 
 ggplot(data = all_di_p, aes(x = simpson_percentile)) +
-   geom_histogram(bins = 100, aes(y = stat(count / sum(count)))) +
+  geom_histogram(bins = 100, aes(y = stat(count / sum(count)))) +
   theme_bw() +
-    geom_hline(yintercept = .01, linetype = 3)
+  geom_hline(yintercept = .01, linetype = 3)
 
 pp_singletons_effect <- all_di_p %>%
   select(singletons, skew_percentile, simpson_percentile, year, plot, treatment, season) %>%
@@ -625,7 +668,7 @@ By treatment, season
 
 ```{r portal trtmt}
 ggplot(data = filter(all_di_p, singletons == F), aes(x = skew_percentile)) +
-    geom_histogram(bins = 100) +
+  geom_histogram(bins = 100) +
   theme_bw() +
   facet_wrap(vars(season, treatment), scales = "free_y")
 
@@ -678,8 +721,8 @@ sk_x <- ggplot(data = pp_median, aes(x = skew_percentile_control, y = skew_perce
   theme_bw() +
   ggtitle("Skew Ctrl v Exclosure") +
   geom_abline(intercept = 0, slope = 1, color = "green") +
-   xlim(40, 100) +
-   ylim(40, 100)
+  xlim(40, 100) +
+  ylim(40, 100)
 
 sk_r <- ggplot(data = pp_median, aes(x = skew_percentile_control, y = skew_percentile_removal)) +
   geom_point(alpha = .5) +
@@ -687,8 +730,8 @@ sk_r <- ggplot(data = pp_median, aes(x = skew_percentile_control, y = skew_perce
   theme_bw() +
   ggtitle("Skew Ctrl v Removal") +
   geom_abline(intercept = 0, slope = 1, color = "green") +
-   xlim(40, 100) +
-   ylim(40, 100)
+  xlim(40, 100) +
+  ylim(40, 100)
 
 gridExtra::grid.arrange(grobs = list(sk_x, sk_r), nrow = 2)
 
@@ -699,8 +742,8 @@ sp_x <- ggplot(data = pp_median, aes(x = simpson_percentile_control, y = simpson
   theme_bw() +
   ggtitle("Simpson Ctrl v Exclosure") +
   geom_abline(intercept = 0, slope = 1, color = "green") +
-   xlim(0, 40) +
-   ylim(0, 40)
+  xlim(0, 40) +
+  ylim(0, 40)
 
 sp_r <- ggplot(data = pp_median, aes(x = simpson_percentile_control, y = simpson_percentile_removal)) +
   geom_point(alpha = .5) +
