@@ -312,6 +312,28 @@ Both Simpson's and skewness are disproportiately in the extremes: from about the
 
 It's not ubiquitous! Often things are unremarkable compared to the feasible set. That said, *more often than we'd expect*, real distributions are highly skewed/highly uneven compared to their feasible sets. 
 
+```{r do fs chars predict perc, fig.dim = c(4,4)}
+ggplot(data = filter(all_di, nsamples >= 2000, singletons == FALSE), aes(x = simpson_range, y = simpson_percentile)) +
+  geom_point(alpha = .1) +
+  theme_bw()
+ggplot(data = filter(all_di, nsamples >= 2000, singletons == FALSE), aes(x = simpson_mean, y = simpson_percentile)) +
+  geom_point(alpha = .05) +
+  theme_bw()
+ggplot(data = filter(all_di, nsamples >= 2000, singletons == FALSE), aes(x = simpson_sd, y = simpson_percentile)) +
+  geom_point(alpha = .1) +
+  theme_bw()
+
+ggplot(data = filter(all_di, nsamples >= 2000, singletons == FALSE), aes(x = skew_range, y = skew_percentile)) +
+  geom_point(alpha = .1) +
+  theme_bw()
+ggplot(data = filter(all_di, nsamples >= 2000, singletons == FALSE), aes(x = skew_mean, y = skew_percentile)) +
+  geom_point(alpha = .05) +
+  theme_bw()
+ggplot(data = filter(all_di, nsamples >= 2000, singletons == FALSE), aes(x = skew_sd, y = skew_percentile)) +
+  geom_point(alpha = .1) +
+  theme_bw()
+```
+
 Effect of singletons
 
 ```{r singletons overall}
@@ -373,6 +395,60 @@ gridExtra::grid.arrange(grobs = skew_hists)
 Evennes is consistently more concentrated in the extremes than skewness. 
 
 Gentry has a weird U going on, where it has a lot of weirdly *low*/*high* values. All the others are concentrated as low (evenness) or high (skew). BBS and FIA have the most that are in the intermediate zone.
+
+```{r fs chars by dat, fig.dim = c(3,3)}
+ggplot(data = filter(all_di, nsamples >= 2000, singletons == FALSE), aes(x = dat, y = simpson_range)) +
+  geom_boxplot() +
+  theme_bw()
+ggplot(data = filter(all_di, nsamples >= 2000, singletons == FALSE), aes(x = dat, y = simpson_mean)) +
+  geom_boxplot() +
+  theme_bw()
+ggplot(data = filter(all_di, nsamples >= 2000, singletons == FALSE), aes(x = dat, y = simpson_sd)) +
+  geom_boxplot() +
+  theme_bw()
+ggplot(data = filter(all_di, nsamples >= 2000, singletons == FALSE), aes(x = dat, y = simpson_percentile)) +
+  geom_boxplot() +
+  theme_bw()
+# Removing low n/s
+ggplot(data = filter(all_di, nsamples >= 2000, singletons == FALSE, log(n0/s0) >= 1.5), aes(x = dat, y = simpson_range)) +
+  geom_boxplot() +
+  theme_bw()
+ggplot(data = filter(all_di, nsamples >= 2000, singletons == FALSE, log(n0/s0) >= 1.5), aes(x = dat, y = simpson_mean)) +
+  geom_boxplot() +
+  theme_bw()
+ggplot(data = filter(all_di, nsamples >= 2000, singletons == FALSE, log(n0/s0) >= 1.5), aes(x = dat, y = simpson_sd)) +
+  geom_boxplot() +
+  theme_bw()
+ggplot(data = filter(all_di, nsamples >= 2000, singletons == FALSE, log(n0/s0) >= 1.5), aes(x = dat, y = simpson_percentile)) +
+  geom_boxplot() +
+  theme_bw()
+
+ggplot(data = filter(all_di, nsamples >= 2000, singletons == FALSE), aes(x = dat, y = skew_range)) +
+  geom_boxplot() +
+  theme_bw()
+ggplot(data = filter(all_di, nsamples >= 2000, singletons == FALSE), aes(x = dat, y = skew_mean)) +
+  geom_boxplot() +
+  theme_bw()
+ggplot(data = filter(all_di, nsamples >= 2000, singletons == FALSE), aes(x = dat, y = skew_sd)) +
+  geom_boxplot() +
+  theme_bw()
+ggplot(data = filter(all_di, nsamples >= 2000, singletons == FALSE), aes(x = dat, y = skew_percentile)) +
+  geom_boxplot() +
+  theme_bw()
+# Removing low n/s
+ggplot(data = filter(all_di, nsamples >= 2000, singletons == FALSE, log(n0/s0) >= 1.5), aes(x = dat, y = skew_range)) +
+  geom_boxplot() +
+  theme_bw()
+ggplot(data = filter(all_di, nsamples >= 2000, singletons == FALSE, log(n0/s0) >= 1.5), aes(x = dat, y = skew_mean)) +
+  geom_boxplot() +
+  theme_bw()
+ggplot(data = filter(all_di, nsamples >= 2000, singletons == FALSE, log(n0/s0) >= 1.5), aes(x = dat, y = skew_sd)) +
+  geom_boxplot() +
+  theme_bw()
+ggplot(data = filter(all_di, nsamples >= 2000, singletons == FALSE, log(n0/s0) >= 1.5), aes(x = dat, y = skew_percentile)) +
+  geom_boxplot() +
+  theme_bw()
+```
 
 Effect of singletons
 

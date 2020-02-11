@@ -76,6 +76,8 @@ Both Simpson's and skewness are disproportiately in the extremes: from about the
 
 It's not ubiquitous! Often things are unremarkable compared to the feasible set. That said, *more often than we'd expect*, real distributions are highly skewed/highly uneven compared to their feasible sets.
 
+![](vetting_files/figure-markdown_github/do%20fs%20chars%20predict%20perc-1.png)![](vetting_files/figure-markdown_github/do%20fs%20chars%20predict%20perc-2.png)![](vetting_files/figure-markdown_github/do%20fs%20chars%20predict%20perc-3.png)![](vetting_files/figure-markdown_github/do%20fs%20chars%20predict%20perc-4.png)![](vetting_files/figure-markdown_github/do%20fs%20chars%20predict%20perc-5.png)![](vetting_files/figure-markdown_github/do%20fs%20chars%20predict%20perc-6.png)
+
 Effect of singletons
 
 ![](vetting_files/figure-markdown_github/singletons%20overall-1.png)![](vetting_files/figure-markdown_github/singletons%20overall-2.png)
@@ -90,6 +92,8 @@ Broken out by dataset
 Evennes is consistently more concentrated in the extremes than skewness.
 
 Gentry has a weird U going on, where it has a lot of weirdly *low*/*high* values. All the others are concentrated as low (evenness) or high (skew). BBS and FIA have the most that are in the intermediate zone.
+
+![](vetting_files/figure-markdown_github/fs%20chars%20by%20dat-1.png)![](vetting_files/figure-markdown_github/fs%20chars%20by%20dat-2.png)![](vetting_files/figure-markdown_github/fs%20chars%20by%20dat-3.png)![](vetting_files/figure-markdown_github/fs%20chars%20by%20dat-4.png)![](vetting_files/figure-markdown_github/fs%20chars%20by%20dat-5.png)![](vetting_files/figure-markdown_github/fs%20chars%20by%20dat-6.png)![](vetting_files/figure-markdown_github/fs%20chars%20by%20dat-7.png)![](vetting_files/figure-markdown_github/fs%20chars%20by%20dat-8.png)![](vetting_files/figure-markdown_github/fs%20chars%20by%20dat-9.png)![](vetting_files/figure-markdown_github/fs%20chars%20by%20dat-10.png)![](vetting_files/figure-markdown_github/fs%20chars%20by%20dat-11.png)![](vetting_files/figure-markdown_github/fs%20chars%20by%20dat-12.png)![](vetting_files/figure-markdown_github/fs%20chars%20by%20dat-13.png)![](vetting_files/figure-markdown_github/fs%20chars%20by%20dat-14.png)![](vetting_files/figure-markdown_github/fs%20chars%20by%20dat-15.png)![](vetting_files/figure-markdown_github/fs%20chars%20by%20dat-16.png)
 
 Effect of singletons
 
