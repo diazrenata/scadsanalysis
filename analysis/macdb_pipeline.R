@@ -8,7 +8,7 @@ datasets <- "macdb"
 
 sites_list <- list_sites("macdb") %>%
   dplyr::filter(!(site %in% c(164, 166, 167)))
-ndraws = 10000
+ndraws = 30000
 #sites_list <- sites_list[1:5, ]
 set.seed(1981)
 

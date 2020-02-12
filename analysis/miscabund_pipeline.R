@@ -7,7 +7,7 @@ expose_imports("scadsanalysis")
 datasets <- "misc_abund_short"
 
 sites_list <- list_sites("misc_abund_short")
-ndraws = 2500
+ndraws = 10000
 #sites_list <- sites_list[1:15, ]
 set.seed(1981)
 
