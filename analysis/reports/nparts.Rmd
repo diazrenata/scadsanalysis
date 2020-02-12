@@ -1,0 +1,74 @@
+---
+title: "Nparts"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+library(ggplot2)
+```
+
+```{r fxns}
+
+brute_force_parts <- function(s, n, nsamples = 1000) {
+  bunch_of_fs <- feasiblesads::sample_fs(s, n, nsamples)
+  colnames(bunch_of_fs) <- 1:s
+  
+  bunch_of_fs <- bunch_of_fs %>%
+    as.data.frame %>%
+    distinct() %>%
+    mutate(sim = dplyr::row_number()) %>%
+    tidyr::gather(-sim, key = "species", value = "abund") %>%
+    arrange(sim)
+  return(max(bunch_of_fs$sim)) 
+}
+
+# count_parts <- function(s, n, p_table = NULL) {
+#   
+#   if(is.null(p_table)) {
+#     p_table <- feasiblesads::fill_ps(s, n, F)
+#   }
+#   
+#   k_table <- feasiblesads::fill_ks(s, n)
+#   
+#   
+#   ns = 1:k_table[s, n+1] # this differs from `feasiblesads` because 0 is NOT an option
+#   
+#   n_parts = p_table[s - 1,
+#                     n - (s * ns) + 1]
+#   total_parts = gmp::sum.bigz(gmp::as.bigz(n_parts))
+#   
+#   return(as.integer(total_parts))
+# }
+
+```
+
+```{r small range}
+s = seq(2, 10, by = 2)
+n = seq(3, 53, by = 5)
+
+comms <- expand.grid("s" =s , "n" = n) %>%
+  filter(n > s) %>%
+  mutate(bf_n = NA,
+         cp_n = NA)
+
+for(i in 1:nrow(comms)) {
+  comms$bf_n[i] <- brute_force_parts(comms$s[i], comms$n[i], nsamples = 1000)
+  comms$cp_n[i] <- scadsanalysis::count_elements(comms$s[i], comms$n[i])
+}
+
+ggplot(data = comms, aes(x = bf_n, y = cp_n)) +
+  geom_point() +
+  geom_abline(intercept = 0, slope  = 1) +
+  theme_bw()
+
+```
+So this function looks pretty good until the size of the fs approaches 2x nb samples.
+
+```{r s and n}
+ggplot(data = comms, aes(x = s, y = n, color = cp_n)) +
+  geom_point() +
+  theme_bw()
+
+```

@@ -43,7 +43,10 @@ sample_fs <- function(dataset, nsamples, p_table = NULL) {
                   dat = dataset$dat[1],
                   site = dataset$site[1],
                   singletons = dataset$singletons[1]) %>%
-    dplyr::bind_rows(dataset)
+    dplyr::bind_rows(dataset) %>%
+    dplyr::mutate(s0 = max_s,
+                  n0 = max_n,
+                  nparts = as.character(count_elements(max_s, max_n, p_table)))
 
   return(fs_samples)
 
