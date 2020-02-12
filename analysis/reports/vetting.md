@@ -104,6 +104,19 @@ There's some fuzz, most pronouncedly for BBS and FIA. Those are also the ones wi
 MACD
 ====
 
+    ##  [1] "sim"                "source"             "dat"               
+    ##  [4] "site"               "singletons"         "skew"              
+    ##  [7] "shannon"            "simpson"            "skew_percentile"   
+    ## [10] "shannon_percentile" "simpson_percentile" "skew_range"        
+    ## [13] "simpson_range"      "nsamples"           "skew_sd"           
+    ## [16] "skew_mean"          "simpson_sd"         "simpson_mean"      
+    ## [19] "studyID"            "treatment"
+
+    ## [1] "rank"       "abund"      "site"       "dat"        "singletons"
+    ## [6] "sim"        "source"
+
+![](vetting_files/figure-markdown_github/load%20macd-1.png)![](vetting_files/figure-markdown_github/load%20macd-2.png)
+
 Nsamples
 
 ![](vetting_files/figure-markdown_github/macd%20overall-1.png)![](vetting_files/figure-markdown_github/macd%20overall-2.png)![](vetting_files/figure-markdown_github/macd%20overall-3.png)
@@ -178,7 +191,7 @@ By treatment - overall
     ## V = 1803, p-value = 0.773
     ## alternative hypothesis: true location shift is not equal to 0
 
--   change is going to be bounded at 100 and 0: you can't go up or down from there. (Another argument for increasing the number of samples?)
+Change is going to be bounded at 100 and 0: you can't go up or down from there. (Another argument for increasing the number of samples?)
 
 Portal plant manips
 ===================

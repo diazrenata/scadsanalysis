@@ -488,9 +488,24 @@ db <- DBI::dbConnect(RSQLite::SQLite(), here::here("analysis", "drake", paste0("
 cache <- storr::storr_dbi("datatable", "keystable", db)
 
 all_di_macd <- readd(all_di_manip, cache = cache) 
+macd_dat <- readd(dat_s_dat_macdb, cache = cache)
 
 DBI::dbDisconnect(db)
 rm(cache)
+
+macd_dat <- macd_dat %>%
+  group_by(site, dat, singletons, sim, source) %>%
+  summarize(s0 = max(rank),
+            n0 = sum(abund)) %>%
+  ungroup()
+
+all_di_macd <- left_join(all_di_macd, macd_dat, by = c("site", "dat", "singletons", "sim", "source"))
+
+ggplot(data = all_di, aes(x = log(s0), y = log(n0))) + geom_point(alpha = .1) + geom_point(data = all_di_macd, aes(x = log(s0), y = log(n0)), color = "blue", alpha = .9) + theme_bw()
+
+
+ggplot(data = filter(all_di, nsamples >= 2000), aes(x = log(s0), y = log(n0))) + geom_point(alpha = .1) + geom_point(data = filter(all_di_macd, nsamples >= 2000), aes(x = log(s0), y = log(n0)), color = "blue", alpha = .9) + theme_bw()
+
 ```
 
 Nsamples
