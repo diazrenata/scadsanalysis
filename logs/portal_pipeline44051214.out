@@ -1,45 +1,0 @@
-[1] ".Rprofile loaded"
-<environment: R_GlobalEnv>
-[1] "I know I am on the HiPerGator!"
-  |                                                                              |                                                                      |   0%  |                                                                              |.....                                                                 |   7%
-  ordinary text without R code
-
-  |                                                                              |..........                                                            |  14%
-label: setup (with options) 
-List of 1
- $ include: logi FALSE
-
-  |                                                                              |...............                                                       |  21%
-   inline R code fragments
-
-  |                                                                              |....................                                                  |  29%
-label: statevars
-  |                                                                              |.........................                                             |  36%
-  ordinary text without R code
-
-  |                                                                              |..............................                                        |  43%
-label: sv change
-  |                                                                              |...................................                                   |  50%
-  ordinary text without R code
-
-  |                                                                              |........................................                              |  57%
-label: number of samples
-  |                                                                              |.............................................                         |  64%
-   inline R code fragments
-
-  |                                                                              |..................................................                    |  71%
-label: plot nb samples
-  |                                                                              |.......................................................               |  79%
-  ordinary text without R code
-
-  |                                                                              |............................................................          |  86%
-label: empirical positions
-  |                                                                              |.................................................................     |  93%
-  ordinary text without R code
-
-  |                                                                              |......................................................................| 100%
-label: cleanup
-
-/usr/bin/pandoc +RTS -K512m -RTS dat_report_template.utf8.md --to markdown_github --from markdown+autolink_bare_uris+tex_math_single_backslash --output portal_plants_report.md --standalone --template /home/diaz.renata/R_libs/rmarkdown/rmarkdown/templates/github_document/resources/default.md 
-/usr/bin/pandoc +RTS -K512m -RTS portal_plants_report.md --to html4 --from markdown_github --output portal_plants_report.html --standalone --self-contained --highlight-style pygments --template /home/diaz.renata/R_libs/rmarkdown/rmarkdown/templates/github_document/resources/preview.html --variable 'github-markdown-css:/home/diaz.renata/R_libs/rmarkdown/rmarkdown/templates/github_document/resources/github.css' --email-obfuscation none 
-[1] "Completed OK"

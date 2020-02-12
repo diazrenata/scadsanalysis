@@ -1,19 +1,0 @@
-* Option 'clustermq.scheduler' not set, defaulting to ‘SLURM’
---- see: https://mschubert.github.io/clustermq/articles/userguide.html#configuration
-
-...............................................................................
-...............................................................................
-......................................target all_di_manip
-.target report
-...Target report messages:
-  
-
-processing file: dat_report_template.Rmd
-  output file: dat_report_template.knit.md
-
-  
-Preview created: macdb_report.html
-  
-Output created: macdb_report.md
-Master: [31.3s 62.1% CPU]; Worker: [avg 8.4% CPU, max 365.2 Mb]
-.
