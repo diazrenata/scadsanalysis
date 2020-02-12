@@ -11,6 +11,10 @@
 #' @importFrom gmp sum.bigz as.bigz
 count_elements <- function(s, n, p_table = NULL) {
 
+  if(s == 1) {
+    return("1")
+  }
+
   if(is.null(p_table)) {
     p_table <- feasiblesads::fill_ps(s, n, F)
   } else {
