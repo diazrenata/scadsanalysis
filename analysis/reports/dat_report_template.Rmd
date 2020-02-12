@@ -80,28 +80,28 @@ sv_change_plot
 ## Number of samples achieved
 
 ```{r number of samples}
-
-site_samples <- all_di %>%
-  left_join(select(sv, -source, -sim), by = c("site", "singletons"))
+# 
+# site_samples <- all_di %>%
+#   left_join(select(sv, -source, -sim), by = c("site", "singletons"))
 ```
 
-#### The maximum number of samples achieved is `r max(site_samples$nsamples)`.
+#### The maximum number of samples achieved is `r max(all_di$nsamples)`.
 
 ```{r plot nb samples}
-samples_hist <- ggplot(data = site_samples, aes(x = nsamples)) +
+samples_hist <- ggplot(data = all_di, aes(x = nsamples)) +
   geom_histogram(binwidth = 10) +
   theme_bw() +
   facet_wrap(vars(singletons), nrow = 1) +
   ggtitle("Number of samples achieved")  +
-  xlim(c(-11, max(site_samples$nsamples) + 11))
+  xlim(c(-11, max(all_di$nsamples) + 11))
 
 samples_hist
 
-sv_samples_plot <- ggplot(data = site_samples, aes(x = s0, y = n0, color = nsamples)) +
+sv_samples_plot <- ggplot(data = all_di, aes(x = s0, y = n0, color = nsamples)) +
   geom_point(alpha = .5) +
   theme_bw() +
   facet_wrap(vars(singletons), nrow = 1) +
-  scale_color_viridis_c(option = "magma", end = .75, limits = c(0, max(site_samples$nsamples))) +
+  scale_color_viridis_c(option = "magma", end = .75, limits = c(0, max(all_di$nsamples))) +
   ggtitle("Number of samples achieved by state variables")
 sv_samples_plot
 
