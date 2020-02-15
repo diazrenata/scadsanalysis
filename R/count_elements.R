@@ -18,7 +18,7 @@ count_elements <- function(s, n, p_table = NULL) {
   if(is.null(p_table)) {
     p_table <- feasiblesads::fill_ps(s, n, F)
   } else {
-    p_table <- p_table[1:s, 1:n+1]
+    p_table <- p_table[1:s,0:n+1]
   }
 
   k_table <- feasiblesads::fill_ks(s, n)
