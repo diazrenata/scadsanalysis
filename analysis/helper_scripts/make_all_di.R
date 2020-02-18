@@ -28,9 +28,9 @@ for(i in 1:length(datasets)) {
 
   all_di[[i]] <- filter(all_di[[i]], source == "observed")
 
-  this_dat <- readd(paste0("dat_s_dat_", this_dataset), cache = cache, character_only = T)
-  sv <- get_statevars(this_dat)
-  all_di[[i]] <- left_join(all_di[[i]], sv, by = c("sim", "site", "source", "singletons", "dat"))
+  #this_dat <- readd(paste0("dat_s_dat_", this_dataset), cache = cache, character_only = T)
+ # sv <- get_statevars(this_dat)
+#  all_di[[i]] <- left_join(all_di[[i]], sv, by = c("sim", "site", "source", "singletons", "dat"))
 
 
   DBI::dbDisconnect(db)
