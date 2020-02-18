@@ -7,7 +7,7 @@
 #SBATCH --ntasks=1                 # Number of MPI ranks
 #SBATCH --cpus-per-task=1            # Number of cores per MPI rank
 #SBATCH --mem-per-cpu=20GB
-#SBATCH --time=24:00:00       #Time limit hrs:min:sec
+#SBATCH --time=47:00:00       #Time limit hrs:min:sec
 #SBATCH --output logs/macdb_pipeline%j.out
 #SBATCH --error logs/macdb_pipeline%j.err
 
