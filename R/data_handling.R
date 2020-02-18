@@ -207,35 +207,3 @@ get_statevars <- function(a_dataset) {
                      n0 = sum(abund)) %>%
     dplyr::ungroup()
 }
-
-#' Prepare MACDB for pipeline
-#'
-#' @param storage_path where to get the data
-#' @param save defaults TRUE
-#'
-#' @return nothing
-#' @export
-#'
-#' @importFrom here here
-#' @importFrom dplyr select left_join filter mutate group_by ungroup row_number rename
-prep_macdb <- function(storage_path = here::here("working-data", "macdb_data"), save = TRUE) {
-
-  communities <- read.csv(file.path(storage_path, "community_analysis_data.csv"), stringsAsFactors = F)
-  experiments <- read.csv(file.path(storage_path, "experiments_analysis_data.csv"), stringsAsFactors = F)
-
-  communities <- dplyr::select(communities, -referenceID) %>%
-    dplyr::left_join(experiments, by = "siteID")
-
-  communities <- communities %>%
-    dplyr::filter(raw_abundance == 1) %>%
-    dplyr::select(siteID, abundance) %>%
-    dplyr::group_by(siteID) %>%
-    dplyr::mutate(species = dplyr::row_number()) %>%
-    dplyr::ungroup() %>%
-    dplyr::rename(site = siteID, abund = abundance) %>%
-    dplyr::mutate(year = NA) %>%
-    dplyr::select(site, year, species, abund)
-
-  write.csv(communities, here::here("working-data", "abund_data", "macdb_spab.csv"), row.names = F)
-
-}
