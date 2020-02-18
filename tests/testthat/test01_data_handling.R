@@ -13,9 +13,9 @@ test_that("filter misc abund", {
 })
 
 test_that("load_dataset", {
-  datasets <- c("mcdb", "misc_abund", "bbs", "fia", "gentry", "misc_abund_short", "portal_plants", "fia_short")
+  datasets <- c("mcdb", "misc_abund", "bbs", "fia", "gentry", "misc_abund_short", "portal_plants", "fia_short", "macdb", "portal_plants_manip")
 
-  for(i in 1:8) {
+  for(i in 1:length(datasets)) {
     thisdat <- load_dataset(datasets[i])
     expect_true(is.data.frame(thisdat))
     expect_true(ncol(thisdat) == 7)
@@ -33,8 +33,9 @@ test_that("load_dataset", {
 })
 
 test_that("list_sites", {
-  datasets <- c("mcdb", "misc_abund", "bbs", "fia", "gentry", "misc_abund_short", "portal_plants", "fia_short")
-  for(i in 1:8) {
+  datasets <- c("mcdb", "misc_abund", "bbs", "fia", "gentry", "misc_abund_short", "portal_plants", "fia_short", "macdb", "portal_plants_manip")
+
+  for(i in 1:length(datasets)) {
     sitelist <- list_sites(datasets[i])
     expect_true(is.data.frame(sitelist))
     expect_true(ncol(sitelist) == 2)
