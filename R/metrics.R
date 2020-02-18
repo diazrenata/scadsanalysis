@@ -143,11 +143,19 @@ pull_di <- function(di_df) {
     dplyr::group_by(source) %>%
     dplyr::mutate(skew_range = max(skew, na.rm = T) - min(skew, na.rm = T),
                   simpson_range = max(simpson, na.rm = T) - min(simpson, na.rm = T),
-                  nsamples = length(unique(sim))) %>%
+                  nsamples = length(unique(sim)),
+                  skew_sd = sd(skew, na.rm = T),
+                  skew_mean = mean(skew, na.rm = T),
+                  simpson_sd = sd(simpson, na.rm = T),
+                  simpson_mean = mean(simpson, na.rm = T)) %>%
     dplyr::ungroup() %>%
     dplyr::mutate(skew_range = max(skew_range, na.rm = T),
                   simpson_range = max(simpson_range, na.rm = T),
-                  nsamples = max(nsamples, na.rm = T)) %>%
+                  nsamples = max(nsamples, na.rm = T),
+                  skew_sd = max(skew_sd, na.rm = T),
+                  skew_mean = max(skew_mean, na.rm = T),
+                  simpson_sd = max(simpson_sd, na.rm = T),
+                  simpson_mean = max(simpson_mean, na.rm = T)) %>%
     dplyr::filter(source == "observed")
 
   return(di_df)

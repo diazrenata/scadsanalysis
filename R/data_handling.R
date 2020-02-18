@@ -80,11 +80,12 @@ load_dataset <- function(dataset_name, storage_path = here::here("working-data",
 
       return(dataset)
 
-    } else if (dataset_name == "portal_plants") {
+    } else if (dataset_name %in% c("portal_plants", "macdb", "portal_plants_manip")) {
 
       dataset <- read.csv(dataset_path, stringsAsFactors = F, header = T)
 
-    } else {
+    }
+    else {
       dataset <- read.csv(dataset_path, stringsAsFactors = F, header = F, skip = 2)
 
       colnames(dataset) <- c("site", "year", "species", "abund")
@@ -206,4 +207,3 @@ get_statevars <- function(a_dataset) {
                      n0 = sum(abund)) %>%
     dplyr::ungroup()
 }
-

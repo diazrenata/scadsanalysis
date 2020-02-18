@@ -18,20 +18,20 @@ Some summary statistics:
 ![](cross_dataset_files/figure-markdown_github/summary%20plots-1.png)![](cross_dataset_files/figure-markdown_github/summary%20plots-2.png)
 
     ## # A tibble: 12 x 6
-    ##    dat      singletons mean_nsamples nsites prop_skew_high prop_simpson_low
-    ##    <chr>    <lgl>              <dbl>  <int>          <dbl>            <dbl>
-    ##  1 bbs      FALSE              2500.   2772          0.130            0.261
-    ##  2 bbs      TRUE               2500.   2772          0.141            0.323
-    ##  3 fia_sho… FALSE              2310.   2608          0.112            0.146
-    ##  4 fia_sho… TRUE               2326.   2946          0.127            0.192
-    ##  5 gentry   FALSE              2497.    221          0.195            0.154
-    ##  6 gentry   TRUE               2497.    222          0.194            0.189
-    ##  7 mcdb     FALSE              2456.    324          0.238            0.469
-    ##  8 mcdb     TRUE               2457.    371          0.302            0.606
-    ##  9 misc_ab… FALSE              2487.    448          0.373            0.638
-    ## 10 misc_ab… TRUE               2491.    453          0.430            0.704
-    ## 11 portal_… FALSE              2500.     58          0.569            0.914
-    ## 12 portal_… TRUE               2500.     59          0.644            0.966
+    ##    dat           singletons mean_nsamples nsites prop_skew_high prop_simpson_low
+    ##    <chr>         <lgl>              <dbl>  <int>          <dbl>            <dbl>
+    ##  1 bbs           FALSE              2500.   2772          0.130            0.261
+    ##  2 bbs           TRUE               2500.   2772          0.141            0.323
+    ##  3 fia_short     FALSE              2310.   2608          0.112            0.146
+    ##  4 fia_short     TRUE               2326.   2946          0.127            0.192
+    ##  5 gentry        FALSE              2497.    221          0.195            0.154
+    ##  6 gentry        TRUE               2497.    222          0.194            0.189
+    ##  7 mcdb          FALSE              2456.    324          0.238            0.469
+    ##  8 mcdb          TRUE               2457.    371          0.302            0.606
+    ##  9 misc_abund_s… FALSE              2487.    448          0.373            0.638
+    ## 10 misc_abund_s… TRUE               2491.    453          0.430            0.704
+    ## 11 portal_plants FALSE              2500.     58          0.569            0.914
+    ## 12 portal_plants TRUE               2500.     59          0.644            0.966
 
     ## Warning: Using size for a discrete variable is not advised.
 

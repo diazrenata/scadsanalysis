@@ -7,7 +7,7 @@ expose_imports("scadsanalysis")
 datasets <- "fia_short"
 
 sites_list <- list_sites("fia_short")
-ndraws = 2500
+ndraws = 4000
 #sites_list <- sites_list[1:2000, ]
 set.seed(1978)
 
@@ -65,7 +65,7 @@ if(grepl("ufhpc", nodename)) {
        cache_log_file = here::here("analysis", "drake", "cache_log_fia.txt"),
        verbose = 2,
        parallelism = "clustermq",
-       jobs = 50,
+       jobs = 20,
        caching = "master", memory_strategy = "autoclean") # Important for DBI caches!
 } else {
   library(clustermq)

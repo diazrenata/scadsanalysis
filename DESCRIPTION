@@ -16,10 +16,12 @@ RoxygenNote: 6.1.1
 Imports: 
     drake (>= 7.0.0),
     dplyr,
+    gmp,
     e1071,
     feasiblesads,
     here,
     portalr,
+    purrr,
     rmarkdown,
     tidyr,
     magrittr,

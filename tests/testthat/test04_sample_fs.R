@@ -10,7 +10,7 @@ test_that("sampling fs works", {
 
   fs_samples <- sample_fs_wrapper(dat, site_name = "1001", singletonsyn = F, n_samples = 2, p_table = NULL, seed = 1)
 
-  expect_true(ncol(fs_samples) == 7)
+  expect_true(ncol(fs_samples) == 10)
   expect_true(all(
     mode(fs_samples$site) == "character",
     mode(fs_samples$dat) == "character",
