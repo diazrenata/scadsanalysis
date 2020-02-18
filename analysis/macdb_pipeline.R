@@ -8,7 +8,7 @@ datasets <- "macdb"
 
 sites_list <- list_sites("macdb") %>%
   dplyr::filter(!(site %in% c(164, 166, 167)))
-ndraws = 30000
+ndraws = 4000
 #sites_list <- sites_list[1:5, ]
 set.seed(1981)
 
@@ -45,6 +45,7 @@ all <- dat_plan
 ## Set up the cache and config
 db <- DBI::dbConnect(RSQLite::SQLite(), here::here("analysis", "drake", "drake-cache-macdb.sqlite"))
 cache <- storr::storr_dbi("datatable", "keystable", db)
+cache$del(key = "lock", namespace = "session")
 
 ## View the graph of the plan
 if (interactive())

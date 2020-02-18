@@ -7,7 +7,7 @@ expose_imports("scadsanalysis")
 datasets <- "portal_plants_manip"
 
 sites_list <- list_sites("portal_plants_manip")
-ndraws = 10000
+ndraws = 4000
 #sites_list <- sites_list[1:2, ]
 set.seed(1977)
 
@@ -43,6 +43,7 @@ all <- drake_plan(
 ## Set up the cache and config
 db <- DBI::dbConnect(RSQLite::SQLite(), here::here("analysis", "drake", "drake-cache-portal_plants_manip.sqlite"))
 cache <- storr::storr_dbi("datatable", "keystable", db)
+cache$del(key = "lock", namespace = "session")
 
 ## View the graph of the plan
 if (interactive())

@@ -43,6 +43,7 @@ all <- dat_plan
 ## Set up the cache and config
 db <- DBI::dbConnect(RSQLite::SQLite(), here::here("analysis", "drake", "drake-cache-fia.sqlite"))
 cache <- storr::storr_dbi("datatable", "keystable", db)
+cache$del(key = "lock", namespace = "session")
 
 ## View the graph of the plan
 if (interactive())

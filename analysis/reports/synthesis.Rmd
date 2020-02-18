@@ -1,0 +1,21 @@
+---
+title: "Synthesis report"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(drake)
+library(dplyr)
+library(ggplot2)
+
+all_di <- read.csv(here::here("analysis", "reports", "all_di.csv"), stringsAsFactors = F)
+```
+
+# Datasets in S and N space
+
+# Number of samples
+- How many samples are we achieving
+- What % of the FS is this?
+
+# 
