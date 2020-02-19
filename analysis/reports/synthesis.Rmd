@@ -10,12 +10,82 @@ library(dplyr)
 library(ggplot2)
 
 all_di <- read.csv(here::here("analysis", "reports", "all_di.csv"), stringsAsFactors = F)
+
+all_di <- all_di %>%
+  mutate(log_nparts = log(gmp:::as.double.bigz(nparts)),
+         log_nsamples = log(nsamples))
 ```
 
 # Datasets in S and N space
 
+Here is where our communities fall in S and N space:
+
+```{r datasets in s and n space}
+ggplot(filter(all_di, singletons == F), aes(x = log(s0), y = log(n0), color = dat)) +
+  geom_point(alpha = .2) +
+  theme_bw() +
+  scale_color_viridis_d()
+
+```
+
+Here is how that translates into the size of the feasible set:
+
+```{r size of fs}
+ggplot(filter(all_di, singletons == F), aes(x = log(s0), y = log(n0), color = log_nparts)) +
+  geom_point(alpha = .3) +
+  theme_bw() +
+  scale_color_viridis_c(option = "magma", end = .9)
+
+```
+
+Note that the color scale is log transformed, so the largest communities have e^`r max(all_di$log_nparts)`, or `r exp(max(all_di$log_nparts))`, elements in the feasible set!
+
+Here is how the size of the feasible set maps on to N/S:
+
+```{r nparts vs avgn}
+ggplot(filter(all_di, singletons == F), aes(x = log(n0 / s0), y = log_nparts, color = log(s0))) +
+  theme_bw() +
+  geom_point(alpha = .2) +
+  scale_color_viridis_c()
+
+```
+
 # Number of samples
-- How many samples are we achieving
-- What % of the FS is this?
+
+Here is how many samples we are achieving:
+
+```{r nsamples}
+ggplot(filter(all_di, singletons == F), aes(x = log(s0), y = log(n0), color = log_nsamples)) +
+  geom_point(alpha = .3) +
+  theme_bw() +
+  scale_color_viridis_c(option = "magma", end = .9)
+
+ggplot(filter(all_di, singletons == F, nsamples <  max(nsamples)), aes(x = log(s0), y = log(n0), color = log_nsamples)) +
+  geom_point() +
+  theme_bw() +
+  scale_color_viridis_c(option = "magma", end = .9)
+```
+
+Only in the very smallest communities do we get appreciably fewer than `r max(all_di$nsamples)` samples.
+
+Here is how the number of samples we're getting compares to the size of the feasible set:
+
+```{r nsamples vs nparts}
+ggplot(filter(all_di, singletons == F), aes(x = log(s0), y = log(n0), color = log_nsamples - log_nparts)) +
+  geom_point(alpha = .7) +
+  theme_bw() +
+  scale_color_viridis_c(option = "magma", end = .9, direction = -1) +
+  theme(legend.position = "top")
+
+ggplot(filter(all_di, singletons == F), aes(x = log_nsamples - log_nparts, y = log_nsamples)) +
+  theme_bw() +
+  geom_vline(xintercept = c(log(.95), log(.1))) +
+  geom_point(alpha = .3)
+
+```
+
+The vertical lines are the 10% and 95% marks, from left to right. When we got relatively few samples (`r min(all_di$nsamples)`), we had found `r exp(filter(all_di, nsamples == min(nsamples))$log_nsamples -  filter(all_di, nsamples == min(nsamples))$log_nparts)` of that feasible set. And there's a clear negative relationship between the proportion of the FS that we've found and the number of samples we got, once we start getting about 10% of the feasible set. This makes sense; at that point we have a 1 in 10 chance of drawing one we've already seen. But for almost all cases, we're sampling only a miniscule proportion of the feasible set - median of `r median(exp(all_di$log_nsamples - all_di$log_nparts))`! - and get no duplicates.
+
+The vastness of the FS poses a limit on our capacity to detect how unlikely a value is. We could conservatively round up: scoring in the 100th percentile, when we had 4000 samples, means a maximum of (1 / 4000 + tiny error) chance of getting that score?
 
 # 
