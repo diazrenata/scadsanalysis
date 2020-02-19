@@ -1,0 +1,69 @@
+---
+title: "Digging into %ile and CDF fxns"
+output: 
+  github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(drake)
+library(dplyr)
+library(ggplot2)
+library(scadsanalysis)
+
+this_dataset <- "portal_plants"
+
+if(this_dataset == "misc_abund_short") {
+  cache_loc = "miscabund"
+} else if (this_dataset == "fia_short") {
+  cache_loc = "fia" 
+} else {
+  cache_loc = this_dataset
+}
+
+## Set up the cache and config
+db <- DBI::dbConnect(RSQLite::SQLite(), here::here("analysis", "drake", paste0("drake-cache-", cache_loc, ".sqlite")))
+cache <- storr::storr_dbi("datatable", "keystable", db)
+
+dat <- readd(paste0("dat_s_dat_", this_dataset), cache = cache, character_only = T) 
+
+a_fs <- readd(di_fs_1991_winter_FALSE, cache = cache)
+```
+
+
+Here is the distribution of skew values in this fs:
+
+```{r raw dists}
+
+ggplot(filter(a_fs, source == "sampled"), aes(x = skew)) + 
+  geom_histogram() +
+  theme_bw()
+
+```
+
+The percentile ranks as computed by `get_percentile` for the max and minimum sampled values are `r get_percentile(max(filter(a_fs, source == "sampled")$skew), filter(a_fs, source == "sampled")$skew)` and `r get_percentile(min(filter(a_fs, source == "sampled")$skew), filter(a_fs, source == "sampled")$skew)`.
+
+```{r ecdf}
+
+skew_ecdf <- ecdf(filter(a_fs, source == "sampled")$skew)
+
+plot(skew_ecdf)
+
+```
+
+
+The ecdf function at hte minimum and maximum sampled valures evaluates to `r skew_ecdf(max(filter(a_fs, source == "sampled")$skew))` and `r skew_ecdf(min(filter(a_fs, source == "sampled")$skew))`.
+
+```{r ecdf w infinities}
+
+inf_ecdf <- ecdf(c(filter(a_fs, source == "sampled")$skew, -Inf, Inf))
+plot(x = filter(a_fs, source == "sampled")$skew, y = inf_ecdf(filter(a_fs, source == "sampled")$skew))
+```
+
+The inf_ecdf function at the minimum and maximum sampled valures evaluates to `r inf_ecdf(max(filter(a_fs, source == "sampled")$skew))` and `r inf_ecdf(min(filter(a_fs, source == "sampled")$skew))`.
+
+```{r cleanup}
+
+DBI::dbDisconnect(db)
+rm(cache)
+```

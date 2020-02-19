@@ -13,7 +13,8 @@ all_di <- read.csv(here::here("analysis", "reports", "all_di.csv"), stringsAsFac
 
 all_di <- all_di %>%
   mutate(log_nparts = log(gmp:::as.double.bigz(nparts)),
-         log_nsamples = log(nsamples))
+         log_nsamples = log(nsamples)) %>%
+  mutate(prop_found = exp(log_nsamples - log_nparts))
 ```
 
 # Datasets in S and N space
@@ -24,7 +25,7 @@ Here is where our communities fall in S and N space:
 ggplot(filter(all_di, singletons == F), aes(x = log(s0), y = log(n0), color = dat)) +
   geom_point(alpha = .2) +
   theme_bw() +
-  scale_color_viridis_d()
+  theme(legend.position = "top") + scale_color_viridis_d()
 
 ```
 
@@ -34,7 +35,7 @@ Here is how that translates into the size of the feasible set:
 ggplot(filter(all_di, singletons == F), aes(x = log(s0), y = log(n0), color = log_nparts)) +
   geom_point(alpha = .3) +
   theme_bw() +
-  scale_color_viridis_c(option = "magma", end = .9)
+  theme(legend.position = "top") + scale_color_viridis_c(option = "magma", end = .9)
 
 ```
 
@@ -46,7 +47,7 @@ Here is how the size of the feasible set maps on to N/S:
 ggplot(filter(all_di, singletons == F), aes(x = log(n0 / s0), y = log_nparts, color = log(s0))) +
   theme_bw() +
   geom_point(alpha = .2) +
-  scale_color_viridis_c()
+  theme(legend.position = "top") + scale_color_viridis_c()
 
 ```
 
@@ -58,12 +59,12 @@ Here is how many samples we are achieving:
 ggplot(filter(all_di, singletons == F), aes(x = log(s0), y = log(n0), color = log_nsamples)) +
   geom_point(alpha = .3) +
   theme_bw() +
-  scale_color_viridis_c(option = "magma", end = .9)
+  theme(legend.position = "top") + scale_color_viridis_c(option = "magma", end = .9)
 
 ggplot(filter(all_di, singletons == F, nsamples <  max(nsamples)), aes(x = log(s0), y = log(n0), color = log_nsamples)) +
   geom_point() +
   theme_bw() +
-  scale_color_viridis_c(option = "magma", end = .9)
+  theme(legend.position = "top") + scale_color_viridis_c(option = "magma", end = .9)
 ```
 
 Only in the very smallest communities do we get appreciably fewer than `r max(all_di$nsamples)` samples.
@@ -84,8 +85,72 @@ ggplot(filter(all_di, singletons == F), aes(x = log_nsamples - log_nparts, y = l
 
 ```
 
-The vertical lines are the 10% and 95% marks, from left to right. When we got relatively few samples (`r min(all_di$nsamples)`), we had found `r exp(filter(all_di, nsamples == min(nsamples))$log_nsamples -  filter(all_di, nsamples == min(nsamples))$log_nparts)` of that feasible set. And there's a clear negative relationship between the proportion of the FS that we've found and the number of samples we got, once we start getting about 10% of the feasible set. This makes sense; at that point we have a 1 in 10 chance of drawing one we've already seen. But for almost all cases, we're sampling only a miniscule proportion of the feasible set - median of `r median(exp(all_di$log_nsamples - all_di$log_nparts))`! - and get no duplicates.
+The vertical lines are the 10% and 95% marks, from left to right. When we got relatively few samples (`r min(filter(all_di, singletons == F, nsamples > 1)$nsamples)`), we had found `r 100 * exp(filter(all_di, nsamples == min(filter(all_di, singletons == F, nsamples > 1)$nsamples))$log_nsamples[1] -  filter(all_di, nsamples == min(filter(all_di, singletons == F, nsamples > 1)$nsamples))$log_nparts[1])`% of that feasible set. And there's a clear negative relationship between the proportion of the FS that we've found and the number of samples we got, once we start getting about 10% of the feasible set. This makes sense; at that point we have a 1 in 10 chance of drawing one we've already seen. But for almost all cases, we're sampling only a miniscule proportion of the feasible set - median of `r median(exp(all_di$log_nsamples - all_di$log_nparts))`! - and get no duplicates.
 
 The vastness of the FS poses a limit on our capacity to detect how unlikely a value is. We could conservatively round up: scoring in the 100th percentile, when we had 4000 samples, means a maximum of (1 / 4000 + tiny error) chance of getting that score?
 
-# 
+# Distribution of percentile values
+
+## Skewness
+```{r skew percentiles}
+ggplot(filter(all_di, singletons == F), aes(x = skew_percentile, y =..count.. / sum(..count..))) +
+  geom_histogram(bins = 100) +
+  theme_bw() +
+  geom_hline(yintercept = .01)
+
+ggplot(filter(all_di, singletons == F), aes(x = log(s0), y = log(n0), color = skew_percentile)) +
+  geom_point(alpha = .5) +
+  theme_bw() +
+  theme(legend.position = "top") + scale_color_viridis_c(option = "plasma", end = .9)
+
+ggplot(filter(all_di, singletons == F), aes(x = log(s0/n0), y = skew_percentile, color = prop_found)) +
+  geom_point() +
+  theme_bw() +
+  scale_color_viridis_c(option = "plasma", end = .9, direction = -1) +
+  theme(legend.position = "top")
+
+all_di$many_found <- all_di$prop_found >= .5
+
+ggplot(filter(all_di, singletons == F), aes(x = skew_percentile)) +
+  theme_bw() +
+  geom_histogram(bins = 100) +
+  facet_wrap(vars(many_found))
+
+ggplot(filter(all_di, singletons == F), aes(x = log(n0 / s0), y = skew_percentile, color = log(s0))) +
+  geom_point(alpha = .2) +
+  theme_bw() +
+  theme(legend.position = "top") + scale_color_viridis_c()
+```
+
+
+## Simpson
+```{r simpson percentiles}
+ggplot(filter(all_di, singletons == F), aes(x = simpson_percentile, y =..count.. / sum(..count..))) +
+  geom_histogram(bins = 100) +
+  theme_bw() +
+  geom_hline(yintercept = .01)
+
+
+ggplot(filter(all_di, singletons == F), aes(x = log(s0), y = log(n0), color = simpson_percentile)) +
+  geom_point(alpha = .5) +
+  theme_bw() +
+  theme(legend.position = "top") + scale_color_viridis_c(option = "plasma", end = .9)
+
+ggplot(filter(all_di, singletons == F), aes(x = log(s0/n0), y = simpson_percentile, color = prop_found)) +
+  geom_point() +
+  theme_bw() +
+  scale_color_viridis_c(option = "plasma", end = .9, direction = -1) +
+  theme(legend.position = "top")
+
+ggplot(filter(all_di, singletons == F), aes(x = simpson_percentile)) +
+  theme_bw() +
+  geom_histogram(bins = 100) +
+  facet_wrap(vars(many_found))
+
+ggplot(filter(all_di, singletons == F), aes(x = log(n0 / s0), y = simpson_percentile, color = log(s0))) +
+  geom_point(alpha = .2) +
+  theme_bw() +
+  theme(legend.position = "top") + scale_color_viridis_c()
+```
+
+Do S and N predict percentile?
