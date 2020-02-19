@@ -34,7 +34,7 @@ test_that("Portal plot treatment parsing works", {
     dplyr::filter(site %in% c("1999_15_exclosure_winter", "2012_9_control_summer", "2013_18_exclosure_summer")) # chosen bc small sv
 
   set.seed(1)
-  fs_samples <- lapply(unique(dat$site), FUN = sample_fs_wrapper, dat = dat, singletons = F, n_samples = 5, p_table = NULL)
+  fs_samples <- lapply(unique(dat$site), FUN = sample_fs_wrapper, dat = dat, singletons = F, n_samples = 20, p_table = NULL)
 
   dis <- lapply(fs_samples, FUN = add_dis)
 
@@ -43,7 +43,7 @@ test_that("Portal plot treatment parsing works", {
   di_obs_s <- dplyr::bind_rows(dis_obs)
 
   expect_silent(wtrts <- assign_portal_manips(di_obs_s))
-  expect_true(ncol(wtrts) == 25)
+  expect_true(ncol(wtrts) == 27)
   expect_false(anyNA(wtrts))
   expect_equivalent(wtrts$year, c(2012, 1999, 2013))
   expect_equivalent(wtrts$plot, c(9, 15, 18))
