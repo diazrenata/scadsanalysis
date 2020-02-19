@@ -13,7 +13,8 @@ all_di <- read.csv(here::here("analysis", "reports", "all_di.csv"), stringsAsFac
 
 all_di <- all_di %>%
   mutate(log_nparts = log(gmp:::as.double.bigz(nparts)),
-         log_nsamples = log(nsamples))
+         log_nsamples = log(nsamples)) %>%
+  mutate(prop_found = exp(log_nsamples - log_nparts))
 ```
 
 # Datasets in S and N space
@@ -22,7 +23,7 @@ Here is where our communities fall in S and N space:
 
 ```{r datasets in s and n space}
 ggplot(filter(all_di, singletons == F), aes(x = log(s0), y = log(n0), color = dat)) +
-  geom_point(alpha = .2) +
+  geom_point(alpha = .8) +
   theme_bw() +
   scale_color_viridis_d()
 
@@ -32,9 +33,9 @@ Here is how that translates into the size of the feasible set:
 
 ```{r size of fs}
 ggplot(filter(all_di, singletons == F), aes(x = log(s0), y = log(n0), color = log_nparts)) +
-  geom_point(alpha = .3) +
+  geom_point(alpha = .5) +
   theme_bw() +
-  scale_color_viridis_c(option = "magma", end = .9)
+  scale_color_viridis_c(option = "magma", end = .9, begin = .1)
 
 ```
 
@@ -71,21 +72,38 @@ Only in the very smallest communities do we get appreciably fewer than `r max(al
 Here is how the number of samples we're getting compares to the size of the feasible set:
 
 ```{r nsamples vs nparts}
-ggplot(filter(all_di, singletons == F), aes(x = log(s0), y = log(n0), color = log_nsamples - log_nparts)) +
+ggplot(filter(all_di, singletons == F), aes(x = prop_found)) +
+  theme_bw() +
+  geom_histogram(bins = 100)
+
+ggplot(filter(all_di, singletons == F), aes(x = log(s0), y = log(n0), color = prop_found)) +
   geom_point(alpha = .7) +
+  geom_point(data = filter(all_di, singletons == F, prop_found == 1), color = "grey") +
   theme_bw() +
   scale_color_viridis_c(option = "magma", end = .9, direction = -1) +
   theme(legend.position = "top")
 
-ggplot(filter(all_di, singletons == F), aes(x = log_nsamples - log_nparts, y = log_nsamples)) +
+ggplot(filter(all_di, singletons == F), aes(x = prop_found, y =nsamples)) +
   theme_bw() +
-  geom_vline(xintercept = c(log(.95), log(.1))) +
-  geom_point(alpha = .3)
+  geom_vline(xintercept = c((.95), (.1))) +
+  geom_point(alpha = .3) +
+  geom_point(data = filter(all_di, singletons == F, prop_found == 1), color = "grey")
+
+
+prop_found_ecdf <- ecdf(filter(all_di,singletons == F)$prop_found)
+
+pf_df <- data.frame(prop_found = seq(0, 1, by = 0.001),
+                    cdf = prop_found_ecdf(seq(0, 1, by = 0.001)))
+
+ggplot(data = pf_df, aes(x = prop_found, y = cdf)) +
+  geom_line() +
+  theme_bw()
 
 ```
 
-The vertical lines are the 10% and 95% marks, from left to right. When we got relatively few samples (`r min(all_di$nsamples)`), we had found `r exp(filter(all_di, nsamples == min(nsamples))$log_nsamples -  filter(all_di, nsamples == min(nsamples))$log_nparts)` of that feasible set. And there's a clear negative relationship between the proportion of the FS that we've found and the number of samples we got, once we start getting about 10% of the feasible set. This makes sense; at that point we have a 1 in 10 chance of drawing one we've already seen. But for almost all cases, we're sampling only a miniscule proportion of the feasible set - median of `r median(exp(all_di$log_nsamples - all_di$log_nparts))`! - and get no duplicates.
+For about `r 100 * mean(filter(all_di, singletons == F)$prop_found == 1)`% of sites, we found all the elements of the FS. The *vast majority* of this is FIA.
 
-The vastness of the FS poses a limit on our capacity to detect how unlikely a value is. We could conservatively round up: scoring in the 100th percentile, when we had 4000 samples, means a maximum of (1 / 4000 + tiny error) chance of getting that score?
+
+
 
 # 
