@@ -30,7 +30,7 @@ dis_wrapper <- function(fs_df) {
 
 }
 
-#' Skewness
+#' Add dis
 #'
 #' @param fs_samples_df df of all samples, with column for abundance
 #'
@@ -67,6 +67,22 @@ add_dis <- function(fs_samples_df) {
                   shannon_percentile = get_percentile(shannon, a_vector = sim_percentiles$shannon),
                   simpson_percentile = get_percentile(simpson, a_vector = sim_percentiles$simpson))
 
+  # Add ecdf
+
+  if(log(length(unique(sim_percentiles$sim))) == log(as.double(sim_percentiles$nparts)[1])){
+    skew_ecdf <- ecdf(sim_percentiles$skew)
+    simpson_ecdf <- ecdf(sim_percentiles$simpson)
+  } else if(log(length(unique(sim_percentiles$sim))) < log(as.double(sim_percentiles$nparts)[1])) {
+    skew_ecdf <- ecdf(c(sim_percentiles$simpson, -Inf, Inf))
+    simpson_ecdf <- ecdf(c(sim_percentiles$simpson, -Inf, Inf))
+  }
+
+  sim_percentiles <- sim_percentiles %>%
+    dplyr::mutate(skew_cd = skew_ecdf(skew),
+           simpson_cd = simpson_ecdf(simpson))
+  sampled_percentile <- sampled_percentile %>%
+    dplyr::mutate(skew_cd = skew_ecdf(skew),
+                  simpson_cd = simpson_ecdf(simpson))
 
   sim_dis <- dplyr::bind_rows(sim_percentiles, sampled_percentile)
 

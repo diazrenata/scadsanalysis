@@ -2,7 +2,7 @@
 % Please edit documentation in R/metrics.R
 \name{add_dis}
 \alias{add_dis}
-\title{Skewness}
+\title{Add dis}
 \usage{
 add_dis(fs_samples_df)
 }
@@ -13,5 +13,5 @@ add_dis(fs_samples_df)
 summary of skewness per sample
 }
 \description{
-Skewness
+Add dis
 }
