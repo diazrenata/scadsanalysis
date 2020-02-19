@@ -18,7 +18,7 @@ Here is a plot of how many species were added to each dataset by estimating the 
 Number of samples achieved
 --------------------------
 
-#### The maximum number of samples achieved is 10000.
+#### The maximum number of samples achieved is 4000.
 
     ## Warning: Removed 4 rows containing missing values (geom_bar).
 
@@ -32,5 +32,3 @@ Position (%ile) of empirical SADs within FS
 Here is a heatmap of an observed + sampled FS:
 
 ![](macdb_report_files/figure-markdown_github/example%20heatmap-1.png)
-
-![](macdb_report_files/figure-markdown_github/manip-1.png)![](macdb_report_files/figure-markdown_github/manip-2.png)
