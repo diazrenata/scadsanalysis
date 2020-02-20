@@ -1,0 +1,83 @@
+---
+title: "CDF v percentiles report"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(drake)
+library(dplyr)
+library(ggplot2)
+
+all_di <- read.csv(here::here("analysis", "reports", "all_di.csv"), stringsAsFactors = F)
+
+all_di <- all_di %>%
+  mutate(log_nparts = log(gmp:::as.double.bigz(nparts)),
+         log_nsamples = log(nsamples)) %>%
+  mutate(prop_found = exp(log_nsamples - log_nparts)) %>%
+  mutate(found_all = prop_found ==1)
+```
+
+
+## Skewness
+```{r skew cds}
+ggplot(filter(all_di, singletons == F), aes(x = skew_cd, y =..count.. / sum(..count..))) +
+  geom_histogram(bins = 100) +
+  theme_bw() +
+  geom_hline(yintercept = .01)
+
+ggplot(filter(all_di, singletons == F), aes(x = log(s0), y = log(n0), color = skew_cd)) +
+  geom_point(alpha = .5) +
+  theme_bw() +
+  theme(legend.position = "top") + scale_color_viridis_c(option = "plasma", end = .9)
+
+ggplot(filter(all_di, singletons == F), aes(x = log(s0/n0), y = skew_cd, color = prop_found)) +
+  geom_point() +
+  theme_bw() +
+  scale_color_viridis_c(option = "plasma", end = .9, direction = -1) +
+  theme(legend.position = "top")
+
+all_di$many_found <- all_di$prop_found >= .5
+
+ggplot(filter(all_di, singletons == F), aes(x = skew_cd)) +
+  theme_bw() +
+  geom_histogram(bins = 100) +
+  facet_wrap(vars(many_found))
+
+ggplot(filter(all_di, singletons == F), aes(x = log(n0 / s0), y = skew_cd, color = log(s0))) +
+  geom_point(alpha = .2) +
+  theme_bw() +
+  theme(legend.position = "top") + scale_color_viridis_c()
+```
+
+
+## Simpson
+```{r simpson cds}
+ggplot(filter(all_di, singletons == F), aes(x = simpson_cd, y =..count.. / sum(..count..))) +
+  geom_histogram(bins = 100) +
+  theme_bw() +
+  geom_hline(yintercept = .01)
+
+
+ggplot(filter(all_di, singletons == F), aes(x = log(s0), y = log(n0), color = simpson_cd)) +
+  geom_point(alpha = .5) +
+  theme_bw() +
+  theme(legend.position = "top") + scale_color_viridis_c(option = "plasma", end = .9)
+
+ggplot(filter(all_di, singletons == F), aes(x = log(s0/n0), y = simpson_cd, color = prop_found)) +
+  geom_point() +
+  theme_bw() +
+  scale_color_viridis_c(option = "plasma", end = .9, direction = -1) +
+  theme(legend.position = "top")
+
+ggplot(filter(all_di, singletons == F), aes(x = simpson_cd)) +
+  theme_bw() +
+  geom_histogram(bins = 100) +
+  facet_wrap(vars(many_found))
+
+ggplot(filter(all_di, singletons == F), aes(x = log(n0 / s0), y = simpson_cd, color = log(s0))) +
+  geom_point(alpha = .2) +
+  theme_bw() +
+  theme(legend.position = "top") + scale_color_viridis_c()
+```
+

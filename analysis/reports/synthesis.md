@@ -12,7 +12,7 @@ Here is how that translates into the size of the feasible set:
 
 ![](synthesis_files/figure-markdown_github/size%20of%20fs-1.png)
 
-Note that the color scale is log transformed, so the largest communities have e^217.4549092, or 2.750851410^{94}, elements in the feasible set!
+Note that the color scale is log transformed, so the largest communities have e^331.5401042, or 9.683621310^{143}, elements in the feasible set!
 
 Here is how the size of the feasible set maps on to N/S:
 
@@ -31,7 +31,7 @@ Here is how the number of samples we're getting compares to the size of the feas
 
 ![](synthesis_files/figure-markdown_github/nsamples%20vs%20nparts-1.png)![](synthesis_files/figure-markdown_github/nsamples%20vs%20nparts-2.png)
 
-The vertical lines are the 10% and 95% marks, from left to right. When we got relatively few samples (2), we had found 100% of that feasible set. And there's a clear negative relationship between the proportion of the FS that we've found and the number of samples we got, once we start getting about 10% of the feasible set. This makes sense; at that point we have a 1 in 10 chance of drawing one we've already seen. But for almost all cases, we're sampling only a miniscule proportion of the feasible set - median of 1.25960910^{-16}! - and get no duplicates.
+The vertical lines are the 10% and 95% marks, from left to right. When we got relatively few samples (2), we had found 100% of that feasible set. And there's a clear negative relationship between the proportion of the FS that we've found and the number of samples we got, once we start getting about 10% of the feasible set. This makes sense; at that point we have a 1 in 10 chance of drawing one we've already seen. But for almost all cases, we're sampling only a miniscule proportion of the feasible set - median of 0.7252563! - and get no duplicates.
 
 The vastness of the FS poses a limit on our capacity to detect how unlikely a value is. We could conservatively round up: scoring in the 100th percentile, when we had 4000 samples, means a maximum of (1 / 4000 + tiny error) chance of getting that score?
 

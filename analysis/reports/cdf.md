@@ -12,3 +12,7 @@ The percentile ranks as computed by `get_percentile` for the max and minimum sam
 ![](cdf_files/figure-markdown_github/ecdf-1.png)
 
 The ecdf function at hte minimum and maximum sampled valures evaluates to 1 and 10^{-4}.
+
+![](cdf_files/figure-markdown_github/ecdf%20w%20infinities-1.png)
+
+The inf\_ecdf function at the minimum and maximum sampled valures evaluates to 0.9999 and 1.999600110^{-4}.
