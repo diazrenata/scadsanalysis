@@ -274,23 +274,24 @@ cache_loc = "macdb"
 db <- DBI::dbConnect(RSQLite::SQLite(), here::here("analysis", "drake", paste0("drake-cache-", cache_loc, ".sqlite")))
 cache <- storr::storr_dbi("datatable", "keystable", db)
 
-all_di_macd <- readd(all_di_manip, cache = cache) 
+all_di_macd <- readd(all_di_obs, cache = cache) 
+all_di_macd_manip <- readd(all_di_manip, cache = cache)
 macd_dat <- readd(dat_s_dat_macdb, cache = cache)
 
 DBI::dbDisconnect(db)
 rm(cache)
 
-macd_dat <- macd_dat %>%
-  group_by(site, dat, singletons, sim, source) %>%
-  summarize(s0 = max(rank),
-            n0 = sum(abund)) %>%
-  ungroup()
-
-all_di_macd <- left_join(all_di_macd, macd_dat, by = c("site", "dat", "singletons", "sim", "source")) %>%
+all_di_macd <- all_di_macd %>%
   mutate(log_nparts = log(gmp:::as.double.bigz(nparts)),
          log_nsamples = log(nsamples)) %>%
   mutate(prop_found = exp(log_nsamples - log_nparts)) %>%
   mutate(found_all = prop_found==1)
+# 
+# all_di_macd_manip <- all_di_macd_manip %>%
+#   mutate(log_nparts = log(gmp:::as.double.bigz(nparts)),
+#          log_nsamples = log(nsamples)) %>%
+#   mutate(prop_found = exp(log_nsamples - log_nparts)) %>%
+#   mutate(found_all = prop_found==1)
 
 ggplot(data = all_di, aes(x = log(s0), y = log(n0))) + geom_point(alpha = .1) + geom_point(data = all_di_macd, aes(x = log(s0), y = log(n0)), color = "blue", alpha = .9) + theme_bw()
 
@@ -320,42 +321,14 @@ Here is how manipulation affects things:
 
 ```{r macd ctrlcomp, fig.dim = c(4,4)}
 
-macd_comparisons <- read.csv(here::here("working-data", "macdb_data", "orderedcomparisons.csv"), header = F, stringsAsFactors = F)
-
-colnames(macd_comparisons) <- c("studyID", "control", "site")
-macd_comparisons <- macd_comparisons %>%
-  mutate(site = as.character(site), control = as.character(control))
-
-cc_di <- all_di_macd %>%
-  filter(singletons == FALSE, treatment == "comparison") %>%
-  left_join(macd_comparisons, by = c("studyID", "site")) %>%
-  select(dat, site, skew_percentile, simpson_percentile, studyID, control) %>%
-  rename(comparison = site) %>%
-  mutate(ctrl_skew_percentile = NA,
-         ctrl_simpson_percentile = NA)
-
-for(i in 1:nrow(cc_di)) {
-  
-  control_row <- filter(all_di_macd, site == cc_di$control[i], singletons == F) %>%
-    unique()
-  if(nrow(control_row) >0 ) {
-    cc_di$ctrl_simpson_percentile[i] <- control_row$simpson_percentile
-    cc_di$ctrl_skew_percentile[i] <- control_row$skew_percentile
-  }
-}
-
-cc_di <- cc_di %>%
-  mutate(simpson_change = simpson_percentile - ctrl_simpson_percentile,
-         skew_change = skew_percentile - ctrl_skew_percentile)
-
-ggplot(data = cc_di, aes(x = skew_percentile, y = ctrl_skew_percentile)) +
+ggplot(data = all_di_macd_manip, aes(x = skew_percentile, y = ctrl_skew_percentile)) +
   geom_point(alpha = .5) +
   #  xlim(0, 100) +
   # ylim(0, 100) +
   theme_bw() +
   geom_abline(intercept = 0, slope = 1, color = "green")
 
-ggplot(data = cc_di, aes(x = simpson_percentile, y = ctrl_skew_percentile)) +
+ggplot(data = all_di_macd_manip, aes(x = simpson_percentile, y = ctrl_skew_percentile)) +
   geom_point(alpha = .5) +
   xlim(0, 100) +
   ylim(0, 100) +
@@ -363,33 +336,33 @@ ggplot(data = cc_di, aes(x = simpson_percentile, y = ctrl_skew_percentile)) +
   geom_abline(intercept = 0, slope = 1, color = "green")
 
 
-ggplot(data = cc_di, aes(x = simpson_change)) +
+ggplot(data = all_di_macd_manip, aes(x = simpson_change)) +
   geom_histogram() +
   theme_bw()
 
-ggplot(data = cc_di, aes(x = skew_change)) +
+ggplot(data = all_di_macd_manip, aes(x = skew_change)) +
   geom_histogram() +
   theme_bw()
 
-ggplot(data = cc_di, aes(x = ctrl_simpson_percentile, y = simpson_change)) +
+ggplot(data = all_di_macd_manip, aes(x = ctrl_simpson_percentile, y = simpson_change)) +
   geom_point(alpha = .3) +
   geom_hline(yintercept = 0) +
   theme_bw()
 
 
-ggplot(data = cc_di, aes(x = ctrl_skew_percentile, y = skew_change)) +
+ggplot(data = all_di_macd_manip, aes(x = ctrl_skew_percentile, y = skew_change)) +
   geom_point(alpha = .3) +
   geom_hline(yintercept = 0) +
   theme_bw()
 
 
-print(t.test(cc_di$skew_percentile, cc_di$ctrl_skew_percentile, paired = T)
+print(t.test(all_di_macd_manip$skew_percentile, all_di_macd_manip$ctrl_skew_percentile, paired = T)
 )
-print(t.test(cc_di$simpson_percentile, cc_di$ctrl_simpson_percentile, paired = T)
+print(t.test(all_di_macd_manip$simpson_percentile, all_di_macd_manip$ctrl_simpson_percentile, paired = T)
 )
 
-print(wilcox.test(cc_di$skew_percentile, cc_di$ctrl_skew_percentile, paired = T))
-print(wilcox.test(cc_di$simpson_percentile, cc_di$ctrl_simpson_percentile, paired = T))
+print(wilcox.test(all_di_macd_manip$skew_percentile, all_di_macd_manip$ctrl_skew_percentile, paired = T))
+print(wilcox.test(all_di_macd_manip$simpson_percentile, all_di_macd_manip$ctrl_simpson_percentile, paired = T))
 
 ```
 
