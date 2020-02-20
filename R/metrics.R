@@ -17,7 +17,7 @@ dis_wrapper <- function(fs_df) {
 
   if(any(fs_df$singletons)) {
 
-  all_fs_sites <- c(fs_singletons, fs_singletons_f)
+    all_fs_sites <- c(fs_singletons, fs_singletons_f)
 
   } else {
     all_fs_sites <- fs_singletons_f
@@ -68,21 +68,49 @@ add_dis <- function(fs_samples_df) {
                   simpson_percentile = get_percentile(simpson, a_vector = sim_percentiles$simpson))
 
   # Add ecdf
-
   if(log(length(unique(sim_percentiles$sim))) == log(as.double(sim_percentiles$nparts)[1])){
-    skew_ecdf <- ecdf(sim_percentiles$skew)
-    simpson_ecdf <- ecdf(sim_percentiles$simpson)
+    if(any(!is.nan(sim_percentiles$skew))) {
+      skew_ecdf <- ecdf(sim_percentiles$skew)
+    } else {
+      skew_ecdf <- function(skval) {
+        return(NA)
+      }
+    }
+
+    if(any(!is.nan(sim_percentiles$simpson))) {
+      simpson_ecdf <- ecdf(sim_percentiles$simpson)
+    } else {
+      simpson_ecdf <- function(sval) {
+        return(NA)
+      }
+    }
   } else if(log(length(unique(sim_percentiles$sim))) < log(as.double(sim_percentiles$nparts)[1])) {
-    skew_ecdf <- ecdf(c(sim_percentiles$simpson, -Inf, Inf))
-    simpson_ecdf <- ecdf(c(sim_percentiles$simpson, -Inf, Inf))
+    if(any(!is.nan(sim_percentiles$skew))) {
+      skew_ecdf <- ecdf(c(sim_percentiles$simpson, -Inf, Inf))
+    } else {
+      skew_ecdf <- function(skval) {
+        return(NA)
+      }
+    }
+
+    if(any(!is.nan(sim_percentiles$simpson))) {
+      simpson_ecdf <- ecdf(c(sim_percentiles$simpson, -Inf, Inf))
+    } else {
+      simpson_ecdf <- function(sval) {
+        return(NA)
+      }
+    }
+
+
   }
 
   sim_percentiles <- sim_percentiles %>%
     dplyr::mutate(skew_cd = skew_ecdf(skew),
-           simpson_cd = simpson_ecdf(simpson))
+                  simpson_cd = simpson_ecdf(simpson))
   sampled_percentile <- sampled_percentile %>%
     dplyr::mutate(skew_cd = skew_ecdf(skew),
                   simpson_cd = simpson_ecdf(simpson))
+
 
   sim_dis <- dplyr::bind_rows(sim_percentiles, sampled_percentile)
 
