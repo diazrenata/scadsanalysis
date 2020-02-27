@@ -7,8 +7,8 @@ expose_imports("scadsanalysis")
 datasets <- "fia_small"
 
 sites_list <- list_sites("fia_small")
-ndraws = 40
-sites_list <- sites_list[1:4, ]
+ndraws = 4000
+#sites_list <- sites_list[1:4, ]
 set.seed(1978)
 
 dat_plan <- drake_plan(
