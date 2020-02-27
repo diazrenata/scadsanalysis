@@ -15,9 +15,7 @@ When we found all the samples, the percentiles are more evenly distributed. I do
 
 Here is how skewness maps with S and N, *filtered to communities where we found all samples*: ![](found_all_files/figure-markdown_github/skew%20v%20s%20and%20n-1.png)
 
-So I'm pretty sure the spike at 0 is the communities with 1 or 2 species, for which we shouldn't be calculating skewness anyway.
-
-Here is how the histogram changes as we bin the lognparts into 5s:
+Here is how the histogram changes as we bin the lognparts into 2s:
 
 ![](found_all_files/figure-markdown_github/binned%20nparts-1.png)
 
@@ -33,8 +31,6 @@ Simpson is less evenly distributed than skewness. Again, where we found them all
 Here is how Simpson behaves in S and N space where we found them all:
 
 ![](found_all_files/figure-markdown_github/even%20v%20s%20and%20n-1.png)
-
-There is nothing to learn when s0 = 1 or really 2.
 
 Here is how the histogram changes as we bin the lognparts into 5s:
 

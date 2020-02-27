@@ -7,8 +7,8 @@ expose_imports("scadsanalysis")
 datasets <- "fia_small"
 
 sites_list <- list_sites("fia_small")
-ndraws = 4000
-#sites_list <- sites_list[1:2000, ]
+ndraws = 40
+sites_list <- sites_list[1:4, ]
 set.seed(1978)
 
 dat_plan <- drake_plan(
@@ -21,9 +21,9 @@ dat_plan <- drake_plan(
   dat_s = target(add_singletons_dataset(dat),
                  transform = map(dat),
                  hpc = F),
-  wide_p = target(readRDS(here::here("analysis", "masterp_mamm.Rds")),
+  mamm_p = target(readRDS(here::here("analysis", "masterp_mamm.Rds")),
                   hpc = F),
-  fs = target(sample_fs_wrapper(dataset = dat_s_dat_fia_small, site_name = s, singletonsyn = singletons, n_samples = ndraws, p_table = wide_p, seed = !!sample.int(10^6, size = 1)),
+  fs = target(sample_fs_wrapper(dataset = dat_s_dat_fia_small, site_name = s, singletonsyn = singletons, n_samples = ndraws, p_table = mamm_p, seed = !!sample.int(10^6, size = 1)),
                    transform = cross(s = !!sites_list$site,
                                      singletons = !!c(TRUE, FALSE))),
   di = target(add_dis(fs),

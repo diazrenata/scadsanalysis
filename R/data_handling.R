@@ -113,7 +113,7 @@ load_dataset <- function(dataset_name, storage_path = here::here("working-data",
   dataset_path = file.path(storage_path, paste0(dataset_name, "_spab.csv"))
 
   if(dataset_name != "misc_abund") {
-    if(dataset_name  %in% c("misc_abund_short", "fia_short")) {
+    if(dataset_name  %in% c("misc_abund_short", "fia_short", "fia_small")) {
 
       dataset <- read.csv(dataset_path, stringsAsFactors = F)
 

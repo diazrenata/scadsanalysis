@@ -28,11 +28,11 @@ There is some weird behavior where, for datasets where all samples were found, w
 
 Here is the overall distribution of skewness, and if we split based on whether we found all the samples:
 ```{r skew percentiles}
-ggplot(filter(all_di, singletons == F), aes(x = skew_percentile, y =..count.. / sum(..count..))) +
+ggplot(filter(all_di, singletons == F, s0 >= 3), aes(x = skew_percentile, y =..count.. / sum(..count..))) +
   geom_histogram(bins = 100) +
   theme_bw() +
   geom_hline(yintercept = .01)
-ggplot(filter(all_di, singletons == F), aes(x = skew_percentile)) +
+ggplot(filter(all_di, singletons == F, s0 >= 3), aes(x = skew_percentile)) +
   theme_bw() +
   geom_histogram(bins = 100) +
   facet_wrap(vars(found_all), scales = "free_y")
@@ -44,7 +44,7 @@ When we found all the samples, the percentiles are more evenly distributed. I do
 Here is how skewness maps with S and N, *filtered to communities where we found all samples*:
 ```{r skew v s and n}
 
-ggplot(filter(all_di, singletons == F, found_all), aes(x = log(s0), y = log(n0), color = skew_percentile)) +
+ggplot(filter(all_di, singletons == F, found_all, s0 >= 3), aes(x = log(s0), y = log(n0), color = skew_percentile)) +
   geom_point(alpha = .5) +
   theme_bw() +
   theme(legend.position = "top") + scale_color_viridis_c(option = "plasma", end = .9)
@@ -58,14 +58,17 @@ ggplot(filter(all_di, singletons == F, found_all), aes(x = log(s0), y = log(n0),
 
 ```
 
-So I'm pretty sure the spike at 0 is the communities with 1 or 2 species, for which we shouldn't be calculating skewness anyway. 
-
-
-Here is how the histogram changes as we bin the lognparts into 5s:
+Here is how the histogram changes as we bin the lognparts into 2s:
 
 ```{r binned nparts, fig.dim = c(10,10)}
 all_di <- all_di %>%
-  mutate(nparts_binned = as.factor(ceiling(log_nparts / 5) * 5))
+  mutate(nparts_binned = as.factor(ceiling(log_nparts / 2) * 2))
+
+for(i in 1:nrow(all_di)) {
+  if(as.numeric(levels(all_di$nparts_binned)[as.numeric(all_di$nparts_binned[i])]) >= 25) {
+    all_di$nparts_binned[i] <- 26
+  }
+}
 
 ggplot(filter(all_di, !singletons, s0 >= 3), aes(x = skew_percentile)) +
   geom_histogram(bins = 100) +
@@ -80,12 +83,12 @@ ggplot(filter(all_di, !singletons, s0 >= 3), aes(x = skew_percentile)) +
 Here is the overall evenness distribution, and split by whether we found 'em all:
 
 ```{r simpson percentiles}
-ggplot(filter(all_di, singletons == F), aes(x = simpson_percentile, y =..count.. / sum(..count..))) +
+ggplot(filter(all_di, singletons == F, s0 >= 2), aes(x = simpson_percentile, y =..count.. / sum(..count..))) +
   geom_histogram(bins = 100) +
   theme_bw() +
   geom_hline(yintercept = .01)
 
-ggplot(filter(all_di, singletons == F), aes(x = simpson_percentile)) +
+ggplot(filter(all_di, singletons == F, s0 >= 2), aes(x = simpson_percentile)) +
   theme_bw() +
   geom_histogram(bins = 100) +
   facet_wrap(vars(found_all))
@@ -96,23 +99,22 @@ Simpson is less evenly distributed than skewness. Again, where we found them all
 
 Here is how Simpson behaves in S and N space where we found them all:
 
-```{r even v s and n, fig.dim = c(10,10)}
+```{r even v s and n}
 
-ggplot(filter(all_di, singletons == F, found_all), aes(x = log(s0), y = log(n0), color = simpson_percentile)) +
+ggplot(filter(all_di, singletons == F, found_all, s0 >= 2), aes(x = log(s0), y = log(n0), color = simpson_percentile)) +
   geom_point(alpha = .5) +
   theme_bw() +
   theme(legend.position = "top") + scale_color_viridis_c(option = "plasma", end = .9)
 
 ```
 
-There is nothing to learn when s0 = 1 or really 2. 
 
 Here is how the histogram changes as we bin the lognparts into 5s:
 
 ```{r binned nparts even, fig.dim = c(10,10)}
 
 
-ggplot(filter(all_di, !singletons, s0 >= 3), aes(x = simpson_percentile)) +
+ggplot(filter(all_di, !singletons, s0 >= 2), aes(x = simpson_percentile)) +
   geom_histogram(bins = 100) +
   theme_bw() +
   facet_wrap(vars(nparts_binned), scales = "free_y")
