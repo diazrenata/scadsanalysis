@@ -61,5 +61,3 @@ Communities with more than 2.202646610^{4} parts in the FS account for about 33.
     ## 4 mcdb                         0.467    613
     ## 5 misc_abund_short             0.799    542
     ## 6 portal_plants                0.951     61
-
-![](found_all_files/figure-markdown_github/nparts%20and%20dat-1.png)![](found_all_files/figure-markdown_github/nparts%20and%20dat-2.png)

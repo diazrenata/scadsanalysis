@@ -58,6 +58,48 @@ filter_fia <- function(storage_path = here::here("working-data", "abund_data"), 
   }
 }
 
+
+#' Filter FIA data - tiny communities
+#'
+#' Following White et al 2012, filtering FIA data to sites with > 10 species. This brings it from 103343 sites to 10355.
+#'
+#' @param min_s0 min s0
+#' @param max_s0 max s0
+#' @param max_comm  max ncommunities
+#' @param storage_path where to put it
+#' @param save save it?
+#'
+#' @return nothing
+#' @export
+#'
+#' @importFrom dplyr filter mutate
+filter_fia_small <- function(min_s0 = 3, max_s0 = 9, max_comm = 10000, storage_path = here::here("working-data", "abund_data"), save = TRUE) {
+
+
+  fia <- load_dataset("fia", storage_path = storage_path)
+
+  fia_sv <- get_statevars(fia) %>%
+    dplyr::filter(s0 >= min_s0) %>%
+    dplyr::filter(s0 <= max_s0)
+
+  if(nrow(fia_sv) > max_comm) {
+    set.seed(1977)
+    fia_sv <- fia_sv[ sample.int(nrow(fia_sv), size = max_comm, replace = F), ]
+  }
+
+
+  fia <- fia %>%
+    dplyr::filter(site %in% fia_sv$site) %>%
+    dplyr::mutate(dat = "fia_small")
+
+  if(save) {
+
+    write.csv(fia, file.path(storage_path, "fia_small_spab.csv"), row.names = F)
+
+  }
+}
+
+
 #' Load a dataset
 #'
 #' @param dataset_name "bbs", "fia", "gentry", "mcdb", "portal_plants", "misc_abund_short", or "misc_abund"

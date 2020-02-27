@@ -35,12 +35,15 @@ download_data <- function(from_url = FALSE, storage_path = here::here("working-d
 
     filter_miscabund(storage_path = file.path(storage_path, "abund_data"))
     filter_fia(storage_path = file.path(storage_path, "abund_data"))
+    filter_fia_small(storage_path = file.path(storage_path, "abund_data"))
 
   } else {
     file.copy(inst_path, storage_path, recursive = T)
 
     filter_miscabund(storage_path = file.path(storage_path, "abund_data"))
     filter_fia(storage_path = file.path(storage_path, "abund_data"))
+    filter_fia_small(storage_path = file.path(storage_path, "abund_data"))
+
   }
 }
 

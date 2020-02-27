@@ -127,12 +127,15 @@ It is NOT ABOUT whether we found all the samples. It is that the %iles look pret
 
 We expect issues of small N, but not for communities even so large. So if there are even 150 elements in the FS, we expect to be able to identify some kind of central tendency. 
 
-```{r nparts classification}
+```{r nparts classification, fig.dim = c(10, 5)}
 
 all_di <-  mutate(all_di, more_than_10 = log_nparts >= 10)
-ggplot(filter(all_di, !singletons), aes(x = log(s0), y = log(n0), color = more_than_10)) +
+ggplot(filter(all_di, !singletons), aes(x = log(s0), y = log(n0), color = dat)) +
   geom_point() +
-  theme_bw()
+  theme_bw() +
+  scale_color_viridis_d() +
+  facet_wrap(vars(more_than_10), scales = "fixed") +
+  theme(legend.position = "top")
 
 ```
 
@@ -153,7 +156,7 @@ filter(all_di, !singletons, s0 >= 3) %>%
   ungroup() 
 ```
 
-```{r nparts and dat, fig.dim = c(15,15)}
+```{r nparts and dat, fig.dim = c(15,15), include = F}
 for(i in 1:nrow(all_di)) {
   if(as.numeric(levels(all_di$nparts_binned)[as.numeric(all_di$nparts_binned[i])]) >= 50) {
     all_di$nparts_binned[i] <- 50
