@@ -31,11 +31,11 @@ Here is how the number of samples we're getting compares to the size of the feas
 
 ![](synthesis_files/figure-markdown_github/nsamples%20vs%20nparts-1.png)![](synthesis_files/figure-markdown_github/nsamples%20vs%20nparts-2.png)![](synthesis_files/figure-markdown_github/nsamples%20vs%20nparts-3.png)![](synthesis_files/figure-markdown_github/nsamples%20vs%20nparts-4.png)
 
-For about 30.3874915% of sites, we found all the elements of the FS. The *vast majority* of this is FIA - here is what happens if we take out FIA:
+For about 44.4840146% of sites, we found all the elements of the FS. The *vast majority* of this is FIA - here is what happens if we take out FIA:
 
 ![](synthesis_files/figure-markdown_github/prop%20found%20no%20fia-1.png)![](synthesis_files/figure-markdown_github/prop%20found%20no%20fia-2.png)![](synthesis_files/figure-markdown_github/prop%20found%20no%20fia-3.png)![](synthesis_files/figure-markdown_github/prop%20found%20no%20fia-4.png)
 
-Without FIA, we find all the samples about 10.1262916% of the time.
+Without FIA, we find all the samples about 48.5057471% of the time.
 
 Distribution of percentile values
 =================================
@@ -79,120 +79,196 @@ Here is how singletons change percentiles, broken out by whether or not we found
 
 The rarefaction-inflated datasets are strongly // the raw vectors. They have more extreme skewness and evenness values, relative to their feasible sets, than the raw vectors. This is almost always true for evenness, with a little more noise in the skewness signal. But either way, very strong.
 
-Manipulations
-=============
-
-MACD
-====
-
-![](synthesis_files/figure-markdown_github/load%20macd-1.png)![](synthesis_files/figure-markdown_github/load%20macd-2.png)
-
-Here are the distributions of skew and evenness, overall.
-
-![](synthesis_files/figure-markdown_github/macd%20overall-1.png)![](synthesis_files/figure-markdown_github/macd%20overall-2.png)
-
-Here is how manipulation affects things:
-
-    ## Warning: Removed 2 rows containing missing values (geom_point).
-
-![](synthesis_files/figure-markdown_github/macd%20ctrlcomp-1.png)
-
-    ## Warning: Removed 2 rows containing missing values (geom_point).
-
-![](synthesis_files/figure-markdown_github/macd%20ctrlcomp-2.png)
-
-    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
-
-    ## Warning: Removed 2 rows containing non-finite values (stat_bin).
-
-![](synthesis_files/figure-markdown_github/macd%20ctrlcomp-3.png)
-
-    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
-
-    ## Warning: Removed 2 rows containing non-finite values (stat_bin).
-
-![](synthesis_files/figure-markdown_github/macd%20ctrlcomp-4.png)
-
-    ## Warning: Removed 2 rows containing missing values (geom_point).
-
-![](synthesis_files/figure-markdown_github/macd%20ctrlcomp-5.png)
-
-    ## Warning: Removed 2 rows containing missing values (geom_point).
-
-![](synthesis_files/figure-markdown_github/macd%20ctrlcomp-6.png)
-
-    ## 
-    ##  Paired t-test
-    ## 
-    ## data:  all_di_macd_manip$skew_percentile and all_di_macd_manip$ctrl_skew_percentile
-    ## t = 2.1644, df = 119, p-value = 0.03243
-    ## alternative hypothesis: true difference in means is not equal to 0
-    ## 95 percent confidence interval:
-    ##   0.5271239 11.8517311
-    ## sample estimates:
-    ## mean of the differences 
-    ##                6.189428
-
-    ## 
-    ##  Paired t-test
-    ## 
-    ## data:  all_di_macd_manip$simpson_percentile and all_di_macd_manip$ctrl_simpson_percentile
-    ## t = -1.447, df = 119, p-value = 0.1505
-    ## alternative hypothesis: true difference in means is not equal to 0
-    ## 95 percent confidence interval:
-    ##  -8.033839  1.249765
-    ## sample estimates:
-    ## mean of the differences 
-    ##               -3.392037
-
-    ## 
-    ##  Wilcoxon signed rank test with continuity correction
-    ## 
-    ## data:  all_di_macd_manip$skew_percentile and all_di_macd_manip$ctrl_skew_percentile
-    ## V = 3993, p-value = 0.06652
-    ## alternative hypothesis: true location shift is not equal to 0
-
-    ## 
-    ##  Wilcoxon signed rank test with continuity correction
-    ## 
-    ## data:  all_di_macd_manip$simpson_percentile and all_di_macd_manip$ctrl_simpson_percentile
-    ## V = 2680, p-value = 0.2672
-    ## alternative hypothesis: true location shift is not equal to 0
-
-Change is going to be bounded at 100 and 0: you can't go up or down from there. (Another argument for increasing the number of samples?)
-
-Portal plant manips
-===================
-
-Nsamples, singletons
-
-![](synthesis_files/figure-markdown_github/pp%20overall-1.png)![](synthesis_files/figure-markdown_github/pp%20overall-2.png)
-
-By treatment, season
-
-![](synthesis_files/figure-markdown_github/portal%20trtmt-1.png)![](synthesis_files/figure-markdown_github/portal%20trtmt-2.png)![](synthesis_files/figure-markdown_github/portal%20trtmt-3.png)![](synthesis_files/figure-markdown_github/portal%20trtmt-4.png)
-
-<!-- By year -->
-<!-- ```{r plants year, fig.height = 25, fig.width = 5} -->
+<!-- # Manipulations -->
+<!-- # MACD -->
+<!-- ```{r load macd, include =F} -->
+<!-- cache_loc = "macdb" -->
+<!-- ## Set up the cache and config -->
+<!-- db <- DBI::dbConnect(RSQLite::SQLite(), here::here("analysis", "drake", paste0("drake-cache-", cache_loc, ".sqlite"))) -->
+<!-- cache <- storr::storr_dbi("datatable", "keystable", db) -->
+<!-- all_di_macd <- readd(all_di_obs, cache = cache)  -->
+<!-- all_di_macd_manip <- readd(all_di_manip, cache = cache) -->
+<!-- macd_dat <- readd(dat_s_dat_macdb, cache = cache) -->
+<!-- DBI::dbDisconnect(db) -->
+<!-- rm(cache) -->
+<!-- all_di_macd <- all_di_macd %>% -->
+<!--   mutate(log_nparts = log(gmp:::as.double.bigz(nparts)), -->
+<!--          log_nsamples = log(nsamples)) %>% -->
+<!--   mutate(prop_found = exp(log_nsamples - log_nparts)) %>% -->
+<!--   mutate(found_all = prop_found==1) -->
+<!-- #  -->
+<!-- # all_di_macd_manip <- all_di_macd_manip %>% -->
+<!-- #   mutate(log_nparts = log(gmp:::as.double.bigz(nparts)), -->
+<!-- #          log_nsamples = log(nsamples)) %>% -->
+<!-- #   mutate(prop_found = exp(log_nsamples - log_nparts)) %>% -->
+<!-- #   mutate(found_all = prop_found==1) -->
+<!-- ggplot(data = all_di, aes(x = log(s0), y = log(n0))) + geom_point(alpha = .1) + geom_point(data = all_di_macd, aes(x = log(s0), y = log(n0)), color = "blue", alpha = .9) + theme_bw() -->
+<!-- ggplot(data = filter(all_di, !singletons), aes(x = log(s0), y = log(n0))) + geom_point(alpha = .1) + geom_point(data = filter(all_di_macd, !singletons), aes(x = log(s0), y = log(n0)), color = "blue", alpha = .9) + theme_bw() -->
+<!-- ``` -->
+<!-- Here are the distributions of skew and evenness, overall. -->
+<!-- ```{r macd overall, include =F} -->
+<!-- ggplot(data = all_di_macd, aes(x = skew_percentile)) + -->
+<!--   geom_histogram(bins = 100) + -->
+<!--   theme_bw() + -->
+<!--   facet_wrap(vars(found_all), scales = "free_y") -->
+<!-- ggplot(data = all_di_macd, aes(x = simpson_percentile)) + -->
+<!--   geom_histogram(bins = 100) + -->
+<!--   theme_bw() + -->
+<!--   facet_wrap(vars(found_all), scales = "free_y") -->
+<!-- ``` -->
+<!-- Here is how manipulation affects things: -->
+<!-- ```{r macd ctrlcomp, fig.dim = c(4,4), include =F} -->
+<!-- ggplot(data = all_di_macd_manip, aes(x = skew_percentile, y = ctrl_skew_percentile)) + -->
+<!--   geom_point(alpha = .5) + -->
+<!--   #  xlim(0, 100) + -->
+<!--   # ylim(0, 100) + -->
+<!--   theme_bw() + -->
+<!--   geom_abline(intercept = 0, slope = 1, color = "green") -->
+<!-- ggplot(data = all_di_macd_manip, aes(x = simpson_percentile, y = ctrl_skew_percentile)) + -->
+<!--   geom_point(alpha = .5) + -->
+<!--   xlim(0, 100) + -->
+<!--   ylim(0, 100) + -->
+<!--   theme_bw() + -->
+<!--   geom_abline(intercept = 0, slope = 1, color = "green") -->
+<!-- ggplot(data = all_di_macd_manip, aes(x = simpson_change)) + -->
+<!--   geom_histogram() + -->
+<!--   theme_bw() -->
+<!-- ggplot(data = all_di_macd_manip, aes(x = skew_change)) + -->
+<!--   geom_histogram() + -->
+<!--   theme_bw() -->
+<!-- ggplot(data = all_di_macd_manip, aes(x = ctrl_simpson_percentile, y = simpson_change)) + -->
+<!--   geom_point(alpha = .3) + -->
+<!--   geom_hline(yintercept = 0) + -->
+<!--   theme_bw() -->
+<!-- ggplot(data = all_di_macd_manip, aes(x = ctrl_skew_percentile, y = skew_change)) + -->
+<!--   geom_point(alpha = .3) + -->
+<!--   geom_hline(yintercept = 0) + -->
+<!--   theme_bw() -->
+<!-- print(t.test(all_di_macd_manip$skew_percentile, all_di_macd_manip$ctrl_skew_percentile, paired = T) -->
+<!-- ) -->
+<!-- print(t.test(all_di_macd_manip$simpson_percentile, all_di_macd_manip$ctrl_simpson_percentile, paired = T) -->
+<!-- ) -->
+<!-- print(wilcox.test(all_di_macd_manip$skew_percentile, all_di_macd_manip$ctrl_skew_percentile, paired = T)) -->
+<!-- print(wilcox.test(all_di_macd_manip$simpson_percentile, all_di_macd_manip$ctrl_simpson_percentile, paired = T)) -->
+<!-- ``` -->
+<!-- Change is going to be bounded at 100 and 0: you can't go up or down from there. (Another argument for increasing the number of samples?) -->
+<!-- # Portal plant manips -->
+<!-- ```{r load pp, include = F} -->
+<!-- cache_loc = "portal_plants_manip" -->
+<!-- ## Set up the cache and config -->
+<!-- db <- DBI::dbConnect(RSQLite::SQLite(), here::here("analysis", "drake", paste0("drake-cache-", cache_loc, ".sqlite"))) -->
+<!-- cache <- storr::storr_dbi("datatable", "keystable", db) -->
+<!-- all_di_p<- readd(all_di_manip, cache = cache)  -->
+<!-- all_di_p <- all_di_p %>% -->
+<!--   mutate(log_nparts = log(gmp:::as.double.bigz(nparts)), -->
+<!--          log_nsamples = log(nsamples)) %>% -->
+<!--   mutate(prop_found = exp(log_nsamples - log_nparts)) %>% -->
+<!--   mutate(found_all = prop_found==1) -->
+<!-- DBI::dbDisconnect(db) -->
+<!-- rm(cache) -->
+<!-- ``` -->
+<!-- Nsamples, singletons -->
+<!-- ```{r pp overall, include = F} -->
+<!-- #  -->
+<!-- # ggplot(data = all_di_p, aes(x = nsamples)) + -->
+<!-- #   geom_histogram(bins = 100) + -->
+<!-- #   theme_bw() + -->
+<!-- #   geom_vline(xintercept = 2000) -->
+<!-- #  -->
+<!-- # all_di_p <- filter(all_di_p, nsamples >= 2000) -->
+<!-- ggplot(data = all_di_p, aes(x = skew_percentile)) + -->
+<!--   geom_histogram(bins = 100) + -->
+<!--   theme_bw() + -->
+<!--   facet_wrap(vars(found_all), scales = "free_y") -->
+<!-- ggplot(data = all_di_p, aes(x = simpson_percentile)) + -->
+<!--   geom_histogram(bins = 100) + -->
+<!--   theme_bw() + -->
+<!--   facet_wrap(vars(found_all), scales = "free_y") -->
+<!-- #  -->
+<!-- # pp_singletons_effect <- all_di_p %>% -->
+<!-- #   select(singletons, skew_percentile, simpson_percentile, year, plot, treatment, season) %>% -->
+<!-- #   tidyr::pivot_wider(names_from = singletons, values_from = c("skew_percentile", "simpson_percentile")) -->
+<!-- #  -->
+<!-- # ggplot(data = pp_singletons_effect, aes(x = skew_percentile_FALSE, y  = skew_percentile_TRUE)) + -->
+<!-- #   geom_point(alpha = .1) + -->
+<!-- #   geom_abline(intercept = 0, slope = 1, color = "green") + -->
+<!-- #   theme_bw() -->
+<!-- #  -->
+<!-- #  -->
+<!-- # ggplot(data = pp_singletons_effect, aes(x = simpson_percentile_FALSE, y  = simpson_percentile_TRUE)) + -->
+<!-- #   geom_point(alpha = .1) + -->
+<!-- #   geom_abline(intercept = 0, slope = 1, color = "green") + -->
+<!-- #   theme_bw() -->
+<!-- ``` -->
+<!-- By treatment, season -->
+<!-- ```{r portal trtmt, include =F} -->
+<!-- ggplot(data = filter(all_di_p, singletons == F), aes(x = skew_percentile)) + -->
+<!--   geom_histogram(bins = 100) + -->
+<!--   theme_bw() + -->
+<!--   facet_wrap(vars(season, treatment), scales = "free_y") -->
 <!-- ggplot(data = filter(all_di_p, singletons == F), aes(x = treatment, y = skew_percentile)) + -->
 <!--   geom_boxplot() + -->
 <!--   theme_bw() + -->
-<!--   facet_grid(rows = vars(year), cols = vars(season), scales = "free_y") -->
+<!--   facet_wrap(vars(season)) -->
+<!-- ggplot(data = filter(all_di_p, singletons == F), aes(x = simpson_percentile)) + -->
+<!--   geom_histogram(bins = 100) + -->
+<!--   theme_bw() + -->
+<!--   facet_wrap(vars(season, treatment), scales = "free_y") -->
 <!-- ggplot(data = filter(all_di_p, singletons == F), aes(x = treatment, y = simpson_percentile)) + -->
 <!--   geom_boxplot() + -->
 <!--   theme_bw() + -->
-<!--   facet_grid(rows = vars(year), cols = vars(season), scales = "free_y") -->
+<!--   facet_wrap(vars(season)) -->
 <!-- ``` -->
-Median
+<!-- <!-- By year -->
+--&gt;
 
-    ## Warning: Removed 9 rows containing missing values (geom_point).
+<!-- <!-- ```{r plants year, fig.height = 25, fig.width = 5} -->
+--&gt;
 
-    ## Warning: Removed 9 rows containing missing values (geom_point).
+<!-- <!-- ggplot(data = filter(all_di_p, singletons == F), aes(x = treatment, y = skew_percentile)) + -->
+--&gt; <!-- <!--   geom_boxplot() + --> --&gt; <!-- <!--   theme_bw() + --> --&gt; <!-- <!--   facet_grid(rows = vars(year), cols = vars(season), scales = "free_y") --> --&gt; <!-- <!-- ggplot(data = filter(all_di_p, singletons == F), aes(x = treatment, y = simpson_percentile)) + --> --&gt; <!-- <!--   geom_boxplot() + --> --&gt; <!-- <!--   theme_bw() + --> --&gt; <!-- <!--   facet_grid(rows = vars(year), cols = vars(season), scales = "free_y") --> --&gt; <!-- <!-- ``` --> --&gt;
 
-![](synthesis_files/figure-markdown_github/pp%20median-1.png)
-
-    ## Warning: Removed 6 rows containing missing values (geom_point).
-
-    ## Warning: Removed 7 rows containing missing values (geom_point).
-
-![](synthesis_files/figure-markdown_github/pp%20median-2.png)
+<!-- Median -->
+<!-- ```{r pp median, fig.width = 12, fig.height = 12, include =F} -->
+<!-- pp_median <- all_di_p %>% -->
+<!--   filter(singletons == F) %>% -->
+<!--   group_by(season, year, treatment) %>% -->
+<!--   summarize(skew_percentile = median(skew_percentile), -->
+<!--             simpson_percentile = median(simpson_percentile)) %>% -->
+<!--   ungroup() %>% -->
+<!--   tidyr::pivot_wider(names_from = treatment, values_from = c(skew_percentile, simpson_percentile)) -->
+<!-- sk_x <- ggplot(data = pp_median, aes(x = skew_percentile_control, y = skew_percentile_exclosure)) + -->
+<!--   geom_point(alpha = .5) + -->
+<!--   facet_wrap(vars(season)) + -->
+<!--   theme_bw() + -->
+<!--   ggtitle("Skew Ctrl v Exclosure") + -->
+<!--   geom_abline(intercept = 0, slope = 1, color = "green") + -->
+<!--   xlim(40, 100) + -->
+<!--   ylim(40, 100) -->
+<!-- sk_r <- ggplot(data = pp_median, aes(x = skew_percentile_control, y = skew_percentile_removal)) + -->
+<!--   geom_point(alpha = .5) + -->
+<!--   facet_wrap(vars(season)) + -->
+<!--   theme_bw() + -->
+<!--   ggtitle("Skew Ctrl v Removal") + -->
+<!--   geom_abline(intercept = 0, slope = 1, color = "green") + -->
+<!--   xlim(40, 100) + -->
+<!--   ylim(40, 100) -->
+<!-- gridExtra::grid.arrange(grobs = list(sk_x, sk_r), nrow = 2) -->
+<!-- sp_x <- ggplot(data = pp_median, aes(x = simpson_percentile_control, y = simpson_percentile_exclosure)) + -->
+<!--   geom_point(alpha = .5) + -->
+<!--   facet_wrap(vars(season)) + -->
+<!--   theme_bw() + -->
+<!--   ggtitle("Simpson Ctrl v Exclosure") + -->
+<!--   geom_abline(intercept = 0, slope = 1, color = "green") + -->
+<!--   xlim(0, 40) + -->
+<!--   ylim(0, 40) -->
+<!-- sp_r <- ggplot(data = pp_median, aes(x = simpson_percentile_control, y = simpson_percentile_removal)) + -->
+<!--   geom_point(alpha = .5) + -->
+<!--   facet_wrap(vars(season)) + -->
+<!--   theme_bw() + -->
+<!--   ggtitle("Simpson Ctrl v Removal") + -->
+<!--   geom_abline(intercept = 0, slope = 1, color = "green") + -->
+<!--   xlim(0, 40) + -->
+<!--   ylim(0, 40) -->
+<!-- gridExtra::grid.arrange(grobs = list(sp_x, sp_r), nrow = 2) -->
+<!-- ``` -->

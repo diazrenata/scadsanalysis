@@ -8,6 +8,8 @@ datasets <- "portal_plants"
 
 sites_list <- list_sites("portal_plants")
 ndraws = 4000
+nresamples <- 4000
+
 #sites_list <- sites_list[1:15, ]
 set.seed(1977)
 
@@ -28,6 +30,12 @@ all <- drake_plan(
                                 singletons = !!c(TRUE, FALSE))),
   di = target(add_dis(fs),
               transform = map(fs)),
+  diffs = target(rep_diff_sampler(fs, ndraws = !!nresamples),
+                 transform = map(fs)),
+  diffs_summary = target(summarize_diffs(diffs),
+                         transform = map(diffs)),
+  all_diffs = target(dplyr::bind_rows(diffs_summary),
+                     transform = combine(diffs_summary)),
   di_obs = target(pull_di(di),
                   transform = map(di)),
   di_obs_s = target(dplyr::bind_rows(di_obs),

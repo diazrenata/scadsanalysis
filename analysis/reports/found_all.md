@@ -44,16 +44,47 @@ We expect issues of small N, but not for communities even so large. So if there 
 
 ![](found_all_files/figure-markdown_github/nparts%20classification-1.png)
 
-Communities with more than 2.202646610^{4} parts in the FS account for about 33.7389531% of communities.
+Communities with more than 2.202646610^{4} parts in the FS account for about 21.4649939% of communities.
 
 ![](found_all_files/figure-markdown_github/nparts%20by%20dat-1.png)
 
-    ## # A tibble: 6 x 3
+    ## # A tibble: 7 x 3
     ##   dat              prop_more_than_10 nsites
     ##   <chr>                        <dbl>  <int>
-    ## 1 bbs                          0.999   2773
-    ## 2 fia_short                    0.115  10355
-    ## 3 gentry                       0.987    223
-    ## 4 mcdb                         0.467    613
-    ## 5 misc_abund_short             0.799    542
-    ## 6 portal_plants                0.951     61
+    ## 1 bbs                         0.999    2773
+    ## 2 fia_short                   0.115   10355
+    ## 3 fia_small                   0.0341  10000
+    ## 4 gentry                      0.987     223
+    ## 5 mcdb                        0.467     613
+    ## 6 misc_abund_short            0.799     542
+    ## 7 portal_plants               0.951      61
+
+![](found_all_files/figure-markdown_github/nparts%20and%20dat-1.png)![](found_all_files/figure-markdown_github/nparts%20and%20dat-2.png)
+
+    ## Warning: Removed 2638 rows containing missing values (geom_point).
+
+![](found_all_files/figure-markdown_github/nparts%20variability-1.png)
+
+    ## Warning: Removed 53 rows containing missing values (geom_point).
+
+![](found_all_files/figure-markdown_github/nparts%20variability-2.png)
+
+![](found_all_files/figure-markdown_github/mean%20v%20sd-1.png)![](found_all_files/figure-markdown_github/mean%20v%20sd-2.png)![](found_all_files/figure-markdown_github/mean%20v%20sd-3.png)
+
+Mean and sd are correlated.
+
+![](found_all_files/figure-markdown_github/cv%20in%20space-1.png)![](found_all_files/figure-markdown_github/cv%20in%20space-2.png)
+
+Coefficients of variation for skewness and evenness follow clear S and N gradients.
+
+    ## Warning: Removed 194 rows containing missing values (geom_point).
+
+![](found_all_files/figure-markdown_github/cv%20v%20nparts-1.png)
+
+    ## Warning: Removed 194 rows containing missing values (geom_point).
+
+![](found_all_files/figure-markdown_github/cv%20v%20nparts-2.png)
+
+The CV scans with nparts and drops off suspiciously right around the same place where the threshold shows up for percentile.
+
+![](found_all_files/figure-markdown_github/cv%20v%20percentile-1.png)![](found_all_files/figure-markdown_github/cv%20v%20percentile-2.png)

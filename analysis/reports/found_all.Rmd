@@ -158,7 +158,7 @@ filter(all_di, !singletons, s0 >= 3) %>%
   ungroup() 
 ```
 
-```{r nparts and dat, fig.dim = c(15,15), include = F}
+```{r nparts and dat, fig.dim = c(15,15)}
 for(i in 1:nrow(all_di)) {
   if(as.numeric(levels(all_di$nparts_binned)[as.numeric(all_di$nparts_binned[i])]) >= 50) {
     all_di$nparts_binned[i] <- 50
@@ -178,4 +178,107 @@ ggplot(filter(all_di, !singletons, s0 >= 3), aes(x = skew_percentile)) +
   theme_bw() +
   facet_wrap(vars(nparts_binned, dat), scales = "free_y", ncol = length(unique(all_di$dat)), drop = F)
 
+```
+
+```{r nparts variability}
+
+ggplot(filter(all_di, !singletons, s0 >= 3, !is.infinite(skew_sd), !is.infinite(skew_mean), nsamples >2), aes(x = log_nparts, y = (skew_sd/skew_mean), color = skew_percentile)) +
+  geom_point(alpha = .1) +
+  theme_bw() +
+  geom_vline(xintercept = 10) +
+  scale_color_viridis_c() +
+  ylim(-0, 1) +
+  xlim(0, 100)
+
+
+
+ggplot(filter(all_di, !singletons, s0 >= 3, !is.infinite(simpson_sd), !is.infinite(simpson_sd), nsamples >2), aes(x = log_nparts, y = (simpson_sd/simpson_mean), color = simpson_percentile)) +
+  geom_point(alpha = .1) +
+  theme_bw() +
+  geom_vline(xintercept = 10) +
+  scale_color_viridis_c() +
+  xlim(0, 100)
+
+```
+
+```{r mean v sd}
+
+ggplot(filter(all_di, !is.infinite(skew_mean), !is.infinite(skew_sd)), aes(x = skew_mean, y = skew_sd)) +
+  geom_point() +
+  theme_bw()
+
+all_di <- all_di %>%
+  mutate(skew_cv = skew_sd / abs(skew_mean),
+         simpson_cv = simpson_sd / abs(simpson_mean))
+
+
+ggplot(filter(all_di, !is.infinite(skew_mean), !is.infinite(skew_sd)), aes(x = skew_mean, y = skew_sd)) +
+  geom_point() +
+  theme_bw() +
+  scale_color_viridis_c()
+
+
+ggplot(filter(all_di, !is.infinite(simpson_mean), !is.infinite(simpson_sd)), aes(x = simpson_mean, y = simpson_sd)) +
+  geom_point() +
+  theme_bw() +
+  scale_color_viridis_c()
+
+```
+
+Mean and sd are correlated.
+
+```{r cv in space}
+
+ggplot(filter(all_di, !singletons, !is.infinite(skew_mean), s0 >= 3, !is.infinite(skew_sd), nparts > 2), aes(log(s0), log(n0), color = log(skew_cv))) +
+  geom_point(alpha = .15) +
+  scale_color_viridis_c(option = "plasma", end = .9) +
+  theme_bw() 
+# +
+  # facet_wrap(vars(more_than_10))
+
+ggplot(filter(all_di, !singletons, !is.infinite(simpson_mean), s0 >= 2, !is.infinite(simpson_mean), nparts > 2), aes(log(s0), log(n0), color = log(simpson_cv))) +
+  geom_point(alpha = .15) +
+  scale_color_viridis_c(option = "plasma", end = .9) +
+  theme_bw() 
+# +
+  # facet_wrap(vars(more_than_10))
+```
+
+Coefficients of variation for skewness and evenness follow clear S and N gradients.
+
+```{r cv v nparts}
+ggplot(filter(all_di, !singletons, !is.infinite(skew_mean), s0 >= 3, !is.infinite(skew_sd), nparts > 2), aes(x = log_nparts, y = skew_cv)) +
+  geom_point(alpha = .05) +
+  theme_bw() +
+  geom_vline(xintercept = 10) +
+  xlim(0, 75)
+
+
+ggplot(filter(all_di, !singletons, !is.infinite(simpson_mean), s0 >= 2, !is.infinite(simpson_mean), nparts > 2), aes(x = log_nparts, y = simpson_cv)) +
+  geom_point(alpha = .05) +
+  theme_bw() +
+  geom_vline(xintercept = 10) +
+  xlim(0, 75)
+```
+
+The CV scans with nparts and drops off suspiciously right around the same place where the threshold shows up for percentile.
+
+```{r cv v percentile}
+all_di <- all_di %>%
+  group_by_all() %>%
+  mutate(log_nparts_thresh = min(log_nparts, 5)) %>%
+  ungroup()
+
+ggplot(filter(all_di, !singletons, !is.infinite(skew_mean), s0 >= 3, !is.infinite(skew_sd), nparts > 2), aes(y = skew_cv, x = skew_percentile, color = log_nparts_thresh)) +
+  geom_point(alpha = .1) +
+  theme_bw() +
+  facet_wrap(vars(more_than_10)) +
+  scale_color_viridis_c()
+
+
+ggplot(filter(all_di, !singletons, !is.infinite(simpson_mean), s0 >= 2, !is.infinite(simpson_sd), nparts > 2), aes(y = simpson_cv, x = simpson_percentile, color = log_nparts_thresh)) +
+  geom_point(alpha = .1) +
+  theme_bw() +
+  facet_wrap(vars(more_than_10)) +
+  scale_color_viridis_c() 
 ```
