@@ -8,6 +8,8 @@ datasets <- "fia_small"
 
 sites_list <- list_sites("fia_small")
 ndraws = 4000
+nresamples <- 4000
+
 #sites_list <- sites_list[1:4, ]
 set.seed(1978)
 
