@@ -29,7 +29,7 @@ for(i in 1:length(datasets)) {
 
   all_di[[i]] <- filter(all_di[[i]], source == "observed")
 
-  if("all_diffs" %in% cached(cache)) {
+  if("all_diffs" %in% cached(cache = cache)) {
     all_diffs[[i]] <- readd(all_diffs, cache = cache)
 
     all_diffs[[i]] <- select(all_diffs[[i]], -source)
