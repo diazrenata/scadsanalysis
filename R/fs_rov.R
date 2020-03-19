@@ -143,13 +143,18 @@ fs_diff_sampler <- function(fs_set) {
 #'
 #' @return df of comparisons
 #' @export
-#' @importFrom dplyr bind_rows distinct_at mutate
+#' @importFrom dplyr bind_rows distinct_at mutate filter
 rep_diff_sampler <- function(fs_set, ndraws) {
 
   if(nrow(fs_set) < 1) {
     return()
   }
 
+  fs_set <- dplyr::filter(fs_set, source == "sampled")
+
+  if(nrow(fs_set) < 1) {
+    return()
+  }
   diff_df <- dplyr::bind_rows(replicate(n = ndraws, expr = fs_diff_sampler(fs_set), simplify = F))
 
   diff_df <- diff_df %>%
