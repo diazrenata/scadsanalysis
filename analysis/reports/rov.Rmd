@@ -1,0 +1,89 @@
+---
+title: "ROV report"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(drake)
+library(dplyr)
+library(ggplot2)
+
+all_di <- read.csv(here::here("analysis", "reports", "all_di.csv"), stringsAsFactors = F)
+
+all_di <- all_di %>%
+  mutate(log_nparts = log(gmp:::as.double.bigz(nparts)),
+         log_nsamples = log(nsamples)) %>%
+  mutate(prop_found = exp(log_nsamples - log_nparts)) %>%
+  mutate(found_all = prop_found==1) %>%
+  filter(dat == "portal_plants")
+
+all_diffs <- read.csv(here::here("all_diffs.csv"), stringsAsFactors = F)
+
+all_diffs <- all_diffs %>%
+  select(-X, -source)
+
+all_di <- left_join(all_di, all_diffs)
+
+all_di <- filter(all_di, s0 > 1)
+```
+
+# Datasets in S and N space
+
+Here is where our communities fall in S and N space:
+
+```{r datasets in s and n space}
+ggplot(filter(all_di, singletons == F), aes(x = log(s0), y = log(n0), color = dat)) +
+  geom_point(alpha = .8) +
+  theme_bw() +
+  theme(legend.position = "top") + scale_color_viridis_d()
+
+```
+
+Here is how that translates into the size of the feasible set:
+
+```{r size of fs}
+ggplot(filter(all_di, singletons == F), aes(x = log(s0), y = log(n0), color = log_nparts)) +
+  geom_point(alpha = .5) +
+  theme_bw() +
+  theme(legend.position = "top") + scale_color_viridis_c(option = "magma", end = .9, begin = .1)
+
+```
+And various metrics of the ROV of the feasible set:
+
+```{r fs rov}
+
+rov_long <- all_di %>%
+  select(dat, site, singletons, s0, n0, mean_r2, mean_cd, mean_prop_off, mean_div, log_nparts) %>%
+  tidyr::pivot_longer(cols = starts_with("mean"),
+                      names_to = "rov_index",
+                      values_to = "val")
+rov_plots <- list()
+
+for(i in 1:length(unique(rov_long$rov_index))) {
+  rov_plots[[i]] <- ggplot(filter(rov_long, rov_index == unique(rov_long$rov_index)[i]), aes(log(s0), log(n0), color = val)) +
+    geom_point() +
+    theme_bw() +
+    scale_color_viridis_c() +
+    ggtitle(unique(rov_long$rov_index)[i])
+}
+
+gridExtra::grid.arrange(grobs = rov_plots)
+```
+
+Here is how ROV corresponds to nparts:
+
+```{r rov lognparts}
+
+rov_nparts_plots <- list()
+
+for(i in 1:length(unique(rov_long$rov_index))) {
+  rov_nparts_plots[[i]] <- ggplot(filter(rov_long, rov_index == unique(rov_long$rov_index)[i]), aes(log_nparts, val)) +
+    geom_point() +
+    theme_bw() +
+    ggtitle(unique(rov_long$rov_index)[i])
+}
+
+gridExtra::grid.arrange(grobs = rov_nparts_plots)
+
+```

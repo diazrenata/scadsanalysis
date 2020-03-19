@@ -4,6 +4,7 @@ library(ggplot2)
 library(scadsanalysis)
 
 all_di <- list()
+all_diffs <- list()
 datasets <- c("bbs", "fia_short", "gentry", "mcdb", "misc_abund_short", "portal_plants", "fia_small")
 
 #datasets <- c("fia", "gentry", "mcdb", "misc_abund_short", "portal_plants")
@@ -28,9 +29,16 @@ for(i in 1:length(datasets)) {
 
   all_di[[i]] <- filter(all_di[[i]], source == "observed")
 
+  if("all_diffs" %in% cached(cache)) {
+    all_diffs[[i]] <- readd(all_diffs, cache = cache)
+
+    all_diffs[[i]] <- select(all_diffs[[i]], -source)
+
+    all_di[[i]] <- left_join(all_di[[i]], all_diffs[[i]])
+  }
   #this_dat <- readd(paste0("dat_s_dat_", this_dataset), cache = cache, character_only = T)
- # sv <- get_statevars(this_dat)
-#  all_di[[i]] <- left_join(all_di[[i]], sv, by = c("sim", "site", "source", "singletons", "dat"))
+  # sv <- get_statevars(this_dat)
+  #  all_di[[i]] <- left_join(all_di[[i]], sv, by = c("sim", "site", "source", "singletons", "dat"))
 
 
   DBI::dbDisconnect(db)
