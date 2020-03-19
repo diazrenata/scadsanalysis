@@ -16,7 +16,9 @@ all_di <- all_di %>%
          log_nsamples = log(nsamples)) %>%
   mutate(prop_found = exp(log_nsamples - log_nparts)) %>%
   mutate(found_all = prop_found==1) %>%
-  filter(dat == "portal_plants")
+  filter(dat == "portal_plants") %>% 
+    mutate(binned_nparts = as.factor(ceiling(log_nparts/10)))
+
 
 all_diffs <- read.csv(here::here("all_diffs.csv"), stringsAsFactors = F)
 
@@ -49,12 +51,23 @@ ggplot(filter(all_di, singletons == F), aes(x = log(s0), y = log(n0), color = lo
   theme(legend.position = "top") + scale_color_viridis_c(option = "magma", end = .9, begin = .1)
 
 ```
+
+Exploring ways we might bin nparts:
+
+```{r nparts distribution}
+
+ggplot(filter(all_di, singletons == F), aes(log_nparts)) +
+  geom_histogram(binwidth = 10, boundary = 0, color = "black", alpha = 0) +
+  theme_bw()
+
+```
+
 And various metrics of the ROV of the feasible set:
 
 ```{r fs rov}
 
 rov_long <- all_di %>%
-  select(dat, site, singletons, s0, n0, mean_r2, mean_cd, mean_prop_off, mean_div, log_nparts) %>%
+  select(dat, site, singletons, s0, n0, skew_percentile, simpson_percentile, mean_r2, mean_cd, mean_prop_off, mean_div, log_nparts, binned_nparts) %>%
   tidyr::pivot_longer(cols = starts_with("mean"),
                       names_to = "rov_index",
                       values_to = "val")
@@ -81,9 +94,54 @@ for(i in 1:length(unique(rov_long$rov_index))) {
   rov_nparts_plots[[i]] <- ggplot(filter(rov_long, rov_index == unique(rov_long$rov_index)[i]), aes(log_nparts, val)) +
     geom_point() +
     theme_bw() +
-    ggtitle(unique(rov_long$rov_index)[i])
+    ggtitle(unique(rov_long$rov_index)[i]) +
+    geom_vline(xintercept = 10)
 }
 
 gridExtra::grid.arrange(grobs = rov_nparts_plots)
 
 ```
+
+If we bin nparts:
+
+```{r binned nparts ROV}
+
+rov_nparts_binned_plots <- list()
+
+for(i in 1:length(unique(rov_long$rov_index))) {
+  rov_nparts_binned_plots[[i]] <- ggplot(filter(rov_long, rov_index == unique(rov_long$rov_index)[i]), aes(binned_nparts, val)) +
+    geom_boxplot() +
+    theme_bw()
+}
+
+gridExtra::grid.arrange(grobs = rov_nparts_binned_plots)
+```
+
+## Percentile distributions
+
+Overall:
+
+```{r percentiles overall}
+
+ggplot(filter(all_di, !singletons), aes(x = skew_percentile)) +
+  geom_histogram(bins = 100, boundary = 0) +
+  theme_bw()
+
+ggplot(filter(all_di, !singletons), aes(x = simpson_percentile)) +
+  geom_histogram(bins = 100, boundary = 0) +
+  theme_bw()
+
+```
+
+Binned:
+
+```{r binned percentiles}
+
+ggplot(filter(all_di, !singletons), aes(x = skew_percentile)) +
+  geom_histogram(bins = 100, boundary = 0) +
+  theme_bw() +
+  facet_wrap(vars(binned_nparts))
+
+```
+
+OK, these visualiations are pretty hard with this dataset (not very many small communities). Try after adding FIA?
