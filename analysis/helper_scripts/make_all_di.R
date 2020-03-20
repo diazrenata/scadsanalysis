@@ -32,7 +32,7 @@ for(i in 1:length(datasets)) {
   #if("all_diffs" %in% cached(cache = cache)) {
   diffs <- try(readd(all_diffs, cache = cache))
 
-  if(is.data.frane(diffs)) {
+  if(is.data.frame(diffs)) {
 
     all_diffs[[i]] <- select(all_diffs[[i]], -source)
 
