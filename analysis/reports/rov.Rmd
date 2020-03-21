@@ -18,7 +18,7 @@ all_di <- all_di %>%
          log_nsamples = log(nsamples)) %>%
   mutate(prop_found = exp(log_nsamples - log_nparts)) %>%
   mutate(found_all = prop_found==1) %>% 
-    mutate(binned_nparts = as.factor(ceiling(log_nparts/10)))
+    mutate(binned_nparts = as.factor(ceiling(log_nparts/5)))
 
 
 diffs <- list.files(here::here("analysis", "results"), pattern = "diff_")
@@ -126,7 +126,7 @@ Overall:
 
 ```{r percentiles overall}
 
-ggplot(filter(all_di, !singletons), aes(x = skew_percentile)) +
+ggplot(filter(all_di, !singletons, s0 > 2), aes(x = skew_percentile)) +
   geom_histogram(bins = 100, boundary = 0) +
   theme_bw()
 
@@ -140,7 +140,12 @@ Binned:
 
 ```{r binned percentiles}
 
-ggplot(filter(all_di, !singletons), aes(x = skew_percentile)) +
+ggplot(filter(all_di, !singletons, s0 > 2), aes(x = skew_percentile)) +
+  geom_histogram(bins = 100, boundary = 0) +
+  theme_bw() +
+  facet_wrap(vars(binned_nparts))
+
+ggplot(filter(all_di, !singletons), aes(x = simpson_percentile)) +
   geom_histogram(bins = 100, boundary = 0) +
   theme_bw() +
   facet_wrap(vars(binned_nparts))

@@ -53,6 +53,6 @@ Overall:
 
 Binned:
 
-![](rov_files/figure-markdown_github/binned%20percentiles-1.png)
+![](rov_files/figure-markdown_github/binned%20percentiles-1.png)![](rov_files/figure-markdown_github/binned%20percentiles-2.png)
 
 OK, these visualiations are pretty hard with this dataset (not very many small communities). Try after adding FIA?
