@@ -9,21 +9,24 @@ library(drake)
 library(dplyr)
 library(ggplot2)
 
-all_di <- read.csv(here::here("analysis", "reports", "all_di.csv"), stringsAsFactors = F)
+dis <- list.files(here::here("analysis", "results"), pattern = "all_di")
+all_di <- lapply(dis, FUN = function(di_df) return(read.csv(here::here("analysis", "results", di_df), stringsAsFactors = F)))
+all_di <- bind_rows(all_di)
 
 all_di <- all_di %>%
   mutate(log_nparts = log(gmp:::as.double.bigz(nparts)),
          log_nsamples = log(nsamples)) %>%
   mutate(prop_found = exp(log_nsamples - log_nparts)) %>%
-  mutate(found_all = prop_found==1) %>%
-  filter(dat == "portal_plants") %>% 
+  mutate(found_all = prop_found==1) %>% 
     mutate(binned_nparts = as.factor(ceiling(log_nparts/10)))
 
 
-all_diffs <- read.csv(here::here("all_diffs.csv"), stringsAsFactors = F)
+diffs <- list.files(here::here("analysis", "results"), pattern = "diff_")
+all_diffs <- lapply(diffs, FUN = function(di_df) return(read.csv(here::here("analysis", "results", di_df), stringsAsFactors = F)))
+all_diffs <- bind_rows(all_diffs)
 
 all_diffs <- all_diffs %>%
-  select(-X, -source)
+  select(-source)
 
 all_di <- left_join(all_di, all_diffs)
 
