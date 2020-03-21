@@ -10,19 +10,21 @@ library(dplyr)
 library(ggplot2)
 
 dis <- list.files(here::here("analysis", "results"), pattern = "all_di")
-all_di <- lapply(dis, FUN = function(di_df) return(read.csv(here::here("analysis", "results", di_df), stringsAsFactors = F)))
+all_di <- lapply(dis, FUN = function(di_df) return(mutate(read.csv(here::here("analysis", "results", di_df), stringsAsFactors = F), site = as.character(site))))
 all_di <- bind_rows(all_di)
 
 all_di <- all_di %>%
   mutate(log_nparts = log(gmp:::as.double.bigz(nparts)),
          log_nsamples = log(nsamples)) %>%
   mutate(prop_found = exp(log_nsamples - log_nparts)) %>%
-  mutate(found_all = prop_found==1) %>% 
-    mutate(binned_nparts = as.factor(ceiling(log_nparts/5)))
+  mutate(found_all = prop_found==1,
+         log_log_nparts = log10(log_nparts)) %>% 
+    mutate(binned_nparts = as.factor(ceiling(log_log_nparts/.75))) %>%
+  filter(nparts > 1)
 
 
 diffs <- list.files(here::here("analysis", "results"), pattern = "diff_")
-all_diffs <- lapply(diffs, FUN = function(di_df) return(read.csv(here::here("analysis", "results", di_df), stringsAsFactors = F)))
+all_diffs <- lapply(diffs, FUN = function(di_df) return(mutate(read.csv(here::here("analysis", "results", di_df), stringsAsFactors = F), site = as.character(site))))
 all_diffs <- bind_rows(all_diffs)
 
 all_diffs <- all_diffs %>%
@@ -59,7 +61,7 @@ Exploring ways we might bin nparts:
 
 ```{r nparts distribution}
 
-ggplot(filter(all_di, singletons == F), aes(log_nparts)) +
+ggplot(filter(all_di, singletons == F, nparts > 1), aes(log_log_nparts)) +
   geom_histogram(binwidth = 10, boundary = 0, color = "black", alpha = 0) +
   theme_bw()
 

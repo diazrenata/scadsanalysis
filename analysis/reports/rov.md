@@ -22,25 +22,9 @@ And various metrics of the ROV of the feasible set:
 
 Here is how ROV corresponds to nparts:
 
-    ## Warning: Removed 350 rows containing missing values (geom_point).
-
-    ## Warning: Removed 350 rows containing missing values (geom_point).
-
-    ## Warning: Removed 350 rows containing missing values (geom_point).
-
-    ## Warning: Removed 350 rows containing missing values (geom_point).
-
 ![](rov_files/figure-markdown_github/rov%20lognparts-1.png)
 
 If we bin nparts:
-
-    ## Warning: Removed 350 rows containing non-finite values (stat_boxplot).
-
-    ## Warning: Removed 350 rows containing non-finite values (stat_boxplot).
-
-    ## Warning: Removed 350 rows containing non-finite values (stat_boxplot).
-
-    ## Warning: Removed 350 rows containing non-finite values (stat_boxplot).
 
 ![](rov_files/figure-markdown_github/binned%20nparts%20ROV-1.png)
 
