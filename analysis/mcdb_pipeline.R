@@ -82,7 +82,7 @@ if(grepl("ufhpc", nodename)) {
 
 
 ## make .csv files for easier portability
-summary_targets <- dplyr::filter(dat_plan, substr(target, 0, 8) == "diffs_su")
+summary_targets <- dplyr::filter(all, substr(target, 0, 8) == "diffs_su")
 diffs_summaries <- list()
 for(i in 1:length(summary_targets$target)) {
   diffs_summaries[[i]] <- readd(summary_targets$target[i], cache = cache, character_only = T)
