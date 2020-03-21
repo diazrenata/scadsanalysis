@@ -34,8 +34,6 @@ all <- drake_plan(
                  transform = map(fs)),
   diffs_summary = target(summarize_diffs(diffs),
                          transform = map(diffs)),
-  all_diffs = target(dplyr::bind_rows(diffs_summary),
-                     transform = combine(diffs_summary)),
   di_obs = target(pull_di(di),
                   transform = map(di)),
   di_obs_s = target(dplyr::bind_rows(di_obs),
@@ -81,6 +79,21 @@ if(grepl("ufhpc", nodename)) {
   # Run the pipeline on multiple local cores
   system.time(make(all, cache = cache, cache_log_file = here::here("analysis", "drake", "cache_log_portal_plants.txt"), parallelism = "clustermq", jobs = 2))
 }
+
+
+## make .csv files for easier portability
+summary_targets <- dplyr::filter(dat_plan, substr(target, 0, 8) == "diffs_su")
+diffs_summaries <- list()
+for(i in 1:length(summary_targets$target)) {
+  diffs_summaries[[i]] <- readd(summary_targets$target[i], cache = cache, character_only = T)
+}
+all_summaries <- dplyr::bind_rows(diffs_summaries)
+write.csv(all_summaries, here::here("analysis", "results", "diff_summaries_portal.csv"), row.names = F)
+rm(diffs_summaries)
+rm(all_summaries)
+all_di <- readd(all_di_obs, cache = cache)
+write.csv(all_di, here::here("analysis", "results", "all_di_portal.csv"), row.names = F)
+rm(all_di)
 
 DBI::dbDisconnect(db)
 rm(cache)
