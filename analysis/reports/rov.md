@@ -22,21 +22,15 @@ And various metrics of the ROV of the feasible set:
 
 Here is how ROV corresponds to nparts:
 
-    ## Warning: Removed 22648 rows containing missing values (geom_point).
+    ## Warning: Removed 22546 rows containing missing values (geom_point).
 
 ![](rov_files/figure-markdown_github/rov%20lognparts-1.png)![](rov_files/figure-markdown_github/rov%20lognparts-2.png)![](rov_files/figure-markdown_github/rov%20lognparts-3.png)![](rov_files/figure-markdown_github/rov%20lognparts-4.png)![](rov_files/figure-markdown_github/rov%20lognparts-5.png)
 
+Gentry behaves somewhat strangely in these plots because it has the high proportion of low N/S communities; for these communities, all elements of the FS are squished into being highly even.
+
 If we bin nparts:
 
-    ## Warning: Continuous x aesthetic -- did you forget aes(group=...)?
-
-    ## Warning: Continuous x aesthetic -- did you forget aes(group=...)?
-
-    ## Warning: Continuous x aesthetic -- did you forget aes(group=...)?
-
-    ## Warning: Continuous x aesthetic -- did you forget aes(group=...)?
-
-![](rov_files/figure-markdown_github/binned%20nparts%20ROV-1.png)
+![](rov_files/figure-markdown_github/binned%20nparts%20ROV-1.png)![](rov_files/figure-markdown_github/binned%20nparts%20ROV-2.png)![](rov_files/figure-markdown_github/binned%20nparts%20ROV-3.png)![](rov_files/figure-markdown_github/binned%20nparts%20ROV-4.png)
 
 Percentile distributions
 ------------------------
