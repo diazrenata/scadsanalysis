@@ -8,6 +8,7 @@ datasets <- "misc_abund_short"
 
 sites_list <- list_sites("misc_abund_short")
 ndraws = 4000
+nresamples <- 4000
 #sites_list <- sites_list[1:15, ]
 set.seed(1981)
 
@@ -32,6 +33,10 @@ dat_plan <- drake_plan(
                                                     transform = map(di)),
   di_obs_s = target(dplyr::bind_rows(di_obs),
                     transform = combine(di_obs, .by = singletons)),
+  diffs = target(rep_diff_sampler(fs, ndraws = !!nresamples),
+                 transform = map(fs)),
+  diffs_summary = target(summarize_diffs(diffs),
+                         transform = map(diffs)),
   all_di_obs = target(dplyr::bind_rows(di_obs_s_TRUE, di_obs_s_FALSE)),
   report = target(render_report(here::here("analysis", "reports", "dat_report_template.Rmd"), dependencies = all_di_obs, is_template = TRUE, dat_name = !!datasets),
                   trigger = trigger(condition = T),
@@ -75,6 +80,20 @@ if(grepl("ufhpc", nodename)) {
   # Run the pipeline on multiple local cores
   system.time(make(all, cache = cache, cache_log_file = here::here("analysis", "drake", "cache_log_miscabund.txt"), parallelism = "clustermq", jobs = 2))
 }
+
+## make .csv files for easier portability
+summary_targets <- dplyr::filter(all, substr(target, 0, 8) == "diffs_su")
+diffs_summaries <- list()
+for(i in 1:length(summary_targets$target)) {
+  diffs_summaries[[i]] <- readd(summary_targets$target[i], cache = cache, character_only = T)
+}
+all_summaries <- dplyr::bind_rows(diffs_summaries)
+write.csv(all_summaries, here::here("analysis", "results", "diff_summaries_misc.csv"), row.names = F)
+rm(diffs_summaries)
+rm(all_summaries)
+all_di <- readd(all_di_obs, cache = cache)
+write.csv(all_di, here::here("analysis", "results", "all_di_misc.csv"), row.names = F)
+rm(all_di)
 
 DBI::dbDisconnect(db)
 rm(cache)
