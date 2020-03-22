@@ -14,7 +14,7 @@ Here is how that translates into the size of the feasible set:
 
 Exploring ways we might bin nparts:
 
-![](rov_files/figure-markdown_github/nparts%20distribution-1.png)
+![](rov_files/figure-markdown_github/nparts%20distribution-1.png)![](rov_files/figure-markdown_github/nparts%20distribution-2.png)![](rov_files/figure-markdown_github/nparts%20distribution-3.png)
 
 And various metrics of the ROV of the feasible set:
 
@@ -22,9 +22,19 @@ And various metrics of the ROV of the feasible set:
 
 Here is how ROV corresponds to nparts:
 
-![](rov_files/figure-markdown_github/rov%20lognparts-1.png)
+    ## Warning: Removed 22648 rows containing missing values (geom_point).
+
+![](rov_files/figure-markdown_github/rov%20lognparts-1.png)![](rov_files/figure-markdown_github/rov%20lognparts-2.png)![](rov_files/figure-markdown_github/rov%20lognparts-3.png)![](rov_files/figure-markdown_github/rov%20lognparts-4.png)![](rov_files/figure-markdown_github/rov%20lognparts-5.png)
 
 If we bin nparts:
+
+    ## Warning: Continuous x aesthetic -- did you forget aes(group=...)?
+
+    ## Warning: Continuous x aesthetic -- did you forget aes(group=...)?
+
+    ## Warning: Continuous x aesthetic -- did you forget aes(group=...)?
+
+    ## Warning: Continuous x aesthetic -- did you forget aes(group=...)?
 
 ![](rov_files/figure-markdown_github/binned%20nparts%20ROV-1.png)
 

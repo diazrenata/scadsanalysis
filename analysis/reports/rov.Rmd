@@ -17,10 +17,12 @@ all_di <- all_di %>%
   mutate(log_nparts = log(gmp:::as.double.bigz(nparts)),
          log_nsamples = log(nsamples)) %>%
   mutate(prop_found = exp(log_nsamples - log_nparts)) %>%
-  mutate(found_all = prop_found==1,
-         log_log_nparts = log10(log_nparts)) %>% 
-    mutate(binned_nparts = as.factor(ceiling(log_log_nparts/.75))) %>%
-  filter(nparts > 1)
+  mutate(found_all = prop_found==1) %>% 
+    mutate(binned_nparts = (ceiling(log_nparts/4))) %>%
+  filter(nparts > 1) %>%
+  group_by_all() %>%
+  mutate(thresholded_nparts = min(binned_nparts, 5)) %>%
+  ungroup()
 
 
 diffs <- list.files(here::here("analysis", "results"), pattern = "diff_")
@@ -61,8 +63,18 @@ Exploring ways we might bin nparts:
 
 ```{r nparts distribution}
 
-ggplot(filter(all_di, singletons == F, nparts > 1), aes(log_log_nparts)) +
+ggplot(filter(all_di, singletons == F, nparts > 1), aes(log_nparts)) +
   geom_histogram(binwidth = 10, boundary = 0, color = "black", alpha = 0) +
+  theme_bw()
+
+
+ggplot(filter(all_di, singletons == F, nparts > 1), aes(binned_nparts)) +
+  geom_histogram(binwidth = 10, boundary = 0, color = "black", alpha = 0) +
+  theme_bw()
+
+
+ggplot(filter(all_di, singletons == F, nparts > 1), aes(thresholded_nparts)) +
+  geom_histogram(bins = 5, color = "black", alpha = 0) +
   theme_bw()
 
 ```
@@ -96,15 +108,26 @@ Here is how ROV corresponds to nparts:
 rov_nparts_plots <- list()
 
 for(i in 1:length(unique(rov_long$rov_index))) {
-  rov_nparts_plots[[i]] <- ggplot(filter(rov_long, rov_index == unique(rov_long$rov_index)[i]), aes(log_nparts, val)) +
+  rov_nparts_plots[[i]] <- ggplot(filter(rov_long, rov_index == unique(rov_long$rov_index)[i]), aes(log_nparts, val, color = dat)) +
     geom_point() +
     theme_bw() +
     ggtitle(unique(rov_long$rov_index)[i]) +
-    geom_vline(xintercept = 10)
+    geom_vline(xintercept = 10) +
+    scale_color_viridis_d() +
+    theme(legend.position = "none")
 }
 
-gridExtra::grid.arrange(grobs = rov_nparts_plots)
+ggplot(filter(rov_long, rov_index == unique(rov_long$rov_index)[i]), aes(log_nparts, val, color = dat)) +
+  geom_point() +
+    scale_color_viridis_d() +
+  xlim(0,0) +
+  ylim(0,0) + 
+  theme_minimal() +
+theme(legend.position=c(.5, .5))
 
+for(i in 1:length(rov_nparts_plots)) {
+  print(rov_nparts_plots[[i]])
+}
 ```
 
 If we bin nparts:
@@ -145,12 +168,12 @@ Binned:
 ggplot(filter(all_di, !singletons, s0 > 2), aes(x = skew_percentile)) +
   geom_histogram(bins = 100, boundary = 0) +
   theme_bw() +
-  facet_wrap(vars(binned_nparts))
+  facet_wrap(vars(thresholded_nparts), scales = "free_y")
 
 ggplot(filter(all_di, !singletons), aes(x = simpson_percentile)) +
   geom_histogram(bins = 100, boundary = 0) +
   theme_bw() +
-  facet_wrap(vars(binned_nparts))
+  facet_wrap(vars(thresholded_nparts), scales = "free_y")
 
 ```
 
