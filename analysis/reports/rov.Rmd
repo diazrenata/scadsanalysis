@@ -34,6 +34,14 @@ all_diffs <- all_diffs %>%
 
 all_di <- left_join(all_di, all_diffs)
 
+all_di_singletons <- filter(all_di, s0 > 2, dat != "portal_plants", singletons) 
+
+rov_long_singletons <- all_di_singletons %>%
+  select(dat, site, singletons, s0, n0, skew_percentile, simpson_percentile, mean_r2, mean_cd, mean_prop_off, mean_div, log_nparts, binned_nparts, thresholded_nparts) %>%
+  tidyr::pivot_longer(cols = starts_with("mean"),
+                      names_to = "rov_index",
+                      values_to = "val")
+
 all_di <- filter(all_di, s0 > 2, dat != "portal_plants", !singletons)
 
 
@@ -74,6 +82,16 @@ rov_long <- rov_long %>%
   ungroup()
 
 all_di <- all_di %>%
+  mutate(qbinned_lognparts = bin_rov(log_nparts, nbins = 10, quantiles = T, as.fact = T)) 
+
+rov_long_singletons <- rov_long_singletons %>%
+  group_by(rov_index) %>%
+  mutate(binned_val = bin_rov(val, nbins =5 ),
+         qbinned_val = bin_rov(val, nbins = 5, quantiles = T),
+         qbinned_lognparts = bin_rov(log_nparts, nbins = 10, quantiles = T, as.fact = T)) %>%
+  ungroup()
+
+all_di_singletons <- all_di_singletons %>%
   mutate(qbinned_lognparts = bin_rov(log_nparts, nbins = 10, quantiles = T, as.fact = T)) 
 
 ```
@@ -230,7 +248,7 @@ for(i in 1:length(rov_nparts_qbinned_plots)) {
 Remove low N/S:
 
 
-```{r qbinned nparts ROV}
+```{r qbinned nparts ROV high n}
 
 rov_nparts_qbinned_plots_highn <- list()
 
@@ -374,4 +392,82 @@ fifty_largest <- filter(all_di, log_nparts >= median(log_nparts))
 mean(fifty_largest$simpson_percentile <= 5)
 
 
+```
+
+### Rarefaction
+```{r rarefaction percentiles overall}
+
+ggplot(all_di_singletons, aes(x = skew_percentile)) +
+  geom_histogram(bins = 100) +
+  theme_bw()
+
+ggplot(all_di_singletons, aes(x = simpson_percentile)) +
+  geom_histogram(bins = 100) +
+  theme_bw()
+```
+
+```{r rarefaction percentiles binned by nparts}
+
+ggplot(all_di_singletons, aes(x = skew_percentile)) +
+  geom_histogram(bins = 100) +
+  theme_bw() +
+  facet_wrap(vars(qbinned_lognparts), scales = "free_y", nrow = 2)
+
+
+ggplot(all_di_singletons, aes(x = simpson_percentile)) +
+  geom_histogram(bins = 100) +
+  theme_bw() +
+  facet_wrap(vars(qbinned_lognparts), scales = "free_y", nrow = 2)
+
+```
+
+```{r rarefaction change}
+
+all_di_change <- select(all_di, dat, site, singletons, s0, n0, log_nparts, qbinned_lognparts, skew_percentile, simpson_percentile) %>%
+  bind_rows(select(all_di_singletons, dat, site, singletons, s0, n0, skew_percentile, simpson_percentile)) %>%
+  tidyr::pivot_wider(names_from = singletons, values_from = c(s0, n0, skew_percentile, simpson_percentile, log_nparts, qbinned_lognparts)) %>%
+  select(-log_nparts_TRUE, -qbinned_lognparts_TRUE) %>%
+  filter(!is.na(s0_FALSE)) %>%
+  mutate(s0_change = s0_TRUE - s0_FALSE,
+         n0_change = n0_TRUE - n0_FALSE,
+         skew_change = skew_percentile_TRUE - skew_percentile_FALSE,
+         even_change = simpson_percentile_TRUE - simpson_percentile_FALSE)
+
+
+ggplot(all_di_change, aes(skew_percentile_FALSE, skew_percentile_TRUE)) +
+  geom_point(alpha = .2) +
+  theme_bw() +
+  xlim(0, 100) +
+  ylim(0, 100) +
+  geom_abline(intercept = 0, slope = 1, color = "orange")
+
+
+ggplot(all_di_change, aes(log(s0_FALSE), log(n0_FALSE), color = skew_percentile_TRUE < skew_percentile_FALSE)) +
+  geom_point() +
+  theme_bw() +
+  scale_color_viridis_d(begin = .1, end = .9) +
+  theme(legend.position = "top")
+
+ggplot(all_di_change, aes(skew_percentile_FALSE, skew_percentile_TRUE)) +
+  geom_point(alpha = .2) +
+  theme_bw() +
+  facet_wrap(vars(qbinned_lognparts_FALSE), nrow = 2) +
+  xlim(0, 100) +
+  ylim(0, 100) +
+  geom_abline(intercept = 0, slope = 1, color = "orange")
+
+
+ggplot(all_di_change, aes(simpson_percentile_FALSE, simpson_percentile_TRUE)) +
+  geom_point(alpha = .2) +
+  theme_bw() +
+  xlim(0, 100) +
+  ylim(0, 100) +
+  geom_abline(intercept = 0, slope = 1, color = "orange")
+ggplot(all_di_change, aes(simpson_percentile_FALSE, simpson_percentile_TRUE)) +
+  geom_point(alpha = .2) +
+  theme_bw() +
+  facet_wrap(vars(qbinned_lognparts_FALSE), nrow = 2) +
+  xlim(0, 100) +
+  ylim(0, 100) +
+  geom_abline(intercept = 0, slope = 1, color = "orange")
 ```
