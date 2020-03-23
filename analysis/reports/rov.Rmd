@@ -382,9 +382,11 @@ nparts_summary
 
 eighty_smallest <- filter(all_di, log_nparts <= 8.6)
 mean(eighty_smallest$skew_percentile >= 95)
+mean(eighty_smallest$simpson_percentile <= 5)
 
 twenty_largest <- filter(all_di, log_nparts >= 8.6)
 mean(twenty_largest$skew_percentile >= 95)
+mean(twenty_largest$simpson_percentile <= 5)
 
 fifty_smallest <- filter(all_di, log_nparts <= median(log_nparts))
 mean(fifty_smallest$simpson_percentile <= 5)
@@ -448,6 +450,7 @@ ggplot(all_di_change, aes(log(s0_FALSE), log(n0_FALSE), color = skew_percentile_
   scale_color_viridis_d(begin = .1, end = .9) +
   theme(legend.position = "top")
 
+
 ggplot(all_di_change, aes(skew_percentile_FALSE, skew_percentile_TRUE)) +
   geom_point(alpha = .2) +
   theme_bw() +
@@ -470,4 +473,24 @@ ggplot(all_di_change, aes(simpson_percentile_FALSE, simpson_percentile_TRUE)) +
   xlim(0, 100) +
   ylim(0, 100) +
   geom_abline(intercept = 0, slope = 1, color = "orange")
+```
+
+```{r rarefaction stats}
+# proportion of %iles above 95/below 5
+# skew
+mean(all_di_singletons$skew_percentile >= 95)
+# simpson
+mean(all_di_singletons$simpson_percentile <= 5)
+
+
+nparts_summary2 <- all_di_singletons %>%
+  group_by(qbinned_lognparts) %>%
+  summarize(high_skew = mean(skew_percentile >= 95),
+            low_simpson = mean(simpson_percentile <= 5)) %>%
+  ungroup()
+
+
+nparts_summary2
+
+
 ```
