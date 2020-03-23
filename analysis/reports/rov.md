@@ -22,7 +22,7 @@ And various metrics of the ROV of the feasible set:
 
 Here is how ROV corresponds to nparts:
 
-    ## Warning: Removed 22546 rows containing missing values (geom_point).
+    ## Warning: Removed 48800 rows containing missing values (geom_point).
 
 ![](rov_files/figure-markdown_github/rov%20lognparts-1.png)![](rov_files/figure-markdown_github/rov%20lognparts-2.png)![](rov_files/figure-markdown_github/rov%20lognparts-3.png)![](rov_files/figure-markdown_github/rov%20lognparts-4.png)![](rov_files/figure-markdown_github/rov%20lognparts-5.png)
 
@@ -44,3 +44,9 @@ Binned:
 ![](rov_files/figure-markdown_github/binned%20percentiles-1.png)![](rov_files/figure-markdown_github/binned%20percentiles-2.png)
 
 OK, these visualiations are pretty hard with this dataset (not very many small communities). Try after adding FIA?
+
+Against ROV metrics:
+
+![](rov_files/figure-markdown_github/percentile%20v%20rov-1.png)
+
+![](rov_files/figure-markdown_github/bin%20rov-1.png)![](rov_files/figure-markdown_github/bin%20rov-2.png)![](rov_files/figure-markdown_github/bin%20rov-3.png)![](rov_files/figure-markdown_github/bin%20rov-4.png)

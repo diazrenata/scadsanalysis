@@ -34,7 +34,48 @@ all_diffs <- all_diffs %>%
 
 all_di <- left_join(all_di, all_diffs)
 
-all_di <- filter(all_di, s0 > 2)
+all_di <- filter(all_di, s0 > 2, dat != "portal_plants", !singletons)
+
+
+rov_long <- all_di %>%
+  select(dat, site, singletons, s0, n0, skew_percentile, simpson_percentile, mean_r2, mean_cd, mean_prop_off, mean_div, log_nparts, binned_nparts, thresholded_nparts) %>%
+  tidyr::pivot_longer(cols = starts_with("mean"),
+                      names_to = "rov_index",
+                      values_to = "val")
+
+
+bin_rov <- function(rov_vector, nbins, quantiles = F, as.fact = F) {
+  
+  cutoffs <- seq(from = min(rov_vector), to = 1.00001 * max(rov_vector), length.out = nbins + 1)
+  
+  if(quantiles) {
+    cutoffs <- quantile(rov_vector, probs = seq(0, 1, length.out = nbins + 1))
+    cutoffs[ length(cutoffs)] <- cutoffs[ length(cutoffs)] * 1.00001
+  }
+  
+  binned_vect <- rov_vector
+
+  for(i in 1:length(rov_vector)) {
+    binned_vect[i] <- max(which(cutoffs <= rov_vector[i]))
+  }
+  
+  if(as.fact) {
+    binned_vect <- factor(binned_vect, ordered = T, labels = round(cutoffs[2:length(cutoffs)],digits = 1))
+  }
+  
+  return(binned_vect)
+}
+
+rov_long <- rov_long %>%
+  group_by(rov_index) %>%
+  mutate(binned_val = bin_rov(val, nbins =5 ),
+         qbinned_val = bin_rov(val, nbins = 5, quantiles = T),
+         qbinned_lognparts = bin_rov(log_nparts, nbins = 10, quantiles = T, as.fact = T)) %>%
+  ungroup()
+
+all_di <- all_di %>%
+  mutate(qbinned_lognparts = bin_rov(log_nparts, nbins = 10, quantiles = T, as.fact = T)) 
+
 ```
 
 # Datasets in S and N space
@@ -52,10 +93,24 @@ ggplot(filter(all_di, singletons == F), aes(x = log(s0), y = log(n0), color = da
 Here is how that translates into the size of the feasible set:
 
 ```{r size of fs}
-ggplot(filter(all_di, singletons == F), aes(x = log(s0), y = log(n0), color = log_nparts)) +
+ggplot(filter(all_di, singletons == F), aes(x = log(s0), y = log(n0), color = log(log_nparts))) +
   geom_point(alpha = .5) +
   theme_bw() +
-  theme(legend.position = "top") + scale_color_viridis_c(option = "magma", end = .9, begin = .1)
+  theme(legend.position = "top") + scale_color_viridis_c()
+
+fs_size_panels <- list(
+  ggplot(filter(all_di, singletons == F), aes(x = log(s0), y = log_nparts)) +
+    theme_bw() +
+    geom_point(),
+  ggplot(filter(all_di, singletons == F), aes(x = log(n0), y = log_nparts)) +
+    theme_bw() +
+    geom_point(),
+  ggplot(filter(all_di, singletons == F), aes(x = log(n0 / s0), y = log_nparts)) +
+    theme_bw() +
+    geom_point()
+)
+
+gridExtra::grid.arrange(grobs = fs_size_panels)
 
 ```
 
@@ -83,37 +138,6 @@ And various metrics of the ROV of the feasible set:
 
 ```{r fs rov}
 
-rov_long <- all_di %>%
-  select(dat, site, singletons, s0, n0, skew_percentile, simpson_percentile, mean_r2, mean_cd, mean_prop_off, mean_div, log_nparts, binned_nparts, thresholded_nparts) %>%
-  tidyr::pivot_longer(cols = starts_with("mean"),
-                      names_to = "rov_index",
-                      values_to = "val")
-
-
-bin_rov <- function(rov_vector, nbins, quantiles = F) {
-  
-  cutoffs <- seq(from = min(rov_vector), to = 1.00001 * max(rov_vector), length.out = nbins + 1)
-  
-  if(quantiles) {
-    cutoffs <- quantile(rov_vector, probs = seq(0, 1, length.out = nbins + 1))
-    cutoffs[ length(cutoffs)] <- cutoffs[ length(cutoffs)] * 1.00001
-  }
-  
-  binned_vect <- rov_vector
-
-  for(i in 1:length(rov_vector)) {
-    binned_vect[i] <- max(which(cutoffs <= rov_vector[i]))
-  }
-  
-  return(binned_vect)
-}
-
-rov_long <- rov_long %>%
-  group_by(rov_index) %>%
-  mutate(binned_val = bin_rov(val, nbins =5 ),
-         qbinned_val = bin_rov(val, nbins = 5, quantiles = T)) %>%
-  ungroup()
-
 rov_plots <- list()
 
 for(i in 1:length(unique(rov_long$rov_index))) {
@@ -138,7 +162,6 @@ for(i in 1:length(unique(rov_long$rov_index))) {
     geom_point(alpha = .2) +
     theme_bw() +
     ggtitle(unique(rov_long$rov_index)[i]) +
-    geom_vline(xintercept = 10) +
     scale_color_viridis_d() +
     theme(legend.position = "none")
 }
@@ -158,23 +181,70 @@ for(i in 1:length(rov_nparts_plots)) {
 
 Gentry behaves somewhat strangely in these plots because it has the high proportion of low N/S communities; for these communities, all elements of the FS are squished into being highly even. 
 
-If we bin nparts:
 
 ```{r binned nparts ROV}
 
 rov_nparts_binned_plots <- list()
 
 for(i in 1:length(unique(rov_long$rov_index))) {
-  rov_nparts_binned_plots[[i]] <- ggplot(filter(rov_long, rov_index == unique(rov_long$rov_index)[i]), aes(log_nparts, val, color = as.factor(thresholded_nparts))) +
-    geom_point(alpha = .1) +
+  rov_nparts_binned_plots[[i]] <- ggplot(filter(rov_long, rov_index == unique(rov_long$rov_index)[i]), aes(log_nparts, val, color = log(n0/s0))) +
+    geom_point(alpha = .3) +
     theme_bw() +
     ggtitle(unique(rov_long$rov_index)[i]) +
-    scale_color_viridis_d() +
-    theme(legend.position = "none")
+    scale_color_viridis_c(end = .9) +
+    theme(legend.position = "left")
 }
 
 for(i in 1:length(rov_nparts_binned_plots)) {
   print(rov_nparts_binned_plots[[i]]) 
+}
+
+ggplot(rov_long, aes(log_nparts, val, color = log(n0/s0))) +
+  geom_point(alpha = .3) +
+  theme_bw() +
+  scale_color_viridis_c() +
+  theme(legend.position = "left") +
+  facet_wrap(vars(rov_index), scales = "free_y")
+```
+
+
+
+```{r qbinned nparts ROV}
+
+rov_nparts_qbinned_plots <- list()
+
+for(i in 1:length(unique(rov_long$rov_index))) {
+  rov_nparts_qbinned_plots[[i]] <- ggplot(filter(rov_long, rov_index == unique(rov_long$rov_index)[i]), aes(qbinned_lognparts, val, color = log(n0 / s0))) +
+    geom_jitter(alpha = .1) +
+    theme_bw() +
+    ggtitle(unique(rov_long$rov_index)[i]) +
+    scale_color_viridis_c() +
+    theme(legend.position = "none")
+}
+
+for(i in 1:length(rov_nparts_qbinned_plots)) {
+  print(rov_nparts_qbinned_plots[[i]]) 
+}
+```
+
+Remove low N/S:
+
+
+```{r qbinned nparts ROV}
+
+rov_nparts_qbinned_plots_highn <- list()
+
+for(i in 1:length(unique(rov_long$rov_index))) {
+  rov_nparts_qbinned_plots_highn[[i]] <- ggplot(filter(rov_long, rov_index == unique(rov_long$rov_index)[i], log(n0 / s0) > .7), aes(qbinned_lognparts, val, color = log(n0/s0))) +
+    geom_jitter(alpha = .1) +
+    theme_bw() +
+    ggtitle(unique(rov_long$rov_index)[i]) +
+    scale_color_viridis_c() +
+    theme(legend.position = "none")
+}
+
+for(i in 1:length(rov_nparts_qbinned_plots_highn)) {
+  print(rov_nparts_qbinned_plots_highn[[i]]) 
 }
 ```
 
@@ -207,6 +277,23 @@ ggplot(filter(all_di, !singletons), aes(x = simpson_percentile)) +
   geom_histogram(bins = 100, boundary = 0) +
   theme_bw() +
   facet_wrap(vars(thresholded_nparts), scales = "free_y")
+
+```
+
+Binned by quantile:
+
+
+```{r qbinned percentiles}
+
+ggplot(filter(all_di, !singletons, s0 > 2), aes(x = skew_percentile)) +
+  geom_histogram(bins = 100, boundary = 0) +
+  theme_bw() +
+  facet_wrap(vars(qbinned_lognparts), scales = "free_y", nrow = 2)
+
+ggplot(filter(all_di, !singletons), aes(x = simpson_percentile)) +
+  geom_histogram(bins = 100, boundary = 0) +
+  theme_bw() +
+  facet_wrap(vars(qbinned_lognparts), scales = "free_y", nrow = 2)
 
 ```
 
@@ -251,6 +338,40 @@ ggplot(rov_long, aes(x = simpson_percentile)) +
   geom_histogram(bins = 100) +
   theme_bw() +
   facet_wrap(vars(rov_index, qbinned_val), scales = "free_y")
+
+
+```
+
+```{r report stats}
+
+# proportion of %iles above 95/below 5
+# skew
+mean(all_di$skew_percentile >= 95)
+# simpson
+mean(all_di$simpson_percentile <= 5)
+
+
+# by nparts
+
+nparts_summary <- all_di %>%
+  group_by(qbinned_lognparts) %>%
+  summarize(high_skew = mean(skew_percentile >= 95),
+            low_simpson = mean(simpson_percentile <= 5)) %>%
+  ungroup()
+
+
+nparts_summary
+
+eighty_smallest <- filter(all_di, log_nparts <= 8.6)
+mean(eighty_smallest$skew_percentile >= 95)
+
+twenty_largest <- filter(all_di, log_nparts >= 8.6)
+mean(twenty_largest$skew_percentile >= 95)
+
+fifty_smallest <- filter(all_di, log_nparts <= median(log_nparts))
+mean(fifty_smallest$simpson_percentile <= 5)
+fifty_largest <- filter(all_di, log_nparts >= median(log_nparts))
+mean(fifty_largest$simpson_percentile <= 5)
 
 
 ```
