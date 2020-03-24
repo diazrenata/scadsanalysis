@@ -522,3 +522,16 @@ nparts_summary2
 
 
 ```
+
+```{r map of percentiles}
+ggplot(all_di, aes(log(s0), log(n0), color = skew_percentile)) +
+  geom_point(alpha = .3) +
+  theme_bw() +
+  scale_color_viridis_c(limits = c(0, 100))
+ggplot(all_di, aes(log(s0), log(n0), color = simpson_percentile)) +
+  geom_point(alpha = .2) +
+  theme_bw() +
+  scale_color_viridis_c(limits = c(0, 100))
+
+
+```
