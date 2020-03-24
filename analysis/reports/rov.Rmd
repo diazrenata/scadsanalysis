@@ -396,6 +396,34 @@ mean(fifty_largest$simpson_percentile <= 5)
 
 ```
 
+
+```{r ggplot rov v percentile}
+
+rescaled_long <- rov_long %>%
+  group_by(rov_index) %>%
+  mutate(rescaled_val = scales::rescale(val, c(0, 100))) %>%
+  ungroup() %>%
+  group_by(rov_index, qbinned_lognparts) %>%
+  mutate(high_skew = 100 * mean(skew_percentile >= 95),
+         low_simpson =100 *mean(simpson_percentile <= 5)) %>%
+  ungroup()
+
+
+ggplot(rescaled_long, aes(x = qbinned_lognparts, y = rescaled_val)) +
+  geom_violin() +
+  geom_point(aes(y = high_skew)) +
+  geom_point(aes(y = low_simpson), color = 'green') +
+  theme_bw() +
+  facet_wrap(vars(rov_index), scales = "free_y") +
+  geom_hline(yintercept = 5)
+
+
+ggplot(rescaled_long, aes(x = rescaled_val, y = skew_percentile)) +
+  geom_point(alpha = .01) +
+  theme_bw() +
+  facet_wrap(vars(rov_index), scales = "free_y") 
+
+```
 ### Rarefaction
 ```{r rarefaction percentiles overall}
 

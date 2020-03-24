@@ -79,16 +79,36 @@ Against ROV metrics:
 
     ## [1] 0.03255677
 
+    ## [1] 0.09306989
+
     ## [1] 0.1497893
+
+    ## [1] 0.2501019
 
     ## [1] 0.09378085
 
     ## [1] 0.1873972
 
-### Rarefaction
-
-![](rov_files/figure-markdown_github/rarefaction%20percentiles%20overall-1.png)![](rov_files/figure-markdown_github/rarefaction%20percentiles%20overall-2.png)
+![](rov_files/figure-markdown_github/ggplot%20rov%20v%20percentile-1.png) \#\#\# Rarefaction ![](rov_files/figure-markdown_github/rarefaction%20percentiles%20overall-1.png)![](rov_files/figure-markdown_github/rarefaction%20percentiles%20overall-2.png)
 
 ![](rov_files/figure-markdown_github/rarefaction%20percentiles%20binned%20by%20nparts-1.png)![](rov_files/figure-markdown_github/rarefaction%20percentiles%20binned%20by%20nparts-2.png)
 
 ![](rov_files/figure-markdown_github/rarefaction%20change-1.png)![](rov_files/figure-markdown_github/rarefaction%20change-2.png)![](rov_files/figure-markdown_github/rarefaction%20change-3.png)![](rov_files/figure-markdown_github/rarefaction%20change-4.png)![](rov_files/figure-markdown_github/rarefaction%20change-5.png)
+
+    ## [1] 0.1050687
+
+    ## [1] 0.2021342
+
+    ## # A tibble: 10 x 3
+    ##    qbinned_lognparts high_skew low_simpson
+    ##    <ord>                 <dbl>       <dbl>
+    ##  1 3.7                  0.0103      0.141 
+    ##  2 4.9                  0.0429      0.0983
+    ##  3 5.7                  0.0476      0.102 
+    ##  4 6.5                  0.0622      0.105 
+    ##  5 7.3                  0.0932      0.150 
+    ##  6 8.1                  0.108       0.163 
+    ##  7 9.2                  0.104       0.181 
+    ##  8 11.2                 0.158       0.270 
+    ##  9 40.1                 0.228       0.404 
+    ## 10 331.5                0.195       0.407
