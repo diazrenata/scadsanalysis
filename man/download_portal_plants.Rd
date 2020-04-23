@@ -4,8 +4,7 @@
 \alias{download_portal_plants}
 \title{Download Portal plants}
 \usage{
-download_portal_plants(storage_path = here::here("working-data",
-  "abund_data"))
+download_portal_plants(storage_path = here::here("working-data", "abund_data"))
 }
 \arguments{
 \item{storage_path}{where it goes}

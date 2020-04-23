@@ -4,8 +4,10 @@
 \alias{load_dataset}
 \title{Load a dataset}
 \usage{
-load_dataset(dataset_name, storage_path = here::here("working-data",
-  "abund_data"))
+load_dataset(
+  dataset_name,
+  storage_path = here::here("working-data", "abund_data")
+)
 }
 \arguments{
 \item{dataset_name}{"bbs", "fia", "gentry", "mcdb", "portal_plants", "misc_abund_short", or "misc_abund"}

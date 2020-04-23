@@ -4,8 +4,10 @@
 \alias{prep_macdb}
 \title{Prepare MACDB for pipeline}
 \usage{
-prep_macdb(storage_path = here::here("working-data", "macdb_data"),
-  save = TRUE)
+prep_macdb(
+  storage_path = here::here("working-data", "macdb_data"),
+  save = TRUE
+)
 }
 \arguments{
 \item{storage_path}{where to get the data}

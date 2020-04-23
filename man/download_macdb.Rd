@@ -4,8 +4,7 @@
 \alias{download_macdb}
 \title{Download MACDB data}
 \usage{
-download_macdb(from_url = FALSE,
-  storage_path = here::here("working-data"))
+download_macdb(from_url = FALSE, storage_path = here::here("working-data"))
 }
 \arguments{
 \item{from_url}{defaults FALSE. If true, from figshare. Otherwise, loads data from storage internal to the package}

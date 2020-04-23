@@ -4,8 +4,12 @@
 \alias{render_report}
 \title{Render a report}
 \usage{
-render_report(report_path, dependencies = list(), is_template = FALSE,
-  dat_name = NULL)
+render_report(
+  report_path,
+  dependencies = list(),
+  is_template = FALSE,
+  dat_name = NULL
+)
 }
 \arguments{
 \item{report_path}{file path for report}

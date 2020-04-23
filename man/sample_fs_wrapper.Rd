@@ -4,8 +4,14 @@
 \alias{sample_fs_wrapper}
 \title{Sample fs wrapper}
 \usage{
-sample_fs_wrapper(dataset, site_name, singletonsyn, n_samples,
-  p_table = NULL, seed = NULL)
+sample_fs_wrapper(
+  dataset,
+  site_name,
+  singletonsyn,
+  n_samples,
+  p_table = NULL,
+  seed = NULL
+)
 }
 \arguments{
 \item{dataset}{Full dataset}
