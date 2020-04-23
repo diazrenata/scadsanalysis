@@ -8,6 +8,8 @@ datasets <- c("bbs", "fia_short", "gentry", "mcdb", "misc_abund_short", "portal_
 
 #datasets <- c("fia", "gentry", "mcdb", "misc_abund_short", "portal_plants")
 
+#datasets <- c("portal_plants","gentry", "misc_abund_short" )
+
 for(i in 1:length(datasets)) {
 
   this_dataset = datasets[i]
@@ -41,4 +43,4 @@ for(i in 1:length(datasets)) {
 
 all_di <- bind_rows(all_di)
 
-write.csv(all_di, "all_di.csv", row.names = F)
+write.csv(all_di, here::here("analysis", "reports", "all_di.csv"), row.names = F)
