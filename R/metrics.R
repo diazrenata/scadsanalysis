@@ -150,11 +150,18 @@ pull_di <- function(di_df) {
                   simpson_mean = mean(simpson, na.rm = T),
                   skew_2p5 = quantile(skew, probs = c(0.025), na.rm = T),
                   skew_97p5 = quantile(skew, probs = c(0.975), na.rm = T),
+                  skew_95 = quantile(skew, probs = c(0.95), na.rm = T),
+                  skew_min = min(skew, na.rm = T),
+                  simpson_max = max(simpson, na.rm = T),
                   simpson_2p5 = quantile(simpson, probs = c(0.025), na.rm = T),
+                  simpson_5 = quantile(simpson, probs = c(.05), na.rm = T),
                   simpson_97p5 = quantile(simpson, probs = c(0.975), na.rm = T)) %>%
     dplyr::ungroup() %>%
-    dplyr::mutate(skew_95_ratio = (skew_97p5 - skew_2p5)/skew_range,
-                  simpson_95_ratio = (simpson_97p5 - simpson_2p5)/simpson_range)
+    dplyr::mutate(skew_95_ratio_2t = (skew_97p5 - skew_2p5)/skew_range,
+                  simpson_95_ratio_2t = (simpson_97p5 - simpson_2p5)/simpson_range,
+                  skew_95_ratio_1t = (skew_95 - skew_min)/skew_range,
+                  simpson_95_ratio_1t = (simpson_max - simpson_5)/simpson_range
+                  )
 
   di_observed <- dplyr::filter(di_df, source == "observed") %>%
     dplyr::left_join(di_sampled)
