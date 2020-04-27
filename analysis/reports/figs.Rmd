@@ -1,0 +1,366 @@
+---
+title: "Synthesis report"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(drake)
+library(dplyr)
+library(ggplot2)
+
+all_di <- read.csv(here::here("analysis", "reports", "all_di.csv"), stringsAsFactors = F)
+
+all_di <- all_di %>%
+  mutate(log_nparts = log(gmp:::as.double.bigz(nparts)),
+         log_nsamples = log(nsamples),
+         log150_nparts = log(gmp:::as.double.bigz(nparts), base = 150)) %>%
+  mutate(prop_found = exp(log_nsamples - log_nparts)) %>%
+  mutate(found_all = prop_found==1) %>%
+  filter(s0 >= 2,
+         n0 > s0,
+         dat != "fia_small")
+```
+
+# Datasets in S and N space
+
+Here is where our communities fall in S and N space:
+
+```{r datasets in s and n space}
+ggplot(filter(all_di, singletons == F), aes(x = log(s0), y = log(n0), color = dat)) +
+  geom_point(alpha = .8) +
+  theme_bw() +
+  theme(legend.position = "top") + scale_color_viridis_d()
+
+```
+
+Here is how that translates into the size of the feasible set:
+
+```{r size of fs}
+ggplot(filter(all_di, singletons == F), aes(x = log(s0), y = log(n0), color = log150_nparts)) +
+  geom_point(alpha = .5) +
+  theme_bw() +
+  theme(legend.position = "top") + scale_color_viridis_c(option = "magma", end = .9, begin = .1)
+
+ggplot(filter(all_di, singletons == F), aes(x = log_nparts, y = ..count..)) +
+  geom_density() +
+  theme_bw() +
+  geom_vline(xintercept = c(10, 15))
+
+
+ggplot(filter(all_di, singletons == F), aes(x = log_nparts, y = ..count..)) +
+  geom_density() +
+  theme_bw() +
+  geom_vline(xintercept = c(10, 15)) +
+  facet_wrap(vars(dat), scales = "free")
+
+
+```
+
+The small datasets are basically all FIA. 
+
+Note that the color scale is log transformed, so the largest communities have e^`r max(all_di$log_nparts)`, or `r exp(max(all_di$log_nparts))`, elements in the feasible set!
+
+
+# 95 interval vs nparts
+
+```{r 95 interval} 
+
+ggplot(filter(all_di, singletons == F, s0 > 2), aes(x = log(s0), y = log(n0), color = skew_95_ratio_2t)) +
+  geom_point(alpha = .5) +
+  theme_bw() +
+  theme(legend.position = "top") + scale_color_viridis_c(option = "magma", end = .9, begin = .1)
+
+
+ggplot(filter(all_di, singletons == F), aes(x = log(s0), y = log(n0), color = simpson_95_ratio_2t)) +
+  geom_point(alpha = .5) +
+  theme_bw() +
+  theme(legend.position = "top") + scale_color_viridis_c(option = "magma", end = .9, begin = .1)
+
+```
+
+```{r 95 ratio v nparts scatter}
+
+ggplot(filter(all_di, singletons == F, s0 > 2), aes(x = log_nparts, y = skew_95_ratio_2t, color = log(n0/s0))) +
+  geom_point() +
+  theme_bw() +
+  geom_vline(xintercept = c(10,15)) +
+  scale_color_viridis_c()
+
+ggplot(filter(all_di, singletons == F), aes(x = log_nparts, y = simpson_95_ratio_2t, color = log(n0/s0))) +
+  geom_point() +
+  theme_bw() +
+  geom_vline(xintercept = c(10,15)) +
+  scale_color_viridis_c()
+
+```
+
+
+```{r percentiles v 95 interval}
+
+ggplot(filter(all_di, !singletons), aes(x = skew_95_ratio_2t, y = skew_percentile)) +
+  geom_point(alpha = .05) +
+  theme_bw()
+
+
+ggplot(filter(all_di, !singletons), aes(x = simpson_95_ratio_2t, y = simpson_percentile)) +
+  geom_point(alpha = .05) +
+  theme_bw()
+
+```
+
+# Binned by ranked nparts and ranked 95 intervals
+
+```{r binned skew}
+
+all_di_skew <- all_di %>%
+  filter(!singletons, s0 > 2) %>%
+  arrange(log_nparts) %>%
+  mutate(nparts_rank = row_number()) %>%
+  arrange(skew_95_ratio_2t)%>%
+  mutate(ratio_rank = row_number(),
+         random_rank = sample.int(n = length(nparts_rank), size = length(nparts_rank), replace = F)) %>%
+  mutate(nparts_rank_binned = ceiling(10 * (nparts_rank / max(nparts_rank))),
+         ratio_rank_binned = ceiling(10 * (ratio_rank / max(ratio_rank))),
+         random_rank_binned = ceiling(10 * (random_rank / max(random_rank))))
+
+ggplot(all_di_skew, aes(x = skew_percentile)) +
+  geom_histogram() +
+  facet_wrap(vars(nparts_rank_binned), scales = "free") +
+  theme_bw() +
+  ggtitle("1/10th bins: Nparts")
+ggplot(all_di_skew, aes(x = skew_percentile)) +
+  geom_histogram() +
+  facet_wrap(vars(ratio_rank_binned), scales = "free") +
+  theme_bw() +
+  ggtitle("1/10th bins: 95% interval ratio")
+ggplot(all_di_skew, aes(x = skew_percentile)) +
+  geom_histogram() +
+  facet_wrap(vars(random_rank_binned), scales = "free") +
+  theme_bw() +
+  ggtitle("10 random bins")
+
+```
+
+```{r binned simpson}
+
+all_di_simpson <- all_di %>%
+  filter(!singletons) %>%
+  arrange(log_nparts) %>%
+  mutate(nparts_rank = row_number()) %>%
+  arrange(simpson_95_ratio_2t)%>%
+  mutate(ratio_rank = row_number(),
+         random_rank = sample.int(n = length(nparts_rank), size = length(nparts_rank), replace = F)) %>%
+  mutate(nparts_rank_binned = ceiling(10 * (nparts_rank / max(nparts_rank))),
+         ratio_rank_binned = ceiling(10 * (ratio_rank / max(ratio_rank))),
+         random_rank_binned = ceiling(10 * (random_rank / max(random_rank))))
+
+ggplot(all_di_simpson, aes(x = simpson_percentile)) +
+  geom_histogram() +
+  facet_wrap(vars(nparts_rank_binned), scales = "free") +
+  theme_bw() +
+    ggtitle("1/10th bins: Nparts")
+
+ggplot(all_di_simpson, aes(x = simpson_percentile)) +
+  geom_histogram() +
+  facet_wrap(vars(ratio_rank_binned), scales = "free") +
+  theme_bw()+
+  ggtitle("1/10th bins: 95% interval ratio")
+
+ggplot(all_di_simpson, aes(x = simpson_percentile)) +
+  geom_histogram() +
+  facet_wrap(vars(random_rank_binned), scales = "free") +
+  theme_bw() +
+  ggtitle("10 random bins")
+
+```
+
+```{r relationships in nparts bins}
+
+ggplot(all_di_skew, aes(x = skew_95_ratio_2t, y = skew_percentile)) +
+  geom_point(alpha = .05) +
+  theme_bw() +
+  facet_wrap(vars(nparts_rank_binned), scales = "free")
+
+ggplot(all_di_simpson, aes(x = simpson_95_ratio_2t, y = simpson_percentile)) +
+  geom_point(alpha = .05) +
+  theme_bw() +
+  facet_wrap(vars(nparts_rank_binned), scales = "free")
+
+```
+
+
+
+# 95 interval vs nparts
+
+```{r 1t 95 interval} 
+
+ggplot(filter(all_di, singletons == F, s0 > 2), aes(x = log(s0), y = log(n0), color = skew_95_ratio_1t)) +
+  geom_point(alpha = .5) +
+  theme_bw() +
+  theme(legend.position = "top") + scale_color_viridis_c(option = "magma", end = .9, begin = .1)
+
+
+ggplot(filter(all_di, singletons == F), aes(x = log(s0), y = log(n0), color = simpson_95_ratio_1t)) +
+  geom_point(alpha = .5) +
+  theme_bw() +
+  theme(legend.position = "top") + scale_color_viridis_c(option = "magma", end = .9, begin = .1)
+
+```
+
+```{r 1t 95 ratio v nparts scatter}
+
+ggplot(filter(all_di, singletons == F, s0 > 2), aes(x = log_nparts, y = skew_95_ratio_1t, color = log(n0/s0))) +
+  geom_point() +
+  theme_bw() +
+  geom_vline(xintercept = c(10,15)) +
+  scale_color_viridis_c()
+
+ggplot(filter(all_di, singletons == F), aes(x = log_nparts, y = simpson_95_ratio_1t, color = log(n0/s0))) +
+  geom_point() +
+  theme_bw() +
+  geom_vline(xintercept = c(10,15)) +
+  scale_color_viridis_c()
+
+```
+
+
+```{r 1t percentiles v 95 interval}
+
+ggplot(filter(all_di, !singletons), aes(x = skew_95_ratio_1t, y = skew_percentile)) +
+  geom_point(alpha = .05) +
+  theme_bw()
+
+
+ggplot(filter(all_di, !singletons), aes(x = simpson_95_ratio_1t, y = simpson_percentile)) +
+  geom_point(alpha = .05) +
+  theme_bw()
+
+```
+
+# Binned by ranked nparts and ranked 95 intervals
+
+```{r 1t binned skew}
+
+all_di_skew <- all_di %>%
+  filter(!singletons, s0 > 2) %>%
+  arrange(log_nparts) %>%
+  mutate(nparts_rank = row_number()) %>%
+  arrange(skew_95_ratio_1t)%>%
+  mutate(ratio_rank = row_number(),
+         random_rank = sample.int(n = length(nparts_rank), size = length(nparts_rank), replace = F)) %>%
+  mutate(nparts_rank_binned = ceiling(10 * (nparts_rank / max(nparts_rank))),
+         ratio_rank_binned = ceiling(10 * (ratio_rank / max(ratio_rank))),
+         random_rank_binned = ceiling(10 * (random_rank / max(random_rank))))
+
+ggplot(all_di_skew, aes(x = skew_percentile)) +
+  geom_histogram() +
+  facet_wrap(vars(nparts_rank_binned), scales = "free") +
+  theme_bw() +
+  ggtitle("1/10th bins: Nparts")
+ggplot(all_di_skew, aes(x = skew_percentile)) +
+  geom_histogram() +
+  facet_wrap(vars(ratio_rank_binned), scales = "free") +
+  theme_bw() +
+  ggtitle("1/10th bins: 95% interval ratio")
+ggplot(all_di_skew, aes(x = skew_percentile)) +
+  geom_histogram() +
+  facet_wrap(vars(random_rank_binned), scales = "free") +
+  theme_bw() +
+  ggtitle("10 random bins")
+
+```
+
+```{r 1t binned simpson}
+
+all_di_simpson <- all_di %>%
+  filter(!singletons) %>%
+  arrange(log_nparts) %>%
+  mutate(nparts_rank = row_number()) %>%
+  arrange(simpson_95_ratio_1t)%>%
+  mutate(ratio_rank = row_number(),
+         random_rank = sample.int(n = length(nparts_rank), size = length(nparts_rank), replace = F)) %>%
+  mutate(nparts_rank_binned = ceiling(10 * (nparts_rank / max(nparts_rank))),
+         ratio_rank_binned = ceiling(10 * (ratio_rank / max(ratio_rank))),
+         random_rank_binned = ceiling(10 * (random_rank / max(random_rank))))
+
+ggplot(all_di_simpson, aes(x = simpson_percentile)) +
+  geom_histogram() +
+  facet_wrap(vars(nparts_rank_binned), scales = "free") +
+  theme_bw() +
+    ggtitle("1/10th bins: Nparts")
+
+ggplot(all_di_simpson, aes(x = simpson_percentile)) +
+  geom_histogram() +
+  facet_wrap(vars(ratio_rank_binned), scales = "free") +
+  theme_bw()+
+  ggtitle("1/10th bins: 95% interval ratio")
+
+ggplot(all_di_simpson, aes(x = simpson_percentile)) +
+  geom_histogram() +
+  facet_wrap(vars(random_rank_binned), scales = "free") +
+  theme_bw() +
+  ggtitle("10 random bins")
+
+```
+
+```{r 1t relationships in nparts bins}
+
+ggplot(all_di_skew, aes(x = skew_95_ratio_1t, y = skew_percentile)) +
+  geom_point(alpha = .05) +
+  theme_bw() +
+  facet_wrap(vars(nparts_rank_binned), scales = "free")
+
+ggplot(all_di_simpson, aes(x = simpson_95_ratio_1t, y = simpson_percentile)) +
+  geom_point(alpha = .05) +
+  theme_bw() +
+  facet_wrap(vars(nparts_rank_binned), scales = "free")
+
+```
+
+```{r overall relationships}
+
+ggplot(filter(all_di, !singletons), aes(x = skew_percentile)) +
+  geom_histogram() +
+  theme_bw()
+
+
+ggplot(filter(all_di, !singletons), aes(x = simpson_percentile)) +
+  geom_histogram() +
+  theme_bw()
+
+```
+
+
+```{r overall relationships by da t}
+
+ggplot(filter(all_di, !singletons, s0 > 2), aes(x = skew_percentile)) +
+  geom_histogram() +
+  theme_bw() +
+  facet_wrap(vars(dat), scales = "free_y")
+
+
+ggplot(filter(all_di, !singletons), aes(x = simpson_percentile)) +
+  geom_histogram() +
+  theme_bw()+
+  facet_wrap(vars(dat), scales = "free_y")
+
+```
+
+```{r gentry}
+
+ggplot(filter(all_di, dat == "gentry", !singletons), aes(x = log(n0/s0), y = simpson_percentile)) +
+  geom_point()
+
+
+gentry_cat <- filter(all_di, dat == "gentry", !singletons) %>%
+  mutate(low_avgn = log(n0/s0) < 1.25) 
+
+
+ggplot(gentry_cat, aes(x = simpson_percentile)) +
+  geom_histogram() +
+  facet_wrap(vars(low_avgn), scales = "free_y")
+
+
+
+```
