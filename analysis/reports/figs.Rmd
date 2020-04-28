@@ -331,6 +331,21 @@ ggplot(filter(all_di, !singletons), aes(x = simpson_percentile)) +
 
 ```
 
+### Remove FIA
+
+```{r overall relationships no fia}
+
+ggplot(filter(all_di, !singletons, dat != "fia_short"), aes(x = skew_percentile)) +
+  geom_histogram() +
+  theme_bw()
+
+
+ggplot(filter(all_di, !singletons, dat != "fia_short"), aes(x = simpson_percentile)) +
+  geom_histogram() +
+  theme_bw()
+
+```
+
 
 ```{r overall relationships by da t}
 

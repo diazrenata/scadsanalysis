@@ -282,3 +282,27 @@ ggplot(filter(all_di, !singletons, n0 >= 3.5), aes(x = simpson_percentile)) +
   theme_bw() 
 
 ```
+
+# Remove fia sized from all
+
+```{r remove fia sized}
+
+ggplot(filter(all_di, !singletons, s0 > fia_max_s, n0 > fia_max_n), aes(x = skew_percentile)) +
+  geom_histogram() +
+  theme_bw()
+
+ggplot(filter(all_di, !singletons, s0 > fia_max_s, n0 > fia_max_n), aes(x = skew_percentile)) +
+  geom_histogram() +
+  theme_bw() +
+  facet_wrap(vars(dat), scales = "free_y")
+
+ggplot(filter(all_di, !singletons, s0 > fia_max_s, n0 > fia_max_n), aes(x = simpson_percentile)) +
+  geom_histogram() +
+  theme_bw()
+
+
+ggplot(filter(all_di, !singletons, s0 > fia_max_s, n0 > fia_max_n), aes(x = simpson_percentile)) +
+  geom_histogram() +
+  theme_bw() +
+  facet_wrap(vars(dat), scales = "free_y")
+```
