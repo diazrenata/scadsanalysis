@@ -1,0 +1,215 @@
+---
+title: "Synthesis report"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(drake)
+library(dplyr)
+library(ggplot2)
+
+all_di <- read.csv(here::here("analysis", "reports", "all_di.csv"), stringsAsFactors = F)
+
+all_di <- all_di %>%
+  mutate(log_nparts = log(gmp:::as.double.bigz(nparts)),
+         log_nsamples = log(nsamples),
+         log150_nparts = log(gmp:::as.double.bigz(nparts), base = 150)) %>%
+  mutate(prop_found = exp(log_nsamples - log_nparts)) %>%
+  mutate(found_all = prop_found==1) %>%
+  filter(s0 >= 2,
+         n0 > s0,
+         dat != "fia_small")
+```
+
+# Datasets in S and N space
+
+Here is where our communities fall in S and N space:
+
+```{r datasets in s and n space}
+ggplot(filter(all_di, singletons == F), aes(x = log(s0), y = log(n0), color = dat)) +
+  geom_point(alpha = .8) +
+  theme_bw() +
+  theme(legend.position = "top") + scale_color_viridis_d()
+
+```
+
+Here is how that translates into the size of the feasible set:
+
+```{r size of fs}
+ggplot(filter(all_di, singletons == F), aes(x = log(s0), y = log(n0), color = log150_nparts)) +
+  geom_point(alpha = .5) +
+  theme_bw() +
+  theme(legend.position = "top") + scale_color_viridis_c(option = "magma", end = .9, begin = .1)
+
+ggplot(filter(all_di, singletons == F), aes(x = log_nparts, y = ..count..)) +
+  geom_density() +
+  theme_bw() +
+  geom_vline(xintercept = c(10, 15))
+
+
+ggplot(filter(all_di, singletons == F), aes(x = log_nparts, y = ..count..)) +
+  geom_density() +
+  theme_bw() +
+  geom_vline(xintercept = c(10, 15)) +
+  facet_wrap(vars(dat), scales = "free")
+
+
+```
+
+The small datasets are basically all FIA. 
+
+Note that the color scale is log transformed, so the largest communities have e^`r max(all_di$log_nparts)`, or `r exp(max(all_di$log_nparts))`, elements in the feasible set!
+
+
+# 95 interval vs nparts
+
+```{r 95 interval} 
+
+ggplot(filter(all_di, singletons == F, s0 > 2), aes(x = log(s0), y = log(n0), color = skew_95_ratio)) +
+  geom_point(alpha = .5) +
+  theme_bw() +
+  theme(legend.position = "top") + scale_color_viridis_c(option = "magma", end = .9, begin = .1)+
+  facet_wrap(vars(dat), scales = "free")
+
+
+ggplot(filter(all_di, singletons == F), aes(x = log(s0), y = log(n0), color = simpson_95_ratio)) +
+  geom_point(alpha = .5) +
+  theme_bw() +
+  theme(legend.position = "top") + scale_color_viridis_c(option = "magma", end = .9, begin = .1)+
+  facet_wrap(vars(dat), scales = "free")
+
+ggplot(filter(all_di, singletons == F, s0 > 2), aes(x = log_nparts, y = skew_95_ratio, color = log(n0/s0))) +
+  geom_point() +
+  theme_bw() +
+  geom_vline(xintercept = c(10,15)) +
+  scale_color_viridis_c() +
+  facet_wrap(vars(dat), scales = "free")
+
+ggplot(filter(all_di, singletons == F), aes(x = log_nparts, y = simpson_95_ratio, color = log(n0/s0))) +
+  geom_point() +
+  theme_bw() +
+  geom_vline(xintercept = c(10,15)) +
+  scale_color_viridis_c()+
+  facet_wrap(vars(dat), scales = "free")
+
+```
+
+
+
+# Binned by ranked nparts and ranked 95 intervals
+
+```{r binned skew}
+
+all_di_skew <- all_di %>%
+  filter(!singletons, s0 > 2) %>%
+  arrange(log_nparts) %>%
+  mutate(nparts_rank = row_number()) %>%
+  arrange(skew_95_ratio)%>%
+  mutate(ratio_rank = row_number(),
+         random_rank = sample.int(n = length(nparts_rank), size = length(nparts_rank), replace = F)) %>%
+  mutate(nparts_rank_binned = ceiling(10 * (nparts_rank / max(nparts_rank))),
+         ratio_rank_binned = ceiling(10 * (ratio_rank / max(ratio_rank))),
+         random_rank_binned = ceiling(10 * (random_rank / max(random_rank))))
+
+ggplot(all_di_skew, aes(x = skew_percentile)) +
+  geom_histogram() +
+  facet_wrap(vars(nparts_rank_binned), scales = "free") +
+  theme_bw()
+ggplot(all_di_skew, aes(x = skew_percentile)) +
+  geom_histogram() +
+  facet_wrap(vars(ratio_rank_binned), scales = "free") +
+  theme_bw()
+
+ggplot(all_di_skew, aes(x = skew_percentile)) +
+  geom_histogram() +
+  facet_wrap(vars(random_rank_binned), scales = "free") +
+  theme_bw()
+
+```
+```{r binned simpson}
+
+all_di_simpson <- all_di %>%
+  filter(!singletons) %>%
+  arrange(log_nparts) %>%
+  mutate(nparts_rank = row_number()) %>%
+  arrange(simpson_95_ratio)%>%
+  mutate(ratio_rank = row_number()) %>%
+  mutate(nparts_rank_binned = ceiling(10 * (nparts_rank / max(nparts_rank))),
+         ratio_rank_binned = ceiling(10 * (ratio_rank / max(ratio_rank))))
+
+ggplot(all_di_simpson, aes(x = simpson_percentile)) +
+  geom_histogram() +
+  facet_wrap(vars(nparts_rank_binned), scales = "free") +
+  theme_bw()
+ggplot(all_di_simpson, aes(x = simpson_percentile)) +
+  geom_histogram() +
+  facet_wrap(vars(ratio_rank_binned), scales = "free") +
+  theme_bw()
+
+```
+
+# Small mcdb
+
+```{r small mcdb}
+small_di <- filter(all_di, dat == "mcdb", log_nparts < 20)
+
+ggplot(small_di, aes(x = log_nparts, y = skew_95_ratio)) +
+  geom_point() +
+  theme_bw()
+
+filter(small_di, skew_95_ratio == min(small_di$skew_95_ratio, na.rm = T))
+
+```
+
+```{r load one site}
+
+site = 1879
+  
+library(drake)
+
+## Set up the cache and config
+db <- DBI::dbConnect(RSQLite::SQLite(), here::here("analysis", "drake", "drake-cache-mcdb.sqlite"))
+cache <- storr::storr_dbi("datatable", "keystable", db)
+cache$del(key = "lock", namespace = "session")
+
+loadd(di_fs_1879_TRUE, cache = cache)
+
+twosided_interval <- quantile(filter(di_fs_1879_TRUE, source!= "observed")$skew, probs = c(0.025, 0.975))
+
+onesided_interval <- quantile(filter(di_fs_1879_TRUE, source!= "observed")$skew, probs = c(.95))
+
+ggplot(filter(di_fs_1879_TRUE, source != "observed"), aes(x =skew)) +
+  geom_density() +
+  geom_vline(xintercept = twosided_interval) +
+  geom_vline(xintercept = onesided_interval, color = "red")
+
+
+# 1469 - more middle of the pack
+
+loadd(di_fs_1469_TRUE, cache = cache)
+
+twosided_interval <- quantile(filter(di_fs_1469_TRUE, source!= "observed")$skew, probs = c(0.025, 0.975))
+
+onesided_interval <- quantile(filter(di_fs_1469_TRUE, source!= "observed")$skew, probs = c(.95))
+
+ggplot(filter(di_fs_1469_TRUE, source != "observed"), aes(x =skew)) +
+  geom_density() +
+  geom_vline(xintercept = twosided_interval) +
+  geom_vline(xintercept = onesided_interval, color = "red")
+
+
+#1218 - very high
+
+loadd(di_fs_1218_TRUE, cache = cache)
+
+twosided_interval <- quantile(filter(di_fs_1218_TRUE, source!= "observed")$skew, probs = c(0.025, 0.975), na.rm=T)
+
+onesided_interval <- quantile(filter(di_fs_1218_TRUE, source!= "observed")$skew, probs = c(.95), na.rm=T)
+
+ggplot(filter(di_fs_1218_TRUE, source != "observed"), aes(x =skew)) +
+  geom_density() +
+  geom_vline(xintercept = twosided_interval) +
+  geom_vline(xintercept = onesided_interval, color = "red")
+
+```
