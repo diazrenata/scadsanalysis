@@ -1,0 +1,308 @@
+---
+title: "Synthesis report"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(drake)
+library(dplyr)
+library(ggplot2)
+
+all_di <- read.csv(here::here("analysis", "reports", "all_di.csv"), stringsAsFactors = F)
+all_di_old <- read.csv(here::here("all_di.csv"), stringsAsFactors = F)
+
+fia_small_provisional <- filter(all_di_old, dat == "fia_small")
+
+all_di <- bind_rows(all_di, fia_small_provisional)
+
+all_di <- all_di %>%
+  mutate(log_nparts = log(gmp:::as.double.bigz(nparts)),
+         log_nsamples = log(nsamples),
+         log150_nparts = log(gmp:::as.double.bigz(nparts), base = 150)) %>%
+  mutate(prop_found = exp(log_nsamples - log_nparts)) %>%
+  mutate(found_all = prop_found==1) %>%
+  filter(s0 >= 2,
+         n0 > s0) %>%
+  mutate(dat = ifelse(substr(dat, 0, 3) == "fia", "fia", dat))
+```
+
+# Datasets in S and N space
+
+Here is where our communities fall in S and N space:
+
+```{r datasets in s and n space}
+ggplot(filter(all_di, singletons == F), aes(x = log(s0), y = log(n0), color = dat)) +
+  geom_point(alpha = .8) +
+  theme_bw() +
+  theme(legend.position = "top") + scale_color_viridis_d()
+
+```
+
+Here is how that translates into the size of the feasible set:
+
+```{r size of fs}
+ggplot(filter(all_di, singletons == F), aes(x = log(s0), y = log(n0), color = log150_nparts)) +
+  geom_point(alpha = .5) +
+  theme_bw() +
+  theme(legend.position = "top") + scale_color_viridis_c(option = "magma", end = .9, begin = .1)
+
+ggplot(filter(all_di, singletons == F), aes(x = log_nparts, y = ..count..)) +
+  geom_density() +
+  theme_bw() +
+  geom_vline(xintercept = c(10, 15))
+
+
+ggplot(filter(all_di, singletons == F), aes(x = log_nparts, y = ..count..)) +
+  geom_density() +
+  theme_bw() +
+  geom_vline(xintercept = c(10, 15)) +
+  facet_wrap(vars(dat), scales = "free")
+
+
+```
+
+## All sites all sizes
+
+```{r percentiles overall}
+
+ggplot(filter(all_di, s0 > 2, !singletons), aes(x = skew_percentile)) +
+  geom_histogram() +
+  theme_bw() +
+  ggtitle("Skew - all sites")
+
+
+ggplot(filter(all_di, s0 > 2, !singletons), aes(x = skew_percentile)) +
+  geom_histogram() +
+  theme_bw() +
+  facet_wrap(vars(dat), scales = "free_y") +
+  ggtitle("Skew - all sites")
+
+
+
+ggplot(filter(all_di,!singletons), aes(x = simpson_percentile)) +
+  geom_histogram() +
+  theme_bw() +
+  ggtitle("Simpson - all sites")
+
+ggplot(filter(all_di,!singletons), aes(x = simpson_percentile)) +
+  geom_histogram() +
+  theme_bw() +
+  ggtitle("Simpson - all sites") +
+    facet_wrap(vars(dat), scales = "free_y")
+
+
+
+
+```
+
+## Resrict to sizes found in FIA
+
+```{r fia limits}
+
+
+fia_max_s <- max(filter(all_di, !singletons, dat == "fia")$s0)
+fia_max_n <- max(filter(all_di,!singletons,  dat == "fia")$n0)
+
+fia_sized <- filter(all_di, s0 <= fia_max_s, !singletons, n0 <= fia_max_n) %>%
+  mutate(fia_yn = dat == "fia") %>%
+  mutate(random_5th = as.integer(sample(2, size = n(), replace = T, prob = c(0.035, 0.965))))
+
+ggplot(fia_sized, aes(x = log(s0), y= log(n0), color = dat)) +
+  geom_point() +
+  theme_bw() +
+  scale_color_viridis_d()
+
+
+ggplot(fia_sized, aes(x = log(s0), y= log(n0), color = dat)) +
+  geom_point() +
+  theme_bw() +
+  scale_color_viridis_d() +
+  facet_wrap(vars(fia_yn), scales = "fixed")
+
+mean(fia_sized$dat == "fia")
+mean(fia_sized$random_5th == "2")
+```
+
+96.5% of the datasets with state variables comparable to the FIA ranges are FIA. 
+
+```{r fia sized hists}
+
+ggplot(filter(fia_sized, s0 > 2), aes(x = skew_percentile)) +
+  geom_histogram() + theme_bw() +
+  ggtitle("Skew - all sites")
+
+
+ggplot(filter(fia_sized, s0 > 2), aes(x = skew_percentile)) +
+  geom_histogram() + theme_bw() +
+  facet_wrap(vars(fia_yn), scales = "free_y") +
+  ggtitle("Skew - FIA true/false")
+# 
+# fia_sized <- fia_sized %>%
+#   mutate(small_n = log(n0) <= 3.5)
+# 
+# ggplot(filter(fia_sized, s0 > 2), aes(x = skew_percentile)) +
+#   geom_histogram() + theme_bw() +
+#   facet_grid(rows = vars(fia_yn), cols = vars(small_n), scales = "free_y") +
+#   ggtitle("Skew - FIA true/false (rows), n <= 20 true/false (cols)")
+# 
+# 
+ggplot(filter(fia_sized, s0 > 2), aes(x = skew_percentile)) +
+  geom_histogram() + theme_bw() +
+  facet_wrap(vars(random_5th), scales = "free_y") +
+  ggtitle("Skew - randomly pulling out 4%")
+
+
+ggplot(filter(fia_sized, s0 > 2), aes(x = simpson_percentile)) +
+  geom_histogram() + theme_bw() +
+  ggtitle("Simpson all sites")
+
+
+ggplot(filter(fia_sized, s0 > 2), aes(x = simpson_percentile)) +
+  geom_histogram() + theme_bw() +
+  facet_wrap(vars(fia_yn), scales = "free_y") +
+  ggtitle("Simpson - FIA true/false")
+
+
+ggplot(filter(fia_sized, s0 > 2), aes(x = simpson_percentile)) +
+  geom_histogram() + theme_bw() +
+  facet_wrap(vars(random_5th), scales = "free_y") +
+  ggtitle("Simpson - a random 4%")
+
+```
+
+
+```{r on map}
+
+
+ggplot(filter(fia_sized, s0 > 2), aes(x = log(s0), y= log(n0), color = skew_percentile)) +
+  geom_point() +
+  theme_bw() +
+  scale_color_viridis_c()
+
+
+ggplot(fia_sized, aes(x = log(s0), y= log(n0), color = simpson_percentile)) +
+  geom_point() +
+  theme_bw() +
+  scale_color_viridis_c()
+```
+
+Does skew behave differently if n0 <0 `r exp(3.5)`? Just from looking at the map.
+
+```{r skew small n}
+
+fia_sized <- fia_sized %>%
+  mutate(small_n = log(n0) <= 3.5)
+
+fia_sized %>%
+  group_by(small_n) %>%
+  summarize(prop_fia = mean(fia_yn)) 
+
+
+ggplot(filter(fia_sized, small_n, s0 > 2), aes(x = skew_percentile)) +
+  geom_histogram() +
+  theme_bw() +
+  #facet_wrap(vars(fia_yn), scales = "free_y") +
+  ggtitle("Small N")
+
+
+
+ggplot(filter(fia_sized, !small_n, s0 > 2), aes(x = skew_percentile)) +
+  geom_histogram() +
+  theme_bw() +
+  #facet_wrap(vars(fia_yn), scales = "free_y") +
+  ggtitle("NOT Small N")
+
+
+ggplot(filter(fia_sized, !small_n, s0 > 2), aes(x = skew_percentile)) +
+  geom_histogram() +
+  theme_bw() +
+  facet_wrap(vars(fia_yn), scales = "free_y") +
+  ggtitle("NOT Small N, FIA true/false")
+
+
+
+ggplot(filter(fia_sized, small_n, s0 > 2), aes(x = skew_percentile)) +
+  geom_histogram() +
+  theme_bw() +
+  facet_wrap(vars(fia_yn), scales = "free_y") +
+  ggtitle("Small N")
+
+```
+
+# simpson
+```{r simpson}
+
+
+ggplot(filter(fia_sized, small_n, s0 > 2), aes(x = simpson_percentile)) +
+  geom_histogram() +
+  theme_bw() +
+  #facet_wrap(vars(fia_yn), scales = "free_y") +
+  ggtitle("Small N")
+
+
+
+ggplot(filter(fia_sized, !small_n, s0 > 2), aes(x = simpson_percentile)) +
+  geom_histogram() +
+  theme_bw() +
+  #facet_wrap(vars(fia_yn), scales = "free_y") +
+  ggtitle("NOT Small N")
+
+
+ggplot(filter(fia_sized, !small_n, s0 > 2), aes(x = simpson_percentile)) +
+  geom_histogram() +
+  theme_bw() +
+  facet_wrap(vars(fia_yn), scales = "free_y") +
+  ggtitle("NOT Small N, FIA true/false")
+
+
+
+
+ggplot(filter(fia_sized, small_n, s0 > 2), aes(x = simpson_percentile)) +
+  geom_histogram() +
+  theme_bw() +
+  facet_wrap(vars(fia_yn), scales = "free_y") +
+  ggtitle("Small N")
+
+
+```
+
+# Remove small N from all (not just fia sized)
+
+```{r full}
+
+ggplot(filter(all_di, s0 > 2, !singletons, n0 >= 3.5), aes(x = skew_percentile)) +
+  geom_histogram() +
+  theme_bw() 
+
+
+
+ggplot(filter(all_di, !singletons, n0 >= 3.5), aes(x = simpson_percentile)) +
+  geom_histogram() +
+  theme_bw() 
+
+```
+
+# Remove fia sized from all
+
+```{r remove fia sized}
+
+ggplot(filter(all_di, !singletons, s0 > fia_max_s, n0 > fia_max_n), aes(x = skew_percentile)) +
+  geom_histogram() +
+  theme_bw()
+
+ggplot(filter(all_di, !singletons, s0 > fia_max_s, n0 > fia_max_n), aes(x = skew_percentile)) +
+  geom_histogram() +
+  theme_bw() +
+  facet_wrap(vars(dat), scales = "free_y")
+
+ggplot(filter(all_di, !singletons, s0 > fia_max_s, n0 > fia_max_n), aes(x = simpson_percentile)) +
+  geom_histogram() +
+  theme_bw()
+
+
+ggplot(filter(all_di, !singletons, s0 > fia_max_s, n0 > fia_max_n), aes(x = simpson_percentile)) +
+  geom_histogram() +
+  theme_bw() +
+  facet_wrap(vars(dat), scales = "free_y")
+```
