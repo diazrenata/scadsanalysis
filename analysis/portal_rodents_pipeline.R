@@ -32,13 +32,13 @@ sites_list <- dat %>%
 
 #sites_list <- sites_list[1:2, ]
 set.seed(1977)
-
+ndraws = 4000
 all <- drake_plan(
   dat_s = target(add_singletons_dataset(dat),
                  hpc = F),
   wide_p = target(readRDS(here::here("analysis", "masterp_wide.Rds")),
                   hpc = F),
-  fs = target(sample_fs_wrapper(dataset = dat_s_dat, site_name = s, singletonsyn = singletons, n_samples = ndraws, p_table = wide_p, seed = !!sample.int(10^6, size = 1)),
+  fs = target(sample_fs_wrapper(dataset = dat_s, site_name = s, singletonsyn = singletons, n_samples = ndraws, p_table = wide_p, seed = !!sample.int(10^6, size = 1)),
               transform = cross(s = !!sites_list$site,
                                 singletons = !!c(TRUE, FALSE))),
   di = target(add_dis(fs),
