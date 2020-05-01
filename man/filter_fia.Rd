@@ -4,8 +4,10 @@
 \alias{filter_fia}
 \title{Filter FIA data}
 \usage{
-filter_fia(storage_path = here::here("working-data", "abund_data"),
-  save = TRUE)
+filter_fia(
+  storage_path = here::here("working-data", "abund_data"),
+  save = TRUE
+)
 }
 \arguments{
 \item{storage_path}{where to put it}

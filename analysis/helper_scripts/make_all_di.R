@@ -4,9 +4,12 @@ library(ggplot2)
 library(scadsanalysis)
 
 all_di <- list()
-datasets <- c("bbs", "fia_short", "gentry", "mcdb", "misc_abund_short", "portal_plants", "fia_small")
+#datasets <- c("bbs", "fia_short", "gentry", "mcdb", "misc_abund_short", "portal_plants", "fia_small")
+datasets <- c("bbs",  "gentry", "fia_short", "mcdb", "misc_abund_short", "portal_plants")
 
 #datasets <- c("fia", "gentry", "mcdb", "misc_abund_short", "portal_plants")
+
+#datasets <- c("portal_plants","gentry", "misc_abund_short" )
 
 for(i in 1:length(datasets)) {
 
@@ -41,4 +44,4 @@ for(i in 1:length(datasets)) {
 
 all_di <- bind_rows(all_di)
 
-write.csv(all_di, "all_di.csv", row.names = F)
+write.csv(all_di, here::here("analysis", "reports", "all_di.csv"), row.names = F)

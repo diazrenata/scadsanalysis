@@ -136,28 +136,36 @@ get_percentile <- function(a_value, a_vector) {
 #' @return di_df for observed + n samples
 #' @export
 #'
-#' @importFrom dplyr filter mutate group_by ungroup
+#' @importFrom dplyr filter mutate group_by ungroup summarize left_join
 pull_di <- function(di_df) {
 
-  di_df <- di_df  %>%
-    dplyr::group_by(source) %>%
-    dplyr::mutate(skew_range = max(skew, na.rm = T) - min(skew, na.rm = T),
+  di_sampled <- dplyr::filter(di_df, source != "observed") %>%
+    dplyr::group_by(s0, n0,dat, site) %>%
+    dplyr::summarize(skew_range = max(skew, na.rm = T) - min(skew, na.rm = T),
                   simpson_range = max(simpson, na.rm = T) - min(simpson, na.rm = T),
                   nsamples = length(unique(sim)),
                   skew_sd = sd(skew, na.rm = T),
                   skew_mean = mean(skew, na.rm = T),
                   simpson_sd = sd(simpson, na.rm = T),
-                  simpson_mean = mean(simpson, na.rm = T)) %>%
+                  simpson_mean = mean(simpson, na.rm = T),
+                  skew_2p5 = quantile(skew, probs = c(0.025), na.rm = T),
+                  skew_97p5 = quantile(skew, probs = c(0.975), na.rm = T),
+                  skew_95 = quantile(skew, probs = c(0.95), na.rm = T),
+                  skew_min = min(skew, na.rm = T),
+                  simpson_max = max(simpson, na.rm = T),
+                  simpson_2p5 = quantile(simpson, probs = c(0.025), na.rm = T),
+                  simpson_5 = quantile(simpson, probs = c(.05), na.rm = T),
+                  simpson_97p5 = quantile(simpson, probs = c(0.975), na.rm = T)) %>%
     dplyr::ungroup() %>%
-    dplyr::mutate(skew_range = max(skew_range, na.rm = T),
-                  simpson_range = max(simpson_range, na.rm = T),
-                  nsamples = max(nsamples, na.rm = T),
-                  skew_sd = max(skew_sd, na.rm = T),
-                  skew_mean = max(skew_mean, na.rm = T),
-                  simpson_sd = max(simpson_sd, na.rm = T),
-                  simpson_mean = max(simpson_mean, na.rm = T)) %>%
-    dplyr::filter(source == "observed")
+    dplyr::mutate(skew_95_ratio_2t = (skew_97p5 - skew_2p5)/skew_range,
+                  simpson_95_ratio_2t = (simpson_97p5 - simpson_2p5)/simpson_range,
+                  skew_95_ratio_1t = (skew_95 - skew_min)/skew_range,
+                  simpson_95_ratio_1t = (simpson_max - simpson_5)/simpson_range
+                  )
 
-  return(di_df)
+  di_observed <- dplyr::filter(di_df, source == "observed") %>%
+    dplyr::left_join(di_sampled)
+
+  return(di_observed)
 
 }

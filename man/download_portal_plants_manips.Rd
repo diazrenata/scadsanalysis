@@ -4,8 +4,9 @@
 \alias{download_portal_plants_manips}
 \title{Download Portal plants with manipulations}
 \usage{
-download_portal_plants_manips(storage_path = here::here("working-data",
-  "abund_data"))
+download_portal_plants_manips(
+  storage_path = here::here("working-data", "abund_data")
+)
 }
 \arguments{
 \item{storage_path}{where it goes}

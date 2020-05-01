@@ -4,8 +4,10 @@
 \alias{assign_macdb_manips}
 \title{Assign ctrl/treatment designation to MACD sites}
 \usage{
-assign_macdb_manips(all_di, storage_path = here::here("working-data",
-  "macdb_data"))
+assign_macdb_manips(
+  all_di,
+  storage_path = here::here("working-data", "macdb_data")
+)
 }
 \arguments{
 \item{all_di}{diversity indicies df}

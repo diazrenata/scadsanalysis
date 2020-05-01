@@ -4,8 +4,7 @@
 \alias{download_data}
 \title{Download SAD data}
 \usage{
-download_data(from_url = FALSE,
-  storage_path = here::here("working-data"))
+download_data(from_url = FALSE, storage_path = here::here("working-data"))
 }
 \arguments{
 \item{from_url}{defaults FALSE. If true, downloads White/Baldridge data directly from GitHub and figshare. Otherwise, loads data from storage internal to the package}

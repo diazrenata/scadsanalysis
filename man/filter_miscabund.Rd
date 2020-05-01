@@ -4,8 +4,12 @@
 \alias{filter_miscabund}
 \title{Filter misc abund data}
 \usage{
-filter_miscabund(max_s = 200, max_n = 40720,
-  storage_path = here::here("working-data", "abund_data"), save = TRUE)
+filter_miscabund(
+  max_s = 200,
+  max_n = 40720,
+  storage_path = here::here("working-data", "abund_data"),
+  save = TRUE
+)
 }
 \arguments{
 \item{max_s}{currently 200}

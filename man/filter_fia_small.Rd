@@ -4,8 +4,13 @@
 \alias{filter_fia_small}
 \title{Filter FIA data - tiny communities}
 \usage{
-filter_fia_small(min_s0 = 3, max_s0 = 9, max_comm = 10000,
-  storage_path = here::here("working-data", "abund_data"), save = TRUE)
+filter_fia_small(
+  min_s0 = 3,
+  max_s0 = 9,
+  max_comm = 10000,
+  storage_path = here::here("working-data", "abund_data"),
+  save = TRUE
+)
 }
 \arguments{
 \item{min_s0}{min s0}
