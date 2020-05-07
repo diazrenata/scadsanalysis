@@ -33,9 +33,9 @@ Here is how that translates into the size of the feasible set:
 
 ![](fia_size_files/figure-gfm/fia%20limits-1.png)<!-- -->![](fia_size_files/figure-gfm/fia%20limits-2.png)<!-- -->
 
-    ## [1] 0.965004
+    ## [1] 0.9651876
 
-    ## [1] 0.9653369
+    ## [1] 0.9636182
 
 96.5% of the datasets with state variables comparable to the FIA ranges
 are FIA.
@@ -136,3 +136,5 @@ the map.
     ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 
 ![](fia_size_files/figure-gfm/remove%20fia%20sized-4.png)<!-- -->
+
+![](fia_size_files/figure-gfm/onetailed%20intervals-1.png)<!-- -->![](fia_size_files/figure-gfm/onetailed%20intervals-2.png)<!-- -->

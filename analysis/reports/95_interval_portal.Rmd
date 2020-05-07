@@ -66,27 +66,28 @@ Note that the color scale is log transformed, so the largest communities have e^
 
 ```{r 95 interval} 
 
-ggplot(filter(all_di, singletons == F, s0 > 2), aes(x = log(s0), y = log(n0), color = skew_95_ratio)) +
+ggplot(filter(all_di, singletons == F, s0 > 2), aes(x = log(s0), y = log(n0), color = skew_95_ratio_1t)) +
+  geom_point(alpha = .5) +
+  theme_bw() +
+  theme(legend.position = "top") + 
+    scale_color_viridis_c(option = "magma", end = .9, begin = .1)+
+  facet_wrap(vars(dat), scales = "free")
+
+
+ggplot(filter(all_di, singletons == F), aes(x = log(s0), y = log(n0), color = simpson_95_ratio_1t))+
   geom_point(alpha = .5) +
   theme_bw() +
   theme(legend.position = "top") + scale_color_viridis_c(option = "magma", end = .9, begin = .1)+
   facet_wrap(vars(dat), scales = "free")
 
-
-ggplot(filter(all_di, singletons == F), aes(x = log(s0), y = log(n0), color = simpson_95_ratio)) +
-  geom_point(alpha = .5) +
-  theme_bw() +
-  theme(legend.position = "top") + scale_color_viridis_c(option = "magma", end = .9, begin = .1)+
-  facet_wrap(vars(dat), scales = "free")
-
-ggplot(filter(all_di, singletons == F, s0 > 2), aes(x = log_nparts, y = skew_95_ratio, color = log(n0/s0))) +
+ggplot(filter(all_di, singletons == F, s0 > 2), aes(x = log_nparts, y = skew_95_ratio_1t, color = log(n0/s0))) +
   geom_point() +
   theme_bw() +
   geom_vline(xintercept = c(10,15)) +
   scale_color_viridis_c() +
   facet_wrap(vars(dat), scales = "free")
 
-ggplot(filter(all_di, singletons == F), aes(x = log_nparts, y = simpson_95_ratio, color = log(n0/s0))) +
+ggplot(filter(all_di, singletons == F), aes(x = log_nparts, y = simpson_95_ratio_1t, color = log(n0/s0))) +
   geom_point() +
   theme_bw() +
   geom_vline(xintercept = c(10,15)) +
@@ -105,7 +106,7 @@ all_di_skew <- all_di %>%
   filter(!singletons, s0 > 2) %>%
   arrange(log_nparts) %>%
   mutate(nparts_rank = row_number()) %>%
-  arrange(skew_95_ratio)%>%
+  arrange(skew_95_ratio_1t)%>%
   mutate(ratio_rank = row_number(),
          random_rank = sample.int(n = length(nparts_rank), size = length(nparts_rank), replace = F)) %>%
   mutate(nparts_rank_binned = ceiling(10 * (nparts_rank / max(nparts_rank))),
@@ -133,7 +134,7 @@ all_di_simpson <- all_di %>%
   filter(!singletons) %>%
   arrange(log_nparts) %>%
   mutate(nparts_rank = row_number()) %>%
-  arrange(simpson_95_ratio)%>%
+  arrange(simpson_95_ratio_1t)%>%
   mutate(ratio_rank = row_number()) %>%
   mutate(nparts_rank_binned = ceiling(10 * (nparts_rank / max(nparts_rank))),
          ratio_rank_binned = ceiling(10 * (ratio_rank / max(ratio_rank))))
@@ -154,11 +155,11 @@ ggplot(all_di_simpson, aes(x = simpson_percentile)) +
 ```{r small mcdb}
 small_di <- filter(all_di, dat == "mcdb", log_nparts < 20)
 
-ggplot(small_di, aes(x = log_nparts, y = skew_95_ratio)) +
+ggplot(small_di, aes(x = log_nparts, y = skew_95_ratio_1t))+
   geom_point() +
   theme_bw()
 
-filter(small_di, skew_95_ratio == min(small_di$skew_95_ratio, na.rm = T))
+filter(small_di, skew_95_ratio_1t == min(small_di$skew_95_ratio_1t, na.rm = T))
 
 ```
 
@@ -181,8 +182,9 @@ onesided_interval <- quantile(filter(di_fs_1879_TRUE, source!= "observed")$skew,
 
 ggplot(filter(di_fs_1879_TRUE, source != "observed"), aes(x =skew)) +
   geom_density() +
-  geom_vline(xintercept = twosided_interval) +
-  geom_vline(xintercept = onesided_interval, color = "red")
+ # geom_vline(xintercept = twosided_interval) +
+  geom_vline(xintercept = onesided_interval, color = "red") +
+  theme_bw()
 
 
 # 1469 - more middle of the pack
@@ -195,8 +197,9 @@ onesided_interval <- quantile(filter(di_fs_1469_TRUE, source!= "observed")$skew,
 
 ggplot(filter(di_fs_1469_TRUE, source != "observed"), aes(x =skew)) +
   geom_density() +
-  geom_vline(xintercept = twosided_interval) +
-  geom_vline(xintercept = onesided_interval, color = "red")
+#  geom_vline(xintercept = twosided_interval) +
+  geom_vline(xintercept = onesided_interval, color = "red") +
+  theme_bw()
 
 
 #1218 - very high
@@ -209,7 +212,8 @@ onesided_interval <- quantile(filter(di_fs_1218_TRUE, source!= "observed")$skew,
 
 ggplot(filter(di_fs_1218_TRUE, source != "observed"), aes(x =skew)) +
   geom_density() +
-  geom_vline(xintercept = twosided_interval) +
-  geom_vline(xintercept = onesided_interval, color = "red")
+ # geom_vline(xintercept = twosided_interval) +
+  geom_vline(xintercept = onesided_interval, color = "red") +
+  theme_bw()
 
 ```

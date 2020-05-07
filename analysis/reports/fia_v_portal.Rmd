@@ -306,3 +306,18 @@ ggplot(filter(all_di, !singletons, s0 > fia_max_s, n0 > fia_max_n), aes(x = simp
   theme_bw() +
   facet_wrap(vars(dat), scales = "free_y")
 ```
+
+```{r compare fia to portal rodents}
+
+ggplot(filter(fia_sized, dat %in% c("fia", "portal_rodents")), aes(x = log(s0), y = log(n0), color = dat)) +
+  geom_point(alpha = .3) +
+  geom_point(data = filter(all_di, dat == "portal_rodents")) +
+  theme_bw()
+
+ggplot(filter(fia_sized, dat %in% c("fia", "portal_rodents"), s0 > 2), aes(x = skew_percentile)) +
+  geom_histogram() +
+  facet_wrap(vars(dat, small_n), scales = "free_y") +
+  theme_bw()
+
+
+```

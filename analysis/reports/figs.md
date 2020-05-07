@@ -28,7 +28,7 @@ have e^331.5401042, or 9.683621310^{143}, elements in the feasible set\!
 
 ![](figs_files/figure-gfm/95%20ratio%20v%20nparts%20scatter-2.png)<!-- -->
 
-    ## Warning: Removed 93 rows containing missing values (geom_point).
+    ## Warning: Removed 99 rows containing missing values (geom_point).
 
 ![](figs_files/figure-gfm/percentiles%20v%2095%20interval-1.png)<!-- -->
 
@@ -82,7 +82,7 @@ have e^331.5401042, or 9.683621310^{143}, elements in the feasible set\!
 
 ![](figs_files/figure-gfm/1t%2095%20ratio%20v%20nparts%20scatter-2.png)<!-- -->
 
-    ## Warning: Removed 93 rows containing missing values (geom_point).
+    ## Warning: Removed 99 rows containing missing values (geom_point).
 
 ![](figs_files/figure-gfm/1t%20percentiles%20v%2095%20interval-1.png)<!-- -->
 
@@ -155,3 +155,29 @@ have e^331.5401042, or 9.683621310^{143}, elements in the feasible set\!
     ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 
 ![](figs_files/figure-gfm/gentry-2.png)<!-- -->
+
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+    ## Warning: Removed 11 rows containing non-finite values (stat_bin).
+
+![](figs_files/figure-gfm/1t%20hists-1.png)<!-- -->
+
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+    ## Warning: Removed 11 rows containing non-finite values (stat_bin).
+
+![](figs_files/figure-gfm/1t%20hists-2.png)<!-- -->
+
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+    ## Warning: Removed 15 rows containing non-finite values (stat_bin).
+
+![](figs_files/figure-gfm/1t%20hists-3.png)<!-- -->
+
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+    ## Warning: Removed 15 rows containing non-finite values (stat_bin).
+
+![](figs_files/figure-gfm/1t%20hists-4.png)<!-- -->

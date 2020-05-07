@@ -379,3 +379,32 @@ ggplot(gentry_cat, aes(x = simpson_percentile)) +
 
 
 ```
+
+```{r 1t hists}
+
+
+ggplot(all_di_skew, aes(x = skew_95_ratio_1t))  +
+geom_histogram() +   theme_bw() +
+  facet_wrap(vars(nparts_rank_binned))
+
+ggplot(all_di_skew, aes(x = skew_95_ratio_1t)) +
+  geom_histogram(aes(x = skew_percentile / 100, y = ..count.. * 5), fill = "green", alpha = .5) + geom_histogram(alpha = .5) +  
+theme_bw() +
+  facet_wrap(vars(nparts_rank_binned))
+
+
+
+
+ggplot(all_di_simpson, aes(x = simpson_95_ratio_1t))  +
+geom_histogram() +   theme_bw() +
+  facet_wrap(vars(nparts_rank_binned))
+
+ggplot(all_di_simpson, aes(x = simpson_95_ratio_1t)) +
+  geom_histogram(aes(x = simpson_percentile / 100, y = ..count.. * 5), fill = "green", alpha = .5) + geom_histogram(alpha = .5) +  
+theme_bw() +
+  facet_wrap(vars(nparts_rank_binned))
+
+
+
+
+```

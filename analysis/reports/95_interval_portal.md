@@ -56,16 +56,18 @@ have e^331.5401042, or 9.683621310^{143}, elements in the feasible set\!
 
 ![](95_interval_portal_files/figure-gfm/small%20mcdb-1.png)<!-- -->
 
-    ##   sim   source  dat site singletons s0 n0 nparts     skew  shannon   simpson
-    ## 1 -99 observed mcdb 1879       TRUE 14 41   2738 2.902913 1.615595 0.6115407
+    ##   sim   source  dat site singletons s0  n0   nparts     skew  shannon   simpson
+    ## 1 -99 observed mcdb 1724       TRUE 24 118 67867303 2.414811 1.990816 0.7806665
     ##   skew_percentile shannon_percentile simpson_percentile skew_range
-    ## 1        99.03939          0.1440922          0.1440922   5.956108
+    ## 1         77.6194           0.100025            0.60015   4.463304
     ##   simpson_range nsamples   skew_sd skew_mean simpson_sd simpson_mean  skew_2p5
-    ## 1     0.4021416     2082 0.7163278  1.445342 0.04671035    0.8598034 0.1013209
-    ##   skew_97p5 simpson_2p5 simpson_97p5 skew_95_ratio simpson_95_ratio log_nparts
-    ## 1  2.792307   0.7376859    0.9161214     0.4518028         0.443713   7.914983
-    ##   log_nsamples log150_nparts prop_found found_all
-    ## 1     7.641084      1.579637  0.7604091     FALSE
+    ## 1     0.3047975     3999 0.7545883  1.856245 0.03081419    0.9025698 0.5497199
+    ##   skew_97p5  skew_95   skew_min simpson_max simpson_2p5 simpson_5 simpson_97p5
+    ## 1  3.522572 3.218997 -0.2232043   0.9515944   0.8208489 0.8452743    0.9418271
+    ##   skew_95_ratio_2t simpson_95_ratio_2t skew_95_ratio_1t simpson_95_ratio_1t
+    ## 1        0.6660653           0.3969133        0.7712226           0.3488219
+    ##   log_nparts log_nsamples log150_nparts   prop_found found_all
+    ## 1   18.03306       8.2938      3.598958 5.892381e-05     FALSE
 
 ![](95_interval_portal_files/figure-gfm/load%20one%20site-1.png)<!-- -->![](95_interval_portal_files/figure-gfm/load%20one%20site-2.png)<!-- -->
 
