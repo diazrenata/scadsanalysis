@@ -20,19 +20,19 @@ have e^331.5401042, or 9.683621310^{143}, elements in the feasible set\!
 
 ![](figs_files/figure-gfm/95%20interval-1.png)<!-- -->![](figs_files/figure-gfm/95%20interval-2.png)<!-- -->
 
-    ## Warning: Removed 11 rows containing missing values (geom_point).
+    ## Warning: Removed 112 rows containing missing values (geom_point).
 
 ![](figs_files/figure-gfm/95%20ratio%20v%20nparts%20scatter-1.png)<!-- -->
 
-    ## Warning: Removed 15 rows containing missing values (geom_point).
+    ## Warning: Removed 116 rows containing missing values (geom_point).
 
 ![](figs_files/figure-gfm/95%20ratio%20v%20nparts%20scatter-2.png)<!-- -->
 
-    ## Warning: Removed 99 rows containing missing values (geom_point).
+    ## Warning: Removed 200 rows containing missing values (geom_point).
 
 ![](figs_files/figure-gfm/percentiles%20v%2095%20interval-1.png)<!-- -->
 
-    ## Warning: Removed 15 rows containing missing values (geom_point).
+    ## Warning: Removed 116 rows containing missing values (geom_point).
 
 ![](figs_files/figure-gfm/percentiles%20v%2095%20interval-2.png)<!-- -->
 
@@ -62,11 +62,11 @@ have e^331.5401042, or 9.683621310^{143}, elements in the feasible set\!
 
 ![](figs_files/figure-gfm/binned%20simpson-3.png)<!-- -->
 
-    ## Warning: Removed 11 rows containing missing values (geom_point).
+    ## Warning: Removed 112 rows containing missing values (geom_point).
 
 ![](figs_files/figure-gfm/relationships%20in%20nparts%20bins-1.png)<!-- -->
 
-    ## Warning: Removed 15 rows containing missing values (geom_point).
+    ## Warning: Removed 116 rows containing missing values (geom_point).
 
 ![](figs_files/figure-gfm/relationships%20in%20nparts%20bins-2.png)<!-- -->
 
@@ -74,19 +74,19 @@ have e^331.5401042, or 9.683621310^{143}, elements in the feasible set\!
 
 ![](figs_files/figure-gfm/1t%2095%20interval-1.png)<!-- -->![](figs_files/figure-gfm/1t%2095%20interval-2.png)<!-- -->
 
-    ## Warning: Removed 11 rows containing missing values (geom_point).
+    ## Warning: Removed 112 rows containing missing values (geom_point).
 
 ![](figs_files/figure-gfm/1t%2095%20ratio%20v%20nparts%20scatter-1.png)<!-- -->
 
-    ## Warning: Removed 15 rows containing missing values (geom_point).
+    ## Warning: Removed 116 rows containing missing values (geom_point).
 
 ![](figs_files/figure-gfm/1t%2095%20ratio%20v%20nparts%20scatter-2.png)<!-- -->
 
-    ## Warning: Removed 99 rows containing missing values (geom_point).
+    ## Warning: Removed 200 rows containing missing values (geom_point).
 
 ![](figs_files/figure-gfm/1t%20percentiles%20v%2095%20interval-1.png)<!-- -->
 
-    ## Warning: Removed 15 rows containing missing values (geom_point).
+    ## Warning: Removed 116 rows containing missing values (geom_point).
 
 ![](figs_files/figure-gfm/1t%20percentiles%20v%2095%20interval-2.png)<!-- -->
 
@@ -116,11 +116,11 @@ have e^331.5401042, or 9.683621310^{143}, elements in the feasible set\!
 
 ![](figs_files/figure-gfm/1t%20binned%20simpson-3.png)<!-- -->
 
-    ## Warning: Removed 11 rows containing missing values (geom_point).
+    ## Warning: Removed 112 rows containing missing values (geom_point).
 
 ![](figs_files/figure-gfm/1t%20relationships%20in%20nparts%20bins-1.png)<!-- -->
 
-    ## Warning: Removed 15 rows containing missing values (geom_point).
+    ## Warning: Removed 116 rows containing missing values (geom_point).
 
 ![](figs_files/figure-gfm/1t%20relationships%20in%20nparts%20bins-2.png)<!-- -->
 
@@ -158,26 +158,26 @@ have e^331.5401042, or 9.683621310^{143}, elements in the feasible set\!
 
     ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 
-    ## Warning: Removed 11 rows containing non-finite values (stat_bin).
+    ## Warning: Removed 112 rows containing non-finite values (stat_bin).
 
 ![](figs_files/figure-gfm/1t%20hists-1.png)<!-- -->
 
     ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
     ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 
-    ## Warning: Removed 11 rows containing non-finite values (stat_bin).
+    ## Warning: Removed 112 rows containing non-finite values (stat_bin).
 
 ![](figs_files/figure-gfm/1t%20hists-2.png)<!-- -->
 
     ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 
-    ## Warning: Removed 15 rows containing non-finite values (stat_bin).
+    ## Warning: Removed 116 rows containing non-finite values (stat_bin).
 
 ![](figs_files/figure-gfm/1t%20hists-3.png)<!-- -->
 
     ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
     ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 
-    ## Warning: Removed 15 rows containing non-finite values (stat_bin).
+    ## Warning: Removed 116 rows containing non-finite values (stat_bin).
 
 ![](figs_files/figure-gfm/1t%20hists-4.png)<!-- -->

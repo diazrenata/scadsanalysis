@@ -18,8 +18,7 @@ all_di <- all_di %>%
   mutate(prop_found = exp(log_nsamples - log_nparts)) %>%
   mutate(found_all = prop_found==1) %>%
   filter(s0 >= 2,
-         n0 > s0,
-         dat != "fia_small")
+         n0 > s0)
 ```
 
 # Datasets in S and N space
@@ -335,12 +334,12 @@ ggplot(filter(all_di, !singletons), aes(x = simpson_percentile)) +
 
 ```{r overall relationships no fia}
 
-ggplot(filter(all_di, !singletons, dat != "fia_short"), aes(x = skew_percentile)) +
+ggplot(filter(all_di, !singletons, dat != "fia_short", dat != "fia_small"), aes(x = skew_percentile)) +
   geom_histogram() +
   theme_bw()
 
 
-ggplot(filter(all_di, !singletons, dat != "fia_short"), aes(x = simpson_percentile)) +
+ggplot(filter(all_di, !singletons, dat != "fia_short", dat != "fia_small"), aes(x = simpson_percentile)) +
   geom_histogram() +
   theme_bw()
 
