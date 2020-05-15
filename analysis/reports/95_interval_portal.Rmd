@@ -70,9 +70,18 @@ ggplot(filter(all_di, singletons == F, s0 > 2), aes(x = log(s0), y = log(n0), co
   geom_point(alpha = .5) +
   theme_bw() +
   theme(legend.position = "top") + 
+    scale_color_viridis_c(option = "magma", end = .9, begin = .1)
+ggplot(filter(all_di, singletons == F, s0 > 2), aes(x = log(s0), y = log(n0), color = skew_95_ratio_1t)) +
+  geom_point(alpha = .5) +
+  theme_bw() +
+  theme(legend.position = "top") + 
     scale_color_viridis_c(option = "magma", end = .9, begin = .1)+
   facet_wrap(vars(dat), scales = "free")
 
+ggplot(filter(all_di, singletons == F), aes(x = log(s0), y = log(n0), color = simpson_95_ratio_1t))+
+  geom_point(alpha = .5) +
+  theme_bw() +
+  theme(legend.position = "top") + scale_color_viridis_c(option = "magma", end = .9, begin = .1)
 
 ggplot(filter(all_di, singletons == F), aes(x = log(s0), y = log(n0), color = simpson_95_ratio_1t))+
   geom_point(alpha = .5) +

@@ -18,15 +18,15 @@ have e^331.5401042, or 9.683621310^{143}, elements in the feasible set\!
 
 # 95 interval vs nparts
 
-![](95_interval_portal_files/figure-gfm/95%20interval-1.png)<!-- -->![](95_interval_portal_files/figure-gfm/95%20interval-2.png)<!-- -->
+![](95_interval_portal_files/figure-gfm/95%20interval-1.png)<!-- -->![](95_interval_portal_files/figure-gfm/95%20interval-2.png)<!-- -->![](95_interval_portal_files/figure-gfm/95%20interval-3.png)<!-- -->![](95_interval_portal_files/figure-gfm/95%20interval-4.png)<!-- -->
 
     ## Warning: Removed 11 rows containing missing values (geom_point).
 
-![](95_interval_portal_files/figure-gfm/95%20interval-3.png)<!-- -->
+![](95_interval_portal_files/figure-gfm/95%20interval-5.png)<!-- -->
 
     ## Warning: Removed 15 rows containing missing values (geom_point).
 
-![](95_interval_portal_files/figure-gfm/95%20interval-4.png)<!-- -->
+![](95_interval_portal_files/figure-gfm/95%20interval-6.png)<!-- -->
 
 # Binned by ranked nparts and ranked 95 intervals
 
