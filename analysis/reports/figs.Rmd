@@ -20,7 +20,9 @@ all_di <- all_di %>%
   filter(s0 >= 2,
          n0 > s0,
          dat %in% c("bbs", "gentry", "fia_short", "fia_small", "mcdb", "misc_abund_short")) %>%
-  mutate(dat = ifelse(substr(dat, 0, 3) == "fia", yes = "fia", no = dat))
+  mutate(dat = ifelse(substr(dat, 0, 3) == "fia", yes = "fia", no = dat)) %>%
+  mutate(dat = ifelse(dat == "misc_abund_short", "misc_abund", dat))%>%
+  mutate(is_fia = ifelse(substr(dat, 0, 3) == "fia", dat, "other"))
 ```
 
 # Datasets in S and N space
@@ -28,10 +30,15 @@ all_di <- all_di %>%
 Here is where our communities fall in S and N space:
 
 ```{r datasets in s and n space}
-ggplot(filter(all_di, singletons == F), aes(x = log(s0), y = log(n0), color = dat)) +
+
+all_dat_to_plot <- filter(all_di, singletons == F) %>%
+  bind_rows(mutate(filter(all_di, singletons == F), dat = "all"))
+
+ggplot(all_dat_to_plot, aes(x = log(s0), y = log(n0), color = dat)) +
   geom_point(alpha = .5) +
   theme_bw() +
-  theme(legend.position = "top") + scale_color_viridis_d(end = .9)
+  theme(legend.position = "top") + scale_color_viridis_d(end = .9) +
+  facet_wrap(vars(dat))
 
 ```
 
@@ -100,305 +107,115 @@ ggplot(filter(all_di, !singletons), aes(x = simpson_percentile)) +
   ggtitle("Simpson percentile")+
   facet_wrap(vars(dat), scales = "free_y")
 
-
-```
-
-# Binned by ranked nparts and ranked 95 intervals
-
-```{r binned skew}
-
-all_di_skew <- all_di %>%
-  filter(!singletons, s0 > 2) %>%
-  arrange(log_nparts) %>%
-  mutate(nparts_rank = row_number()) %>%
-  arrange(skew_95_ratio_2t)%>%
-  mutate(ratio_rank = row_number(),
-         random_rank = sample.int(n = length(nparts_rank), size = length(nparts_rank), replace = F)) %>%
-  mutate(nparts_rank_binned = ceiling(10 * (nparts_rank / max(nparts_rank))),
-         ratio_rank_binned = ceiling(10 * (ratio_rank / max(ratio_rank))),
-         random_rank_binned = ceiling(10 * (random_rank / max(random_rank))))
-
-ggplot(all_di_skew, aes(x = skew_percentile)) +
-  geom_histogram() +
-  facet_wrap(vars(nparts_rank_binned), scales = "free") +
-  theme_bw() +
-  ggtitle("1/10th bins: Nparts")
-ggplot(all_di_skew, aes(x = skew_percentile)) +
-  geom_histogram() +
-  facet_wrap(vars(ratio_rank_binned), scales = "free") +
-  theme_bw() +
-  ggtitle("1/10th bins: 95% interval ratio")
-ggplot(all_di_skew, aes(x = skew_percentile)) +
-  geom_histogram() +
-  facet_wrap(vars(random_rank_binned), scales = "free") +
-  theme_bw() +
-  ggtitle("10 random bins")
-
-```
-
-```{r binned simpson}
-
-all_di_simpson <- all_di %>%
-  filter(!singletons) %>%
-  arrange(log_nparts) %>%
-  mutate(nparts_rank = row_number()) %>%
-  arrange(simpson_95_ratio_2t)%>%
-  mutate(ratio_rank = row_number(),
-         random_rank = sample.int(n = length(nparts_rank), size = length(nparts_rank), replace = F)) %>%
-  mutate(nparts_rank_binned = ceiling(10 * (nparts_rank / max(nparts_rank))),
-         ratio_rank_binned = ceiling(10 * (ratio_rank / max(ratio_rank))),
-         random_rank_binned = ceiling(10 * (random_rank / max(random_rank))))
-
-ggplot(all_di_simpson, aes(x = simpson_percentile)) +
-  geom_histogram() +
-  facet_wrap(vars(nparts_rank_binned), scales = "free") +
-  theme_bw() +
-    ggtitle("1/10th bins: Nparts")
-
-ggplot(all_di_simpson, aes(x = simpson_percentile)) +
-  geom_histogram() +
-  facet_wrap(vars(ratio_rank_binned), scales = "free") +
-  theme_bw()+
-  ggtitle("1/10th bins: 95% interval ratio")
-
-ggplot(all_di_simpson, aes(x = simpson_percentile)) +
-  geom_histogram() +
-  facet_wrap(vars(random_rank_binned), scales = "free") +
-  theme_bw() +
-  ggtitle("10 random bins")
-
-```
-
-```{r relationships in nparts bins}
-
-ggplot(all_di_skew, aes(x = skew_95_ratio_2t, y = skew_percentile)) +
-  geom_point(alpha = .05) +
-  theme_bw() +
-  facet_wrap(vars(nparts_rank_binned), scales = "free")
-
-ggplot(all_di_simpson, aes(x = simpson_95_ratio_2t, y = simpson_percentile)) +
-  geom_point(alpha = .05) +
-  theme_bw() +
-  facet_wrap(vars(nparts_rank_binned), scales = "free")
-
-```
-
-
-
-# 95 interval vs nparts
-
-```{r 1t 95 interval} 
-
-ggplot(filter(all_di, singletons == F, s0 > 2), aes(x = log(s0), y = log(n0), color = skew_95_ratio_1t)) +
-  geom_point(alpha = .5) +
-  theme_bw() +
-  theme(legend.position = "top") + scale_color_viridis_c(option = "magma", end = .9, begin = .1)
-
-
-ggplot(filter(all_di, singletons == F), aes(x = log(s0), y = log(n0), color = simpson_95_ratio_1t)) +
-  geom_point(alpha = .5) +
-  theme_bw() +
-  theme(legend.position = "top") + scale_color_viridis_c(option = "magma", end = .9, begin = .1)
-
-```
-
-```{r 1t 95 ratio v nparts scatter}
-
-ggplot(filter(all_di, singletons == F, s0 > 2), aes(x = log_nparts, y = skew_95_ratio_1t, color = log(n0/s0))) +
-  geom_point() +
-  theme_bw() +
-  geom_vline(xintercept = c(10,15)) +
-  scale_color_viridis_c()
-
-ggplot(filter(all_di, singletons == F), aes(x = log_nparts, y = simpson_95_ratio_1t, color = log(n0/s0))) +
-  geom_point() +
-  theme_bw() +
-  geom_vline(xintercept = c(10,15)) +
-  scale_color_viridis_c()
-
-```
-
-
-```{r 1t percentiles v 95 interval}
-
-ggplot(filter(all_di, !singletons), aes(x = skew_95_ratio_1t, y = skew_percentile)) +
-  geom_point(alpha = .05) +
-  theme_bw()
-
-
-ggplot(filter(all_di, !singletons), aes(x = simpson_95_ratio_1t, y = simpson_percentile)) +
-  geom_point(alpha = .05) +
-  theme_bw()
-
-```
-
-# Binned by ranked nparts and ranked 95 intervals
-
-```{r 1t binned skew}
-
-all_di_skew <- all_di %>%
-  filter(!singletons, s0 > 2) %>%
-  arrange(log_nparts) %>%
-  mutate(nparts_rank = row_number()) %>%
-  arrange(skew_95_ratio_1t)%>%
-  mutate(ratio_rank = row_number(),
-         random_rank = sample.int(n = length(nparts_rank), size = length(nparts_rank), replace = F)) %>%
-  mutate(nparts_rank_binned = ceiling(10 * (nparts_rank / max(nparts_rank))),
-         ratio_rank_binned = ceiling(10 * (ratio_rank / max(ratio_rank))),
-         random_rank_binned = ceiling(10 * (random_rank / max(random_rank))))
-
-ggplot(all_di_skew, aes(x = skew_percentile)) +
-  geom_histogram() +
-  facet_wrap(vars(nparts_rank_binned), scales = "free") +
-  theme_bw() +
-  ggtitle("1/10th bins: Nparts")
-ggplot(all_di_skew, aes(x = skew_percentile)) +
-  geom_histogram() +
-  facet_wrap(vars(ratio_rank_binned), scales = "free") +
-  theme_bw() +
-  ggtitle("1/10th bins: 95% interval ratio")
-ggplot(all_di_skew, aes(x = skew_percentile)) +
-  geom_histogram() +
-  facet_wrap(vars(random_rank_binned), scales = "free") +
-  theme_bw() +
-  ggtitle("10 random bins")
-
-```
-
-```{r 1t binned simpson}
-
-all_di_simpson <- all_di %>%
-  filter(!singletons) %>%
-  arrange(log_nparts) %>%
-  mutate(nparts_rank = row_number()) %>%
-  arrange(simpson_95_ratio_1t)%>%
-  mutate(ratio_rank = row_number(),
-         random_rank = sample.int(n = length(nparts_rank), size = length(nparts_rank), replace = F)) %>%
-  mutate(nparts_rank_binned = ceiling(10 * (nparts_rank / max(nparts_rank))),
-         ratio_rank_binned = ceiling(10 * (ratio_rank / max(ratio_rank))),
-         random_rank_binned = ceiling(10 * (random_rank / max(random_rank))))
-
-ggplot(all_di_simpson, aes(x = simpson_percentile)) +
-  geom_histogram() +
-  facet_wrap(vars(nparts_rank_binned), scales = "free") +
-  theme_bw() +
-    ggtitle("1/10th bins: Nparts")
-
-ggplot(all_di_simpson, aes(x = simpson_percentile)) +
-  geom_histogram() +
-  facet_wrap(vars(ratio_rank_binned), scales = "free") +
-  theme_bw()+
-  ggtitle("1/10th bins: 95% interval ratio")
-
-ggplot(all_di_simpson, aes(x = simpson_percentile)) +
-  geom_histogram() +
-  facet_wrap(vars(random_rank_binned), scales = "free") +
-  theme_bw() +
-  ggtitle("10 random bins")
-
-```
-
-```{r 1t relationships in nparts bins}
-
-ggplot(all_di_skew, aes(x = skew_95_ratio_1t, y = skew_percentile)) +
-  geom_point(alpha = .05) +
-  theme_bw() +
-  facet_wrap(vars(nparts_rank_binned), scales = "free")
-
-ggplot(all_di_simpson, aes(x = simpson_95_ratio_1t, y = simpson_percentile)) +
-  geom_point(alpha = .05) +
-  theme_bw() +
-  facet_wrap(vars(nparts_rank_binned), scales = "free")
-
-```
-
-```{r overall relationships}
-
-ggplot(filter(all_di, !singletons), aes(x = skew_percentile)) +
-  geom_histogram() +
-  theme_bw()
-
-
-ggplot(filter(all_di, !singletons), aes(x = simpson_percentile)) +
-  geom_histogram() +
-  theme_bw()
-
-```
-
-### Remove FIA
-
-```{r overall relationships no fia}
-
-ggplot(filter(all_di, !singletons, dat != "fia_short", dat != "fia_small"), aes(x = skew_percentile)) +
-  geom_histogram() +
-  theme_bw()
-
-
-ggplot(filter(all_di, !singletons, dat != "fia_short", dat != "fia_small"), aes(x = simpson_percentile)) +
-  geom_histogram() +
-  theme_bw()
-
-```
-
-
-```{r overall relationships by da t}
-
-ggplot(filter(all_di, !singletons, s0 > 2), aes(x = skew_percentile)) +
-  geom_histogram() +
-  theme_bw() +
-  facet_wrap(vars(dat), scales = "free_y")
-
-
-ggplot(filter(all_di, !singletons), aes(x = simpson_percentile)) +
-  geom_histogram() +
-  theme_bw()+
-  facet_wrap(vars(dat), scales = "free_y")
-
-```
-
-```{r gentry}
-
-ggplot(filter(all_di, dat == "gentry", !singletons), aes(x = log(n0/s0), y = simpson_percentile)) +
-  geom_point()
-
-
-gentry_cat <- filter(all_di, dat == "gentry", !singletons) %>%
-  mutate(low_avgn = log(n0/s0) < 1.25) 
-
-
-ggplot(gentry_cat, aes(x = simpson_percentile)) +
-  geom_histogram() +
-  facet_wrap(vars(low_avgn), scales = "free_y")
-
+skew_outcomes <- filter(all_di, !singletons, s0 > 2) %>%
+  group_by(is_fia) %>%
+  summarize(high_skew_prop = mean(skew_percentile >= 95)) %>%
+  ungroup()
+
+even_outcomes <- filter(all_di, !singletons) %>%
+  group_by(is_fia) %>%
+  summarize(low_even_prop = mean(simpson_percentile <= 5)) %>%
+  ungroup()
 
 
 ```
 
-```{r 1t hists}
+# Within the FIA size range
+
+```{r within FIA size range}
+
+fia_size_range <- filter(all_di, !singletons)
+
+fia_max_s = max(filter(all_di, dat == "fia")$s0)
+fia_max_n = max(filter(all_di, dat == "fia")$n0)
+
+fia_size_range <- filter(fia_size_range,
+                         s0 <= fia_max_s,
+                         n0 <= fia_max_n) 
+
+skew_fia <- ggplot(filter(fia_size_range, s0 > 2), aes(x = skew_percentile)) +
+  geom_histogram() +
+  facet_wrap(vars(is_fia), scales = "free_y") +
+  theme_bw() +
+  ggtitle("Skew percentile - within FIA size range")
 
 
-ggplot(all_di_skew, aes(x = skew_95_ratio_1t))  +
-geom_histogram() +   theme_bw() +
-  facet_wrap(vars(nparts_rank_binned))
+simpson_fia <- ggplot(filter(fia_size_range), aes(x = simpson_percentile)) +
+  geom_histogram() +
+  facet_wrap(vars(is_fia), scales = "free_y") +
+  theme_bw() +
+  ggtitle("Simpson percentile - within FIA size range")
 
-ggplot(all_di_skew, aes(x = skew_95_ratio_1t)) +
-  geom_histogram(aes(x = skew_percentile / 100, y = ..count.. * 5), fill = "green", alpha = .5) + geom_histogram(alpha = .5) +  
-theme_bw() +
-  facet_wrap(vars(nparts_rank_binned))
+gridExtra::grid.arrange(grobs = list(skew_fia, simpson_fia), nrow = 1)
+
+```
+
+```{r 95 hists}
+
+all_di <- all_di %>%
+  group_by_all() %>%
+  mutate(is_fia_size = (s0 <= fia_max_s) && (n0 <= fia_max_n)) %>%
+  ungroup() 
+
+all_di <- all_di %>%
+  mutate(is_fia_size = ifelse(is_fia_size, "FIA size", "Larger than FIA"))
+
+skew_ratio <- ggplot(filter(all_di, s0 > 2), aes(x = skew_95_ratio_1t)) +
+  geom_histogram() +
+  theme_bw() +
+  facet_wrap(vars(is_fia_size), scales = "free_y") +
+  ggtitle("Narrowness of skewness")
+
+even_ratio <- ggplot(filter(all_di, s0 > 2), aes(x = simpson_95_ratio_1t)) +
+  geom_histogram() +
+  theme_bw() +
+  facet_wrap(vars(is_fia_size), scales = "free_y") +
+  ggtitle("Narrowness of evenness")
+
+gridExtra::grid.arrange(grobs = list(skew_ratio, even_ratio), nrow = 1)
+
+```
+
+# Rarefaction
+
+```{r rarefaction change}
+
+rarefied <- filter(all_di, singletons) %>%
+  select(dat, site, skew_percentile, simpson_percentile) %>%
+  rename(skew_percentile_rarefied = skew_percentile,
+         simpson_percentile_rarefied = simpson_percentile)
+
+rarefied <- right_join(all_di, rarefied)
+
+skew_rare <- ggplot(filter(rarefied, s0 > 2), aes(x = skew_percentile, y = skew_percentile_rarefied)) +
+  geom_point(alpha = .2) +
+  geom_abline(slope = 1, intercept = 0, color = "green") +
+  theme_bw() +
+  facet_wrap(vars(dat)) +
+  ggtitle("Skew percentile change with rarefaction")
 
 
+even_rare <- ggplot(filter(rarefied), aes(x = simpson_percentile, y = simpson_percentile_rarefied)) +
+  geom_point(alpha = .2) +
+  geom_abline(slope = 1, intercept = 0, color = "green") +
+  theme_bw() +
+  facet_wrap(vars(dat)) +
+  ggtitle("Evenness percentile change with rarefaction")
 
 
-ggplot(all_di_simpson, aes(x = simpson_95_ratio_1t))  +
-geom_histogram() +   theme_bw() +
-  facet_wrap(vars(nparts_rank_binned))
+gridExtra::grid.arrange(grobs = list(skew_rare, even_rare), nrow = 1)
 
-ggplot(all_di_simpson, aes(x = simpson_95_ratio_1t)) +
-  geom_histogram(aes(x = simpson_percentile / 100, y = ..count.. * 5), fill = "green", alpha = .5) + geom_histogram(alpha = .5) +  
-theme_bw() +
-  facet_wrap(vars(nparts_rank_binned))
+skew_rare_outcome <- rarefied %>%
+  filter(s0 > 2) %>%
+  group_by(is_fia) %>%
+  summarize(high_skew = mean(skew_percentile_rarefied >= 95)) %>%
+  ungroup()
+skew_rare_outcome
 
-
-
-
+even_rare_outcome <- rarefied %>%
+  filter(s0 > 2) %>%
+  group_by(is_fia) %>%
+  summarize(low_even = mean(simpson_percentile_rarefied <= 5)) %>%
+  ungroup()
+even_rare_outcome
 ```

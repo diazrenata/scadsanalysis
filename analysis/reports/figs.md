@@ -16,168 +16,51 @@ The small datasets are basically all FIA.
 Note that the color scale is log transformed, so the largest communities
 have e^331.5401042, or 9.683621310^{143}, elements in the feasible set\!
 
-# 95 interval vs nparts
+# 95 interval (one tailed) vs nparts
 
-![](figs_files/figure-gfm/95%20interval-1.png)<!-- -->![](figs_files/figure-gfm/95%20interval-2.png)<!-- -->
+![](figs_files/figure-gfm/95%20interval-1.png)<!-- -->
 
-    ## Warning: Removed 112 rows containing missing values (geom_point).
-
-![](figs_files/figure-gfm/95%20ratio%20v%20nparts%20scatter-1.png)<!-- -->
-
-    ## Warning: Removed 116 rows containing missing values (geom_point).
-
-![](figs_files/figure-gfm/95%20ratio%20v%20nparts%20scatter-2.png)<!-- -->
-
-    ## Warning: Removed 200 rows containing missing values (geom_point).
-
-![](figs_files/figure-gfm/percentiles%20v%2095%20interval-1.png)<!-- -->
-
-    ## Warning: Removed 116 rows containing missing values (geom_point).
-
-![](figs_files/figure-gfm/percentiles%20v%2095%20interval-2.png)<!-- -->
-
-# Binned by ranked nparts and ranked 95 intervals
+# Overall percentile values
 
     ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 
-![](figs_files/figure-gfm/binned%20skew-1.png)<!-- -->
+![](figs_files/figure-gfm/overall-1.png)<!-- -->
 
     ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 
-![](figs_files/figure-gfm/binned%20skew-2.png)<!-- -->
+![](figs_files/figure-gfm/overall-2.png)<!-- -->
 
-    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
-
-![](figs_files/figure-gfm/binned%20skew-3.png)<!-- -->
-
-    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
-
-![](figs_files/figure-gfm/binned%20simpson-1.png)<!-- -->
-
-    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
-
-![](figs_files/figure-gfm/binned%20simpson-2.png)<!-- -->
-
-    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
-
-![](figs_files/figure-gfm/binned%20simpson-3.png)<!-- -->
-
-    ## Warning: Removed 112 rows containing missing values (geom_point).
-
-![](figs_files/figure-gfm/relationships%20in%20nparts%20bins-1.png)<!-- -->
-
-    ## Warning: Removed 116 rows containing missing values (geom_point).
-
-![](figs_files/figure-gfm/relationships%20in%20nparts%20bins-2.png)<!-- -->
-
-# 95 interval vs nparts
-
-![](figs_files/figure-gfm/1t%2095%20interval-1.png)<!-- -->![](figs_files/figure-gfm/1t%2095%20interval-2.png)<!-- -->
-
-    ## Warning: Removed 112 rows containing missing values (geom_point).
-
-![](figs_files/figure-gfm/1t%2095%20ratio%20v%20nparts%20scatter-1.png)<!-- -->
-
-    ## Warning: Removed 116 rows containing missing values (geom_point).
-
-![](figs_files/figure-gfm/1t%2095%20ratio%20v%20nparts%20scatter-2.png)<!-- -->
-
-    ## Warning: Removed 200 rows containing missing values (geom_point).
-
-![](figs_files/figure-gfm/1t%20percentiles%20v%2095%20interval-1.png)<!-- -->
-
-    ## Warning: Removed 116 rows containing missing values (geom_point).
-
-![](figs_files/figure-gfm/1t%20percentiles%20v%2095%20interval-2.png)<!-- -->
-
-# Binned by ranked nparts and ranked 95 intervals
-
-    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
-
-![](figs_files/figure-gfm/1t%20binned%20skew-1.png)<!-- -->
-
-    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
-
-![](figs_files/figure-gfm/1t%20binned%20skew-2.png)<!-- -->
-
-    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
-
-![](figs_files/figure-gfm/1t%20binned%20skew-3.png)<!-- -->
-
-    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
-
-![](figs_files/figure-gfm/1t%20binned%20simpson-1.png)<!-- -->
-
-    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
-
-![](figs_files/figure-gfm/1t%20binned%20simpson-2.png)<!-- -->
-
-    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
-
-![](figs_files/figure-gfm/1t%20binned%20simpson-3.png)<!-- -->
-
-    ## Warning: Removed 112 rows containing missing values (geom_point).
-
-![](figs_files/figure-gfm/1t%20relationships%20in%20nparts%20bins-1.png)<!-- -->
-
-    ## Warning: Removed 116 rows containing missing values (geom_point).
-
-![](figs_files/figure-gfm/1t%20relationships%20in%20nparts%20bins-2.png)<!-- -->
-
-    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
-
-![](figs_files/figure-gfm/overall%20relationships-1.png)<!-- -->
-
-    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
-
-![](figs_files/figure-gfm/overall%20relationships-2.png)<!-- -->
-
-### Remove FIA
-
-    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
-
-![](figs_files/figure-gfm/overall%20relationships%20no%20fia-1.png)<!-- -->
-
-    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
-
-![](figs_files/figure-gfm/overall%20relationships%20no%20fia-2.png)<!-- -->
-
-    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
-
-![](figs_files/figure-gfm/overall%20relationships%20by%20da%20t-1.png)<!-- -->
-
-    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
-
-![](figs_files/figure-gfm/overall%20relationships%20by%20da%20t-2.png)<!-- -->
-
-![](figs_files/figure-gfm/gentry-1.png)<!-- -->
-
-    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
-
-![](figs_files/figure-gfm/gentry-2.png)<!-- -->
-
-    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
-
-    ## Warning: Removed 112 rows containing non-finite values (stat_bin).
-
-![](figs_files/figure-gfm/1t%20hists-1.png)<!-- -->
+# Within the FIA size range
 
     ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
     ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 
-    ## Warning: Removed 112 rows containing non-finite values (stat_bin).
-
-![](figs_files/figure-gfm/1t%20hists-2.png)<!-- -->
+![](figs_files/figure-gfm/within%20FIA%20size%20range-1.png)<!-- -->
 
     ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 
-    ## Warning: Removed 116 rows containing non-finite values (stat_bin).
-
-![](figs_files/figure-gfm/1t%20hists-3.png)<!-- -->
+    ## Warning: Removed 228 rows containing non-finite values (stat_bin).
 
     ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
-    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 
-    ## Warning: Removed 116 rows containing non-finite values (stat_bin).
+    ## Warning: Removed 228 rows containing non-finite values (stat_bin).
 
-![](figs_files/figure-gfm/1t%20hists-4.png)<!-- -->
+![](figs_files/figure-gfm/95%20hists-1.png)<!-- -->
+
+# Rarefaction
+
+    ## Joining, by = c("dat", "site")
+
+![](figs_files/figure-gfm/rarefaction%20change-1.png)<!-- -->
+
+    ## # A tibble: 2 x 2
+    ##   is_fia high_skew
+    ##   <chr>      <dbl>
+    ## 1 fia       0.0905
+    ## 2 other     0.184
+
+    ## # A tibble: 2 x 2
+    ##   is_fia low_even
+    ##   <chr>     <dbl>
+    ## 1 fia       0.173
+    ## 2 other     0.380
