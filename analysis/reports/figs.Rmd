@@ -18,7 +18,9 @@ all_di <- all_di %>%
   mutate(prop_found = exp(log_nsamples - log_nparts)) %>%
   mutate(found_all = prop_found==1) %>%
   filter(s0 >= 2,
-         n0 > s0)
+         n0 > s0,
+         dat %in% c("bbs", "gentry", "fia_short", "fia_small", "mcdb", "misc_abund_short")) %>%
+  mutate(dat = ifelse(substr(dat, 0, 3) == "fia", yes = "fia", no = dat))
 ```
 
 # Datasets in S and N space
@@ -27,17 +29,18 @@ Here is where our communities fall in S and N space:
 
 ```{r datasets in s and n space}
 ggplot(filter(all_di, singletons == F), aes(x = log(s0), y = log(n0), color = dat)) +
-  geom_point(alpha = .8) +
+  geom_point(alpha = .5) +
   theme_bw() +
-  theme(legend.position = "top") + scale_color_viridis_d()
+  theme(legend.position = "top") + scale_color_viridis_d(end = .9)
 
 ```
 
 Here is how that translates into the size of the feasible set:
 
 ```{r size of fs}
-ggplot(filter(all_di, singletons == F), aes(x = log(s0), y = log(n0), color = log150_nparts)) +
+ggplot(filter(all_di, log_nparts <= 100, singletons == F), aes(x = log(s0), y = log(n0), color = log_nparts)) +
   geom_point(alpha = .5) +
+  geom_point(data = filter(all_di, log_nparts > 100), color = "yellow", alpha = .5) +
   theme_bw() +
   theme(legend.position = "top") + scale_color_viridis_c(option = "magma", end = .9, begin = .1)
 
@@ -61,50 +64,42 @@ The small datasets are basically all FIA.
 Note that the color scale is log transformed, so the largest communities have e^`r max(all_di$log_nparts)`, or `r exp(max(all_di$log_nparts))`, elements in the feasible set!
 
 
-# 95 interval vs nparts
+# 95 interval (one tailed) vs nparts
 
 ```{r 95 interval} 
 
-ggplot(filter(all_di, singletons == F, s0 > 2), aes(x = log(s0), y = log(n0), color = skew_95_ratio_2t)) +
+skew_1t = ggplot(filter(all_di, singletons == F, s0 > 2), aes(x = log(s0), y = log(n0), color = skew_95_ratio_1t)) +
   geom_point(alpha = .5) +
   theme_bw() +
   theme(legend.position = "top") + scale_color_viridis_c(option = "magma", end = .9, begin = .1)
 
 
-ggplot(filter(all_di, singletons == F), aes(x = log(s0), y = log(n0), color = simpson_95_ratio_2t)) +
+simpson_1t = ggplot(filter(all_di, singletons == F), aes(x = log(s0), y = log(n0), color = simpson_95_ratio_1t)) +
   geom_point(alpha = .5) +
   theme_bw() +
   theme(legend.position = "top") + scale_color_viridis_c(option = "magma", end = .9, begin = .1)
 
-```
-
-```{r 95 ratio v nparts scatter}
-
-ggplot(filter(all_di, singletons == F, s0 > 2), aes(x = log_nparts, y = skew_95_ratio_2t, color = log(n0/s0))) +
-  geom_point() +
-  theme_bw() +
-  geom_vline(xintercept = c(10,15)) +
-  scale_color_viridis_c()
-
-ggplot(filter(all_di, singletons == F), aes(x = log_nparts, y = simpson_95_ratio_2t, color = log(n0/s0))) +
-  geom_point() +
-  theme_bw() +
-  geom_vline(xintercept = c(10,15)) +
-  scale_color_viridis_c()
+gridExtra::grid.arrange(grobs = list(skew_1t, simpson_1t), nrow = 1)
 
 ```
 
+# Overall percentile values
 
-```{r percentiles v 95 interval}
+```{r overall}
 
-ggplot(filter(all_di, !singletons), aes(x = skew_95_ratio_2t, y = skew_percentile)) +
-  geom_point(alpha = .05) +
-  theme_bw()
+ggplot(filter(all_di, !singletons, s0 > 2), aes(x = skew_percentile)) +
+  geom_histogram() +
+  theme_bw() +
+  ggtitle("Skew percentile") +
+  facet_wrap(vars(dat), scales = "free_y")
 
 
-ggplot(filter(all_di, !singletons), aes(x = simpson_95_ratio_2t, y = simpson_percentile)) +
-  geom_point(alpha = .05) +
-  theme_bw()
+ggplot(filter(all_di, !singletons), aes(x = simpson_percentile)) +
+  geom_histogram() +
+  theme_bw() +
+  ggtitle("Simpson percentile")+
+  facet_wrap(vars(dat), scales = "free_y")
+
 
 ```
 
