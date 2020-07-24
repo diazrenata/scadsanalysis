@@ -18,5 +18,5 @@ filter_fia(
 nothing
 }
 \description{
-Following White et al 2012, filtering FIA data to sites with > 10 species. This brings it from 103343 sites to 10355.
+Following White et al 2012, filtering FIA data to sites with >= 10 species. This brings it from 103343 sites to 10355.
 }

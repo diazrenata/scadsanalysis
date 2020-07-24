@@ -15,8 +15,8 @@ load_dataset(
 \item{storage_path}{where the data is living}
 }
 \value{
-something
+Dataset ready for analysis
 }
 \description{
-Load a dataset
+Loads a (pre-downloaded, and filtered if relevant) dataset and processes it to the right shape for the rest of the functions.
 }
