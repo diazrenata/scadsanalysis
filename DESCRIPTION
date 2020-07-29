@@ -20,7 +20,6 @@ Imports:
     e1071,
     feasiblesads,
     here,
-    portalr,
     purrr,
     rmarkdown,
     tidyr,
@@ -30,3 +29,4 @@ Suggests:
     testthat
 Remotes: 
     diazrenata/feasiblesads
+    weecology/portalr
