@@ -37,5 +37,14 @@ Either copy from directory, or run `analysis/helper_scripts/ptables_plan.R`. RMD
 
 # Run plans
 
-Either source one of the pipelines directory or run via sbatch.
+Either source one of the pipelines directory or run via sbatch. Running directly is going to take a lot of CPU.
+
+The plans render dataset-level reports, but these have not been updated in a while.
+
+# Collect all_di
+
+Run `analysis/helper_scripts/make_all_di.R` to collect the results from each of the pipelines into one dataframe.
+
+# Render manuscript-level reports
+
 
