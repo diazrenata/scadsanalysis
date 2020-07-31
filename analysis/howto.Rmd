@@ -1,0 +1,41 @@
+---
+title: "How to run"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Installations
+
+You will need to download and install hte package for this research compendium, as well as packages to run the analytical workflow and optionally HPC. 
+
+```{r install packages, echo = T, eval  = F}
+devtools::install_github("diazrenata/scadsanalysis@clean-and-tests")
+install.packages("drake")
+install.packages("DBI")
+install.packages("storr")
+install.packages("clustermq")
+
+```
+
+```{r load}
+library(scadsanalysis)
+
+```
+
+# Download and prep data
+
+```{r download data, echo = T, eval = F}
+download_data()
+```
+
+# Get the p tables
+
+Either copy from directory, or run `analysis/helper_scripts/ptables_plan.R`. RMD runs this on a HPC cluster using `submit_p_pipeline.sbatch`. These are very large files.
+
+# Run plans
+
+Either source one of the pipelines directory or run via sbatch.
+

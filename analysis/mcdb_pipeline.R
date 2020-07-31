@@ -7,7 +7,7 @@ expose_imports("scadsanalysis")
 datasets <- "mcdb"
 
 sites_list <- list_sites("mcdb")
-ndraws = 4000
+ndraws = 200
 #sites_list <- sites_list[1:15, ]
 set.seed(1980)
 
