@@ -55,9 +55,13 @@ download_data <- function(from_url = FALSE, storage_path = here::here("working-d
 
 
 
-#' Download Portal plants
+#' Download and preprocess Portal plants
 #'
-#' @param storage_path where it goes
+#' Download Portal plant data and process it. This includes reformatting and removing 4 sampling periods with very large values for S and N.
+#'
+#' The Portal plant data were used for methods development, but are not comparable to the datasets used in the actual analysis (because they are site-level records re-sampled over time, and not independent sites sampled once) and are not included in the manuscript.
+#'
+#' @param storage_path where to store the data
 #'
 #' @return nothing
 #' @export
@@ -93,6 +97,8 @@ download_portal_plants <- function(storage_path = here::here("working-data", "ab
 }
 #'
 #' #' Download MACDB data
+#' #'
+#' #' This function is not included in the final analysis.
 #' #'
 #' #' @param from_url defaults FALSE. If true, from figshare. Otherwise, loads data from storage internal to the package
 #' #' @param storage_path where to put the data. Defaults to working-data/macdb_data.
@@ -136,6 +142,8 @@ download_portal_plants <- function(storage_path = here::here("working-data", "ab
 #'
 #' #' Prepare MACDB for pipeline
 #' #'
+#' #' This function is not part of the final analysis.
+#' #'
 #' #' @param storage_path where to get the data
 #' #' @param save defaults TRUE
 #' #'
@@ -168,6 +176,8 @@ download_portal_plants <- function(storage_path = here::here("working-data", "ab
 #'
 #'
 #' #' Download Portal plants with manipulations
+#' #'
+#' #' This function is not included in the final analysis.
 #' #'
 #' #' @param storage_path where it goes
 #' #'

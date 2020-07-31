@@ -55,29 +55,29 @@ test_that("dataset DIs work", {
   fs_samples2 <- sample_fs_wrapper(dat, site_name = "1003", singletons = F, n_samples = 5, p_table = NULL)
   all_fs_samples <- dplyr::bind_rows(fs_samples1, fs_samples2)
 
-  dis <- dis_wrapper(all_fs_samples)
+  dis <- add_dis(fs_samples2)
 
   expect_true(anyNA(dis$skew_percentile))
   expect_false(anyNA(dis$shannon_percentile))
   expect_false(anyNA(dis$simpson_percentile))
 
-  expect_true(length(unique(dplyr::filter(dis, source == "observed")$skew)) == 2)
+  expect_true(length(unique(dplyr::filter(dis, source == "observed")$skew)) == 1)
 
-  fs_no_obs <- dplyr::filter(all_fs_samples, source == "sampled")
+  fs_no_obs <- dplyr::filter(fs_samples2, source == "sampled")
 
-  di_no_obs <- dis_wrapper(fs_no_obs)
+  di_no_obs <- add_dis(fs_no_obs)
 
   expect_equivalent(di_no_obs, dplyr::filter(dis, source == "sampled"))
 
   })
 
-test_that("get percentiles work", {
+test_that("get percentiles and get percentile work", {
 
   foo <- seq(1, 100, by = 5)
 
   foo_percentiles <- get_percentiles(foo)
 
-  expect_equivalent(foo_percentiles, seq(0, 95, by = 5))
+  expect_equivalent(foo_percentiles, seq(5, 100, by = 5))
 
   a_val <- 17
 
@@ -88,3 +88,40 @@ test_that("get percentiles work", {
   expect_equivalent(by_hand, a_per)
 
 })
+
+test_that("get percentile works if focal value is outside comparison vector", {
+
+  foo <- seq(10, 100, by = 5)
+
+  low_focal_value <- 5
+
+  low_per <- get_percentile(low_focal_value, foo)
+
+  high_focal_value <- 110
+
+  high_per <- get_percentile(high_focal_value, foo)
+
+  expect_equivalent(low_per, 0)
+  expect_equivalent(high_per, 100)
+
+
+})
+
+
+test_that("get percentile works if focal value is edge of comparison vector", {
+
+  foo <- seq(10, 100, by = 5)
+
+  low_focal_value <- 10
+
+  low_per <- get_percentile(low_focal_value, foo)
+
+  high_focal_value <- 100
+
+  high_per <- get_percentile(high_focal_value, foo)
+
+  expect_equivalent(low_per, 100/length(foo))
+  expect_equivalent(high_per, 100)
+
+})
+

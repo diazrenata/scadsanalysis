@@ -7,15 +7,15 @@
 sample_fs(dataset, nsamples, p_table = NULL)
 }
 \arguments{
-\item{dataset}{SAD df to base on}
+\item{dataset}{dataframe of the SAD for a single site; the result of load_dataset and then filtering to one community}
 
-\item{nsamples}{nb samples}
+\item{nsamples}{how many samples to draw. If the number of samples approaches the total number of elements in the feasible set, the samples may not all be unique. This function will only return unique samples, and so may not return \code{nsamples} samples if the feasible set is relatively small.}
 
-\item{p_table}{p table}
+\item{p_table}{p table If provided, passes p table to feasiblesads to avoid re-generating it for every site}
 }
 \value{
-long dataframe of sim, rank, and abundance
+long dataframe of simulated SADs in the same format as \code{dataset}, \emph{and} the original dataset. Sims are distinguished from the observed via the \code{source} column (observed or sampled), and individual sims are identified with the \code{sim} column.
 }
 \description{
-Sample the feasible set
+Draw samples from the feasible set for an SAD.
 }

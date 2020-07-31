@@ -2,16 +2,19 @@
 % Please edit documentation in R/download_data.R
 \name{download_portal_plants}
 \alias{download_portal_plants}
-\title{Download Portal plants}
+\title{Download and preprocess Portal plants}
 \usage{
 download_portal_plants(storage_path = here::here("working-data", "abund_data"))
 }
 \arguments{
-\item{storage_path}{where it goes}
+\item{storage_path}{where to store the data}
 }
 \value{
 nothing
 }
 \description{
-Download Portal plants
+Download Portal plant data and process it. This includes reformatting and removing 4 sampling periods with very large values for S and N.
+}
+\details{
+The Portal plant data were used for methods development, but are not comparable to the datasets used in the actual analysis (because they are site-level records re-sampled over time, and not independent sites sampled once) and are not included in the manuscript.
 }

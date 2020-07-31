@@ -2,7 +2,7 @@
 % Please edit documentation in R/count_elements.R
 \name{count_elements}
 \alias{count_elements}
-\title{Count number of elements in feasible set}
+\title{Count number of elements in the feasible set}
 \usage{
 count_elements(s, n, p_table = NULL)
 }
@@ -11,11 +11,11 @@ count_elements(s, n, p_table = NULL)
 
 \item{n}{N0}
 
-\item{p_table}{Optionally pass the p table so you don't have to regenerate it}
+\item{p_table}{Optionally pass the p table (required by \code{feasiblesads}) so you don't have to regenerate it}
 }
 \value{
 number of elements in the FS
 }
 \description{
-Count number of elements in feasible set
+Finds the number of unique elements in a feasible set given S and N
 }

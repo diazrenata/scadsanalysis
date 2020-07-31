@@ -12,7 +12,7 @@ load_dataset(
 \arguments{
 \item{dataset_name}{"bbs", "fia", "gentry", "mcdb", "portal_plants", "misc_abund_short", or "misc_abund"}
 
-\item{storage_path}{where the data is living}
+\item{storage_path}{where the data is stored}
 }
 \value{
 Dataset ready for analysis

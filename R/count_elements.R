@@ -1,8 +1,10 @@
-#' Count number of elements in feasible set
+#' Count number of elements in the feasible set
+#'
+#' Finds the number of unique elements in a feasible set given S and N
 #'
 #' @param s S0
 #' @param n N0
-#' @param p_table Optionally pass the p table so you don't have to regenerate it
+#' @param p_table Optionally pass the p table (required by `feasiblesads`) so you don't have to regenerate it
 #'
 #' @return number of elements in the FS
 #' @export

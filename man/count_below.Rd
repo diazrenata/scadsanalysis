@@ -2,7 +2,7 @@
 % Please edit documentation in R/metrics.R
 \name{count_below}
 \alias{count_below}
-\title{Count values below a value}
+\title{Count values less than or equal to a value}
 \usage{
 count_below(a_value, a_vector)
 }
@@ -12,8 +12,8 @@ count_below(a_value, a_vector)
 \item{a_vector}{Vector for comparison}
 }
 \value{
-Number of values in vector below value
+Number of values in vector less than or equal to the focal value
 }
 \description{
-Count values below a value
+Count values less than or equal to a value
 }

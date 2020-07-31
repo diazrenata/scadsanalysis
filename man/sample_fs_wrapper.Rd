@@ -14,21 +14,21 @@ sample_fs_wrapper(
 )
 }
 \arguments{
-\item{dataset}{Full dataset}
+\item{dataset}{Full dataset - potentially including numerous sites}
 
 \item{site_name}{Which site within the dataset}
 
-\item{singletonsyn}{Singletons?}
+\item{singletonsyn}{T/F Whether to use the version that has been adjusted for rarefaction}
 
-\item{n_samples}{nb samples}
+\item{n_samples}{How many samples to draw. See \code{sample_fs}: if the feasible set is small, you may not necessarily get \code{n_samples} unique samples. These functions will only return unique samples.}
 
-\item{p_table}{P table to pass}
+\item{p_table}{Optionally, pass the p-table to avoid having to regenerate it}
 
 \item{seed}{pass a seed for reproducibility}
 }
 \value{
-df of samples from fs
+Output of \code{sample_fs} for the selected site
 }
 \description{
-Sample fs wrapper
+Wrapper to sample the feasible set for a single site within a larger dataset; used to interface between the drake plan and \code{sample_fs}.
 }

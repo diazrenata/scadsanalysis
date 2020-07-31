@@ -10,8 +10,8 @@ get_statevars(a_dataset)
 \item{a_dataset}{with columns site, dat, singletons, sim, source, abund}
 }
 \value{
-summarzied to s0 and n0
+the dataset summarzied to s0 and n0 for each site
 }
 \description{
-Retrieve statevars
+Calculate the total abundance (N0) and species richness (S0) for each of the sites in a dataset
 }

@@ -15,5 +15,5 @@ get_percentile(a_value, a_vector)
 Percentile of focal value within comparison vector
 }
 \description{
-Get one percentile value
+Calculate the percentile value for a focal value relative to a comparison vector, as the \% of elements in the comparison vector less than or equal to the focal value.
 }

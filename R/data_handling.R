@@ -105,7 +105,7 @@ filter_fia_small <- function(min_s0 = 3, max_s0 = 9, max_comm = 10000, storage_p
 #' Loads a (pre-downloaded, and filtered if relevant) dataset and processes it to the right shape for the rest of the functions.
 #'
 #' @param dataset_name "bbs", "fia", "gentry", "mcdb", "portal_plants", "misc_abund_short", or "misc_abund"
-#' @param storage_path where the data is living
+#' @param storage_path where the data is stored
 #'
 #' @return Dataset ready for analysis
 #' @export
@@ -162,10 +162,10 @@ load_dataset <- function(dataset_name, storage_path = here::here("working-data",
 
 #' List sites in a dataset
 #'
-#'
+#' List the unique sites, or communities, in a dataset. Helper function for generating the lists of things to iterate over for other functions.
 #'
 #' @param dataset_name "bbs", "fia", "gentry", "mcdb", or "misc_abund"
-#' @param storage_path where the data is living
+#' @param storage_path where the data is stored
 #'
 #' @return dataframe of site names
 #' @export
@@ -215,10 +215,10 @@ list_sites <- function(dataset_name, storage_path = here::here("working-data", "
 
 #' Add singletons to a dataset
 #'
-#' @param dataset the dataset
-#' @param use_max use max?
+#' @param dataset dataset, result of `load_dataset`, potentially with many sites
+#' @param use_max passed to `add_singletons`: use the high estimate, or no?
 #'
-#' @return dataset plus singletons
+#' @return dataset with estimated rare species added to each site
 #' @export
 #'
 #' @importFrom dplyr filter bind_rows
@@ -240,9 +240,11 @@ add_singletons_dataset <- function(dataset, use_max = TRUE) {
 
 #' Retrieve statevars
 #'
+#' Calculate the total abundance (N0) and species richness (S0) for each of the sites in a dataset
+#'
 #' @param a_dataset with columns site, dat, singletons, sim, source, abund
 #'
-#' @return summarzied to s0 and n0
+#' @return the dataset summarzied to s0 and n0 for each site
 #' @export
 #'
 #' @importFrom dplyr group_by summarize ungroup n

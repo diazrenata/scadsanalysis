@@ -13,5 +13,5 @@ get_percentiles(a_vector)
 Vector of percentile values for all values in the vector
 }
 \description{
-Get percentile values
+Calculate the percentile values (\% of elements in the vector <= a value) for all values in a vector
 }
