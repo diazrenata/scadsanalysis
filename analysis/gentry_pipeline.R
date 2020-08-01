@@ -57,7 +57,7 @@ nodename <- Sys.info()["nodename"]
 if(grepl("ufhpc", nodename)) {
   print("I know I am on the HiPerGator!")
   library(clustermq)
-  options(clustermq.scheduler = "slurm", clustermq.template = "slurm_clustermq.tmpl")
+  options(clustermq.scheduler = "slurm", clustermq.template = here::here("slurm_clustermq.tmpl"))
   ## Run the pipeline parallelized for HiPerGator
   make(all,
        force = TRUE,
