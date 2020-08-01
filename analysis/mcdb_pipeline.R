@@ -7,7 +7,7 @@ expose_imports("scadsanalysis")
 datasets <- "mcdb"
 
 sites_list <- list_sites("mcdb")
-ndraws = 4000
+ndraws = 200
 #sites_list <- sites_list[1:15, ]
 set.seed(1980)
 
@@ -57,7 +57,7 @@ nodename <- Sys.info()["nodename"]
 if(grepl("ufhpc", nodename)) {
   print("I know I am on the HiPerGator!")
   library(clustermq)
-  options(clustermq.scheduler = "slurm", clustermq.template = "slurm_clustermq.tmpl")
+  options(clustermq.scheduler = "slurm", clustermq.template = here::here("slurm_clustermq.tmpl"))
   ## Run the pipeline parallelized for HiPerGator
   make(all,
        force = TRUE,
