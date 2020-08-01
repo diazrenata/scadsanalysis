@@ -8,7 +8,7 @@ datasets <- "mcdb"
 
 sites_list <- list_sites("mcdb")
 ndraws = 200
-sites_list <- sites_list[1:15, ]
+sites_list <- sites_list[1:30, ]
 set.seed(1980)
 
 
