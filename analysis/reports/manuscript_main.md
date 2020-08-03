@@ -251,7 +251,817 @@ If you remove the very smallest FIA communities (those that achieved the
 very fewest samples) you get a “significant” effect even for very low
 thresholds.
 
-# 95% interval for small versus large communities
+# Nparts cutoff
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = c("dat", "nsites", "nparts_cutoff")
+
+    ## Joining, by = "dat"
+
+![](manuscript_main_files/figure-gfm/nparts%20cutoff-1.png)<!-- -->![](manuscript_main_files/figure-gfm/nparts%20cutoff-2.png)<!-- -->
+\# 95% interval for small versus large communities
 
 # Comparison of FIA to similarly-sized communities
 
