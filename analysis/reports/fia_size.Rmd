@@ -9,7 +9,7 @@ library(drake)
 library(dplyr)
 library(ggplot2)
 
-all_di <- read.csv(here::here("analysis", "reports", "all_di.csv"), stringsAsFactors = F)
+all_di <- read.csv(here::here("analysis", "reports", "all_di_old.csv"), stringsAsFactors = F)
 all_di_old <- read.csv(here::here("all_di.csv"), stringsAsFactors = F)
 
 fia_small_provisional <- filter(all_di_old, dat == "fia_small")
@@ -105,7 +105,7 @@ ggplot(filter(all_di,!singletons), aes(x = simpson_percentile)) +
 fia_max_s <- max(filter(all_di, !singletons, dat == "fia")$s0)
 fia_max_n <- max(filter(all_di,!singletons,  dat == "fia")$n0)
 
-fia_sized <- filter(all_di, s0 <= fia_max_s, !singletons, n0 <= fia_max_n) %>%
+fia_sized <- filter(all_di, s0 <= fia_max_s, !singletons, n0 <= fia_max_n, s0 > 2) %>%
   mutate(fia_yn = dat == "fia") %>%
   mutate(random_5th = as.integer(sample(2, size = n(), replace = T, prob = c(0.035, 0.965))))
 
