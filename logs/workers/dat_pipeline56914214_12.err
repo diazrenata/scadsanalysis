@@ -1,0 +1,538 @@
+2020-08-01 13:51:18.123589 | Master: tcp://c3a-s3.ufhpc:9532
+2020-08-01 13:51:18.160576 | WORKER_UP to: tcp://c3a-s3.ufhpc:9532
+2020-08-01 13:51:22.525840 | > DO_SETUP (3.828s wait)
+2020-08-01 13:51:22.526345 | token from msg: set_common_data_token
+2020-08-01 13:51:26.658258 | > DO_CALL (1.224s wait)
+* Option 'clustermq.scheduler' not set, defaulting to ‘SLURM’
+--- see: https://mschubert.github.io/clustermq/articles/userguide.html#configuration
+2020-08-01 13:51:30.327611 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 13:51:31.303009 | > DO_CALL (0.265s wait)
+2020-08-01 13:51:38.640233 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 13:51:40.439592 | > DO_CALL (0.271s wait)
+2020-08-01 13:52:34.842619 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 13:52:37.883879 | > DO_CALL (0.267s wait)
+2020-08-01 13:53:27.211016 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 13:53:29.380510 | > DO_CALL (0.252s wait)
+2020-08-01 13:53:33.171810 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 13:53:33.986514 | > DO_CALL (0.230s wait)
+2020-08-01 13:53:35.417164 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 13:53:36.773850 | > DO_CALL (0.244s wait)
+2020-08-01 13:53:39.753403 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 13:53:41.232924 | > DO_CALL (0.240s wait)
+2020-08-01 13:54:03.866457 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 13:54:05.891841 | > DO_CALL (0.257s wait)
+2020-08-01 13:54:07.944380 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 13:54:09.591901 | > DO_CALL (0.252s wait)
+2020-08-01 13:54:13.506610 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 13:54:14.370971 | > DO_CALL (0.254s wait)
+2020-08-01 13:54:16.062734 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 13:54:17.164734 | > DO_CALL (0.253s wait)
+2020-08-01 13:54:19.656157 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 13:54:21.939931 | > DO_CALL (0.252s wait)
+2020-08-01 13:54:28.166795 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 13:54:29.730396 | > DO_CALL (0.251s wait)
+2020-08-01 13:54:33.794570 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 13:54:34.668502 | > DO_CALL (0.257s wait)
+2020-08-01 13:54:35.850906 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 13:54:36.652192 | > DO_CALL (0.250s wait)
+2020-08-01 13:54:47.780986 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 13:54:49.262823 | > DO_CALL (0.260s wait)
+2020-08-01 13:55:16.963865 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 13:55:17.990382 | > DO_CALL (0.264s wait)
+2020-08-01 13:55:20.441074 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 13:55:21.451887 | > DO_CALL (0.256s wait)
+2020-08-01 13:55:42.122235 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 13:55:43.926898 | > DO_CALL (0.255s wait)
+2020-08-01 13:55:46.655301 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 13:55:47.756436 | > DO_CALL (0.249s wait)
+2020-08-01 13:55:52.846520 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 13:55:54.660751 | > DO_CALL (0.250s wait)
+2020-08-01 13:56:02.069814 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 13:56:03.390426 | > DO_CALL (0.253s wait)
+2020-08-01 13:56:36.453366 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 13:56:38.266757 | > DO_CALL (0.247s wait)
+2020-08-01 13:56:43.548167 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 13:56:44.508903 | > DO_CALL (0.246s wait)
+2020-08-01 13:56:45.631802 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 13:56:47.200713 | > DO_CALL (0.247s wait)
+2020-08-01 13:56:57.243429 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 13:56:58.487798 | > DO_CALL (0.240s wait)
+2020-08-01 13:57:03.287595 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 13:57:04.058373 | > DO_CALL (0.258s wait)
+2020-08-01 13:57:19.278345 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 13:57:20.812923 | > DO_CALL (0.273s wait)
+2020-08-01 13:57:22.071573 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 13:57:22.979460 | > DO_CALL (0.269s wait)
+2020-08-01 13:57:27.389728 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 13:57:28.323113 | > DO_CALL (0.257s wait)
+2020-08-01 13:57:35.846942 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 13:57:37.075137 | > DO_CALL (0.257s wait)
+2020-08-01 13:57:39.679772 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 13:57:41.778064 | > DO_CALL (0.254s wait)
+2020-08-01 13:57:45.183185 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 13:57:46.259070 | > DO_CALL (0.249s wait)
+2020-08-01 13:57:48.801651 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 13:57:50.774364 | > DO_CALL (0.257s wait)
+2020-08-01 13:57:55.272751 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 13:57:56.259002 | > DO_CALL (0.254s wait)
+2020-08-01 13:57:59.032911 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 13:58:00.266201 | > DO_CALL (0.252s wait)
+2020-08-01 13:58:05.397144 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 13:58:06.951012 | > DO_CALL (0.262s wait)
+2020-08-01 13:58:09.810708 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 13:58:11.026055 | > DO_CALL (0.263s wait)
+2020-08-01 13:58:11.640911 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 13:58:12.475202 | > DO_CALL (0.253s wait)
+2020-08-01 13:58:27.574687 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 13:58:28.589736 | > DO_CALL (0.259s wait)
+2020-08-01 13:58:30.791924 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 13:58:31.782853 | > DO_CALL (0.262s wait)
+2020-08-01 13:58:37.446717 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 13:58:38.472691 | > DO_CALL (0.252s wait)
+2020-08-01 13:58:39.695402 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 13:58:40.425190 | > DO_CALL (0.255s wait)
+2020-08-01 13:58:48.478321 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 13:58:49.595314 | > DO_CALL (0.258s wait)
+2020-08-01 13:58:50.714333 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 13:58:52.382338 | > DO_CALL (0.252s wait)
+2020-08-01 13:58:55.959271 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 13:58:56.877264 | > DO_CALL (0.261s wait)
+2020-08-01 13:58:57.539520 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 13:58:58.794169 | > DO_CALL (0.253s wait)
+2020-08-01 13:59:02.493586 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 13:59:04.496320 | > DO_CALL (0.250s wait)
+2020-08-01 13:59:29.067890 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 13:59:30.540828 | > DO_CALL (0.242s wait)
+2020-08-01 13:59:34.671828 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 13:59:37.256250 | > DO_CALL (0.243s wait)
+2020-08-01 13:59:53.631659 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 13:59:54.592765 | > DO_CALL (0.237s wait)
+2020-08-01 14:00:02.912921 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:00:03.770457 | > DO_CALL (0.234s wait)
+2020-08-01 14:00:06.885371 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:00:07.677110 | > DO_CALL (0.252s wait)
+2020-08-01 14:00:15.992600 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:00:18.167010 | > DO_CALL (0.258s wait)
+2020-08-01 14:00:23.363209 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:00:24.260909 | > DO_CALL (0.253s wait)
+2020-08-01 14:00:27.359332 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:00:28.311441 | > DO_CALL (0.253s wait)
+2020-08-01 14:00:32.243507 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:00:33.561186 | > DO_CALL (0.257s wait)
+2020-08-01 14:00:45.135508 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:00:46.065648 | > DO_CALL (0.262s wait)
+2020-08-01 14:01:01.151574 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:01:02.160919 | > DO_CALL (0.259s wait)
+2020-08-01 14:01:02.796340 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:01:04.028584 | > DO_CALL (0.252s wait)
+2020-08-01 14:01:09.720929 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:01:10.974138 | > DO_CALL (0.254s wait)
+2020-08-01 14:01:13.646761 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:01:15.331557 | > DO_CALL (0.257s wait)
+2020-08-01 14:01:20.251422 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:01:21.223735 | > DO_CALL (0.266s wait)
+2020-08-01 14:01:25.816821 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:01:26.581385 | > DO_CALL (0.256s wait)
+2020-08-01 14:01:29.005922 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:01:30.340110 | > DO_CALL (0.252s wait)
+2020-08-01 14:01:36.117581 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:01:36.971319 | > DO_CALL (0.251s wait)
+2020-08-01 14:01:47.176597 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:01:49.011309 | > DO_CALL (0.271s wait)
+2020-08-01 14:01:58.643426 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:01:59.692787 | > DO_CALL (0.261s wait)
+2020-08-01 14:02:03.134658 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:02:03.865103 | > DO_CALL (0.252s wait)
+2020-08-01 14:02:09.873357 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:02:11.916307 | > DO_CALL (0.252s wait)
+2020-08-01 14:02:18.247565 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:02:18.454902 | > DO_CALL (0.000s wait)
+2020-08-01 14:02:19.455828 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:02:19.839135 | > DO_CALL (0.014s wait)
+2020-08-01 14:02:21.724181 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:02:21.839759 | > DO_CALL (0.002s wait)
+2020-08-01 14:02:22.944167 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:02:23.017180 | > DO_CALL (0.000s wait)
+2020-08-01 14:02:24.029306 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:02:24.092966 | > DO_CALL (0.000s wait)
+2020-08-01 14:02:25.094280 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:02:25.197180 | > DO_CALL (0.000s wait)
+2020-08-01 14:02:26.226475 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:02:26.685185 | > DO_CALL (0.000s wait)
+2020-08-01 14:02:27.703177 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:02:27.806192 | > DO_CALL (0.007s wait)
+2020-08-01 14:02:29.368252 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:02:30.052642 | > DO_CALL (0.029s wait)
+2020-08-01 14:02:31.659443 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:02:32.088069 | > DO_CALL (0.001s wait)
+2020-08-01 14:02:33.158674 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:02:33.530711 | > DO_CALL (0.010s wait)
+2020-08-01 14:02:35.120334 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:02:35.368505 | > DO_CALL (0.001s wait)
+2020-08-01 14:02:36.365821 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:02:36.829787 | > DO_CALL (0.013s wait)
+2020-08-01 14:02:38.373963 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:02:38.807778 | > DO_CALL (0.037s wait)
+2020-08-01 14:02:40.439714 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:02:40.584917 | > DO_CALL (0.008s wait)
+2020-08-01 14:02:42.072690 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:02:42.581991 | > DO_CALL (0.000s wait)
+2020-08-01 14:02:43.637395 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:02:44.118147 | > DO_CALL (0.001s wait)
+2020-08-01 14:02:45.176536 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:02:45.325520 | > DO_CALL (0.017s wait)
+2020-08-01 14:02:46.904603 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:02:47.005383 | > DO_CALL (0.001s wait)
+2020-08-01 14:02:48.043215 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:02:48.198060 | > DO_CALL (0.000s wait)
+2020-08-01 14:02:49.196504 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:02:49.742458 | > DO_CALL (0.006s wait)
+2020-08-01 14:02:50.833578 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:02:51.926476 | > DO_CALL (0.011s wait)
+2020-08-01 14:02:53.458017 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:02:53.727574 | > DO_CALL (0.001s wait)
+2020-08-01 14:02:54.806551 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:02:54.929809 | > DO_CALL (0.000s wait)
+2020-08-01 14:02:55.947880 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:02:56.031568 | > DO_CALL (0.001s wait)
+2020-08-01 14:02:57.100999 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:02:57.511465 | > DO_CALL (0.001s wait)
+2020-08-01 14:02:58.533526 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:02:58.658303 | > DO_CALL (0.001s wait)
+2020-08-01 14:02:59.680146 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:03:00.212512 | > DO_CALL (0.002s wait)
+2020-08-01 14:03:01.375153 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:03:01.653829 | > DO_CALL (0.002s wait)
+2020-08-01 14:03:02.723378 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:03:03.254027 | > DO_CALL (0.039s wait)
+2020-08-01 14:03:04.935939 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:03:05.090570 | > DO_CALL (0.001s wait)
+2020-08-01 14:03:06.133227 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:03:07.006913 | > DO_CALL (0.007s wait)
+2020-08-01 14:03:08.472397 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:03:09.046730 | > DO_CALL (0.016s wait)
+2020-08-01 14:03:10.723140 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:03:10.933670 | > DO_CALL (0.000s wait)
+2020-08-01 14:03:11.967556 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:03:12.808513 | > DO_CALL (0.005s wait)
+2020-08-01 14:03:14.188379 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:03:14.725916 | > DO_CALL (0.016s wait)
+2020-08-01 14:03:16.386428 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:03:16.818370 | > DO_CALL (0.036s wait)
+2020-08-01 14:03:18.533945 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:03:18.768310 | > DO_CALL (0.013s wait)
+2020-08-01 14:03:20.448666 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:03:20.634407 | > DO_CALL (0.008s wait)
+2020-08-01 14:03:22.074248 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:03:22.215500 | > DO_CALL (0.001s wait)
+2020-08-01 14:03:23.240844 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:03:24.201839 | > DO_CALL (0.031s wait)
+2020-08-01 14:03:25.943325 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:03:26.114319 | > DO_CALL (0.001s wait)
+2020-08-01 14:03:27.167172 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:03:29.471767 | > DO_CALL (0.014s wait)
+2020-08-01 14:03:31.154314 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:03:31.502401 | > DO_CALL (0.001s wait)
+2020-08-01 14:03:32.527156 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:03:33.410507 | > DO_CALL (0.009s wait)
+2020-08-01 14:03:35.010707 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:03:35.541421 | > DO_CALL (0.013s wait)
+2020-08-01 14:03:37.222228 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:03:37.468900 | > DO_CALL (0.009s wait)
+2020-08-01 14:03:39.166090 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:03:39.391906 | > DO_CALL (0.001s wait)
+2020-08-01 14:03:40.535354 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:03:41.107402 | > WORKER_WAIT (0.001s wait)
+2020-08-01 14:03:41.107863 | waiting 1.00s
+2020-08-01 14:03:42.969803 | > DO_CALL (0.000s wait)
+2020-08-01 14:03:44.115623 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:03:44.605087 | > DO_CALL (0.011s wait)
+2020-08-01 14:03:46.310336 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:03:46.796966 | > DO_CALL (0.015s wait)
+2020-08-01 14:03:48.339228 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:03:48.711633 | > DO_CALL (0.018s wait)
+2020-08-01 14:03:50.417839 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:03:52.049926 | > DO_CALL (0.000s wait)
+2020-08-01 14:03:53.146670 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:03:53.510963 | > DO_CALL (0.000s wait)
+2020-08-01 14:03:54.575812 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:03:55.556822 | > DO_CALL (0.009s wait)
+2020-08-01 14:03:57.207118 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:03:57.564133 | > DO_CALL (0.000s wait)
+2020-08-01 14:03:58.670417 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:03:59.404552 | > DO_CALL (0.003s wait)
+2020-08-01 14:04:00.593124 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:04:00.845954 | > DO_CALL (0.035s wait)
+2020-08-01 14:04:02.534291 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:04:03.822765 | > DO_CALL (0.000s wait)
+2020-08-01 14:04:04.856268 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:04:05.484928 | > DO_CALL (0.000s wait)
+2020-08-01 14:04:06.598219 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:04:07.041779 | > DO_CALL (0.001s wait)
+2020-08-01 14:04:08.093243 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:04:08.751505 | > DO_CALL (0.001s wait)
+2020-08-01 14:04:09.834360 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:04:10.449571 | > DO_CALL (0.001s wait)
+2020-08-01 14:04:11.523464 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:04:11.911336 | > DO_CALL (0.001s wait)
+2020-08-01 14:04:13.000695 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:04:13.615645 | > DO_CALL (0.000s wait)
+2020-08-01 14:04:14.662428 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:04:15.178338 | > DO_CALL (0.001s wait)
+2020-08-01 14:04:16.238753 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:04:16.730554 | > DO_CALL (0.029s wait)
+2020-08-01 14:04:18.402232 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:04:19.063093 | > DO_CALL (0.016s wait)
+2020-08-01 14:04:20.722797 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:04:22.843783 | > DO_CALL (0.002s wait)
+2020-08-01 14:04:24.021841 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:04:24.594018 | > DO_CALL (0.021s wait)
+2020-08-01 14:04:26.223153 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:04:26.629683 | > DO_CALL (0.024s wait)
+2020-08-01 14:04:28.315371 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:04:28.645535 | > DO_CALL (0.017s wait)
+2020-08-01 14:04:30.364702 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:04:30.567696 | > DO_CALL (0.014s wait)
+2020-08-01 14:04:32.169753 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:04:32.393406 | > DO_CALL (0.007s wait)
+2020-08-01 14:04:33.825085 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:04:34.245587 | > DO_CALL (0.018s wait)
+2020-08-01 14:04:35.980696 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:04:37.147421 | > DO_CALL (0.001s wait)
+2020-08-01 14:04:38.232365 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:04:38.748941 | > DO_CALL (0.011s wait)
+2020-08-01 14:04:40.419858 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:04:40.558403 | > DO_CALL (0.001s wait)
+2020-08-01 14:04:41.615301 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:04:42.019485 | > DO_CALL (0.019s wait)
+2020-08-01 14:04:43.689209 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:04:44.077224 | > DO_CALL (0.001s wait)
+2020-08-01 14:04:45.213695 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:04:45.588845 | > DO_CALL (0.002s wait)
+Joining, by = c("dat", "site", "s0", "n0")
+2020-08-01 14:04:46.291345 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:04:46.733558 | > DO_CALL (0.002s wait)
+Joining, by = c("dat", "site", "s0", "n0")
+2020-08-01 14:04:47.874301 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:04:48.232347 | > DO_CALL (0.001s wait)
+Joining, by = c("dat", "site", "s0", "n0")
+2020-08-01 14:04:48.971887 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:04:49.325653 | > DO_CALL (0.000s wait)
+Joining, by = c("dat", "site", "s0", "n0")
+2020-08-01 14:04:50.062673 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:04:50.463915 | > DO_CALL (0.000s wait)
+Joining, by = c("dat", "site", "s0", "n0")
+2020-08-01 14:04:51.187135 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:04:51.459436 | > DO_CALL (0.002s wait)
+Joining, by = c("dat", "site", "s0", "n0")
+2020-08-01 14:04:52.185989 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:04:52.569419 | > DO_CALL (0.002s wait)
+Joining, by = c("dat", "site", "s0", "n0")
+2020-08-01 14:04:53.265910 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:04:53.819557 | > DO_CALL (0.001s wait)
+Joining, by = c("dat", "site", "s0", "n0")
+2020-08-01 14:04:54.546325 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:04:54.927764 | > DO_CALL (0.002s wait)
+Joining, by = c("dat", "site", "s0", "n0")
+2020-08-01 14:04:55.651999 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:04:56.138431 | > DO_CALL (0.003s wait)
+Joining, by = c("dat", "site", "s0", "n0")
+2020-08-01 14:04:56.833204 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:04:57.502779 | > DO_CALL (0.002s wait)
+Joining, by = c("dat", "site", "s0", "n0")
+2020-08-01 14:04:58.213455 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:04:58.455073 | > DO_CALL (0.000s wait)
+Joining, by = c("dat", "site", "s0", "n0")
+2020-08-01 14:04:59.175286 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:04:59.539557 | > DO_CALL (0.001s wait)
+Joining, by = c("dat", "site", "s0", "n0")
+2020-08-01 14:05:00.258303 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:05:00.586295 | > DO_CALL (0.001s wait)
+Joining, by = c("dat", "site", "s0", "n0")
+2020-08-01 14:05:01.306898 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:05:01.876863 | > DO_CALL (0.038s wait)
+2020-08-01 14:05:03.614966 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:05:04.309101 | > DO_CALL (0.002s wait)
+Joining, by = c("dat", "site", "s0", "n0")
+2020-08-01 14:05:05.009366 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:05:05.290345 | > DO_CALL (0.001s wait)
+Joining, by = c("dat", "site", "s0", "n0")
+2020-08-01 14:05:06.007040 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:05:06.355328 | > DO_CALL (0.001s wait)
+Joining, by = c("dat", "site", "s0", "n0")
+2020-08-01 14:05:07.071403 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:05:07.404982 | > DO_CALL (0.002s wait)
+Joining, by = c("dat", "site", "s0", "n0")
+2020-08-01 14:05:08.128570 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:05:08.446740 | > DO_CALL (0.000s wait)
+Joining, by = c("dat", "site", "s0", "n0")
+2020-08-01 14:05:09.165978 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:05:09.517741 | > DO_CALL (0.002s wait)
+Joining, by = c("dat", "site", "s0", "n0")
+2020-08-01 14:05:10.245746 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:05:10.557783 | > DO_CALL (0.002s wait)
+Joining, by = c("dat", "site", "s0", "n0")
+2020-08-01 14:05:11.272619 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:05:11.562211 | > DO_CALL (0.000s wait)
+Joining, by = c("dat", "site", "s0", "n0")
+2020-08-01 14:05:12.275482 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:05:12.628577 | > DO_CALL (0.002s wait)
+Joining, by = c("dat", "site", "s0", "n0")
+2020-08-01 14:05:13.348313 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:05:13.780980 | > DO_CALL (0.000s wait)
+Joining, by = c("dat", "site", "s0", "n0")
+2020-08-01 14:05:14.487318 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:05:14.965627 | > DO_CALL (0.001s wait)
+Joining, by = c("dat", "site", "s0", "n0")
+2020-08-01 14:05:15.673406 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:05:16.097891 | > DO_CALL (0.000s wait)
+Joining, by = c("dat", "site", "s0", "n0")
+2020-08-01 14:05:16.801656 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:05:17.368524 | > DO_CALL (0.003s wait)
+Joining, by = c("dat", "site", "s0", "n0")
+2020-08-01 14:05:18.058329 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:05:18.577716 | > DO_CALL (0.002s wait)
+Joining, by = c("dat", "site", "s0", "n0")
+2020-08-01 14:05:19.269347 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:05:19.890747 | > DO_CALL (0.002s wait)
+Joining, by = c("dat", "site", "s0", "n0")
+2020-08-01 14:05:20.559027 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:05:21.658029 | > DO_CALL (0.002s wait)
+Joining, by = c("dat", "site", "s0", "n0")
+2020-08-01 14:05:22.351898 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:05:22.981735 | > DO_CALL (0.002s wait)
+Joining, by = c("dat", "site", "s0", "n0")
+2020-08-01 14:05:23.674254 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:05:24.315237 | > DO_CALL (0.003s wait)
+Joining, by = c("dat", "site", "s0", "n0")
+2020-08-01 14:05:25.009820 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:05:25.613489 | > DO_CALL (0.002s wait)
+Joining, by = c("dat", "site", "s0", "n0")
+2020-08-01 14:05:26.305172 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:05:27.000263 | > DO_CALL (0.003s wait)
+Joining, by = c("dat", "site", "s0", "n0")
+2020-08-01 14:05:27.692571 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:05:28.326464 | > DO_CALL (0.002s wait)
+Joining, by = c("dat", "site", "s0", "n0")
+2020-08-01 14:05:29.018625 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:05:29.665838 | > DO_CALL (0.000s wait)
+Joining, by = c("dat", "site", "s0", "n0")
+2020-08-01 14:05:30.345242 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:05:30.955803 | > DO_CALL (0.000s wait)
+Joining, by = c("dat", "site", "s0", "n0")
+2020-08-01 14:05:31.628244 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:05:32.352365 | > DO_CALL (0.001s wait)
+Joining, by = c("dat", "site", "s0", "n0")
+2020-08-01 14:05:33.021122 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:05:33.751021 | > DO_CALL (0.002s wait)
+Joining, by = c("dat", "site", "s0", "n0")
+2020-08-01 14:05:34.420772 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:05:35.023393 | > DO_CALL (0.001s wait)
+Joining, by = c("dat", "site", "s0", "n0")
+2020-08-01 14:05:35.706192 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:05:36.391534 | > DO_CALL (0.002s wait)
+Joining, by = c("dat", "site", "s0", "n0")
+2020-08-01 14:05:37.072624 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:05:37.783223 | > DO_CALL (0.001s wait)
+Joining, by = c("dat", "site", "s0", "n0")
+2020-08-01 14:05:38.462070 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:05:39.187509 | > DO_CALL (0.002s wait)
+Joining, by = c("dat", "site", "s0", "n0")
+2020-08-01 14:05:39.869067 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:05:40.463029 | > DO_CALL (0.002s wait)
+Joining, by = c("dat", "site", "s0", "n0")
+2020-08-01 14:05:41.126824 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:05:41.820751 | > DO_CALL (0.002s wait)
+Joining, by = c("dat", "site", "s0", "n0")
+2020-08-01 14:05:42.485321 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:05:43.327492 | > DO_CALL (0.001s wait)
+Joining, by = c("dat", "site", "s0", "n0")
+2020-08-01 14:05:43.962865 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:05:44.623322 | > DO_CALL (0.003s wait)
+Joining, by = c("dat", "site", "s0", "n0")
+2020-08-01 14:05:45.272544 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:05:45.911907 | > WORKER_WAIT (0.000s wait)
+2020-08-01 14:05:45.912361 | waiting 1.00s
+2020-08-01 14:05:47.208417 | > DO_CALL (0.001s wait)
+Joining, by = c("dat", "site", "s0", "n0")
+2020-08-01 14:05:47.875625 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:05:48.608282 | > DO_CALL (0.001s wait)
+Joining, by = c("dat", "site", "s0", "n0")
+2020-08-01 14:05:49.275636 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:05:49.929359 | > DO_CALL (0.002s wait)
+Joining, by = c("dat", "site", "s0", "n0")
+2020-08-01 14:05:50.660265 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:05:51.274725 | > DO_CALL (0.000s wait)
+Joining, by = c("dat", "site", "s0", "n0")
+2020-08-01 14:05:51.951976 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:05:52.639512 | > DO_CALL (0.000s wait)
+Joining, by = c("dat", "site", "s0", "n0")
+2020-08-01 14:05:53.315655 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:05:53.949435 | > DO_CALL (0.001s wait)
+Joining, by = c("dat", "site", "s0", "n0")
+2020-08-01 14:05:54.629252 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:05:55.268007 | > DO_CALL (0.002s wait)
+Joining, by = c("dat", "site", "s0", "n0")
+2020-08-01 14:05:55.949741 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:05:56.585794 | > DO_CALL (0.000s wait)
+Joining, by = c("dat", "site", "s0", "n0")
+2020-08-01 14:05:57.259531 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:05:57.944277 | > DO_CALL (0.003s wait)
+Joining, by = c("dat", "site", "s0", "n0")
+2020-08-01 14:05:58.610708 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:05:59.295901 | > DO_CALL (0.000s wait)
+Joining, by = c("dat", "site", "s0", "n0")
+2020-08-01 14:05:59.967425 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:06:00.680474 | > DO_CALL (0.002s wait)
+Joining, by = c("dat", "site", "s0", "n0")
+2020-08-01 14:06:01.349038 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:06:02.021651 | > DO_CALL (0.000s wait)
+Joining, by = c("dat", "site", "s0", "n0")
+2020-08-01 14:06:02.684853 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:06:03.329046 | > DO_CALL (0.002s wait)
+Joining, by = c("dat", "site", "s0", "n0")
+2020-08-01 14:06:03.995636 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:06:04.652503 | > DO_CALL (0.001s wait)
+Joining, by = c("dat", "site", "s0", "n0")
+2020-08-01 14:06:05.334840 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:06:06.023541 | > DO_CALL (0.001s wait)
+Joining, by = c("dat", "site", "s0", "n0")
+2020-08-01 14:06:06.699210 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:06:07.391285 | > DO_CALL (0.002s wait)
+Joining, by = c("dat", "site", "s0", "n0")
+2020-08-01 14:06:08.083290 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:06:08.731318 | > DO_CALL (0.003s wait)
+Joining, by = c("dat", "site", "s0", "n0")
+2020-08-01 14:06:09.439014 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:06:10.051751 | > DO_CALL (0.002s wait)
+Joining, by = c("dat", "site", "s0", "n0")
+2020-08-01 14:06:10.765796 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:06:11.379118 | > DO_CALL (0.000s wait)
+Joining, by = c("dat", "site", "s0", "n0")
+2020-08-01 14:06:12.090877 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:06:12.732775 | > DO_CALL (0.002s wait)
+Joining, by = c("dat", "site", "s0", "n0")
+2020-08-01 14:06:13.441085 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:06:14.088582 | > DO_CALL (0.003s wait)
+Joining, by = c("dat", "site", "s0", "n0")
+2020-08-01 14:06:14.803187 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:06:15.410331 | > DO_CALL (0.003s wait)
+Joining, by = c("dat", "site", "s0", "n0")
+2020-08-01 14:06:16.116298 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:06:16.737366 | > DO_CALL (0.003s wait)
+Joining, by = c("dat", "site", "s0", "n0")
+2020-08-01 14:06:17.451311 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:06:18.107230 | > DO_CALL (0.001s wait)
+Joining, by = c("dat", "site", "s0", "n0")
+2020-08-01 14:06:18.820863 | eval'd: drake::cmq_buildtargetmetadepsspecconfig_tmpconfig
+2020-08-01 14:06:19.551597 | > WORKER_WAIT (0.000s wait)
+2020-08-01 14:06:19.552015 | waiting 1.00s
+2020-08-01 14:06:23.798337 | > WORKER_WAIT (0.001s wait)
+2020-08-01 14:06:23.798751 | waiting 1.00s
+2020-08-01 14:06:27.779392 | > WORKER_WAIT (0.000s wait)
+2020-08-01 14:06:27.779745 | waiting 1.00s
+2020-08-01 14:08:21.493147 | > WORKER_STOP (0.000s wait)
+2020-08-01 14:08:21.493529 | shutting down worker
+2020-08-01 14:08:21.885855 | 
+Total: 223 in 739.56s [user], 8.17s [system], 1023.33s [elapsed]
+There were 27 warnings (use warnings() to see them)
