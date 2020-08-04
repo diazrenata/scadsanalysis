@@ -13,7 +13,7 @@ communities.
 
 # Skewness and evenness histograms by dataset
 
-![](manuscript_main_files/figure-gfm/first%20hists-1.png)<!-- -->![](manuscript_main_files/figure-gfm/first%20hists-2.png)<!-- -->
+![](manuscript_main_files/figure-gfm/first%20hists-1.png)<!-- -->![](manuscript_main_files/figure-gfm/first%20hists-2.png)<!-- -->![](manuscript_main_files/figure-gfm/first%20hists-3.png)<!-- -->![](manuscript_main_files/figure-gfm/first%20hists-4.png)<!-- -->
 
 # Proportion of sites with highly skewed or uneven SADs
 
@@ -31,6 +31,24 @@ communities.
 | gentry      |              0.1883408 |          223 |             0.1517857 |          224 |
 | mcdb        |              0.1672131 |          610 |             0.2713287 |          715 |
 | misc\_abund |              0.3389199 |          537 |             0.5270758 |          554 |
+
+</div>
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Joining, by = "dat"
+
+<div class="kable-table">
+
+| dat         | proportion\_skew\_high | nsites\_skew | proportion\_even\_low | nsites\_even |
+| :---------- | ---------------------: | -----------: | --------------------: | -----------: |
+| bbs         |              0.1301839 |         2773 |             0.2596466 |         2773 |
+| fia         |              0.0631523 |        16959 |             0.0975883 |        16959 |
+| gentry      |              0.1883408 |          223 |             0.1524664 |          223 |
+| mcdb        |              0.1756487 |          501 |             0.3742574 |          505 |
+| misc\_abund |              0.3526971 |          482 |             0.6033058 |          484 |
 
 </div>
 
@@ -95,7 +113,8 @@ Fewer than 20000 elements \~ fewer than 4 species, or fewer than
 
 The 95% ratio decreases for large FS.
 
-For skewness, it is still quite high
+For skewness, it is still quite high even up to 20,000 elements in the
+FS. But it is starting to decline by then?
 
 # Comparison of FIA to similarly-sized communities
 
@@ -106,3 +125,17 @@ For skewness, it is still quite high
     ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 
 ![](manuscript_main_files/figure-gfm/fia%20sized-2.png)<!-- -->![](manuscript_main_files/figure-gfm/fia%20sized-3.png)<!-- -->
+
+# Removing the smallest communities from FIA
+
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+![](manuscript_main_files/figure-gfm/fia%20no%20small-1.png)<!-- -->
+
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+![](manuscript_main_files/figure-gfm/fia%20no%20small-2.png)<!-- -->
+
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+![](manuscript_main_files/figure-gfm/fia%20no%20small-3.png)<!-- -->

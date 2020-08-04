@@ -30,7 +30,8 @@ all_di <- all_di %>%
 ```{r final dataset s and n space}
 
 ggplot(all_di, aes(x = log_s0, y = log_n0, color = dat)) +
-  geom_point(alpha = .4) +
+  geom_point(alpha = .01) +
+  geom_point(data = filter(all_di, log_nparts > log(50)), alpha = .4) +
   theme_bw() +
   scale_color_viridis_d() +
   ggtitle("Communities by S and N")
@@ -52,7 +53,18 @@ ggplot(filter(all_di, s0 > 2), aes(skew_percentile)) +
   theme_bw() +
   facet_wrap(vars(dat), scales = "free_y") + ggtitle("Skewness, all sites")
 
+ggplot(filter(all_di, s0 > 2, log_nparts > log(50)), aes(skew_percentile)) +
+  geom_histogram(bins = 100) +
+  geom_vline(xintercept = 95, color = "red") +
+  theme_bw() +
+  facet_wrap(vars(dat), scales = "free_y") + ggtitle("Skewness, all sites")
+
 ggplot(all_di, aes(simpson_percentile)) + 
+ geom_histogram(bins = 100) +
+  geom_vline(xintercept = 5, color = "red") +
+  theme_bw() +
+  facet_wrap(vars(dat), scales = "free_y") + ggtitle("Evenness, all sites")
+ggplot(filter(all_di, log_nparts > log(50)), aes(simpson_percentile)) + 
  geom_histogram(bins = 100) +
   geom_vline(xintercept = 5, color = "red") +
   theme_bw() +
@@ -79,6 +91,25 @@ overall_simpson_results <- all_di %>%
 overall_results <- left_join(overall_skew_results, overall_simpson_results)
 
 overall_results
+
+
+overall_skew_results2 <- all_di %>%
+  filter(s0 > 2, log_nparts > log(50)) %>%
+  mutate(high_skew = skew_percentile > 95) %>%
+  group_by(dat) %>%
+  summarize(proportion_skew_high = mean(high_skew),
+            nsites_skew = dplyr::n())
+
+overall_simpson_results2 <- all_di %>%
+  filter(log_nparts > log(50)) %>%
+  mutate(low_even = simpson_percentile < 5) %>%
+  group_by(dat) %>%
+  summarize(proportion_even_low = mean(low_even),
+            nsites_even = dplyr::n())
+
+overall_results2 <- left_join(overall_skew_results2, overall_simpson_results2)
+
+overall_results2
 
 ```
 
@@ -180,23 +211,25 @@ For skewness, it is still quite high even up to 20,000 elements in the FS. But i
 fia_max_s <- max(filter(all_di, dat == "fia")$s0)
 fia_max_n <- max(filter(all_di, dat == "fia")$n0)
 
-fia_sized <- filter(all_di, s0 <= fia_max_s,n0 <= fia_max_n) %>%
+fia_max_nparts <-max(filter(all_di, dat == "fia")$log_nparts)
+
+fia_sized <- filter(all_di, s0 <= fia_max_s, n0 <= fia_max_n) %>%
   mutate(fia_yn = dat == "fia") %>%
-  mutate(fia_yn = ifelse(fia_yn, "FIA", "Other datasets"))
+  mutate(fia_yn = ifelse(fia_yn, "FIA", "Other datasets")) %>%
+  mutate(right_corner = FALSE)
 
-ggplot(filter(fia_sized, s0 > 2, nparts > 10), aes(skew_percentile)) +
+ggplot(filter(fia_sized, s0 > 2, nparts > 50), aes(skew_percentile)) +
   geom_histogram() +
   facet_wrap(vars(fia_yn), scales = "free_y")
 
 
-
-ggplot(filter(fia_sized, s0 > 2, log_nparts > 5, nparts > 10), aes(skew_percentile)) +
+ggplot(fia_sized, aes(x = log_nparts)) +
   geom_histogram() +
-  facet_wrap(vars(fia_yn), scales = "free_y")
+  facet_wrap(vars(fia_yn), scales = "free_y") +
+  geom_vline(xintercept = log(50))
 
-ggplot(filter(fia_sized, s0 > 2, log_nparts <  5, nparts > 10), aes(skew_percentile)) +
-  geom_histogram(bins = 100) +
-  facet_wrap(vars(fia_yn), scales = "free_y")
+ggplot(fia_sized, aes(s0, n0, color = fia_yn)) +
+  geom_point()
 
 ```
 
@@ -205,4 +238,22 @@ ggplot(filter(fia_sized, s0 > 2, log_nparts <  5, nparts > 10), aes(skew_percent
 ```{r fia no small}
 
 
+ggplot(filter(fia_sized, s0 > 2, nparts > 50, nparts < exp(7)), aes(skew_percentile)) +
+  geom_histogram() +
+  facet_wrap(vars(fia_yn), scales = "free_y") +
+  ggtitle("50-1,000 parts in FS")
+
+
+
+ggplot(filter(fia_sized, s0 > 2, nparts > 50, nparts >= exp(7)), aes(skew_percentile)) +
+  geom_histogram() +
+  facet_wrap(vars(fia_yn), scales = "free_y") +
+  ggtitle("More than 1,000 parts in FS")
+
+
+
+ggplot(filter(fia_sized, s0 > 2, nparts > 50, nparts >= exp(10)), aes(skew_percentile)) +
+  geom_histogram() +
+  facet_wrap(vars(fia_yn), scales = "free_y") +
+  ggtitle("More than 20,000 parts in FS")
 ```
