@@ -243,14 +243,10 @@ ggplot(filter(fia_sized, s0 > 2, nparts > 50, nparts < exp(7)), aes(skew_percent
   facet_wrap(vars(fia_yn), scales = "free_y") +
   ggtitle("50-1,000 parts in FS")
 
-
-
-ggplot(filter(fia_sized, s0 > 2, nparts > 50, nparts >= exp(7)), aes(skew_percentile)) +
+ggplot(filter(fia_sized, s0 > 2, nparts >= exp(7), nparts < exp(10)), aes(skew_percentile)) +
   geom_histogram() +
   facet_wrap(vars(fia_yn), scales = "free_y") +
-  ggtitle("More than 1,000 parts in FS")
-
-
+  ggtitle("1,000 - 20,000 parts in FS")
 
 ggplot(filter(fia_sized, s0 > 2, nparts > 50, nparts >= exp(10)), aes(skew_percentile)) +
   geom_histogram() +

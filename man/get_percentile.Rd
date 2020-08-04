@@ -4,12 +4,14 @@
 \alias{get_percentile}
 \title{Get one percentile value}
 \usage{
-get_percentile(a_value, a_vector)
+get_percentile(a_value, a_vector, incl = T)
 }
 \arguments{
 \item{a_value}{Focal value}
 
 \item{a_vector}{Comparison vector}
+
+\item{incl}{include end or not? if true, <=, if false, <}
 }
 \value{
 Percentile of focal value within comparison vector

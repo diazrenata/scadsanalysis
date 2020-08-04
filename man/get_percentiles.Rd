@@ -4,10 +4,12 @@
 \alias{get_percentiles}
 \title{Get percentile values}
 \usage{
-get_percentiles(a_vector)
+get_percentiles(a_vector, incl = T)
 }
 \arguments{
 \item{a_vector}{Vector of values}
+
+\item{incl}{tf lessthan or equal to or just less than}
 }
 \value{
 Vector of percentile values for all values in the vector

@@ -37,7 +37,9 @@ add_dis <- function(fs_samples_df) {
     dplyr::filter(source == "observed", sim < 0) %>%
     dplyr::mutate(skew_percentile = get_percentile(skew, a_vector = sim_percentiles$skew),
                   shannon_percentile = get_percentile(shannon, a_vector = sim_percentiles$shannon),
-                  simpson_percentile = get_percentile(simpson, a_vector = sim_percentiles$simpson))
+                  simpson_percentile = get_percentile(simpson, a_vector = sim_percentiles$simpson),
+                  skew_percentile_excl = get_percentile(skew, a_vector = sim_percentiles$skew, incl =F),
+                  simpson_percentile_excl = get_percentile(simpson, a_vector = sim_percentiles$simpson, incl = F))
 
 
   sim_dis <- dplyr::bind_rows(sim_percentiles, sampled_percentile)
@@ -50,15 +52,16 @@ add_dis <- function(fs_samples_df) {
 #' Calculate the percentile values (% of elements in the vector <= a value) for all values in a vector
 #'
 #' @param a_vector Vector of values
+#' @param incl tf lessthan or equal to or just less than
 #'
 #' @return Vector of percentile values for all values in the vector
 #' @export
 #'
-get_percentiles <- function(a_vector) {
+get_percentiles <- function(a_vector, incl = T) {
 
   nvals <- sum(!(is.na(a_vector)))
 
-  percentile_vals <- vapply(as.matrix(a_vector), FUN = count_below, a_vector = a_vector, FUN.VALUE = 100)
+  percentile_vals <- vapply(as.matrix(a_vector), FUN = count_below, a_vector = a_vector, incl = incl, FUN.VALUE = 100)
 
   for(i in 1:length(a_vector)) {
     if(!(is.nan(a_vector[i]))) {
@@ -75,12 +78,17 @@ get_percentiles <- function(a_vector) {
 #'
 #' @param a_value Focal value
 #' @param a_vector Vector for comparison
+#' @param incl include end or not? if true, <=, if false, <
 #'
 #' @return Number of values in vector less than or equal to the focal value
 #' @export
 #'
-count_below <- function(a_value, a_vector) {
+count_below <- function(a_value, a_vector, incl = T) {
+  if(incl) {
   return(sum(a_vector <= a_value, na.rm = T))
+  } else {
+    return(sum(a_vector < a_value, na.rm = T))
+  }
 }
 
 #' Get one percentile value
@@ -89,13 +97,18 @@ count_below <- function(a_value, a_vector) {
 #'
 #' @param a_value Focal value
 #' @param a_vector Comparison vector
+#' @param incl include end or not? if true, <=, if false, <
 #'
 #' @return Percentile of focal value within comparison vector
 #' @export
-get_percentile <- function(a_value, a_vector) {
+get_percentile <- function(a_value, a_vector, incl= T) {
 
+  if(incl) {
   count_below <- sum(a_vector <= a_value, na.rm = T)
+  } else {
+    count_below <- sum(a_vector < a_value, na.rm = T)
 
+}
   nvals <- length(a_vector)
 
   percentile_val <- 100 * (count_below / nvals)

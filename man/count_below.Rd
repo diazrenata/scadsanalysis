@@ -4,12 +4,14 @@
 \alias{count_below}
 \title{Count values less than or equal to a value}
 \usage{
-count_below(a_value, a_vector)
+count_below(a_value, a_vector, incl = T)
 }
 \arguments{
 \item{a_value}{Focal value}
 
 \item{a_vector}{Vector for comparison}
+
+\item{incl}{include end or not? if true, <=, if false, <}
 }
 \value{
 Number of values in vector less than or equal to the focal value

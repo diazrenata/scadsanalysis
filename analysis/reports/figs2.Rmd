@@ -9,7 +9,7 @@ library(drake)
 library(dplyr)
 library(ggplot2)
 
-all_di <- read.csv(here::here("analysis", "reports", "all_di.csv"), stringsAsFactors = F)
+all_di <- read.csv(here::here("analysis", "reports", "all_di_old.csv"), stringsAsFactors = F)
 
 all_di <- all_di %>%
   mutate(log_nparts = log(gmp:::as.double.bigz(nparts)),
@@ -121,7 +121,7 @@ ncol= 2)
 small <- filter(all_di, !singletons, s0 <= fia_s_range[2], n0 <= fia_n_range[2])
 
 gridExtra::grid.arrange(grobs = list(
-ggplot(filter(small, !singletons, s0 > 2), aes(skew_percentile)) +
+ggplot(filter(small, !singletons, s0 > 2, log_nparts > log(50)), aes(skew_percentile)) +
   geom_histogram(bins = 100) +
   theme_bw() +
   facet_wrap(vars(is_fia), scales = "free_y") +
@@ -129,12 +129,45 @@ ggplot(filter(small, !singletons, s0 > 2), aes(skew_percentile)) +
   ggtitle("Small communities percentile: Skewness"),
 
 
-ggplot(filter(small, !singletons), aes(simpson_percentile)) +
+ggplot(filter(small, !singletons, s0 > 2), aes(skew_percentile)) +
   geom_histogram(bins = 100) +
   theme_bw() +
   facet_wrap(vars(is_fia), scales = "free_y") +
-  geom_vline(xintercept = 5, color = "red", linetype = 3) +
-  ggtitle("Small communities percentile: Evenness")), ncol = 1)
+  geom_vline(xintercept = 95, color = "red", linetype = 3) +
+  ggtitle("Small communities percentile: Skewness")#,
+
+# 
+# ggplot(filter(small, !singletons), aes(simpson_percentile)) +
+#   geom_histogram(bins = 100) +
+#   theme_bw() +
+#   facet_wrap(vars(is_fia), scales = "free_y") +
+#   geom_vline(xintercept = 5, color = "red", linetype = 3) +
+#   ggtitle("Small communities percentile: Evenness")
+), ncol = 1)
+
+small %>%
+  filter(s0 > 2) %>%
+  group_by(is_fia) %>%
+  summarize(prop_skew_high = mean(skew_percentile > 95),
+            nsites = dplyr::n())
+
+
+small %>%
+  filter(s0 > 2, nparts > 500) %>%
+  group_by(is_fia) %>%
+  summarize(prop_skew_high = mean(skew_percentile > 95),
+            nsites = dplyr::n())
+
+small %>%
+  group_by(is_fia) %>%
+  summarize(prop_even_low = mean(simpson_percentile < 5),
+            nsites = dplyr::n())
+
+small %>%
+    filter(s0 > 2, nparts > 500) %>%
+  group_by(is_fia) %>%
+  summarize(prop_even_low = mean(simpson_percentile < 5),
+            nsites = dplyr::n())
 
 ```
 
