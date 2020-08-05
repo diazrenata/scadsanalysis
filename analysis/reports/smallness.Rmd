@@ -12,7 +12,7 @@ knitr::opts_chunk$set(echo = FALSE)
 library(drake)
 library(dplyr)
 library(ggplot2)
-
+knitr::opts_chunk$set(fig.width=4, fig.height=3, warning = FALSE, message = FALSE) 
 ```
 
 
@@ -83,120 +83,168 @@ ggplot(small_di, aes(log_nparts)) +
 
 ```
 
-###### Skew for small sites
-```{r skewness small, fig.dim = c(4, 3)}
+Having played around with the shiny app (size_comparisons), here are some static plots that I think are faithful to what I glean from tinkering with cutoffs. 
 
-ggplot(filter(small_di, s0 >2), aes(x = skew_percentile)) +
-  geom_histogram(bins = 100) +
-  theme_bw() +
-  facet_wrap(vars(fia_yn), scales = "free_y") +
-  ggtitle("Skew, <=")
+##### Trivially small
 
-ggplot(filter(small_di, s0 >2), aes(x = skew_percentile_excl)) +
+For a range of about 1-300 elements in the FS, I wouldn't argue for any kind of detectable pattern in any of the results:
+
+```{r trivially small}
+
+minparts = 1
+maxparts = 300
+
+ggplot(filter(small_di,
+              nparts< maxparts, nparts > minparts,
+              s0 > 2), aes(skew_percentile_excl)) +
   geom_histogram(bins = 100) +
-  theme_bw() +
   facet_wrap(vars(fia_yn), scales = "free_y") +
-  ggtitle("Skew, <")
+  theme_bw()
+
+ggplot(filter(small_di,
+              nparts< maxparts, nparts > minparts), aes(simpson_percentile)) +
+  geom_histogram(bins = 100) +
+  facet_wrap(vars(fia_yn), scales = "free_y") +
+  theme_bw()
 
 small_di %>%
-  filter(s0 > 2) %>%
+  filter(nparts< maxparts, nparts > minparts,
+         s0 > 2) %>%
   group_by(fia_yn) %>%
-  summarize(prop_skew_high_ltet = mean(skew_percentile > 95),
-            prop_skew_high_lt = mean(skew_percentile_excl > 95),
-            n_skew_sites = dplyr::n())
+  summarize(prop_skew_high = mean(skew_percentile_excl > 95),
+            nskew_sites = dplyr::n())
+
+small_di %>%
+  filter(nparts< maxparts, nparts > minparts) %>% 
+  group_by(fia_yn) %>%
+  summarize(prop_even_low = mean(simpson_percentile < 5),
+            neven_sites = dplyr::n())
+
+
+
+```
+
+##### Small but not trivially small
+
+There's one dynamic from a minimum of around 50 to 10000 elements, where:
+
+- Not really anything detectable for skewness
+- A weak effect for evenness for FIA, and quite a strong effect for evenness for other datasets
+
+```{r medium small}
+
+minparts = 50
+maxparts = 10000
+
+ggplot(filter(small_di,
+              nparts< maxparts, nparts > minparts,
+              s0 > 2), aes(skew_percentile_excl)) +
+  geom_histogram(bins = 100) +
+  facet_wrap(vars(fia_yn), scales = "free_y") +
+  theme_bw()
+
+ggplot(filter(small_di,
+              nparts< maxparts, nparts > minparts), aes(simpson_percentile)) +
+  geom_histogram(bins = 100) +
+  facet_wrap(vars(fia_yn), scales = "free_y") +
+  theme_bw()
+
+small_di %>%
+  filter(nparts< maxparts, nparts > minparts,
+         s0 > 2) %>%
+  group_by(fia_yn) %>%
+  summarize(prop_skew_high = mean(skew_percentile_excl > 95),
+            nskew_sites = dplyr::n())
+
+small_di %>%
+  filter(nparts< maxparts, nparts > minparts) %>% 
+  group_by(fia_yn) %>%
+  summarize(prop_even_low = mean(simpson_percentile < 5),
+            neven_sites = dplyr::n())
+
+
 
 ```
 
 
-###### Evenness
-```{r evenness result small, fig.dim = c(4, 3)}
+##### Big
 
-ggplot(filter(small_di), aes(x = simpson_percentile)) +
-  geom_histogram(bins = 100) +
-  theme_bw() +
-  facet_wrap(vars(fia_yn), scales = "free_y") +
-  ggtitle("Even, <=")
+And then anything over about 1500 elements:
 
-ggplot(filter(small_di), aes(x = simpson_percentile_excl)) +
+- Effects for both skewness and evenness, which only get stronger as you increase the minimum
+- Consistently more pronounced for other datasets for FIA, but the difference decreases as you increase the minimum
+
+```{r big}
+
+minparts = 1500
+maxparts = exp(30)
+
+ggplot(filter(small_di,
+              nparts< maxparts, nparts > minparts,
+              s0 > 2), aes(skew_percentile_excl)) +
   geom_histogram(bins = 100) +
-  theme_bw() +
   facet_wrap(vars(fia_yn), scales = "free_y") +
-  ggtitle("Even, <")
+  theme_bw()
+
+ggplot(filter(small_di,
+              nparts< maxparts, nparts > minparts), aes(simpson_percentile)) +
+  geom_histogram(bins = 100) +
+  facet_wrap(vars(fia_yn), scales = "free_y") +
+  theme_bw()
 
 small_di %>%
+  filter(nparts< maxparts, nparts > minparts,
+         s0 > 2) %>%
   group_by(fia_yn) %>%
-  summarize(prop_even_low_ltet = mean(simpson_percentile < 5),
-            prop_even_low_lt = mean(simpson_percentile_excl < 5),
-            n_even_sites = dplyr::n())
+  summarize(prop_skew_high = mean(skew_percentile_excl > 95),
+            nskew_sites = dplyr::n())
+
+small_di %>%
+  filter(nparts< maxparts, nparts > minparts) %>% 
+  group_by(fia_yn) %>%
+  summarize(prop_even_low = mean(simpson_percentile < 5),
+            neven_sites = dplyr::n())
+
+
 
 ```
 
 
-For these comparisons, 
-- For skewness, the effect is weak for both FIA and not-FIA (5% and 8% in the extremes, respectively)
-- For evenness, the effect is much stronger for not-FIA (8 vs 15%)
-- < vs <= matters quite a bit
-    - Many of these sites can be quite small. Since we flagged a concern about having fewer than, arbitrarily, 100 elements, let's remove those:
+##### Really big
 
-###### Skew for small sites, removing very small
-```{r skewness small no tiny, fig.dim = c(4, 3)}
+Such that, over about 10000 elements, FIA looks similar to other datasets. 
 
-small_di <- small_di %>%
-  filter(nparts > 100)
+```{r really big}
 
-ggplot(filter(small_di, s0 >2), aes(x = skew_percentile)) +
+minparts = 10000
+maxparts = exp(30)
+
+ggplot(filter(small_di,
+              nparts< maxparts, nparts > minparts,
+              s0 > 2), aes(skew_percentile_excl)) +
   geom_histogram(bins = 100) +
-  theme_bw() +
   facet_wrap(vars(fia_yn), scales = "free_y") +
-  ggtitle("Skew, <=")
+  theme_bw()
 
-ggplot(filter(small_di, s0 >2), aes(x = skew_percentile_excl)) +
+ggplot(filter(small_di,
+              nparts< maxparts, nparts > minparts), aes(simpson_percentile)) +
   geom_histogram(bins = 100) +
-  theme_bw() +
   facet_wrap(vars(fia_yn), scales = "free_y") +
-  ggtitle("Skew, <")
+  theme_bw()
 
 small_di %>%
-  filter(s0 > 2) %>%
+  filter(nparts< maxparts, nparts > minparts,
+         s0 > 2) %>%
   group_by(fia_yn) %>%
-  summarize(prop_skew_high_ltet = mean(skew_percentile > 95),
-            prop_skew_high_lt = mean(skew_percentile_excl > 95),
-            n_skew_sites = dplyr::n())
-
-```
-
-
-###### Evenness
-```{r evenness result small no tiny, fig.dim = c(4, 3)}
-
-ggplot(filter(small_di), aes(x = simpson_percentile)) +
-  geom_histogram(bins = 100) +
-  theme_bw() +
-  facet_wrap(vars(fia_yn), scales = "free_y") +
-  ggtitle("Even, <=")
-
-ggplot(filter(small_di), aes(x = simpson_percentile_excl)) +
-  geom_histogram(bins = 100) +
-  theme_bw() +
-  facet_wrap(vars(fia_yn), scales = "free_y") +
-  ggtitle("Even, <")
+  summarize(prop_skew_high = mean(skew_percentile_excl > 95),
+            nskew_sites = dplyr::n())
 
 small_di %>%
+  filter(nparts< maxparts, nparts > minparts) %>% 
   group_by(fia_yn) %>%
-  summarize(prop_even_low_ltet = mean(simpson_percentile < 5),
-            prop_even_low_lt = mean(simpson_percentile_excl < 5),
-            n_even_sites = dplyr::n())
+  summarize(prop_even_low = mean(simpson_percentile < 5),
+            neven_sites = dplyr::n())
+
+
 
 ```
-
-Removing sites with fewer than 100 elements in the feasible set
-
-- *eliminates the difference between <= and <*
-- We see a difference between FIA and other datasets 
-    - For skew, 6 vs 12% in the extremes
-    - For even, 10 vs 25% in the extremes
-
-
-I am skeptical of these comparisons. It may be that FIA is behaving qualitatively differently, but it may also be that, because the other datasets are less concentrated at *very small* FS, the effect of FS size still drives the difference even when we filter like this. On the strength of this filtering I'm not confident arguing *either* that FIA is qualitatively different, independent of size, or that these subsets are behaving the same. 
-
-I think a stronger comparison would be to break into size classes based on the number of parts. 

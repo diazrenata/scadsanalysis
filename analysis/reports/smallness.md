@@ -15,87 +15,114 @@ than FIA….
 
 ![](smallness_files/figure-gfm/small-1.png)<!-- -->![](smallness_files/figure-gfm/small-2.png)<!-- -->
 
-###### Skew for small sites
+Having played around with the shiny app (size\_comparisons), here are
+some static plots that I think are faithful to what I glean from
+tinkering with cutoffs.
 
-![](smallness_files/figure-gfm/skewness%20small-1.png)<!-- -->![](smallness_files/figure-gfm/skewness%20small-2.png)<!-- -->
+##### Trivially small
 
-    ## `summarise()` ungrouping output (override with `.groups` argument)
+For a range of about 1-300 elements in the FS, I wouldn’t argue for any
+kind of detectable pattern in any of the results:
 
-<div class="kable-table">
-
-| fia\_yn        | prop\_skew\_high\_ltet | prop\_skew\_high\_lt | n\_skew\_sites |
-| :------------- | ---------------------: | -------------------: | -------------: |
-| fia            |              0.0694752 |             0.048879 |          20295 |
-| other datasets |              0.1314387 |             0.079929 |            563 |
-
-</div>
-
-###### Evenness
-
-![](smallness_files/figure-gfm/evenness%20result%20small-1.png)<!-- -->![](smallness_files/figure-gfm/evenness%20result%20small-2.png)<!-- -->
-
-    ## `summarise()` ungrouping output (override with `.groups` argument)
+![](smallness_files/figure-gfm/trivially%20small-1.png)<!-- -->![](smallness_files/figure-gfm/trivially%20small-2.png)<!-- -->
 
 <div class="kable-table">
 
-| fia\_yn        | prop\_even\_low\_ltet | prop\_even\_low\_lt | n\_even\_sites |
-| :------------- | --------------------: | ------------------: | -------------: |
-| fia            |             0.0844543 |           0.1113575 |          20295 |
-| other datasets |             0.1493411 |           0.3045388 |            683 |
+| fia\_yn        | prop\_skew\_high | nskew\_sites |
+| :------------- | ---------------: | -----------: |
+| fia            |        0.0127573 |         8309 |
+| other datasets |        0.0121951 |          246 |
 
 </div>
-
-For these comparisons, - For skewness, the effect is weak for both FIA
-and not-FIA (5% and 8% in the extremes, respectively) - For evenness,
-the effect is much stronger for not-FIA (8 vs 15%) - \< vs \<= matters
-quite a bit - Many of these sites can be quite small. Since we flagged a
-concern about having fewer than, arbitrarily, 100 elements, let’s remove
-those:
-
-###### Skew for small sites, removing very small
-
-![](smallness_files/figure-gfm/skewness%20small%20no%20tiny-1.png)<!-- -->![](smallness_files/figure-gfm/skewness%20small%20no%20tiny-2.png)<!-- -->
-
-    ## `summarise()` ungrouping output (override with `.groups` argument)
 
 <div class="kable-table">
 
-| fia\_yn        | prop\_skew\_high\_ltet | prop\_skew\_high\_lt | n\_skew\_sites |
-| :------------- | ---------------------: | -------------------: | -------------: |
-| fia            |              0.0662983 |            0.0636017 |          15204 |
-| other datasets |              0.1277174 |            0.1222826 |            368 |
+| fia\_yn        | prop\_even\_low | neven\_sites |
+| :------------- | --------------: | -----------: |
+| fia            |       0.0480202 |         8309 |
+| other datasets |       0.0750000 |          320 |
 
 </div>
 
-###### Evenness
+##### Small but not trivially small
 
-![](smallness_files/figure-gfm/evenness%20result%20small%20no%20tiny-1.png)<!-- -->![](smallness_files/figure-gfm/evenness%20result%20small%20no%20tiny-2.png)<!-- -->
+There’s one dynamic from a minimum of around 50 to 10000 elements,
+where:
 
-    ## `summarise()` ungrouping output (override with `.groups` argument)
+  - Not really anything detectable for skewness
+  - A weak effect for evenness for FIA, and quite a strong effect for
+    evenness for other datasets
+
+![](smallness_files/figure-gfm/medium%20small-1.png)<!-- -->![](smallness_files/figure-gfm/medium%20small-2.png)<!-- -->
 
 <div class="kable-table">
 
-| fia\_yn        | prop\_even\_low\_ltet | prop\_even\_low\_lt | n\_even\_sites |
-| :------------- | --------------------: | ------------------: | -------------: |
-| fia            |              0.101618 |           0.1051697 |          15204 |
-| other datasets |              0.250000 |           0.2527174 |            368 |
+| fia\_yn        | prop\_skew\_high | nskew\_sites |
+| :------------- | ---------------: | -----------: |
+| fia            |        0.0432552 |        14426 |
+| other datasets |        0.0652174 |          230 |
 
 </div>
 
-Removing sites with fewer than 100 elements in the feasible set
+<div class="kable-table">
 
-  - *eliminates the difference between \<= and \<*
-  - We see a difference between FIA and other datasets
-      - For skew, 6 vs 12% in the extremes
-      - For even, 10 vs 25% in the extremes
+| fia\_yn        | prop\_even\_low | neven\_sites |
+| :------------- | --------------: | -----------: |
+| fia            |       0.0792319 |        14426 |
+| other datasets |       0.1845494 |          233 |
 
-I am skeptical of these comparisons. It may be that FIA is behaving
-qualitatively differently, but it may also be that, because the other
-datasets are less concentrated at *very small* FS, the effect of FS size
-still drives the difference even when we filter like this. On the
-strength of this filtering I’m not confident arguing *either* that FIA
-is qualitatively different, independent of size, or that these subsets
-are behaving the same.
+</div>
 
-I think a stronger comparison would be to break into size classes based
-on the number of parts.
+##### Big
+
+And then anything over about 1500 elements:
+
+  - Effects for both skewness and evenness, which only get stronger as
+    you increase the minimum
+  - Consistently more pronounced for other datasets for FIA, but the
+    difference decreases as you increase the minimum
+
+![](smallness_files/figure-gfm/big-1.png)<!-- -->![](smallness_files/figure-gfm/big-2.png)<!-- -->
+
+<div class="kable-table">
+
+| fia\_yn        | prop\_skew\_high | nskew\_sites |
+| :------------- | ---------------: | -----------: |
+| fia            |        0.0967742 |         6696 |
+| other datasets |        0.1652542 |          236 |
+
+</div>
+
+<div class="kable-table">
+
+| fia\_yn        | prop\_even\_low | neven\_sites |
+| :------------- | --------------: | -----------: |
+| fia            |       0.1375448 |         6696 |
+| other datasets |       0.2838983 |          236 |
+
+</div>
+
+##### Really big
+
+Such that, over about 10000 elements, FIA looks similar to other
+datasets.
+
+![](smallness_files/figure-gfm/really%20big-1.png)<!-- -->![](smallness_files/figure-gfm/really%20big-2.png)<!-- -->
+
+<div class="kable-table">
+
+| fia\_yn        | prop\_skew\_high | nskew\_sites |
+| :------------- | ---------------: | -----------: |
+| fia            |        0.1409396 |         2533 |
+| other datasets |        0.1775148 |          169 |
+
+</div>
+
+<div class="kable-table">
+
+| fia\_yn        | prop\_even\_low | neven\_sites |
+| :------------- | --------------: | -----------: |
+| fia            |       0.2021319 |         2533 |
+| other datasets |       0.3195266 |          169 |
+
+</div>

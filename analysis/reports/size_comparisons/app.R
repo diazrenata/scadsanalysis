@@ -37,6 +37,7 @@ ui <- fluidPage(
         # Show a plot of the generated distribution
         mainPanel(
             tableOutput("sizeRange"),
+            plotOutput("snPlot", width = 400, height = 200),
             plotOutput("windowPlot", width = 400, height = 200),
             plotOutput("skewPlot", width = 400, height = 200),
             tableOutput("skewResults"),
@@ -89,6 +90,18 @@ server <- function(input, output) {
     small_di <- small_di %>%
         filter(!right_corner)
 
+
+    output$snPlot <- renderPlot({
+        this_di <- small_di %>%
+            filter(log_nparts > input$minparts,
+                   log_nparts < input$maxparts)
+
+        ggplot(small_di, aes(x = (s0), y = (n0))) +
+            geom_point() +
+            geom_point(data = this_di, color = "blue") +
+            theme_bw() +
+            facet_wrap(vars(fia_yn))
+    })
 
     output$windowPlot <- renderPlot({
 
