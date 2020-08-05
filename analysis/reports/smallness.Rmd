@@ -94,6 +94,18 @@ For a range of about 1-300 elements in the FS, I wouldn't argue for any kind of 
 minparts = 1
 maxparts = 300
 
+this_di <- small_di %>%
+            filter(nparts > minparts,
+                   nparts < maxparts)
+
+        ggplot(small_di, aes(x = (s0), y = (n0))) +
+            geom_point() +
+            geom_point(data = this_di, color = "blue") +
+            theme_bw() +
+            facet_wrap(vars(fia_yn))
+
+    
+        
 ggplot(filter(small_di,
               nparts< maxparts, nparts > minparts,
               s0 > 2), aes(skew_percentile_excl)) +
@@ -101,12 +113,30 @@ ggplot(filter(small_di,
   facet_wrap(vars(fia_yn), scales = "free_y") +
   theme_bw()
 
+
+ ggplot(small_di, aes(log_nparts)) +
+            geom_histogram(bins = 30) +
+            theme_bw() +
+            facet_wrap(vars(fia_yn), scales = "free_y") +
+            geom_vline(xintercept = c(log(minparts),
+                                      log(maxparts)), color = "red")
+
+
 ggplot(filter(small_di,
               nparts< maxparts, nparts > minparts), aes(simpson_percentile)) +
   geom_histogram(bins = 100) +
   facet_wrap(vars(fia_yn), scales = "free_y") +
   theme_bw()
 
+ggplot(filter(small_di,
+              nparts< maxparts, nparts > minparts), aes(skew_95_ratio_1t)) +
+         geom_histogram() +
+         theme_bw()
+
+ggplot(filter(small_di,
+              nparts< maxparts, nparts > minparts), aes(simpson_95_ratio_1t)) +
+         geom_histogram() +
+         theme_bw()
 small_di %>%
   filter(nparts< maxparts, nparts > minparts,
          s0 > 2) %>%
@@ -136,19 +166,43 @@ There's one dynamic from a minimum of around 50 to 10000 elements, where:
 minparts = 50
 maxparts = 10000
 
+this_di <- small_di %>%
+            filter(nparts > minparts,
+                   nparts < maxparts)
+
+        ggplot(small_di, aes(x = (s0), y = (n0))) +
+            geom_point() +
+            geom_point(data = this_di, color = "blue") +
+            theme_bw() +
+            facet_wrap(vars(fia_yn))
+
 ggplot(filter(small_di,
               nparts< maxparts, nparts > minparts,
               s0 > 2), aes(skew_percentile_excl)) +
   geom_histogram(bins = 100) +
   facet_wrap(vars(fia_yn), scales = "free_y") +
   theme_bw()
-
+ ggplot(small_di, aes(log_nparts)) +
+            geom_histogram(bins = 30) +
+            theme_bw() +
+            facet_wrap(vars(fia_yn), scales = "free_y") +
+            geom_vline(xintercept = c(log(minparts),
+                                      log(maxparts)), color = "red")
 ggplot(filter(small_di,
               nparts< maxparts, nparts > minparts), aes(simpson_percentile)) +
   geom_histogram(bins = 100) +
   facet_wrap(vars(fia_yn), scales = "free_y") +
   theme_bw()
 
+ggplot(filter(small_di,
+              nparts< maxparts, nparts > minparts), aes(skew_95_ratio_1t)) +
+         geom_histogram() +
+         theme_bw()
+
+ggplot(filter(small_di,
+              nparts< maxparts, nparts > minparts), aes(simpson_95_ratio_1t)) +
+         geom_histogram() +
+         theme_bw()
 small_di %>%
   filter(nparts< maxparts, nparts > minparts,
          s0 > 2) %>%
@@ -179,19 +233,43 @@ And then anything over about 1500 elements:
 minparts = 1500
 maxparts = exp(30)
 
+this_di <- small_di %>%
+            filter(nparts > minparts,
+                   nparts < maxparts)
+
+        ggplot(small_di, aes(x = (s0), y = (n0))) +
+            geom_point() +
+            geom_point(data = this_di, color = "blue") +
+            theme_bw() +
+            facet_wrap(vars(fia_yn))
+
 ggplot(filter(small_di,
               nparts< maxparts, nparts > minparts,
               s0 > 2), aes(skew_percentile_excl)) +
   geom_histogram(bins = 100) +
   facet_wrap(vars(fia_yn), scales = "free_y") +
   theme_bw()
-
+ ggplot(small_di, aes(log_nparts)) +
+            geom_histogram(bins = 30) +
+            theme_bw() +
+            facet_wrap(vars(fia_yn), scales = "free_y") +
+            geom_vline(xintercept = c(log(minparts),
+                                      log(maxparts)), color = "red")
 ggplot(filter(small_di,
               nparts< maxparts, nparts > minparts), aes(simpson_percentile)) +
   geom_histogram(bins = 100) +
   facet_wrap(vars(fia_yn), scales = "free_y") +
   theme_bw()
 
+ggplot(filter(small_di,
+              nparts< maxparts, nparts > minparts), aes(skew_95_ratio_1t)) +
+         geom_histogram() +
+         theme_bw()
+
+ggplot(filter(small_di,
+              nparts< maxparts, nparts > minparts), aes(simpson_95_ratio_1t)) +
+         geom_histogram() +
+         theme_bw()
 small_di %>%
   filter(nparts< maxparts, nparts > minparts,
          s0 > 2) %>%
@@ -219,6 +297,16 @@ Such that, over about 10000 elements, FIA looks similar to other datasets.
 minparts = 10000
 maxparts = exp(30)
 
+this_di <- small_di %>%
+            filter(nparts > minparts,
+                   nparts < maxparts)
+
+        ggplot(small_di, aes(x = (s0), y = (n0))) +
+            geom_point() +
+            geom_point(data = this_di, color = "blue") +
+            theme_bw() +
+            facet_wrap(vars(fia_yn))
+
 ggplot(filter(small_di,
               nparts< maxparts, nparts > minparts,
               s0 > 2), aes(skew_percentile_excl)) +
@@ -226,12 +314,27 @@ ggplot(filter(small_di,
   facet_wrap(vars(fia_yn), scales = "free_y") +
   theme_bw()
 
+ ggplot(small_di, aes(log_nparts)) +
+            geom_histogram(bins = 30) +
+            theme_bw() +
+            facet_wrap(vars(fia_yn), scales = "free_y") +
+            geom_vline(xintercept = c(log(minparts),
+                                      log(maxparts)), color = "red")
 ggplot(filter(small_di,
               nparts< maxparts, nparts > minparts), aes(simpson_percentile)) +
   geom_histogram(bins = 100) +
   facet_wrap(vars(fia_yn), scales = "free_y") +
   theme_bw()
 
+ggplot(filter(small_di,
+              nparts< maxparts, nparts > minparts), aes(skew_95_ratio_1t)) +
+         geom_histogram() +
+         theme_bw()
+
+ggplot(filter(small_di,
+              nparts< maxparts, nparts > minparts), aes(simpson_95_ratio_1t)) +
+         geom_histogram() +
+         theme_bw()
 small_di %>%
   filter(nparts< maxparts, nparts > minparts,
          s0 > 2) %>%

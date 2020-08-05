@@ -47,13 +47,7 @@ To show the 95% interval, we need to load the distribution of shape metric value
 
 ```{r first hists}
 
-ggplot(filter(all_di, s0 > 2), aes(skew_percentile)) +
-  geom_histogram(bins = 100) +
-  geom_vline(xintercept = 95, color = "red") +
-  theme_bw() +
-  facet_wrap(vars(dat), scales = "free_y") + ggtitle("Skewness, all sites")
-
-ggplot(filter(all_di, s0 > 2, log_nparts > log(50)), aes(skew_percentile)) +
+ggplot(filter(all_di, s0 > 2), aes(skew_percentile_excl)) +
   geom_histogram(bins = 100) +
   geom_vline(xintercept = 95, color = "red") +
   theme_bw() +
@@ -64,11 +58,7 @@ ggplot(all_di, aes(simpson_percentile)) +
   geom_vline(xintercept = 5, color = "red") +
   theme_bw() +
   facet_wrap(vars(dat), scales = "free_y") + ggtitle("Evenness, all sites")
-ggplot(filter(all_di, log_nparts > log(50)), aes(simpson_percentile)) + 
- geom_histogram(bins = 100) +
-  geom_vline(xintercept = 5, color = "red") +
-  theme_bw() +
-  facet_wrap(vars(dat), scales = "free_y") + ggtitle("Evenness, all sites")
+
 ```
 
 # Proportion of sites with highly skewed or uneven SADs
@@ -77,7 +67,7 @@ ggplot(filter(all_di, log_nparts > log(50)), aes(simpson_percentile)) +
 
 overall_skew_results <- all_di %>%
   filter(s0 > 2) %>%
-  mutate(high_skew = skew_percentile > 95) %>%
+  mutate(high_skew = skew_percentile_excl > 95) %>%
   group_by(dat) %>%
   summarize(proportion_skew_high = mean(high_skew),
             nsites_skew = dplyr::n())
@@ -94,16 +84,17 @@ overall_results
 
 
 overall_skew_results2 <- all_di %>%
-  filter(s0 > 2, log_nparts > log(50)) %>%
-  mutate(high_skew = skew_percentile > 95) %>%
-  group_by(dat) %>%
+  mutate(fia_yn = ifelse(dat == "fia", "fia", "not fia")) %>%
+  filter(s0 > 2) %>%
+  mutate(high_skew = skew_percentile_excl > 95) %>%
+  group_by(fia_yn) %>%
   summarize(proportion_skew_high = mean(high_skew),
             nsites_skew = dplyr::n())
 
 overall_simpson_results2 <- all_di %>%
-  filter(log_nparts > log(50)) %>%
+   mutate(fia_yn = ifelse(dat == "fia", "fia", "not fia")) %>%
   mutate(low_even = simpson_percentile < 5) %>%
-  group_by(dat) %>%
+  group_by(fia_yn) %>%
   summarize(proportion_even_low = mean(low_even),
             nsites_even = dplyr::n())
 
@@ -111,190 +102,20 @@ overall_results2 <- left_join(overall_skew_results2, overall_simpson_results2)
 
 overall_results2
 
-```
-
-There are fewer sites for skewness because we exclude sites with only 2 species.
-
-# Size of feasible set for each dataset
-
-```{r fs size hists}
-
-all_di <- all_di %>%
-  mutate(log_nparts_truncated = ifelse(
-    log_nparts > 50,
-    50,
-    log_nparts)
-  )
-
-ggplot(all_di, aes(log_nparts_truncated)) +
-  geom_histogram() +
-  facet_wrap(vars(dat), scales = "free_y") +
-  theme_bw()
-
-
-fs_size_results <- all_di %>%
-  group_by(dat) %>%
-  summarize(prop_smaller_than_5=  mean(log_nparts <= 5),
-            prop_smaller_than_7 =  mean(log_nparts <= 7),
-            prop_smaller_than_10 = mean(log_nparts <= 10))
-fs_size_results
 
 ```
 
-FIA is the only dataset that is overwhelmingly dominated by sites with fewer than `r exp(10)` elements in the feasible set. MCDB also has many small sites, but these are counterbalanced by larger ones.
 
-62% of the FIA sites have fewer than `r exp(7)` elements in the feasible set, and 30% have fewer than `r exp(5)`. 
+```{r 95 intervals}
 
-```{r fs size to s0 and n0, fig.dim = c(3,3)}
-ggplot(all_di, aes(x = log_s0, y = log_n0, color = log_nparts <= 5)) +
-  geom_point() +
+ggplot(all_di, aes(x = log_nparts, y= skew_95_ratio_1t)) +
+  geom_point(alpha = .1) +
   theme_bw() +
-  theme(legend.position = "top")
+  xlim(0, 100)
 
-
-
-ggplot(all_di, aes(x = log_s0, y = log_n0, color = log_nparts <= 7)) +
-  geom_point() +
-  theme_bw()+
-  theme(legend.position = "top")
-
-
-
-ggplot(all_di, aes(x = log_s0, y = log_n0, color = log_nparts <= 10)) +
-  geom_point() +
-  theme_bw()+
-  theme(legend.position = "top")
-```
-
-
-Having fewer than 150 elements ~ fewer than 3 species, or fewer than `r exp(2.75)` individuals  with up to 20 species.
-
-Fewer than 1000 elements ~ fewer than 3 species, or fewer than `r exp(3.25)` individuals with up to 20 species.
-
-Fewer than 20000 elements ~ fewer than 4 species, or fewer than `r exp(4)` individuals. 
-
-# 95% interval for small versus large communities
-
-
-```{r 95 interval}
-
-ggplot(all_di, aes(x = log_nparts, y = skew_95_ratio_1t)) +
-  geom_point(alpha = .2) + theme_bw() + ggtitle("Skewness 95% interval")
-
-ggplot(all_di, aes(x = log_nparts, y = skew_95_ratio_1t)) +
-  geom_point(alpha = .01) +
-  xlim(0, 15) +
+ggplot(all_di, aes(x = log_nparts, y= simpson_95_ratio_1t)) +
+  geom_point(alpha = .1) +
   theme_bw() +
-  ggtitle("Skewness 95% interval - only small feasible sets")
+  xlim(0, 100)
 
-
-ggplot(all_di, aes(x = log_nparts, y = simpson_95_ratio_1t)) +
-  geom_point(alpha = .2) + theme_bw()+ ggtitle("Evenness 95% interval")
-
-ggplot(all_di, aes(x = log_nparts, y = simpson_95_ratio_1t)) +
-  geom_point(alpha = .05) +
-  xlim(0, 15) +
-  theme_bw()+
-  ggtitle("Evenness 95% interval - only small feasible sets")
-
-```
-
-The 95% ratio decreases for large FS. 
-
-For skewness, it is still quite high even up to 20,000 elements in the FS. But it is starting to decline by then?
-
-
-# Comparison of FIA to similarly-sized communities
-
-
-```{r fia sized}
-fia_max_s <- max(filter(all_di, dat == "fia")$s0)
-fia_max_n <- max(filter(all_di, dat == "fia")$n0)
-
-fia_max_nparts <-max(filter(all_di, dat == "fia")$log_nparts)
-
-fia_sized <- filter(all_di, s0 <= fia_max_s, n0 <= fia_max_n) %>%
-  mutate(fia_yn = dat == "fia") %>%
-  mutate(fia_yn = ifelse(fia_yn, "FIA", "Other datasets")) %>%
-  mutate(right_corner = FALSE)
-
-ggplot(filter(fia_sized, s0 > 2, nparts > 50), aes(skew_percentile)) +
-  geom_histogram() +
-  facet_wrap(vars(fia_yn), scales = "free_y")
-
-
-ggplot(filter(fia_sized, s0 > 2, nparts > 50), aes(skew_percentile_excl)) +
-  geom_histogram() +
-  facet_wrap(vars(fia_yn), scales = "free_y")
-
-
-ggplot(filter(fia_sized, s0 > 2), aes(skew_percentile_excl)) +
-  geom_histogram() +
-  facet_wrap(vars(fia_yn), scales = "free_y")
-ggplot(fia_sized, aes(x = log_nparts)) +
-  geom_histogram() +
-  facet_wrap(vars(fia_yn), scales = "free_y") +
-  geom_vline(xintercept = log(50))
-
-
-
-fia_sized %>%
-  filter(s0 > 2) %>%
-  group_by(fia_yn) %>%
-  summarize(prop_skew_high = mean(skew_percentile > 95),
-            nsites = dplyr::n())
-
-
-fia_sized %>%
-  filter(s0 > 2, nparts > 50) %>%
-  group_by(fia_yn) %>%
-  summarize(prop_skew_high = mean(skew_percentile > 95),
-            nsites = dplyr::n())
-
-fia_sized %>%
-  group_by(fia_yn) %>%
-  summarize(prop_even_low = mean(simpson_percentile < 5),
-            nsites = dplyr::n())
-
-fia_sized %>%
-    filter(s0 > 2, nparts > 50) %>%
-  group_by(fia_yn) %>%
-  summarize(prop_even_low = mean(simpson_percentile < 5),
-            nsites = dplyr::n())
-
-
-```
-
-# Removing the smallest communities from FIA
-
-```{r fia no small}
-
-
-ggplot(filter(fia_sized, s0 > 2, nparts > 50, nparts < exp(7)), aes(skew_percentile)) +
-  geom_histogram(bins = 50) + theme_bw() +
-  facet_wrap(vars(fia_yn), scales = "free_y") +
-  ggtitle("50-1,000 parts in FS")
-
-ggplot(filter(fia_sized, s0 > 2, nparts > 50, nparts < exp(7)), aes(x = log(s0), y = log(n0), color = fia_yn)) +
-  geom_point(alpha = .2) +
-  facet_wrap(vars(fia_yn))
-
-ggplot(filter(fia_sized, s0 > 2, nparts >= exp(7), nparts < exp(10)), aes(skew_percentile)) +
-  geom_histogram(bins = 50) + theme_bw() +
-  facet_wrap(vars(fia_yn), scales = "free_y") +
-  ggtitle("1,000 - 20,000 parts in FS")
-
-ggplot(filter(fia_sized, s0 > 2, nparts >= exp(7), nparts < exp(10)), aes(x = log(s0), y = log(n0), color = fia_yn)) +
-  geom_point(alpha = .2) +
-  facet_wrap(vars(fia_yn))
-
-ggplot(filter(fia_sized, s0 > 2, nparts > 50, nparts >= exp(10)), aes(skew_percentile)) +
-  geom_histogram(bins = 50) + theme_bw() +
-  facet_wrap(vars(fia_yn), scales = "free_y") +
-  ggtitle("More than 20,000 parts in FS")
-
-
-ggplot(filter(fia_sized, s0 > 2, nparts >= exp(7), nparts < exp(10)), aes(x = log(s0), y = log(n0), color = fia_yn)) +
-  geom_point(alpha = .2) +
-  facet_wrap(vars(fia_yn))
 ```

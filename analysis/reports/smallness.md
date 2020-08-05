@@ -24,7 +24,7 @@ tinkering with cutoffs.
 For a range of about 1-300 elements in the FS, I wouldn’t argue for any
 kind of detectable pattern in any of the results:
 
-![](smallness_files/figure-gfm/trivially%20small-1.png)<!-- -->![](smallness_files/figure-gfm/trivially%20small-2.png)<!-- -->
+![](smallness_files/figure-gfm/trivially%20small-1.png)<!-- -->![](smallness_files/figure-gfm/trivially%20small-2.png)<!-- -->![](smallness_files/figure-gfm/trivially%20small-3.png)<!-- -->![](smallness_files/figure-gfm/trivially%20small-4.png)<!-- -->![](smallness_files/figure-gfm/trivially%20small-5.png)<!-- -->![](smallness_files/figure-gfm/trivially%20small-6.png)<!-- -->
 
 <div class="kable-table">
 
@@ -53,7 +53,7 @@ where:
   - A weak effect for evenness for FIA, and quite a strong effect for
     evenness for other datasets
 
-![](smallness_files/figure-gfm/medium%20small-1.png)<!-- -->![](smallness_files/figure-gfm/medium%20small-2.png)<!-- -->
+![](smallness_files/figure-gfm/medium%20small-1.png)<!-- -->![](smallness_files/figure-gfm/medium%20small-2.png)<!-- -->![](smallness_files/figure-gfm/medium%20small-3.png)<!-- -->![](smallness_files/figure-gfm/medium%20small-4.png)<!-- -->![](smallness_files/figure-gfm/medium%20small-5.png)<!-- -->![](smallness_files/figure-gfm/medium%20small-6.png)<!-- -->
 
 <div class="kable-table">
 
@@ -82,7 +82,7 @@ And then anything over about 1500 elements:
   - Consistently more pronounced for other datasets for FIA, but the
     difference decreases as you increase the minimum
 
-![](smallness_files/figure-gfm/big-1.png)<!-- -->![](smallness_files/figure-gfm/big-2.png)<!-- -->
+![](smallness_files/figure-gfm/big-1.png)<!-- -->![](smallness_files/figure-gfm/big-2.png)<!-- -->![](smallness_files/figure-gfm/big-3.png)<!-- -->![](smallness_files/figure-gfm/big-4.png)<!-- -->![](smallness_files/figure-gfm/big-5.png)<!-- -->![](smallness_files/figure-gfm/big-6.png)<!-- -->
 
 <div class="kable-table">
 
@@ -107,7 +107,7 @@ And then anything over about 1500 elements:
 Such that, over about 10000 elements, FIA looks similar to other
 datasets.
 
-![](smallness_files/figure-gfm/really%20big-1.png)<!-- -->![](smallness_files/figure-gfm/really%20big-2.png)<!-- -->
+![](smallness_files/figure-gfm/really%20big-1.png)<!-- -->![](smallness_files/figure-gfm/really%20big-2.png)<!-- -->![](smallness_files/figure-gfm/really%20big-3.png)<!-- -->![](smallness_files/figure-gfm/really%20big-4.png)<!-- -->![](smallness_files/figure-gfm/really%20big-5.png)<!-- -->![](smallness_files/figure-gfm/really%20big-6.png)<!-- -->
 
 <div class="kable-table">
 
