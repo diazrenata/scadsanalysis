@@ -1,0 +1,202 @@
+---
+title: "Size class small comparisons"
+author: Renata Diaz
+date: "`r Sys.Date()`"
+output: 
+    github_document:
+       df_print: kable
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(drake)
+library(dplyr)
+library(ggplot2)
+
+```
+
+
+```{r real data, include=FALSE}
+
+all_di <- read.csv(here::here("analysis", "reports", "all_di.csv"), stringsAsFactors = F)
+
+all_di <- all_di %>%
+  mutate(log_nparts = log(gmp:::as.double.bigz(nparts)),
+         log_nsamples = log(nsamples),
+         log_s0 = log(s0),
+         log_n0 = log(n0)) %>%
+  filter(n0 > s0,
+         !singletons,
+         dat %in% c("bbs", "fia_short", "fia_small", "gentry", "mcdb", "misc_abund_short")) %>%
+  mutate(dat = ifelse(grepl(dat, pattern = "fia"), "fia", dat),
+         dat = ifelse(dat == "misc_abund_short", "misc_abund", dat))
+```
+
+##### Results for small (FIA sized) communities
+
+Here are the results when we try to tell whether FIA communities differ qualitatively from similarly-sized communities from other datasets...
+
+###### Small sites
+
+Note that, even for small sites, "other datasets" are generally larger than FIA....
+
+```{r small, fig.dim = c(4,3)}
+
+
+fia_max_s = max(filter(all_di, dat == "fia")$s0)
+fia_max_n = max(filter(all_di, dat == "fia")$n0)
+
+fia = filter(all_di, dat == "fia")
+
+small_di <- all_di %>%
+  filter(s0 <= fia_max_s,
+         n0 <= fia_max_n) %>%
+  mutate(fia_yn = ifelse(dat == "fia", "fia", "other datasets"),
+         right_corner = FALSE)
+
+for(i in 1:nrow(small_di)) {
+  if(small_di$dat[i] != "fia") {
+    fia_match_s0 = filter(fia, s0 >= small_di$s0[i])
+    
+    max_n0_for_this_s0 = max(fia_match_s0$n0)
+    
+    small_di$right_corner[i] = small_di$n0[i] > max_n0_for_this_s0
+    
+  }
+}
+
+
+small_di <- small_di %>%
+  filter(!right_corner)
+
+ggplot(small_di, aes(x = s0, y = n0, color = log_nparts)) +
+  geom_point() +
+  theme_bw() +
+  scale_color_viridis_c(option = "plasma", end = .7) +
+  facet_wrap(vars(fia_yn)) +
+  theme(legend.position = "top")
+
+ggplot(small_di, aes(log_nparts)) +
+  geom_histogram(bins = 30) +
+  theme_bw() +
+  facet_wrap(vars(fia_yn), scales = "free_y")
+
+```
+
+###### Skew for small sites
+```{r skewness small, fig.dim = c(4, 3)}
+
+ggplot(filter(small_di, s0 >2), aes(x = skew_percentile)) +
+  geom_histogram(bins = 100) +
+  theme_bw() +
+  facet_wrap(vars(fia_yn), scales = "free_y") +
+  ggtitle("Skew, <=")
+
+ggplot(filter(small_di, s0 >2), aes(x = skew_percentile_excl)) +
+  geom_histogram(bins = 100) +
+  theme_bw() +
+  facet_wrap(vars(fia_yn), scales = "free_y") +
+  ggtitle("Skew, <")
+
+small_di %>%
+  filter(s0 > 2) %>%
+  group_by(fia_yn) %>%
+  summarize(prop_skew_high_ltet = mean(skew_percentile > 95),
+            prop_skew_high_lt = mean(skew_percentile_excl > 95),
+            n_skew_sites = dplyr::n())
+
+```
+
+
+###### Evenness
+```{r evenness result small, fig.dim = c(4, 3)}
+
+ggplot(filter(small_di), aes(x = simpson_percentile)) +
+  geom_histogram(bins = 100) +
+  theme_bw() +
+  facet_wrap(vars(fia_yn), scales = "free_y") +
+  ggtitle("Even, <=")
+
+ggplot(filter(small_di), aes(x = simpson_percentile_excl)) +
+  geom_histogram(bins = 100) +
+  theme_bw() +
+  facet_wrap(vars(fia_yn), scales = "free_y") +
+  ggtitle("Even, <")
+
+small_di %>%
+  group_by(fia_yn) %>%
+  summarize(prop_even_low_ltet = mean(simpson_percentile < 5),
+            prop_even_low_lt = mean(simpson_percentile_excl < 5),
+            n_even_sites = dplyr::n())
+
+```
+
+
+For these comparisons, 
+- For skewness, the effect is weak for both FIA and not-FIA (5% and 8% in the extremes, respectively)
+- For evenness, the effect is much stronger for not-FIA (8 vs 15%)
+- < vs <= matters quite a bit
+    - Many of these sites can be quite small. Since we flagged a concern about having fewer than, arbitrarily, 100 elements, let's remove those:
+
+###### Skew for small sites, removing very small
+```{r skewness small no tiny, fig.dim = c(4, 3)}
+
+small_di <- small_di %>%
+  filter(nparts > 100)
+
+ggplot(filter(small_di, s0 >2), aes(x = skew_percentile)) +
+  geom_histogram(bins = 100) +
+  theme_bw() +
+  facet_wrap(vars(fia_yn), scales = "free_y") +
+  ggtitle("Skew, <=")
+
+ggplot(filter(small_di, s0 >2), aes(x = skew_percentile_excl)) +
+  geom_histogram(bins = 100) +
+  theme_bw() +
+  facet_wrap(vars(fia_yn), scales = "free_y") +
+  ggtitle("Skew, <")
+
+small_di %>%
+  filter(s0 > 2) %>%
+  group_by(fia_yn) %>%
+  summarize(prop_skew_high_ltet = mean(skew_percentile > 95),
+            prop_skew_high_lt = mean(skew_percentile_excl > 95),
+            n_skew_sites = dplyr::n())
+
+```
+
+
+###### Evenness
+```{r evenness result small no tiny, fig.dim = c(4, 3)}
+
+ggplot(filter(small_di), aes(x = simpson_percentile)) +
+  geom_histogram(bins = 100) +
+  theme_bw() +
+  facet_wrap(vars(fia_yn), scales = "free_y") +
+  ggtitle("Even, <=")
+
+ggplot(filter(small_di), aes(x = simpson_percentile_excl)) +
+  geom_histogram(bins = 100) +
+  theme_bw() +
+  facet_wrap(vars(fia_yn), scales = "free_y") +
+  ggtitle("Even, <")
+
+small_di %>%
+  group_by(fia_yn) %>%
+  summarize(prop_even_low_ltet = mean(simpson_percentile < 5),
+            prop_even_low_lt = mean(simpson_percentile_excl < 5),
+            n_even_sites = dplyr::n())
+
+```
+
+Removing sites with fewer than 100 elements in the feasible set
+
+- *eliminates the difference between <= and <*
+- We see a difference between FIA and other datasets 
+    - For skew, 6 vs 12% in the extremes
+    - For even, 10 vs 25% in the extremes
+
+
+I am skeptical of these comparisons. It may be that FIA is behaving qualitatively differently, but it may also be that, because the other datasets are less concentrated at *very small* FS, the effect of FS size still drives the difference even when we filter like this. On the strength of this filtering I'm not confident arguing *either* that FIA is qualitatively different, independent of size, or that these subsets are behaving the same. 
+
+I think a stronger comparison would be to break into size classes based on the number of parts. 
