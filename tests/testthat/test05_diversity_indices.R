@@ -116,6 +116,56 @@ test_that("get percentile works if focal value is edge of comparison vector", {
 })
 
 
+
+
+test_that("get percentile works with incl = F", {
+
+  foo <- seq(1, 100, by = 5)
+
+  foo_percentiles <- get_percentiles(foo, incl = F)
+
+  expect_equivalent(foo_percentiles, seq(0, 95, by = 5))
+
+  a_val <- 17
+
+  a_per <- get_percentile(a_val, foo, incl =F)
+
+  by_hand <- 100 * sum(foo < a_val) / length(foo)
+
+  expect_equivalent(by_hand, a_per)
+
+  # Edges of comparison
+
+    foo <- seq(10, 100, by = 5)
+
+  low_focal_value <- 10
+
+  low_per <- get_percentile(low_focal_value, foo, incl = F)
+
+  high_focal_value <- 100
+
+  high_per <- get_percentile(high_focal_value, foo, F)
+
+  # Outside vector
+
+  expect_equivalent(low_per, 0)
+  expect_equivalent(high_per, 100 -  100/length(foo))
+
+  low_focal_value <- 5
+
+  low_per <- get_percentile(low_focal_value, foo, incl =F)
+
+  high_focal_value <- 110
+
+  high_per <- get_percentile(high_focal_value, foo, incl =F)
+
+  expect_equivalent(low_per, 0)
+  expect_equivalent(high_per, 100)
+
+
+})
+
+
 test_that("pull_di works", {
 
   dat <- load_dataset("mcdb")

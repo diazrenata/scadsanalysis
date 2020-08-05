@@ -223,13 +223,45 @@ ggplot(filter(fia_sized, s0 > 2, nparts > 50), aes(skew_percentile)) +
   facet_wrap(vars(fia_yn), scales = "free_y")
 
 
+ggplot(filter(fia_sized, s0 > 2, nparts > 50), aes(skew_percentile_excl)) +
+  geom_histogram() +
+  facet_wrap(vars(fia_yn), scales = "free_y")
+
+
+ggplot(filter(fia_sized, s0 > 2), aes(skew_percentile_excl)) +
+  geom_histogram() +
+  facet_wrap(vars(fia_yn), scales = "free_y")
 ggplot(fia_sized, aes(x = log_nparts)) +
   geom_histogram() +
   facet_wrap(vars(fia_yn), scales = "free_y") +
   geom_vline(xintercept = log(50))
 
-ggplot(fia_sized, aes(s0, n0, color = fia_yn)) +
-  geom_point()
+
+
+fia_sized %>%
+  filter(s0 > 2) %>%
+  group_by(fia_yn) %>%
+  summarize(prop_skew_high = mean(skew_percentile > 95),
+            nsites = dplyr::n())
+
+
+fia_sized %>%
+  filter(s0 > 2, nparts > 50) %>%
+  group_by(fia_yn) %>%
+  summarize(prop_skew_high = mean(skew_percentile > 95),
+            nsites = dplyr::n())
+
+fia_sized %>%
+  group_by(fia_yn) %>%
+  summarize(prop_even_low = mean(simpson_percentile < 5),
+            nsites = dplyr::n())
+
+fia_sized %>%
+    filter(s0 > 2, nparts > 50) %>%
+  group_by(fia_yn) %>%
+  summarize(prop_even_low = mean(simpson_percentile < 5),
+            nsites = dplyr::n())
+
 
 ```
 
@@ -239,17 +271,30 @@ ggplot(fia_sized, aes(s0, n0, color = fia_yn)) +
 
 
 ggplot(filter(fia_sized, s0 > 2, nparts > 50, nparts < exp(7)), aes(skew_percentile)) +
-  geom_histogram() +
+  geom_histogram(bins = 50) + theme_bw() +
   facet_wrap(vars(fia_yn), scales = "free_y") +
   ggtitle("50-1,000 parts in FS")
 
+ggplot(filter(fia_sized, s0 > 2, nparts > 50, nparts < exp(7)), aes(x = log(s0), y = log(n0), color = fia_yn)) +
+  geom_point(alpha = .2) +
+  facet_wrap(vars(fia_yn))
+
 ggplot(filter(fia_sized, s0 > 2, nparts >= exp(7), nparts < exp(10)), aes(skew_percentile)) +
-  geom_histogram() +
+  geom_histogram(bins = 50) + theme_bw() +
   facet_wrap(vars(fia_yn), scales = "free_y") +
   ggtitle("1,000 - 20,000 parts in FS")
 
+ggplot(filter(fia_sized, s0 > 2, nparts >= exp(7), nparts < exp(10)), aes(x = log(s0), y = log(n0), color = fia_yn)) +
+  geom_point(alpha = .2) +
+  facet_wrap(vars(fia_yn))
+
 ggplot(filter(fia_sized, s0 > 2, nparts > 50, nparts >= exp(10)), aes(skew_percentile)) +
-  geom_histogram() +
+  geom_histogram(bins = 50) + theme_bw() +
   facet_wrap(vars(fia_yn), scales = "free_y") +
   ggtitle("More than 20,000 parts in FS")
+
+
+ggplot(filter(fia_sized, s0 > 2, nparts >= exp(7), nparts < exp(10)), aes(x = log(s0), y = log(n0), color = fia_yn)) +
+  geom_point(alpha = .2) +
+  facet_wrap(vars(fia_yn))
 ```

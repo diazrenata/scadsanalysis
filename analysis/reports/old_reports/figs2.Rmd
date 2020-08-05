@@ -153,7 +153,7 @@ small %>%
 
 
 small %>%
-  filter(s0 > 2, nparts > 500) %>%
+  filter(s0 > 2, nparts > 50) %>%
   group_by(is_fia) %>%
   summarize(prop_skew_high = mean(skew_percentile > 95),
             nsites = dplyr::n())
@@ -164,7 +164,7 @@ small %>%
             nsites = dplyr::n())
 
 small %>%
-    filter(s0 > 2, nparts > 500) %>%
+    filter(s0 > 2, nparts > 50) %>%
   group_by(is_fia) %>%
   summarize(prop_even_low = mean(simpson_percentile < 5),
             nsites = dplyr::n())

@@ -37,8 +37,8 @@ by S and N
     ## # A tibble: 2 x 3
     ##   is_fia prop_skew_high nsites
     ##   <chr>           <dbl>  <int>
-    ## 1 fia            0.0829  10317
-    ## 2 other          0.147     348
+    ## 1 fia            0.0600  16945
+    ## 2 other          0.119     464
 
     ## `summarise()` ungrouping output (override with `.groups` argument)
 
@@ -53,8 +53,8 @@ by S and N
     ## # A tibble: 2 x 3
     ##   is_fia prop_even_low nsites
     ##   <chr>          <dbl>  <int>
-    ## 1 fia            0.123  10317
-    ## 2 other          0.270    348
+    ## 1 fia            0.107  16945
+    ## 2 other          0.261    464
 
 ### 95 interval by S and N
 

@@ -124,18 +124,60 @@ FS. But it is starting to decline by then?
 
     ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 
-![](manuscript_main_files/figure-gfm/fia%20sized-2.png)<!-- -->![](manuscript_main_files/figure-gfm/fia%20sized-3.png)<!-- -->
+![](manuscript_main_files/figure-gfm/fia%20sized-2.png)<!-- -->
+
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+![](manuscript_main_files/figure-gfm/fia%20sized-3.png)<!-- -->
+
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+![](manuscript_main_files/figure-gfm/fia%20sized-4.png)<!-- -->
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+<div class="kable-table">
+
+| fia\_yn        | prop\_skew\_high | nsites |
+| :------------- | ---------------: | -----: |
+| FIA            |        0.0694752 |  20295 |
+| Other datasets |        0.1314985 |    654 |
+
+</div>
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+<div class="kable-table">
+
+| fia\_yn        | prop\_skew\_high | nsites |
+| :------------- | ---------------: | -----: |
+| FIA            |        0.0631523 |  16959 |
+| Other datasets |        0.1224490 |    490 |
+
+</div>
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+<div class="kable-table">
+
+| fia\_yn        | prop\_even\_low | nsites |
+| :------------- | --------------: | -----: |
+| FIA            |       0.0844543 |  20295 |
+| Other datasets |       0.1718346 |    774 |
+
+</div>
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+<div class="kable-table">
+
+| fia\_yn        | prop\_even\_low | nsites |
+| :------------- | --------------: | -----: |
+| FIA            |       0.0975883 |  16959 |
+| Other datasets |       0.2591837 |    490 |
+
+</div>
 
 # Removing the smallest communities from FIA
 
-    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
-
-![](manuscript_main_files/figure-gfm/fia%20no%20small-1.png)<!-- -->
-
-    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
-
-![](manuscript_main_files/figure-gfm/fia%20no%20small-2.png)<!-- -->
-
-    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
-
-![](manuscript_main_files/figure-gfm/fia%20no%20small-3.png)<!-- -->
+![](manuscript_main_files/figure-gfm/fia%20no%20small-1.png)<!-- -->![](manuscript_main_files/figure-gfm/fia%20no%20small-2.png)<!-- -->![](manuscript_main_files/figure-gfm/fia%20no%20small-3.png)<!-- -->![](manuscript_main_files/figure-gfm/fia%20no%20small-4.png)<!-- -->![](manuscript_main_files/figure-gfm/fia%20no%20small-5.png)<!-- -->![](manuscript_main_files/figure-gfm/fia%20no%20small-6.png)<!-- -->

@@ -1,0 +1,64 @@
+---
+title: "Figures and results for main manuscript"
+output: 
+    github_document:
+       df_print: kable
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(drake)
+library(dplyr)
+library(ggplot2)
+
+all_di <- read.csv(here::here("analysis", "reports", "all_di.csv"), stringsAsFactors = F)
+
+all_di <- all_di %>%
+  mutate(log_nparts = log(gmp:::as.double.bigz(nparts)),
+         log_nsamples = log(nsamples),
+         log_s0 = log(s0),
+         log_n0 = log(n0)) %>%
+  filter(n0 > s0,
+         !singletons,
+         dat %in% c("bbs", "fia_short", "fia_small", "gentry", "mcdb", "misc_abund_short")) %>%
+  mutate(dat = ifelse(grepl(dat, pattern = "fia"), "fia", dat),
+         dat = ifelse(dat == "misc_abund_short", "misc_abund", dat))
+```
+
+# Final dataset in S and N space
+
+```{r final dataset s and n space}
+
+ggplot(all_di, aes(x = log_s0, y = log_n0, color = dat)) +
+  geom_point(alpha = .01) +
+  geom_point(data = filter(all_di, log_nparts > log(50)), alpha = .4) +
+  theme_bw() +
+  scale_color_viridis_d() +
+  ggtitle("Communities by S and N")
+
+```
+
+```{r skew change}
+
+ggplot(filter(all_di, s0 > 2), aes(x = skew_percentile_excl, y = skew_percentile, color = nsamples)) +
+  geom_point() +
+  facet_wrap(vars(dat))
+
+all_di <- all_di  %>%
+  mutate(skew_change = skew_percentile - skew_percentile_excl,
+         even_change = simpson_percentile -
+           simpson_percentile_excl)
+
+
+ggplot(filter(all_di, s0 > 2), aes(x = log_nparts, y = skew_change)) +
+  geom_point() +
+  xlim(0,15) +
+  facet_wrap(vars(dat))
+
+```
+
+```{r hists}
+
+
+
+```
