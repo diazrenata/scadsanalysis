@@ -1,4 +1,4 @@
-Size class small comparisons
+FIA vs. other datasets
 ================
 Renata Diaz
 2020-08-06
@@ -7,7 +7,7 @@ The FIA sites stand out from the other datasets in that, overall, they
 do not show pronouncedly extreme values. This is especially the case for
 skewness:
 
-![](smallness_files/figure-gfm/overall%20hists-1.png)<!-- -->![](smallness_files/figure-gfm/overall%20hists-2.png)<!-- -->
+![](fia_vs_other_files/figure-gfm/overall%20hists-1.png)<!-- -->![](fia_vs_other_files/figure-gfm/overall%20hists-2.png)<!-- -->
 
 One possible explanation for this is that the FIA sites tend to have
 quite small S and N, leading to quite a small feasible set and
@@ -32,7 +32,7 @@ concentrated towards **especially small** feasible sets compared “other
 datasets” - even the ones that fall within the general range found in
 FIA.
 
-![](smallness_files/figure-gfm/small-1.png)<!-- -->![](smallness_files/figure-gfm/small-2.png)<!-- -->
+![](fia_vs_other_files/figure-gfm/small-1.png)<!-- -->![](fia_vs_other_files/figure-gfm/small-2.png)<!-- -->
 
 This means that an overall histogram for FIA would be representative
 more of sites in the 4-7 parts range, while one for “other datasets”
@@ -46,7 +46,7 @@ representation of all S and N combinations between FIA and “other
 datasets”, we end up with 309 combinations represented and a total of
 488 comparisons.
 
-![](smallness_files/figure-gfm/subsampling-1.png)<!-- -->![](smallness_files/figure-gfm/subsampling-2.png)<!-- -->
+![](fia_vs_other_files/figure-gfm/subsampling-1.png)<!-- -->![](fia_vs_other_files/figure-gfm/subsampling-2.png)<!-- -->
 
 The dark dots are the sites for which we can find at least one exact
 match in s0 and n0 between a FIA site and a site from another dataset.
@@ -55,7 +55,7 @@ subsample.
 
 Here are the results for that subsample:
 
-![](smallness_files/figure-gfm/subsample%20results-1.png)<!-- -->![](smallness_files/figure-gfm/subsample%20results-2.png)<!-- -->
+![](fia_vs_other_files/figure-gfm/subsample%20results-1.png)<!-- -->![](fia_vs_other_files/figure-gfm/subsample%20results-2.png)<!-- -->
 
 <div class="kable-table">
 
