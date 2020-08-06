@@ -10,7 +10,7 @@
 #' @export
 #'
 #' @importFrom dplyr mutate group_by arrange ungroup row_number bind_rows
-#' @importFrom tidyr gather
+#' @importFrom reshape2 melt
 #' @importFrom feasiblesads fill_ps sample_fs
 sample_fs <- function(dataset, nsamples, p_table = NULL) {
 
@@ -35,7 +35,9 @@ sample_fs <- function(dataset, nsamples, p_table = NULL) {
     unique() %>%
     t() %>%
     as.data.frame() %>%
-    tidyr::gather(key = "sim", value = "abund") %>%
+    reshape2::melt(variable.name = "sim",
+                   value.name = "abund") %>%
+    dplyr::mutate(sim = as.character(sim)) %>%
     dplyr::mutate(sim = as.integer(substr(sim, 2, nchar(sim)))) %>%
     dplyr::group_by(sim) %>%
     dplyr::arrange(abund) %>%
