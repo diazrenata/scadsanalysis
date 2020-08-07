@@ -12,6 +12,11 @@ knitr::opts_chunk$set(echo = FALSE)
 library(drake)
 library(dplyr)
 library(ggplot2)
+
+## Set up the cache and config
+db <- DBI::dbConnect(RSQLite::SQLite(), here::here("analysis", "drake", "drake-cache-net.sqlite"))
+cache <- storr::storr_dbi("datatable", "keystable", db)
+cache$del(key = "lock", namespace = "session")
 knitr::opts_chunk$set(fig.width=4, fig.height=3, warning = FALSE, message = FALSE) 
 ```
 
@@ -52,7 +57,136 @@ To do this we need to establish
 
 We obtain the expectation by drawing samples from the feasible set and constructing the distribution of values for *summary statistics* for all of those elements. 
 
+For example, for a community with 44 species and 13360 individuals, here is the feasible set:
+
+```{r example fs}
+
+net_summary <- readd(all_di_summary, cache = cache)
+
+net_summary <- net_summary %>%
+  mutate(log_nparts = log(gmp:::as.double.bigz(nparts)))
+
+example_fs <- readd(fs_s_44_n_13360, cache = cache)
+
+example_di <- readd(di_fs_s_44_n_13360, cache =cache)
+
+example_fs <- example_fs %>%
+  left_join(example_di) %>%
+  left_join(net_summary)
+
+example_fs2 <- readd(fs_s_7_n_71, cache = cache)
+
+example_di2 <- readd(di_fs_s_7_n_71, cache =cache)
+
+example_fs2 <- example_fs2 %>%
+  left_join(example_di2) %>%
+  left_join(net_summary)
+
+
+ggplot(example_fs, aes(rank, abund, group = sim)) +
+  geom_line(alpha = .01) +
+  theme_bw()
+
+```
+
+Every vector in the feasible set can be summarized according to its skewness or evenness value:
+
+```{r example fs skew and even}
+
+ggplot(example_fs, aes(rank, abund, group = sim, color = skew)) +
+  geom_line(alpha = .05) +
+  theme_bw() +
+  scale_color_viridis_c()
+
+ggplot(example_fs, aes(rank, abund, group = sim, color = simpson)) +
+  geom_line(alpha = .05) +
+  theme_bw() +
+  scale_color_viridis_c(option = "plasma", end = .8)
+
+```
+
+We use the distribution of values for skewness and evenness, from our samples from the feasible set, as the expectation for the values of skewness and evenness for an observation.
+
+```{r example dists}
+
+ggplot(example_fs, aes(skew, ..ndensity..)) +
+  geom_density() +
+  geom_histogram(bins = 50) +
+  theme_bw()
+
+ggplot(example_fs, aes(simpson, ..ndensity..)) +
+  geom_density() +
+  geom_histogram(bins = 50) +
+  theme_bw()
+
+```
+
+Here is what this can look like for a smaller feasible set - for example, 7 species and 71 individuals:
+
+```{r smaller example}
+
+
+ggplot(example_fs2, aes(rank, abund, group = sim, color = skew)) +
+  geom_line(alpha = .05) +
+  theme_bw() +
+  scale_color_viridis_c()
+
+ggplot(example_fs2, aes(rank, abund, group = sim, color = simpson)) +
+  geom_line(alpha = .05) +
+  theme_bw() +
+  scale_color_viridis_c(option = "plasma", end = .8)
+
+
+ggplot(example_fs2, aes(skew, ..ndensity..)) +
+  geom_density() +
+  geom_histogram(bins = 50) +
+  theme_bw()
+
+ggplot(example_fs2, aes(simpson, ..ndensity..)) +
+  geom_density() +
+  geom_histogram(bins = 50) +
+  theme_bw()
+
+```
+
+
 ## Measuring the shape (narrowness)
+
+The actual values of skewness and evenness change over the gradients of S and N. Also, as evident above, these aren't necessarily normally distributed. 
+
+I have computed the ratio of a 95% interval relative to the full range of values. Here is what that looks like.
+
+```{r illustrate 95 interval}
+
+
+ggplot(example_fs, aes(skew, ..ndensity..)) +
+  geom_density() +
+  geom_histogram(bins = 50) +
+  theme_bw() +
+  geom_vline(xintercept = c(example_fs$skew_2p5[1], example_fs$skew_97p5[1]), color = "red")
+
+
+ggplot(example_fs, aes(simpson, ..ndensity..)) +
+  geom_density() +
+  geom_histogram(bins = 50) +
+  theme_bw() +
+  geom_vline(xintercept = c(example_fs$simpson_97p5[1], example_fs$simpson_2p5[1]), color = "red")
+
+ggplot(example_fs2, aes(skew, ..ndensity..)) +
+  geom_density() +
+  geom_histogram(bins = 50) +
+  theme_bw() +
+  geom_vline(xintercept = c(example_fs2$skew_2p5[1], example_fs2$skew_97p5[1]), color = "red")
+
+
+ggplot(example_fs2, aes(simpson, ..ndensity..)) +
+  geom_density() +
+  geom_histogram(bins = 50) +
+  theme_bw() +
+  geom_vline(xintercept = c(example_fs2$simpson_97p5[1], example_fs2$simpson_2p5[1]), color = "red")
+
+```
+
 
 ## Mapping the shape over a gradient in S and N
 
@@ -65,27 +199,30 @@ all_di_net <- all_di %>%
   select(s0, n0) %>%
   distinct()
 
-ggplot(all_di_net, aes(log(s0), log(n0))) +
-  geom_point() +
-  geom_vline(xintercept = log(200)) +
-  geom_hline(yintercept = c(log(40720)))
+net <- readd(dat, cache = cache) 
 
-net_s0 <- floor(exp(seq(.5, log(200), by = .3))) %>%
-  unique()
-
-net_n0 <- 1+ floor(exp(seq(.5, 10, by = .75))) %>%
-  unique()
-
-net <- expand.grid(net_s0, net_n0) %>%
-  rename(s0 = Var1, n0 = Var2) %>%
-  filter(n0 > s0,
-         s0 > 1)
-
+net <- net %>%
+  mutate(s0 = rank,
+         n0 = abund)
 
 ggplot(all_di_net, aes(log(s0), log(n0))) +
   geom_point() +
   geom_vline(xintercept = log(200)) +
-  geom_hline(yintercept = c(log(40720))) +
+  geom_hline(yintercept = c(log(404420))) +
   geom_point(data = net, color = "purple")
 
 ```
+
+
+```{r nparts}
+
+ggplot(net_summary, aes(x = log_nparts, y = skew_95_ratio_1t)) +
+  geom_point() +
+  theme_bw()
+
+
+ggplot(net_summary, aes(x = log_nparts, y = simpson_95_ratio_1t)) +
+  geom_point() +
+  theme_bw()
+```
+
