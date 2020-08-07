@@ -29,8 +29,8 @@ communities.
 | bbs         |              0.1301839 |         2773 |             0.2596466 |         2773 |
 | fia         |              0.0488790 |        20295 |             0.0844543 |        20295 |
 | gentry      |              0.1883408 |          223 |             0.1517857 |          224 |
-| mcdb        |              0.1393443 |          610 |             0.2713287 |          715 |
-| misc\_abund |              0.3165736 |          537 |             0.5270758 |          554 |
+| mcdb        |              0.1393443 |          610 |             0.2848752 |          681 |
+| misc\_abund |              0.3165736 |          537 |             0.5347985 |          546 |
 
 </div>
 
@@ -45,14 +45,14 @@ communities.
 | fia\_yn | proportion\_skew\_high | nsites\_skew | proportion\_even\_low | nsites\_even |
 | :------ | ---------------------: | -----------: | --------------------: | -----------: |
 | fia     |              0.0488790 |        20295 |             0.0844543 |        20295 |
-| not fia |              0.1588221 |         4143 |             0.2906704 |         4266 |
+| not fia |              0.1588221 |         4143 |             0.2935606 |         4224 |
 
 </div>
 
-    ## Warning: Removed 279 rows containing missing values (geom_point).
+    ## Warning: Removed 237 rows containing missing values (geom_point).
 
 ![](manuscript_main_files/figure-gfm/95%20intervals-1.png)<!-- -->
 
-    ## Warning: Removed 202 rows containing missing values (geom_point).
+    ## Warning: Removed 160 rows containing missing values (geom_point).
 
 ![](manuscript_main_files/figure-gfm/95%20intervals-2.png)<!-- -->

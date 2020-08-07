@@ -19,6 +19,7 @@ all_di <- all_di %>%
          log_s0 = log(s0),
          log_n0 = log(n0)) %>%
   filter(n0 > s0,
+         s0 > 1,
          !singletons,
          dat %in% c("bbs", "fia_short", "fia_small", "gentry", "mcdb", "misc_abund_short")) %>%
   mutate(dat = ifelse(grepl(dat, pattern = "fia"), "fia", dat),

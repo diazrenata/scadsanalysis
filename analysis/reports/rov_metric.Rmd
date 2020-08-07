@@ -1,0 +1,91 @@
+---
+title: "Explaining and exploring the 95% interval metric"
+author: Renata Diaz
+date: "`r Sys.Date()`"
+output: 
+    github_document:
+       df_print: kable
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(drake)
+library(dplyr)
+library(ggplot2)
+knitr::opts_chunk$set(fig.width=4, fig.height=3, warning = FALSE, message = FALSE) 
+```
+
+
+```{r real data, include=FALSE}
+
+all_di <- read.csv(here::here("analysis", "reports", "all_di.csv"), stringsAsFactors = F)
+
+all_di <- all_di %>%
+  mutate(log_nparts = log(gmp:::as.double.bigz(nparts)),
+         log_nsamples = log(nsamples),
+         log_s0 = log(s0),
+         log_n0 = log(n0)) %>%
+  filter(n0 > s0,
+         !singletons,
+         s0 > 1,
+         dat %in% c("bbs", "fia_short", "fia_small", "gentry", "mcdb", "misc_abund_short")) %>%
+  mutate(dat = ifelse(grepl(dat, pattern = "fia"), "fia", dat),
+         dat = ifelse(dat == "misc_abund_short", "misc_abund", dat))
+```
+
+One of the crucial threads of reasoning for comparing observations to an emergent statistical expectation is that the expectation be sufficiently specific to allow us to make robust comparisons. *Often*, with sufficiently large systems (also described as sufficiently large scale separation between the subcomponents and the aggregate characteristic of interest; H&L), we can rely on the expectation being extremely narrowly peaked. It is, however, not clear what "sufficiently large" means. We can expect that *some* ecological systems are definitely not large in this sense - if there are only 6 species and 3 individuals, the feasible set is trivially small. Nor is it a given that the expectations do actually get appreciably more peaked with increasing S and N. 
+
+We would like to know:
+
+* How the shape, and specifically the narrowness, of the expectation changes over an ecologically-relevant gradient in S and N
+* If, as we might expect given the above intuition about larger systems, small systems have less steep peaks: whether the change in the shape of the expectation corresponds with the change in our results. 
+    * This is kind of slippery. Ideally we would find a way to measure our statistical power. 
+    
+To do this we need to establish
+
+* A way of measuring the shape, and specifically the narrowness, of the expectation
+* How the shape changes over gradients
+* How the shape constrains the kind of deviation we *could* detect (?)
+* How the shape maps on to the presence/absence of detected deviations
+
+## Illustrating the expectation
+
+We obtain the expectation by drawing samples from the feasible set and constructing the distribution of values for *summary statistics* for all of those elements. 
+
+## Measuring the shape (narrowness)
+
+## Mapping the shape over a gradient in S and N
+
+It can be difficult to interpret the distribution of interval values from our actual datasets, because they are irregularly distributed over S by N space. So we can drop a net over the relevant S by N gradient and sample *regularly* from it. 
+
+
+```{r define net}
+
+all_di_net <- all_di %>%
+  select(s0, n0) %>%
+  distinct()
+
+ggplot(all_di_net, aes(log(s0), log(n0))) +
+  geom_point() +
+  geom_vline(xintercept = log(200)) +
+  geom_hline(yintercept = c(log(40720)))
+
+net_s0 <- floor(exp(seq(.5, log(200), by = .3))) %>%
+  unique()
+
+net_n0 <- 1+ floor(exp(seq(.5, 10, by = .75))) %>%
+  unique()
+
+net <- expand.grid(net_s0, net_n0) %>%
+  rename(s0 = Var1, n0 = Var2) %>%
+  filter(n0 > s0,
+         s0 > 1)
+
+
+ggplot(all_di_net, aes(log(s0), log(n0))) +
+  geom_point() +
+  geom_vline(xintercept = log(200)) +
+  geom_hline(yintercept = c(log(40720))) +
+  geom_point(data = net, color = "purple")
+
+```

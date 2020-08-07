@@ -24,14 +24,14 @@ ui <- fluidPage(
                         "Minimum 95 interval: skew",
                         min = 0,
                         max = 1,
-                        value = .01,
-                        step = .001),
+                        value = .95,
+                        step = .01),
             sliderInput("max_skew_interval",
                         "Maximum 95 interval: skew",
                         min = 0,
                         max = 1,
-                        value = .99,
-                        step = .001),
+                        value = 1,
+                        step = .01),
             sliderInput("min_even_interval",
                         "Minimum 95 interval: even",
                         min = 0,
@@ -51,13 +51,13 @@ ui <- fluidPage(
                   plotOutput("skew_intervalHist", width = 400, height = 200),
                   plotOutput("skew_snPlot", width = 400, height = 200),
                   plotOutput("skewPlot", width = 400, height = 200),
-                  tableOutput("skewResults"),
-                  plotOutput("even_intervalPlot", width = 400, height = 200),
-                  plotOutput("even_intervalHist", width = 400, height = 200),
-
-                  plotOutput("even_snPlot", width = 400, height = 200),
-                  plotOutput("evenPlot", width = 400, height = 200),
-                  tableOutput("evenResults")
+                  tableOutput("skewResults")#,
+                  # plotOutput("even_intervalPlot", width = 400, height = 200),
+                  # plotOutput("even_intervalHist", width = 400, height = 200),
+                  #
+                  # plotOutput("even_snPlot", width = 400, height = 200),
+                  # plotOutput("evenPlot", width = 400, height = 200),
+                  # tableOutput("evenResults")
         )
     )
 )
@@ -100,13 +100,11 @@ server <- function(input, output) {
     })
     output$skew_intervalHist <- renderPlot({
 
-        skew_di <- filter(all_di, skew_95_ratio_1t > input$min_skew_interval,
-                          skew_95_ratio_1t < input$max_skew_interval, s0 >2)
-
-        ggplot(skew_di, aes(x = skew_95_ratio_1t)) +
-            geom_histogram() +
+        ggplot(filter(all_di, s0 >2), aes(x = skew_95_ratio_1t)) +
+            geom_histogram(bins = 100) +
             theme_bw()+
-            xlim(0, 1)
+            xlim(0, 1) +
+            geom_vline(xintercept = c(input$max_skew_interval, input$min_skew_interval), color = "red")
     })
     output$even_intervalHist <- renderPlot({
 
@@ -128,7 +126,8 @@ server <- function(input, output) {
         ggplot(all_di, aes(x = log(s0), y = log(n0))) +
             geom_point(color = "grey") +
             theme_bw() +
-            geom_point(data = skew_di)
+            geom_point(data = skew_di, aes(color = log_nparts)) +
+            scale_color_viridis_c()
     })
     output$even_snPlot <- renderPlot({
 
