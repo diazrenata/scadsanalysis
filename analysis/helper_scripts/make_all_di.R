@@ -6,8 +6,9 @@ library(ggplot2)
 library(scadsanalysis)
 
 all_di <- list()
-datasets <- c("bbs",  "gentry", "fia_short", "mcdb", "misc_abund_short", "fia_small")
+#datasets <- c("bbs",  "gentry", "fia_short", "mcdb", "misc_abund_short", "fia_small")
 
+datasets <- c("bbs",  "gentry", "fia_short", "mcdb", "misc_abund_short") #, "fia_small")
 
 
 for(i in 1:length(datasets)) {
