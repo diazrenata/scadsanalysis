@@ -121,4 +121,17 @@ ggplot(filter(all_di, simpson_unique > 20), aes(x = log_nparts, y= simpson_95_ra
   theme_bw() +
   xlim(0, 100)
 
+
+
+ggplot(filter(all_di, s0 > 2, skew_unique > 20), aes(x= skew_95_ratio_1t)) +
+  geom_histogram() +
+  theme_bw() +
+  facet_wrap(vars(dat), scales = "free_y")
+
+ggplot(filter(all_di, simpson_unique > 20), aes(x = simpson_95_ratio_1t)) +
+geom_histogram() +
+  theme_bw() +
+facet_wrap(vars(dat), scales = "free_y")
+
+
 ```

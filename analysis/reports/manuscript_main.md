@@ -56,3 +56,11 @@ communities.
     ## Warning: Removed 30 rows containing missing values (geom_point).
 
 ![](manuscript_main_files/figure-gfm/95%20intervals-2.png)<!-- -->
+
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+![](manuscript_main_files/figure-gfm/95%20intervals-3.png)<!-- -->
+
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+![](manuscript_main_files/figure-gfm/95%20intervals-4.png)<!-- -->
