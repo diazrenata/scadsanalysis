@@ -27,10 +27,10 @@ communities.
 | dat         | proportion\_skew\_high | nsites\_skew | proportion\_even\_low | nsites\_even |
 | :---------- | ---------------------: | -----------: | --------------------: | -----------: |
 | bbs         |              0.1301839 |         2773 |             0.2596466 |         2773 |
-| fia         |              0.0488790 |        20295 |             0.0844543 |        20295 |
+| fia         |              0.0542077 |        18300 |             0.0939657 |        18113 |
 | gentry      |              0.1883408 |          223 |             0.1517857 |          224 |
-| mcdb        |              0.1393443 |          610 |             0.2848752 |          681 |
-| misc\_abund |              0.3165736 |          537 |             0.5347985 |          546 |
+| mcdb        |              0.1582868 |          537 |             0.3542435 |          542 |
+| misc\_abund |              0.3455285 |          492 |             0.5959184 |          490 |
 
 </div>
 
@@ -44,15 +44,15 @@ communities.
 
 | fia\_yn | proportion\_skew\_high | nsites\_skew | proportion\_even\_low | nsites\_even |
 | :------ | ---------------------: | -----------: | --------------------: | -----------: |
-| fia     |              0.0488790 |        20295 |             0.0844543 |        20295 |
-| not fia |              0.1588221 |         4143 |             0.2935606 |         4224 |
+| fia     |              0.0542077 |        18300 |             0.0939657 |        18113 |
+| not fia |              0.1634783 |         4025 |             0.3072723 |         4029 |
 
 </div>
 
-    ## Warning: Removed 237 rows containing missing values (geom_point).
+    ## Warning: Removed 30 rows containing missing values (geom_point).
 
 ![](manuscript_main_files/figure-gfm/95%20intervals-1.png)<!-- -->
 
-    ## Warning: Removed 160 rows containing missing values (geom_point).
+    ## Warning: Removed 30 rows containing missing values (geom_point).
 
 ![](manuscript_main_files/figure-gfm/95%20intervals-2.png)<!-- -->

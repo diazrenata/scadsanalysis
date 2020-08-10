@@ -36,4 +36,18 @@ all_di <- all_di %>%
          dat %in% c("bbs", "fia_short", "fia_small", "gentry", "mcdb", "misc_abund_short")) %>%
   mutate(dat = ifelse(grepl(dat, pattern = "fia"), "fia", dat),
          dat = ifelse(dat == "misc_abund_short", "misc_abund", dat))
+
+
+
+ggplot(filter(all_di, s0> 2), aes(skew_percentile_excl)) +
+  geom_histogram(bins = 100) +
+  facet_wrap(vars(dat), scales = "free_y")
+
+
+ggplot(filter(all_di, s0> 2, skew_unique > 100), aes(skew_percentile_excl)) +
+  geom_histogram(bins = 100) +
+  facet_wrap(vars(dat), scales = "free_y")
+
+
+
 ```
