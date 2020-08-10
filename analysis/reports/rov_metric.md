@@ -1,7 +1,7 @@
 Explaining and exploring the 95% interval metric
 ================
 Renata Diaz
-2020-08-07
+2020-08-09
 
 One of the crucial threads of reasoning for comparing observations to an
 emergent statistical expectation is that the expectation be sufficiently
@@ -61,6 +61,10 @@ example, 7 species and 71 individuals:
 
 ![](rov_metric_files/figure-gfm/smaller%20example-1.png)<!-- -->![](rov_metric_files/figure-gfm/smaller%20example-2.png)<!-- -->![](rov_metric_files/figure-gfm/smaller%20example-3.png)<!-- -->![](rov_metric_files/figure-gfm/smaller%20example-4.png)<!-- -->
 
+And for a very small feasible set:
+
+![](rov_metric_files/figure-gfm/tiny%20example-1.png)<!-- -->![](rov_metric_files/figure-gfm/tiny%20example-2.png)<!-- -->![](rov_metric_files/figure-gfm/tiny%20example-3.png)<!-- -->![](rov_metric_files/figure-gfm/tiny%20example-4.png)<!-- -->
+
 ## Measuring the shape (narrowness)
 
 The actual values of skewness and evenness change over the gradients of
@@ -70,7 +74,7 @@ distributed.
 I have computed the ratio of a 95% interval relative to the full range
 of values. Here is what that looks like.
 
-![](rov_metric_files/figure-gfm/illustrate%2095%20interval-1.png)<!-- -->![](rov_metric_files/figure-gfm/illustrate%2095%20interval-2.png)<!-- -->![](rov_metric_files/figure-gfm/illustrate%2095%20interval-3.png)<!-- -->![](rov_metric_files/figure-gfm/illustrate%2095%20interval-4.png)<!-- -->
+![](rov_metric_files/figure-gfm/illustrate%2095%20interval-1.png)<!-- -->![](rov_metric_files/figure-gfm/illustrate%2095%20interval-2.png)<!-- -->![](rov_metric_files/figure-gfm/illustrate%2095%20interval-3.png)<!-- -->![](rov_metric_files/figure-gfm/illustrate%2095%20interval-4.png)<!-- -->![](rov_metric_files/figure-gfm/illustrate%2095%20interval-5.png)<!-- -->![](rov_metric_files/figure-gfm/illustrate%2095%20interval-6.png)<!-- -->
 
 ## Mapping the shape over a gradient in S and N
 
@@ -80,3 +84,9 @@ S by N space. So we can drop a net over the relevant S by N gradient and
 sample *regularly* from it.
 
 ![](rov_metric_files/figure-gfm/define%20net-1.png)<!-- -->
+
+Here is how these 95% intervals vary over the *net* of points:
+
+![](rov_metric_files/figure-gfm/intervals%20on%20net-1.png)<!-- -->![](rov_metric_files/figure-gfm/intervals%20on%20net-2.png)<!-- -->
+
+![](rov_metric_files/figure-gfm/nparts-1.png)<!-- -->![](rov_metric_files/figure-gfm/nparts-2.png)<!-- -->
