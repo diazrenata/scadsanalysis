@@ -206,3 +206,48 @@ test_that("pull_di works", {
   expect_equivalent(max(sampled_simpson) - min(sampled_simpson), di_obs$simpson_range)
 
   })
+
+
+test_that("pull_di net works", {
+
+  net <- build_net()
+
+  dat <- net %>%
+    dplyr::filter(site == "s_3_n_8")
+
+  set.seed(1)
+  fs_samples <- sample_fs_wrapper(dat, site_name = "s_3_n_8", singletons = F, n_samples = 100, p_table = NULL)
+
+  di_many <- add_dis(fs_samples)
+
+  expect_true(nrow(di_many) ==  5)
+  expect_false(anyNA(di_many$skew))
+  expect_false(anyNA(di_many$simpson))
+
+
+  di_obs <- pull_di_net(di_many)
+
+  expect_true(is.data.frame(di_obs))
+  expect_true(ncol(di_obs) == ncol(di_many) + 6)
+  expect_true(nrow(di_obs) == 1)
+  expect_equivalent(di_obs$skew_range[1], max(di_many$skew, na.rm = T) - min(di_many$skew, na.rm = T))
+
+
+  expect_equivalent(di_obs$simpson_range[1], max(di_many$simpson, na.rm = T) - min(di_many$simpson, na.rm = T))
+
+  sampled_skew <- di_many$skew
+
+  expect_equivalent(di_obs$skew_min, min(sampled_skew))
+  expect_equivalent(di_obs$skew_95, quantile(sampled_skew, probs = .95))
+  expect_equivalent(di_obs$skew_95_ratio_1t, (quantile(sampled_skew, probs = .95) - min(sampled_skew)) / (max(sampled_skew) - min(sampled_skew)))
+  expect_equivalent(max(sampled_skew) - min(sampled_skew), di_obs$skew_range)
+
+
+  sampled_simpson <- di_many$simpson
+
+  expect_equivalent(di_obs$simpson_max, max(sampled_simpson))
+  expect_equivalent(di_obs$simpson_5, quantile(sampled_simpson, probs = .05))
+  expect_equivalent(di_obs$simpson_95_ratio_1t, (max(sampled_simpson) - quantile(sampled_simpson, probs = .05)) / (max(sampled_simpson) - min(sampled_simpson)))
+  expect_equivalent(max(sampled_simpson) - min(sampled_simpson), di_obs$simpson_range)
+
+})
