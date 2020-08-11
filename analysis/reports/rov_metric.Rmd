@@ -44,8 +44,8 @@ We would like to know:
 
 * How the shape, and specifically the narrowness, of the expectation changes over an ecologically-relevant gradient in S and N
 * If, as we might expect given the above intuition about larger systems, small systems have less steep peaks: whether the change in the shape of the expectation corresponds with the change in our results. 
-    * This is kind of slippery. Ideally we would find a way to measure our statistical power. 
-    
+* This is kind of slippery. Ideally we would find a way to measure our statistical power. 
+
 To do this we need to establish
 
 * A way of measuring the shape, and specifically the narrowness, of the expectation
@@ -84,9 +84,9 @@ example_fs2 <- example_fs2 %>%
 
 
 
-example_fs3 <- readd(fs_s_3_n_34, cache = cache)
+example_fs3 <- readd(fs_s_4_n_34, cache = cache)
 
-example_di3 <- readd(di_fs_s_3_n_34, cache =cache)
+example_di3 <- readd(di_fs_s_4_n_34, cache =cache)
 
 example_fs3 <- example_fs3 %>%
   left_join(example_di3) %>%
@@ -247,6 +247,61 @@ hitting_the_ceiling <- example_fs3 %>%
   distinct() %>%
   mutate(max_skew = max(skew, na.rm = T)) %>%
   mutate(equals_max = skew == max_skew)
+
+```
+```{r fig for manuscript, fig.dim = c(3, 9)}
+
+samples_plots <- list(
+  
+  ggplot(example_fs3, aes(rank, abund, group = sim, color = skew)) +
+    geom_line(alpha = .25) +
+    theme_bw() +
+    scale_color_viridis_c(option = "plasma", end = .8) +
+    ggtitle(paste0("S = ", (example_fs3$s0), "; N = ", (example_fs3$n0[1])), subtitle = paste0(round(exp(example_fs3$log_nparts[1]), 0), " elements in FS")) +
+    theme(legend.position = "top"),
+  
+  ggplot(example_fs2, aes(rank, abund, group = sim, color = skew)) +
+    geom_line(alpha = .1) +
+    theme_bw() +
+    scale_color_viridis_c(option = "plasma", end = .8) +
+    ggtitle(paste0("S = ", (example_fs2$s0), "; N = ", (example_fs2$n0[1])), subtitle = paste0(round(exp(example_fs2$log_nparts[1]), 0), " elements in FS")) +
+    theme(legend.position = "top"),
+  ggplot(example_fs, aes(rank, abund, group = sim, color = skew)) +
+    geom_line(alpha = .1) +
+    theme_bw() +
+    scale_color_viridis_c(option = "plasma", end = .8) +
+    ggtitle(paste0("S = ", (example_fs$s0), "; N = ", (example_fs$n0[1])), subtitle =  paste0(round(exp(example_fs$log_nparts[1]), 0), " elements in FS")) +
+    theme(legend.position = "top")
+)
+
+intervals_plots <- list(
+  
+  ggplot(example_fs3, aes(skew, ..ndensity..)) +
+    geom_density() +
+    geom_histogram(bins = 50) +
+    theme_bw() +
+    geom_vline(xintercept = c(example_fs3$skew_97p5[1], example_fs3$skew_2p5[1]), color = "red") +
+    ggtitle(paste0("S = ", (example_fs3$s0), "; N = ", (example_fs3$n0[1])), subtitle =  paste0("Skew 95% ratio: ", round((example_fs3$skew_95_ratio_2t[1]), 2))),
+  
+  ggplot(example_fs2, aes(skew, ..ndensity..)) +
+    geom_density() +
+    geom_histogram(bins = 50) +
+    theme_bw() +
+    geom_vline(xintercept = c(example_fs2$skew_97p5[1], example_fs2$skew_2p5[1]), color = "red") +
+    ggtitle(paste0("S = ", (example_fs2$s0), "; N = ", (example_fs2$n0[1])), subtitle =  paste0("Skew 95% ratio: ", round((example_fs2$skew_95_ratio_2t[1]), 2))),
+  
+  ggplot(example_fs, aes(skew, ..ndensity..)) +
+    geom_density() +
+    geom_histogram(bins = 50) +
+    theme_bw() +
+    geom_vline(xintercept = c(example_fs$skew_97p5[1], example_fs$skew_2p5[1]), color = "red") +
+    ggtitle(paste0("S = ", (example_fs$s0), "; N = ", (example_fs$n0[1])), subtitle =  paste0("Skew 95% ratio: ", round((example_fs$skew_95_ratio_2t[1]), 2)))
+  
+)
+
+gridExtra::grid.arrange(grobs = samples_plots, ncol = 1)
+gridExtra::grid.arrange(grobs = intervals_plots, ncol = 1)
+
 
 ```
 

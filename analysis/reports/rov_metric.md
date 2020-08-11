@@ -1,7 +1,7 @@
 Explaining and exploring the 95% interval metric
 ================
 Renata Diaz
-2020-08-09
+2020-08-11
 
 One of the crucial threads of reasoning for comparing observations to an
 emergent statistical expectation is that the expectation be sufficiently
@@ -23,8 +23,8 @@ We would like to know:
     systems, small systems have less steep peaks: whether the change in
     the shape of the expectation corresponds with the change in our
     results.
-      - This is kind of slippery. Ideally we would find a way to measure
-        our statistical power.
+  - This is kind of slippery. Ideally we would find a way to measure our
+    statistical power.
 
 To do this we need to establish
 
@@ -75,6 +75,7 @@ I have computed the ratio of a 95% interval relative to the full range
 of values. Here is what that looks like.
 
 ![](rov_metric_files/figure-gfm/illustrate%2095%20interval-1.png)<!-- -->![](rov_metric_files/figure-gfm/illustrate%2095%20interval-2.png)<!-- -->![](rov_metric_files/figure-gfm/illustrate%2095%20interval-3.png)<!-- -->![](rov_metric_files/figure-gfm/illustrate%2095%20interval-4.png)<!-- -->![](rov_metric_files/figure-gfm/illustrate%2095%20interval-5.png)<!-- -->![](rov_metric_files/figure-gfm/illustrate%2095%20interval-6.png)<!-- -->
+![](rov_metric_files/figure-gfm/fig%20for%20manuscript-1.png)<!-- -->![](rov_metric_files/figure-gfm/fig%20for%20manuscript-2.png)<!-- -->
 
 ## Mapping the shape over a gradient in S and N
 
