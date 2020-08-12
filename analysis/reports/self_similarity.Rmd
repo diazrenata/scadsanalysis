@@ -112,11 +112,6 @@ We repeat this comparison process numerous times to get numerous values for the 
 
 comparisons <- rep_diff_sampler(example_fs, ndraws = 100) 
 
-nrow(
-  comparisons %>%
-    select(sim1, sim2) %>%
-    distinct()
-)
 
 ggplot(comparisons, aes(r2)) +
   geom_density() +
@@ -144,3 +139,49 @@ ggplot(comparisons, aes(div)) +
 ```
 
 We repeat this process for feasible sets with varying S and N, and compare the distribution of the self-similarity metrics across the variation in S and N.
+
+```{r comparison 2}
+
+example_fs2 <- readd(fs_s_44_n_13360, cache = cache)
+
+example_di2 <- readd(di_fs_s_44_n_13360, cache =cache)
+
+example_fs2 <- example_fs2 %>%
+  left_join(example_di2) %>%
+  left_join(net_summary)
+
+comparisons2 <- rep_diff_sampler(example_fs2, ndraws = 100) 
+
+both_comparisons <- bind_rows(comparisons, comparisons2) %>%
+  mutate(s_and_n = paste0("s_", s0, "_n_", n0))
+
+
+ggplot(both_comparisons, aes(r2, color = s_and_n)) +
+  geom_density() +
+  theme_bw() +
+  theme(legend.position = "top")
+
+ggplot(both_comparisons, aes(r2_log, color = s_and_n)) +
+  geom_density() +
+  theme_bw() +
+  theme(legend.position = "top")
+
+ggplot(both_comparisons, aes(cd, color = s_and_n)) +
+  geom_density() +
+  theme_bw() +
+  theme(legend.position = "top")
+
+
+ggplot(both_comparisons, aes(prop_off, color = s_and_n)) +
+  geom_density() +
+  theme_bw() +
+  theme(legend.position = "top")
+
+
+ggplot(both_comparisons, aes(div, color = s_and_n)) +
+  geom_density() +
+  theme_bw() +
+  theme(legend.position = "top")
+
+
+```

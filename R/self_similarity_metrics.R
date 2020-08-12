@@ -90,6 +90,9 @@ fs_cd <- function(two_fs) {
 #' @importFrom tidyr pivot_wider
 #'
 fs_diff_sampler <- function(fs_set) {
+
+  fs_set <- dplyr::filter(fs_set, !is.na(sim))
+
   if(length(unique(fs_set$sim)) < 2) {
     return(data.frame(
       sim1 = NA,
