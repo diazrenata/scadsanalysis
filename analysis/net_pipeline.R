@@ -11,6 +11,7 @@ net_sites <- net %>%
   select(-rank, -abund)
 
 ndraws = 4000
+ncomparisons = 200
 #net_sites <- net_sites[1:10, ]
 set.seed(1978)
 
@@ -27,11 +28,11 @@ dat_plan <- drake_plan(
    di_summary = target(pull_di_net(di),
                    transform = map(di)),
   all_di_summary = target(dplyr::bind_rows(di_summary),
-                     transform = combine(di_summary))
-  # all_di_obs = target(dplyr::bind_rows(di_obs_s_TRUE, di_obs_s_FALSE)),
-  # report = target(render_report(here::here("analysis", "reports", "dat_report_template.Rmd"), dependencies = all_di_obs, is_template = TRUE, dat_name = !!datasets),
-  #                 trigger = trigger(condition = T),
-  #                 hpc = F)
+                     transform = combine(di_summary)),
+  diffs = target(rep_diff_sampler(fs, ndraws = !!ncomparisons),
+                 transform = map(fs)),
+  all_diffs = target(dplyr::bind_rows(diffs),
+                     transform = combine(diffs))
 )
 
 

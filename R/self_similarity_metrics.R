@@ -108,14 +108,18 @@ fs_diff_sampler <- function(fs_set) {
 
   pair <- sample((unique(fs_set$sim)), size = 2, replace = F)
 
+  pair <- sort(pair)
+
   two_fs <- dplyr::filter(fs_set, sim %in% pair) %>%
     dplyr::select(abund, sim, rank) %>%
     tidyr::pivot_wider(names_from = rank, values_from = abund) %>%
     dplyr::select(-sim)
 
-  if(pair[1] > pair[2]) {
-    two_fs <- two_fs[c(2, 1), ]
-  }
+  # if(pair[1] > pair[2]) {
+  #   two_fs <- two_fs[c(2, 1), ]
+  #
+  #   pair <- sort(pair, decreasing = F)
+  # }
 
   r2 <- fs_r2(two_fs)
   r2_log <- fs_r2(two_fs, log = T)

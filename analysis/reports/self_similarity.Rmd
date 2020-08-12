@@ -12,6 +12,7 @@ knitr::opts_chunk$set(echo = FALSE)
 library(drake)
 library(dplyr)
 library(ggplot2)
+library(scadsanalysis)
 
 knitr::opts_chunk$set(fig.width=3, fig.height=2.5, warning = FALSE, message = FALSE) 
 ```
@@ -30,3 +31,116 @@ I initially did this analysis in https://github.com/diazrenata/sadspace and am p
 
 We can describe how self-similar the elements of a feasible set are via numerous pairwise comparisons. Given a body of samples drawn from a feasible set, we draw two samples and compute some metric that describes how similar these two samples are to each other. We do this many times, making many pairwise comparisons, to generate a distribution of the self-similarity metric for that feasible set. We then compare how self-similar different feasible sets are by comparing the distributions of self-similarity metrics for the different feasible sets. 
 
+#### Walkthrough
+
+```{r load net}
+
+## Set up the cache and config
+db <- DBI::dbConnect(RSQLite::SQLite(), here::here("analysis", "drake", "drake-cache-net.sqlite"))
+cache <- storr::storr_dbi("datatable", "keystable", db)
+cache$del(key = "lock", namespace = "session")
+knitr::opts_chunk$set(fig.width=3, fig.height=2.5, warning = FALSE, message = FALSE) 
+
+
+net_summary <- readd(all_di_summary, cache = cache)
+
+net_summary <- net_summary %>%
+  mutate(log_nparts = log(gmp:::as.double.bigz(nparts)))
+
+example_fs <- readd(fs_s_7_n_71, cache = cache)
+
+example_di <- readd(di_fs_s_7_n_71, cache =cache)
+
+example_fs <- example_fs %>%
+  left_join(example_di) %>%
+  left_join(net_summary)
+```
+
+
+Here we have a bank of `r length(unique(example_fs$sim))` samples from the feasible set for SADs with 7 species and 71 individuals.
+
+
+```{r illustrate self similarity}
+
+ggplot(example_fs, aes(x = rank, y = abund, group = sim)) +
+  geom_line(alpha = .1) +
+  theme_bw()
+```
+
+We draw two of these samples to compare.
+
+```{r draw two}
+
+set.seed(1977)
+
+
+
+comparison <- fs_diff_sampler(example_fs)
+
+sims <- c(comparison$sim1[1], comparison$sim2[1])
+
+
+comparison_fs <- filter(example_fs, sim %in% sims) %>%
+  mutate(sim = as.factor(sim))
+
+ggplot(comparison_fs, aes(x = rank, y = abund, color = sim)) +
+  geom_line() +
+  geom_point() +
+  theme_bw() +
+  scale_color_viridis_d(end = .7)
+
+```
+
+I have implemented 5 metrics of similarity for comparing samples:
+
+* R2
+* R2 on log-transformed abundances
+* The coefficient of determination from a linear model fitting one sample to the other
+* The proportion of individuals allocated to species of differing abundances
+* The estimated Kullbak-Lieber (sp) divergence between the two samples
+
+
+```{r self similarity metrics}
+
+comparison
+
+```
+
+We repeat this comparison process numerous times to get numerous values for the self-similarity metrics.
+
+```{r rep sampler, fig.dim = c(3,3)}
+
+comparisons <- rep_diff_sampler(example_fs, ndraws = 100) 
+
+nrow(
+  comparisons %>%
+    select(sim1, sim2) %>%
+    distinct()
+)
+
+ggplot(comparisons, aes(r2)) +
+  geom_density() +
+  theme_bw()
+
+
+ggplot(comparisons, aes(r2_log)) +
+  geom_density() +
+  theme_bw()
+
+
+ggplot(comparisons, aes(cd)) +
+  geom_density() +
+  theme_bw()
+
+
+ggplot(comparisons, aes(prop_off)) +
+  geom_density() +
+  theme_bw()
+
+
+ggplot(comparisons, aes(div)) +
+  geom_density() +
+  theme_bw()
+```
+
+We repeat this process for feasible sets with varying S and N, and compare the distribution of the self-similarity metrics across the variation in S and N.
