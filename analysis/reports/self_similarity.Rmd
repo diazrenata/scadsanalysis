@@ -1,0 +1,32 @@
+---
+title: "Self-similarity of the elements of the feasible set"
+author: Renata Diaz
+date: "`r Sys.Date()`"
+output: 
+    github_document:
+       df_print: kable
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(drake)
+library(dplyr)
+library(ggplot2)
+
+knitr::opts_chunk$set(fig.width=3, fig.height=2.5, warning = FALSE, message = FALSE) 
+```
+
+We are interested in how the self-similarity of the elements of the feasible set varies over gradients in S and N. The intuition from "common-sense" probability theory, statistical mechanics, law-of-large-numbers intuition is that, as the number of possible arrangements becomes large, the different possible arrangements should become more self-similar. However, we don't know that this is the case for SADs, nor do we know the values for S and N where things really start to converge. 
+
+In the manuscript, I use the ratio of the 95% interval of summary statistic values, to the full range of summary statistic values. This can be calculated quickly and without introducing new statistics, etc to the main manuscript. It also directly reflects the distributions to which we are comparing our observations. However, it may not tell the full story: if the summary statistic values are idiosyncratic (skewness in particular can behave counterintuitively), it reflects those idiosyncracies. 
+
+With more computing, we can explore how similar the elements of the feasible set are to each other by comparing them to each other directly. Then we can ask whether, as the feasible set gets large, the elements become more similar and converge on a dominant form. 
+
+I initially did this analysis in https://github.com/diazrenata/sadspace and am porting the functions and analysis over to this repo for the supplement. 
+
+### Directly establishing self-similarity
+
+#### Overview 
+
+We can describe how self-similar the elements of a feasible set are via numerous pairwise comparisons. Given a body of samples drawn from a feasible set, we draw two samples and compute some metric that describes how similar these two samples are to each other. We do this many times, making many pairwise comparisons, to generate a distribution of the self-similarity metric for that feasible set. We then compare how self-similar different feasible sets are by comparing the distributions of self-similarity metrics for the different feasible sets. 
+
