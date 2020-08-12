@@ -1,4 +1,4 @@
-Size class small comparisons
+Comparing FIA sites to similarly-sized counterparts
 ================
 Renata Diaz
 2020-08-12
@@ -7,7 +7,7 @@ The FIA sites stand out from the other datasets in that, overall, they
 do not show pronouncedly extreme values. This is especially the case for
 skewness:
 
-![](smallness_files/figure-gfm/overall%20hists-1.png)<!-- -->![](smallness_files/figure-gfm/overall%20hists-2.png)<!-- -->
+![](direct_FIA_size_comparison_files/figure-gfm/overall%20hists-1.png)<!-- -->![](direct_FIA_size_comparison_files/figure-gfm/overall%20hists-2.png)<!-- -->
 
 One possible explanation for this is that the FIA sites tend to have
 quite small S and N, leading to quite a small feasible set and
@@ -32,7 +32,7 @@ concentrated towards **especially small** feasible sets compared “other
 datasets” - even the ones that fall within the general range found in
 FIA.
 
-![](smallness_files/figure-gfm/small-1.png)<!-- -->![](smallness_files/figure-gfm/small-2.png)<!-- -->
+![](direct_FIA_size_comparison_files/figure-gfm/small-1.png)<!-- -->![](direct_FIA_size_comparison_files/figure-gfm/small-2.png)<!-- -->
 
 This means that an overall histogram for FIA would be representative
 more of sites in the 4-7 parts range, while one for “other datasets”
@@ -40,13 +40,27 @@ would be representative of more of a spread from 3-16 parts. Given that
 we suspect the number of parts is quite important, this is a sticky
 problem.
 
-One option, which I haven’t considered before, is to subsample **FIA**
-to match “other datasets”. If we subsample so there is equal
-representation of all S and N combinations between FIA and “other
-datasets”, we end up with 309 combinations represented and a total of
-488 comparisons.
+We can subsample **FIA** so there is equal representation of all S and N
+combinations between FIA and “other datasets”.
 
-![](smallness_files/figure-gfm/subsampling-1.png)<!-- -->![](smallness_files/figure-gfm/subsampling-2.png)<!-- -->
+Some details on the subsampling:
+
+  - We look for exact matches in S and N, with at least one site from
+    FIA and at least one site from the pool of other datasets.
+  - If there are multiple exact matches (on either side) we randomly
+    draw *the number of sites from the side that has fewer matches* from
+    the side that has more matches. So if there are 2 sites in FIA with
+    a particular S and N, and 5 sites in “other datasets” with that S
+    and N, we randomly select 2 of the 5 from “other datasets” to
+    compare to the 2 from FIA.
+  - Some of these S and N combinations have feasible sets that give
+    fewer than 20 unique value for skewness or evenness, and we remove
+    those from the histograms and proportion calculations below. 20 is a
+    somewhat arbitrary (and probably low) cutoff, but if there are fewer
+    than 20 unique values the percentile cannot be above 95 or below 5.
+    We end up with 371 comparisons for skewness and 365 for evenness.
+
+![](direct_FIA_size_comparison_files/figure-gfm/subsampling-1.png)<!-- -->![](direct_FIA_size_comparison_files/figure-gfm/subsampling-2.png)<!-- -->
 
 The dark dots are the sites for which we can find at least one exact
 match in s0 and n0 between a FIA site and a site from another dataset.
@@ -55,7 +69,7 @@ subsample.
 
 Here are the results for that subsample:
 
-![](smallness_files/figure-gfm/subsample%20results-1.png)<!-- -->![](smallness_files/figure-gfm/subsample%20results-2.png)<!-- -->
+![](direct_FIA_size_comparison_files/figure-gfm/subsample%20results-1.png)<!-- -->![](direct_FIA_size_comparison_files/figure-gfm/subsample%20results-2.png)<!-- -->
 
 <div class="kable-table">
 
@@ -66,15 +80,18 @@ Here are the results for that subsample:
 
 </div>
 
-    ## [1] 234
-
-    ## [1] 246
-
 For the subsample that is directly comparable, there is **not a
 difference** between FIA and other datasets in the distribution of
 percentile values. This is a very small subsample relative to all the
 sites in both datasets - FIA has 20,000 sites overall, and we are only
-looking at 500 of them. However, given how sensitive results aggregated
-in this way are to the relative frequency of SxN combinations/FS sizes
-in the sample, I believe this is the most robust way we can ask whether
-*being from FIA* causes detectably different outcomes.
+looking at around 375 of them. However, given how sensitive results
+aggregated in this way are to the relative frequency of SxN
+combinations/FS sizes in the sample, I believe this is the most robust
+way we can ask whether *being from FIA* causes detectably different
+outcomes.
+
+The absence of a difference here implicates the distribution of *sizes*
+in FIA as driving the difference in pattern. In the main manuscript we
+document that the 95% ratios for both skewness and evenness decrease
+over large gradients in S and N. In the self\_similarity supplement, we
+show that this is also the case for other metrics of self-similarity.

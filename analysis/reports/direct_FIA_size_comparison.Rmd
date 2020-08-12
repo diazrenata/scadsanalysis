@@ -1,5 +1,5 @@
 ---
-title: "Size class small comparisons"
+title: "Comparing FIA sites to similarly-sized counterparts"
 author: Renata Diaz
 date: "`r Sys.Date()`"
 output: 
@@ -105,8 +105,14 @@ ggplot(filter(small_di), aes(log_nparts)) +
 
 This means that an overall histogram for FIA would be representative more of sites in the 4-7 parts range, while one for "other datasets" would be representative of more of a spread from 3-16 parts. Given that we suspect the number of parts is quite important, this is a sticky problem.
 
-One option, which I haven't considered before, is to subsample __FIA__ to match "other datasets". 
-If we subsample so there is equal representation of all S and N combinations between FIA and "other datasets", we end up with 309 combinations represented and a total of 488 comparisons. 
+We can subsample __FIA__ so there is equal representation of all S and N combinations between FIA and "other datasets".
+ 
+
+Some details on the subsampling:
+
+* We look for exact matches in S and N, with at least one site from FIA and at least one site from the pool of other datasets. 
+* If there are multiple exact matches (on either side) we randomly draw *the number of sites from the side that has fewer matches* from the side that has more matches. So if there are 2 sites in FIA with a particular S and N, and 5 sites in "other datasets" with that S and N, we randomly select 2 of the 5 from "other datasets" to compare to the 2 from FIA.
+* Some of these S and N combinations have feasible sets that give fewer than 20 unique value for skewness or evenness, and we remove those from the histograms and proportion calculations below. 20 is a somewhat arbitrary (and probably low) cutoff, but if there are fewer than 20 unique values the percentile cannot be above 95 or below 5. We end up with 371 comparisons for skewness and 365 for evenness. 
 
 ```{r subsampling}
 
@@ -196,18 +202,6 @@ ggplot(filter(sub_di, simpson_unique > 20), aes(simpson_percentile)) +
   geom_histogram()+
   theme_bw() +
   facet_wrap(vars(fia_yn), scales = "free_y")
-# 
-# 
-# 
-# ggplot(filter(sub_di), aes(skew_percentile_excl)) +
-#   geom_histogram()+
-#   theme_bw() +
-#   facet_wrap(vars(fia_yn), scales = "free_y")
-# 
-# ggplot(filter(sub_di), aes(simpson_percentile)) +
-#   geom_histogram()+
-#   theme_bw() +
-#   facet_wrap(vars(fia_yn), scales = "free_y")
 
 sub_di %>%
   filter(s0 > 2) %>%
@@ -221,8 +215,10 @@ sub_di %>%
             nsites_skew = sum(!is.na(skew_percentile_excl)),
             nsites_even = sum(!is.na(simpson_percentile)))
 
-sum(sub_di$skew_unique < 20)
-sum(sub_di$simpson_unique < 20)
 ```
 
-For the subsample that is directly comparable, there is **not a difference** between FIA and other datasets in the distribution of percentile values. This is a very small subsample relative to all the sites in both datasets - FIA has 20,000 sites overall, and we are only looking at 500 of them. However, given how sensitive results aggregated in this way are to the relative frequency of SxN combinations/FS sizes in the sample, I believe this is the most robust way we can ask whether *being from FIA* causes detectably different outcomes. 
+For the subsample that is directly comparable, there is **not a difference** between FIA and other datasets in the distribution of percentile values. This is a very small subsample relative to all the sites in both datasets - FIA has 20,000 sites overall, and we are only looking at around 375 of them. However, given how sensitive results aggregated in this way are to the relative frequency of SxN combinations/FS sizes in the sample, I believe this is the most robust way we can ask whether *being from FIA* causes detectably different outcomes. 
+
+
+The absence of a difference here implicates the distribution of *sizes* in FIA as driving the difference in pattern. In the main manuscript we document that the 95% ratios for both skewness and evenness decrease over large gradients in S and N. In the self_similarity supplement, we show that this is also the case for other metrics of self-similarity. 
+
