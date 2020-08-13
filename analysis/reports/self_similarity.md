@@ -1,7 +1,7 @@
 Self-similarity of the elements of the feasible set
 ================
 Renata Diaz
-2020-08-12
+2020-08-13
 
 We are interested in how the self-similarity of the elements of the
 feasible set varies over gradients in S and N. The intuition from
@@ -46,13 +46,9 @@ of self-similarity metrics for the different feasible sets.
 #### Walkthrough
 
 Here we have a bank of 3870 samples from the feasible set for SADs with
-7 species and 71 individuals.
+7 species and 71 individuals. We draw two of these samples to compare.
 
-![](self_similarity_files/figure-gfm/illustrate%20self%20similarity-1.png)<!-- -->
-
-We draw two of these samples to compare.
-
-![](self_similarity_files/figure-gfm/draw%20two-1.png)<!-- -->
+![](self_similarity_files/figure-gfm/illustrate%20self%20similarity-1.png)<!-- -->![](self_similarity_files/figure-gfm/illustrate%20self%20similarity-2.png)<!-- -->
 
 I have implemented 5 metrics of similarity for comparing samples:
 
@@ -75,10 +71,104 @@ I have implemented 5 metrics of similarity for comparing samples:
 We repeat this comparison process numerous times to get numerous values
 for the self-similarity metrics.
 
-    ## [1] 100
-
 ![](self_similarity_files/figure-gfm/rep%20sampler-1.png)<!-- -->![](self_similarity_files/figure-gfm/rep%20sampler-2.png)<!-- -->![](self_similarity_files/figure-gfm/rep%20sampler-3.png)<!-- -->![](self_similarity_files/figure-gfm/rep%20sampler-4.png)<!-- -->![](self_similarity_files/figure-gfm/rep%20sampler-5.png)<!-- -->
 
 We repeat this process for feasible sets with varying S and N, and
 compare the distribution of the self-similarity metrics across the
 variation in S and N.
+
+![](self_similarity_files/figure-gfm/comparison%202-1.png)<!-- -->![](self_similarity_files/figure-gfm/comparison%202-2.png)<!-- -->![](self_similarity_files/figure-gfm/comparison%202-3.png)<!-- -->![](self_similarity_files/figure-gfm/comparison%202-4.png)<!-- -->![](self_similarity_files/figure-gfm/comparison%202-5.png)<!-- -->
+
+### Across a range of S and N
+
+Here we have drawn samples from a “net” of points in S and N space that
+spans the range present in our datasets. For each feasible set we make
+200 comparisons of elements (although for small feasible sets, 200 is
+not necessarily possible). Here is how that net is distributed in S and
+N space, colored by the log() number of elements in the feasible set.
+
+![](self_similarity_files/figure-gfm/diffs-1.png)<!-- -->
+
+#### Heat maps
+
+We can make heat maps of the density distribution of self-similarity
+metrics and look at how the densities shift over gradients in the size
+of the feasible set.
+
+There are a couple of nuances to doing this:
+
+  - We need to have the same number of comparisons for every feasible
+    set, so that the density distributions will be comparable. In order
+    to get a large swatch of S by N space, I’ve taken 50 comparisons
+    from every feasible set. This is pretty low, so it lets us get even
+    small feasible sets. Setting the minimum higher does not change the
+    overall impression.
+  - The metrics vary in how they are bounded. For some of them (R2, log
+    r2) they can have nonsensical long tails towards very low values.
+    For visualization, I’ve filtered out the long tail values (prior to
+    selecting the 50 comparisons). The long tails tend to be most
+    dominant in the comparisons made from small feasible sets. Removing
+    them therefore makes the small feasible sets look *more*
+    self-similar.
+
+##### R2
+
+Higher R2 values indicate more similarity. R2 can be *very low* but the
+most meaningful variation is between 0 and 1.
+
+![](self_similarity_files/figure-gfm/heat%20maps-1.png)<!-- -->![](self_similarity_files/figure-gfm/heat%20maps-2.png)<!-- -->
+
+Here is R2 for only “small” feasible sets (those with fewer than
+4.85165210^{8} elements in the feasible set). This lets us zoom in on
+the distributions where they start to broaden out.
+
+![](self_similarity_files/figure-gfm/r2%20small-1.png)<!-- -->![](self_similarity_files/figure-gfm/r2%20small-2.png)<!-- -->
+
+##### R2 on logged vectors
+
+Higher R2 values indicate more similarity. R2 can be *very low* but the
+most meaningful variation is between 0 and 1.
+
+![](self_similarity_files/figure-gfm/r2%20on%20log-1.png)<!-- -->![](self_similarity_files/figure-gfm/r2%20on%20log-2.png)<!-- -->
+
+Here is R2 on logged vectors for only “small” feasible sets (those with
+fewer than 4.85165210^{8} elements in the feasible set). This lets us
+zoom in on the distributions where they start to broaden out.
+
+![](self_similarity_files/figure-gfm/r2%20log%20small-1.png)<!-- -->![](self_similarity_files/figure-gfm/r2%20log%20small-2.png)<!-- -->
+
+##### Coefficient of determination
+
+Higher CD values indicate more similarity. It is bounded 0 to 1.
+
+![](self_similarity_files/figure-gfm/unnamed-chunk-1-1.png)<!-- -->![](self_similarity_files/figure-gfm/unnamed-chunk-1-2.png)<!-- -->
+
+Here is cd for only “small” feasible sets (those with fewer than
+4.85165210^{8} elements in the feasible set). This lets us zoom in on
+the distributions where they start to broaden out.
+
+![](self_similarity_files/figure-gfm/cd%20small-1.png)<!-- -->![](self_similarity_files/figure-gfm/cd%20small-2.png)<!-- -->
+
+##### Proportion of individuals allocated to different species
+
+Lower “prop off” values indicate more similarity. It is bounded 0 to 1.
+
+![](self_similarity_files/figure-gfm/prop%20off%20heat%20maps-1.png)<!-- -->![](self_similarity_files/figure-gfm/prop%20off%20heat%20maps-2.png)<!-- -->
+
+Here is prop\_off for only “small” feasible sets (those with fewer than
+4.85165210^{8} elements in the feasible set). This lets us zoom in on
+the distributions where they start to broaden out.
+
+![](self_similarity_files/figure-gfm/prop_off%20small-1.png)<!-- -->![](self_similarity_files/figure-gfm/prop_off%20small-2.png)<!-- -->
+
+##### K-L divergence
+
+Lower divergence values indicate more similarity. It is bounded 0 to 1.
+
+![](self_similarity_files/figure-gfm/div%20heat%20maps-1.png)<!-- -->![](self_similarity_files/figure-gfm/div%20heat%20maps-2.png)<!-- -->
+
+Here is div for only “small” feasible sets (those with fewer than
+4.85165210^{8} elements in the feasible set). This lets us zoom in on
+the distributions where they start to broaden out.
+
+![](self_similarity_files/figure-gfm/div%20small-1.png)<!-- -->![](self_similarity_files/figure-gfm/div%20small-2.png)<!-- -->
