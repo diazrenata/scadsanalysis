@@ -33,10 +33,7 @@ all <- drake_plan(
                   transform = map(di)),
   di_obs_s = target(dplyr::bind_rows(di_obs),
                     transform = combine(di_obs, .by = singletons)),
-  all_di_obs = target(dplyr::bind_rows(di_obs_s_TRUE, di_obs_s_FALSE)),
-  report = target(render_report(here::here("analysis", "reports", "dat_report_template.Rmd"), dependencies = all_di_obs, is_template = TRUE, dat_name = !!datasets),
-                  trigger = trigger(condition = T),
-                  hpc = F)
+  all_di_obs = target(dplyr::bind_rows(di_obs_s_TRUE, di_obs_s_FALSE))
 )
 
 ## Set up the cache and config
