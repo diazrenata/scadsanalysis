@@ -39,6 +39,17 @@ ggplot(all_di, aes(x = log_s0, y = log_n0, color = dat)) +
   scale_color_viridis_d() +
   ggtitle("Communities by S and N")
 
+
+ggplot(all_di, aes(x = log_s0, y = log_n0, color = dat)) +
+  geom_point(alpha = .01) +
+  geom_point(data = filter(all_di, log_nparts > log(50)), alpha = .4) +
+  theme_bw() +
+  scale_color_viridis_d() +
+  ggtitle("Communities by S and N") +
+  facet_wrap(vars(dat), scales = "free") +
+  geom_vline(xintercept = log(40)) +
+  geom_hline(yintercept = log(1000))
+
 ```
 
 
