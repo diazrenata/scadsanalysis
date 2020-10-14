@@ -163,7 +163,8 @@ for(i in 1:nrow(small_di_s_n)) {
   
 }
 
-sub_di <- bind_rows(subsamples)
+sub_di <- bind_rows(subsamples) %>%
+   mutate(Dataset = ifelse(fia_yn == "fia", "Forest Inventory and Analysis", "Other datasets"))
 # 
 # ggplot(sub_di, aes(log(s0), log(n0), color = fia_yn)) +
 #   geom_point() +
@@ -196,12 +197,16 @@ Here are the results for that subsample:
 ggplot(filter(sub_di, skew_unique > 20), aes(skew_percentile_excl)) +
   geom_histogram()+
   theme_bw() +
-  facet_wrap(vars(fia_yn), scales = "free_y")
+  facet_wrap(vars(Dataset), scales = "free_y")  +
+  xlab("Percentile rank of observed skewness value relative to feasible set") +
+  ylab("Number of communities")
 
 ggplot(filter(sub_di, simpson_unique > 20), aes(simpson_percentile)) +
   geom_histogram()+
   theme_bw() +
-  facet_wrap(vars(fia_yn), scales = "free_y")
+  facet_wrap(vars(Dataset), scales = "free_y")  +
+  xlab("Percentile rank of observed evenness value relative to feasible set") +
+  ylab("Number of communities")
 
 sub_di %>%
   filter(s0 > 2) %>%
@@ -209,11 +214,18 @@ sub_di %>%
   mutate(skew_percentile_excl = ifelse(skew_unique >= 20, skew_percentile_excl, NA),
          simpson_percentile = ifelse(simpson_unique >= 20, simpson_percentile, NA)) %>%
   ungroup() %>%
-  group_by(fia_yn) %>%
+  group_by(Dataset) %>%
   summarize(prop_skew_high = mean(skew_percentile_excl > 95, na.rm = T),
             prop_even_low = mean(simpson_percentile < 5, na.rm = T),
             nsites_skew = sum(!is.na(skew_percentile_excl)),
-            nsites_even = sum(!is.na(simpson_percentile)))
+            nsites_even = sum(!is.na(simpson_percentile))) %>%
+   rename("Proportion of communities with skewness above 95th percentile" = prop_skew_high,
+         "Number of communities analyzed for skewness" = nsites_skew,
+         "Proportion of communities with evenness below 5th percentile" = prop_even_low,
+         "Number of communities analyzed for evenness" = nsites_even)
+
+
+
 
 ```
 

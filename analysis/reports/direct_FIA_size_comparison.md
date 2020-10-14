@@ -1,7 +1,7 @@
 Comparing FIA sites to similarly-sized counterparts
 ================
 Renata Diaz
-2020-08-12
+2020-10-14
 
 The FIA sites stand out from the other datasets in that, overall, they
 do not show pronouncedly extreme values. This is especially the case for
@@ -73,10 +73,10 @@ Here are the results for that subsample:
 
 <div class="kable-table">
 
-| fia\_yn        | prop\_skew\_high | prop\_even\_low | nsites\_skew | nsites\_even |
-| :------------- | ---------------: | --------------: | -----------: | -----------: |
-| fia            |        0.0808625 |       0.1780822 |          371 |          365 |
-| other datasets |        0.0862534 |       0.2109589 |          371 |          365 |
+| Dataset                       | Proportion of communities with skewness above 95th percentile | Proportion of communities with evenness below 5th percentile | Number of communities analyzed for skewness | Number of communities analyzed for evenness |
+| :---------------------------- | ------------------------------------------------------------: | -----------------------------------------------------------: | ------------------------------------------: | ------------------------------------------: |
+| Forest Inventory and Analysis |                                                     0.0808625 |                                                    0.1780822 |                                         371 |                                         365 |
+| Other datasets                |                                                     0.0862534 |                                                    0.2109589 |                                         371 |                                         365 |
 
 </div>
 
