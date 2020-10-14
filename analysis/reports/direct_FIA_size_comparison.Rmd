@@ -192,7 +192,7 @@ The dark dots are the sites for which we can find at least one exact match in s0
 
 Here are the results for that subsample:
 
-```{r subsample results}
+```{r subsample results, fig.dim = c(6,4)}
 
 ggplot(filter(sub_di, skew_unique > 20), aes(skew_percentile_excl)) +
   geom_histogram()+
