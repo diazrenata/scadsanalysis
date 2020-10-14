@@ -1,7 +1,7 @@
 Explaining and exploring the 95% interval metric
 ================
 Renata Diaz
-2020-08-11
+2020-10-14
 
 One of the crucial threads of reasoning for comparing observations to an
 emergent statistical expectation is that the expectation be sufficiently

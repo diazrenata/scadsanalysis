@@ -200,47 +200,47 @@ ggplot(example_fs, aes(skew, ..ndensity..)) +
   geom_density() +
   geom_histogram(bins = 50) +
   theme_bw() +
-  geom_vline(xintercept = c(example_fs$skew_2p5[1], example_fs$skew_97p5[1]), color = "red") +
-  ggtitle(paste0("Skew 95% interval: ", round(example_fs$skew_95_ratio_2t[1], 2)))
+  geom_vline(xintercept = c(example_fs$skew_min[1], example_fs$skew_95[1]), color = "red") +
+  ggtitle(paste0("Skew 95% interval: ", round(example_fs$skew_95_ratio_1t[1], 2)))
 
 
 ggplot(example_fs, aes(simpson, ..ndensity..)) +
   geom_density() +
   geom_histogram(bins = 50) +
   theme_bw() +
-  geom_vline(xintercept = c(example_fs$simpson_97p5[1], example_fs$simpson_2p5[1]), color = "red") +
-  ggtitle(paste0("Simpson 95% interval: ", round(example_fs$simpson_95_ratio_2t[1], 2)))
+  geom_vline(xintercept = c(example_fs$simpson_max[1], example_fs$simpson_5[1]), color = "red") +
+  ggtitle(paste0("Simpson 95% interval: ", round(example_fs$simpson_95_ratio_1t[1], 2)))
 
 ggplot(example_fs2, aes(skew, ..ndensity..)) +
   geom_density() +
   geom_histogram(bins = 50) +
   theme_bw() +
-  geom_vline(xintercept = c(example_fs2$skew_2p5[1], example_fs2$skew_97p5[1]), color = "red") +
-  ggtitle(paste0("Skew 95% interval: ", round(example_fs2$skew_95_ratio_2t[1], 2)))
+  geom_vline(xintercept = c(example_fs2$skew_min[1], example_fs2$skew_95[1]), color = "red") +
+  ggtitle(paste0("Skew 95% interval: ", round(example_fs2$skew_95_ratio_1t[1], 2)))
 
 
 ggplot(example_fs2, aes(simpson, ..ndensity..)) +
   geom_density() +
   geom_histogram(bins = 50) +
   theme_bw() +
-  geom_vline(xintercept = c(example_fs2$simpson_97p5[1], example_fs2$simpson_2p5[1]), color = "red") +
-  ggtitle(paste0("Simpson 95% interval: ", round(example_fs2$simpson_95_ratio_2t[1], 2)))
+  geom_vline(xintercept = c(example_fs2$simpson_max[1], example_fs2$simpson_5[1]), color = "red") +
+  ggtitle(paste0("Simpson 95% interval: ", round(example_fs2$simpson_95_ratio_1t[1], 2)))
 
 
 ggplot(example_fs3, aes(skew, ..ndensity..)) +
   geom_density() +
   geom_histogram(bins = 50) +
   theme_bw() +
-  geom_vline(xintercept = c(example_fs3$skew_2p5[1], example_fs3$skew_97p5[1]), color = "red") +
-  ggtitle(paste0("Skew 95% interval: ", round(example_fs3$skew_95_ratio_2t[1], 2)))
+  geom_vline(xintercept = c(example_fs3$skew_min[1], example_fs3$skew_95[1]), color = "red") +
+  ggtitle(paste0("Skew 95% interval: ", round(example_fs3$skew_95_ratio_1t[1], 2)))
 
 
 ggplot(example_fs3, aes(simpson, ..ndensity..)) +
   geom_density() +
   geom_histogram(bins = 50) +
   theme_bw() +
-  geom_vline(xintercept = c(example_fs3$simpson_97p5[1], example_fs3$simpson_2p5[1]), color = "red") +
-  ggtitle(paste0("Simpson 95% interval: ", round(example_fs3$simpson_95_ratio_2t[1], 2)))
+  geom_vline(xintercept = c(example_fs3$simpson_max[1], example_fs3$simpson_5[1]), color = "red") +
+  ggtitle(paste0("Simpson 95% interval: ", round(example_fs3$simpson_95_ratio_1t[1], 2)))
 
 hitting_the_ceiling <- example_fs3 %>%
   select(sim, skew) %>%
@@ -280,22 +280,22 @@ intervals_plots <- list(
     geom_density() +
     geom_histogram(bins = 50) +
     theme_bw() +
-    geom_vline(xintercept = c(example_fs3$skew_97p5[1], example_fs3$skew_2p5[1]), color = "red") +
-    ggtitle(paste0("S = ", (example_fs3$s0), "; N = ", (example_fs3$n0[1])), subtitle =  paste0("Skew 95% ratio: ", round((example_fs3$skew_95_ratio_2t[1]), 2))),
+    geom_vline(xintercept = c(example_fs3$skew_95[1], example_fs3$skew_min[1]), color = "red") +
+    ggtitle(paste0("S = ", (example_fs3$s0), "; N = ", (example_fs3$n0[1])), subtitle =  paste0("Skew 95% ratio: ", round((example_fs3$skew_95_ratio_1t[1]), 2))),
   
   ggplot(example_fs2, aes(skew, ..ndensity..)) +
     geom_density() +
     geom_histogram(bins = 50) +
     theme_bw() +
-    geom_vline(xintercept = c(example_fs2$skew_97p5[1], example_fs2$skew_2p5[1]), color = "red") +
-    ggtitle(paste0("S = ", (example_fs2$s0), "; N = ", (example_fs2$n0[1])), subtitle =  paste0("Skew 95% ratio: ", round((example_fs2$skew_95_ratio_2t[1]), 2))),
+    geom_vline(xintercept = c(example_fs2$skew_95[1], example_fs2$skew_min[1]), color = "red") +
+    ggtitle(paste0("S = ", (example_fs2$s0), "; N = ", (example_fs2$n0[1])), subtitle =  paste0("Skew 95% ratio: ", round((example_fs2$skew_95_ratio_1t[1]), 2))),
   
   ggplot(example_fs, aes(skew, ..ndensity..)) +
     geom_density() +
     geom_histogram(bins = 50) +
     theme_bw() +
-    geom_vline(xintercept = c(example_fs$skew_97p5[1], example_fs$skew_2p5[1]), color = "red") +
-    ggtitle(paste0("S = ", (example_fs$s0), "; N = ", (example_fs$n0[1])), subtitle =  paste0("Skew 95% ratio: ", round((example_fs$skew_95_ratio_2t[1]), 2)))
+    geom_vline(xintercept = c(example_fs$skew_95[1], example_fs$skew_min[1]), color = "red") +
+    ggtitle(paste0("S = ", (example_fs$s0), "; N = ", (example_fs$n0[1])), subtitle =  paste0("Skew 95% ratio: ", round((example_fs$skew_95_ratio_1t[1]), 2)))
   
 )
 
@@ -335,12 +335,12 @@ Here is how these 95% intervals vary over the *net* of points:
 
 ```{r intervals on net}
 
-ggplot(filter(net_summary, s0 > 2, skew_unique > 1), aes(log(s0), log(n0), color = skew_95_ratio_2t)) +
+ggplot(filter(net_summary, s0 > 2, skew_unique > 1), aes(log(s0), log(n0), color = skew_95_ratio_1t)) +
   geom_point() +
   theme_bw() +
   scale_color_viridis_c()
 
-ggplot(filter(net_summary,simpson_unique > 1), aes(log(s0), log(n0), color = simpson_95_ratio_2t)) +
+ggplot(filter(net_summary,simpson_unique > 1), aes(log(s0), log(n0), color = simpson_95_ratio_1t)) +
   geom_point() +
   theme_bw() +
   scale_color_viridis_c(option = "plamsa")
@@ -353,12 +353,12 @@ ggplot(filter(net_summary,simpson_unique > 1), aes(log(s0), log(n0), color = sim
 
 ```{r nparts}
 
-ggplot(filter(net_summary, s0 > 2), aes(x = log_nparts, y = skew_95_ratio_2t, color = log(n0/s0))) +
+ggplot(filter(net_summary, s0 > 2), aes(x = log_nparts, y = skew_95_ratio_1t, color = log(n0/s0))) +
   geom_point() +
   theme_bw()
 
 
-ggplot(net_summary, aes(x = log_nparts, y = simpson_95_ratio_2t, color = log(n0/s0))) +
+ggplot(net_summary, aes(x = log_nparts, y = simpson_95_ratio_1t, color = log(n0/s0))) +
   geom_point() +
   theme_bw()
 
