@@ -3,7 +3,7 @@ title: "Figures and results for main manuscript"
 author: Renata Diaz
 date: "`r Sys.Date()`"
 output: 
-    github_document:
+    pdf_document:
        df_print: kable
 ---
 
