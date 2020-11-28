@@ -1,0 +1,223 @@
+---
+title: "Filtering datasets"
+author: Renata Diaz
+date: "`r Sys.Date()`"
+output: 
+    github_document:
+       df_print: kable
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(drake)
+library(dplyr)
+library(ggplot2)
+library(scadsanalysis)
+
+theme_set(theme_bw())
+options(ggplot2.discrete.color = scale_color_viridis_d(end = .8))
+
+knitr::opts_chunk$set(fig.width=3, fig.height=2.5, warning = FALSE, message = FALSE) 
+```
+
+The filtering of datasets to exclude very small or very large communities happens at the very beginning of the analysis, when we download and *process* the data.
+
+```{r}
+
+bbs <- read.csv(here::here("working-data", "abund_data", "bbs_spab.csv"),  stringsAsFactors = F, header = F, skip = 2)
+
+colnames(bbs) <- c("site", "year", "species", "abund")
+
+
+bbs_statevars <- bbs %>%
+  group_by(site) %>%
+  summarize(
+    nyears = length(unique(year)),
+    nspecies = dplyr::n(),
+    nind = sum(abund)
+  )
+
+ggplot(bbs_statevars, aes(nspecies, nind)) +
+  geom_point() +
+  geom_hline(yintercept = 40720) +
+  geom_vline(xintercept = 200) +
+  ggtitle("BBS")
+
+unique(bbs_statevars$nyears)
+
+```
+
+No communities in BBS are outside the maxima. All communities (in this dataset) are only represnted with 1 year. 
+
+
+
+```{r}
+
+gentry <- read.csv(here::here("working-data", "abund_data", "gentry_spab.csv"),  stringsAsFactors = F, header = F, skip = 2)
+
+colnames(gentry) <- c("site", "year", "species", "abund")
+
+
+gentry_statevars <- gentry %>%
+  group_by(site) %>%
+  summarize(
+    nyears = length(unique(year)),
+    nspecies = dplyr::n(),
+    nind = sum(abund)
+  ) %>%
+  mutate(outside_maxima = (nspecies > 200) | (nind > 40720))
+
+ggplot(gentry_statevars, aes(nspecies, nind, color = outside_maxima)) +
+  geom_point() +
+  geom_hline(yintercept = 40720) +
+  geom_vline(xintercept = 200) +
+  ggtitle("gentry")
+
+
+```
+
+Gentry has `r sum(gentry$outside_maxima)` communities, out of `r nrow(gentry)` communities, outside the maxima. RMD just realized, I left these in because they are still sample-able - they have sufficiently low N. 
+
+```{r} 
+
+
+miscabund <- read.csv(here::here("working-data", "abund_data", "misc_abund_spab.csv"))
+
+    miscabund <- miscabund %>%
+      dplyr::rename(site = Site_ID,
+                    abund = Abundance)
+
+    
+miscabund_statevars <- miscabund %>%
+  group_by(site) %>%
+  summarize(
+    nspecies = dplyr::n(),
+    nind = sum(abund),
+    nind_na_rm=sum(abund, na.rm = T)
+  ) %>%
+  mutate(outside_maxima = (nspecies > 200) | (nind > 40720))
+
+
+
+ggplot(miscabund_statevars, aes(nspecies, nind, color = outside_maxima)) +
+  geom_point() +
+  geom_hline(yintercept = 40720) +
+  geom_vline(xintercept = 200) +
+  ggtitle("miscabund")
+
+
+sum(is.na(miscabund_statevars$nind))
+
+# how many of those have 0
+
+nrow(filter(miscabund_statevars, is.na(nind), nind_na_rm == 0))
+
+filter(miscabund_statevars, is.na(nind), nind_na_rm >0 )
+
+```
+
+Misc abund has `{r} sum(miscabund_statevars$outside_maxima, na.rm =T)` communities that get removed. They are all removed because they have high numbers of individiuals.
+
+There are 130 datasets where there are a mixture of relative and count abundances included. of those, 124 have 0 individuals in the count. THose were not included. There were **6** that have a mixutre and a nonzero number counted. These were INCLUDED in the initial analysis, with relative abundance species completely removed. 
+
+
+```{r}
+
+miscabund_within <- miscabund_statevars %>%
+  filter(nspecies <= 200, nind <= 40720)
+
+miscabund_filtered <- load_dataset("misc_abund_short")
+
+miscabund_sites <- unique(miscabund_within$site)
+miscabund_filtered_sites <- unique(miscabund_filtered$site)
+
+included_sites <- as.numeric(miscabund_filtered_sites)
+
+setdiff(included_sites, miscabund_sites)
+  
+```
+
+```{r}
+
+fia <- read.csv(here::here("working-data", "abund_data", "fia_spab.csv"), stringsAsFactors = F, header = F, skip = 2)
+
+      colnames(fia) <- c("site", "year", "species", "abund")
+
+fia_statevars <- fia %>%
+  group_by(site) %>%
+  summarize(
+    nspecies = dplyr::n(),
+    nind = sum(abund),
+    nind_na_rm=sum(abund, na.rm = T)
+  ) %>%
+  mutate(outside_maxima = (nspecies > 200) | (nind > 40720),
+         n_equals_s = nind == nspecies)
+sum(fia_statevars$n_equals_s)
+
+
+ggplot(fia_statevars, aes(nspecies, nind, color = outside_maxima)) +
+  geom_point() +
+  geom_hline(yintercept = 40720) +
+  geom_vline(xintercept = 200) +
+  ggtitle("fia")
+
+```
+
+FIA has no extremely large datasets.
+
+```{r}
+
+ggplot(fia_statevars, aes(nspecies, nind, color = outside_maxima)) +
+  geom_point() +
+  geom_vline(xintercept = 10) +
+  ggtitle("fia")
+
+ggplot(fia_statevars, aes(nspecies)) +
+  geom_histogram() +
+  geom_vline(xintercept = 10)
+
+```
+
+
+```{r}
+
+
+mcdb <- read.csv(here::here("working-data", "abund_data", "mcdb_spab.csv"), stringsAsFactors = F, header = F, skip = 2)
+
+      colnames(mcdb) <- c("site", "year", "species", "abund")
+
+mcdb_statevars <- mcdb %>%
+  group_by(site) %>%
+  summarize(
+    nspecies = dplyr::n(),
+    nind = sum(abund),
+    nind_na_rm=sum(abund, na.rm = T)
+  ) %>%
+  mutate(outside_maxima = (nspecies > 200) | (nind > 40720),
+         n_equals_s = nind == nspecies)
+
+
+
+ggplot(mcdb_statevars, aes(nspecies, nind, color = outside_maxima)) +
+  geom_point() +
+  geom_hline(yintercept = 40720) +
+  geom_vline(xintercept = 200) +
+  ggtitle("mcdb")
+
+sum(mcdb_statevars$n_equals_s)
+```
+
+```{r}
+
+all_statevars <- miscabund_statevars %>%
+  select(-nind) %>%
+  rename(nind = nind_na_rm) %>%
+  bind_rows(bbs_statevars, fia_statevars, gentry_statevars, mcdb_statevars) %>%
+  filter(!outside_maxima) %>%
+  mutate(n_equals_s = nind == nspecies)
+
+sum(all_statevars$n_equals_s)
+
+```
+
+
