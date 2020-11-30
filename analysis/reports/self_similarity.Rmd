@@ -3,7 +3,7 @@ title: "Self-similarity of the elements of the feasible set"
 author: Renata Diaz
 date: "`r Sys.Date()`"
 output: 
-    github_document:
+    word_document:
        df_print: kable
 ---
 
@@ -540,7 +540,7 @@ ggplot(all_diffs_div, aes(div, group = s_and_n, color = log_nparts)) +
 ```
 
 
-Here is div for only "small" feasible sets (those with fewer than `r exp(20)` elements in the feasible set). This lets us zoom in on the distributions where they start to broaden out.
+Here is K-L divergence for only "small" feasible sets (those with fewer than `r exp(20)` elements in the feasible set). This lets us zoom in on the distributions where they start to broaden out.
 
 ```{r div small}
 
