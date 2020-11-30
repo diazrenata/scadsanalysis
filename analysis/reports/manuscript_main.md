@@ -1,7 +1,7 @@
 Figures and results for main manuscript
 ================
 Renata Diaz
-2020-10-14
+2020-11-30
 
 # Final dataset in S and N space
 
@@ -32,7 +32,7 @@ communities.
 | Forest Inventory and Analysis |                                                     0.0542077 |                                       18300 |                                                    0.0939657 |                                       18113 |
 | Gentry                        |                                                     0.1883408 |                                         223 |                                                    0.1517857 |                                         224 |
 | Mammal Community DB           |                                                     0.1582868 |                                         537 |                                                    0.3542435 |                                         542 |
-| Miscellaneous Abundance DB    |                                                     0.3455285 |                                         492 |                                                    0.5959184 |                                         490 |
+| Miscellaneous Abundance DB    |                                                     0.3428571 |                                         490 |                                                    0.5942623 |                                         488 |
 
 </div>
 
@@ -47,17 +47,17 @@ communities.
 | Dataset                       | Proportion of communities with skewness above 95th percentile | Number of communities analyzed for skewness | Proportion of communities with evenness below 5th percentile | Number of communities analyzed for evenness |
 | :---------------------------- | ------------------------------------------------------------: | ------------------------------------------: | -----------------------------------------------------------: | ------------------------------------------: |
 | Forest Inventory and Analysis |                                                     0.0542077 |                                       18300 |                                                    0.0939657 |                                       18113 |
-| Other datasets                |                                                     0.1634783 |                                        4025 |                                                    0.3072723 |                                        4029 |
+| Other datasets                |                                                     0.1630624 |                                        4023 |                                                    0.3069282 |                                        4027 |
 
 </div>
 
 # 95 intervals by size of FS
 
-    ## Warning: Removed 30 rows containing missing values (geom_point).
+    ## Warning: Removed 29 rows containing missing values (geom_point).
 
 ![](manuscript_main_files/figure-gfm/95%20intervals-1.png)<!-- -->
 
-    ## Warning: Removed 30 rows containing missing values (geom_point).
+    ## Warning: Removed 29 rows containing missing values (geom_point).
 
 ![](manuscript_main_files/figure-gfm/95%20intervals-2.png)<!-- -->
 
