@@ -15,217 +15,155 @@ library(ggplot2)
 library(scadsanalysis)
 
 theme_set(theme_bw())
-options(ggplot2.discrete.color = scale_color_viridis_d(end = .8))
 
 knitr::opts_chunk$set(fig.width=3, fig.height=2.5, warning = FALSE, message = FALSE) 
 ```
 
-The filtering of datasets to exclude very small or very large communities happens at the very beginning of the analysis, when we download and *process* the data.
+We filter datasets in two stages. First, **prior to trying to sample from the feasible set**, we remove communities that have a combined S and N too high for us to sample the feasible set. We also create a sub-sample of the FIA dataset, because it has so many communities (~100,000) and so many of them are extremely small (~90,000 with fewer than 10 species). Sampling all 100,000 communities overwhelms our computational pipeline, so we create a subsample of 20,000 communities comprising all communities with more than 10 species (approx. 10,000) and 10,000 randomly selected communities with 3-10 species. Second, **after sampling but before we aggregate results across communities**, we remove communities that are problematic for a number of more nuanced reasons. This includes having only 1 possible SAD (S = 1, N = S, or N = S + 1). We also filter to communities whose sampled feasible sets yield more than 20 unique values for skewness/evenness. We do this because, if there are fewer than 20 unique values in the comparison vector, it's impossible to be in the 5th or 95th percentile. Finally, we remove communities with only 2 species from analyses for skewness, because  `e1071::skewness()` always = 0 if S = 2. 
 
+## Pre-sampling
+
+The only filtering at this stage is removing large communities and subsampling the FIA database. Communities with very large numbers of individuals become computationally intractable. We set the upper limit at 40720, because this is the largest community we were able to sample given the available resources. This upper limit results in the removal of a total of 4 communities, all of them from the Miscellaneous Abundance Database.
 
 The `download_data` function downloads raw data files from https://github.com/weecology/sad-comparison/ (for BBS, Gentry, Mammal Community  Database, and FIA) and figshare http://figshare.com/files/3097079 (for the Miscellaneous Abundance Database). These raw files are stored in `working-data\abund_data` and are not edited. 
 
-To filter, we can re-load the raw data files and go through the filtering process step by step. In the analysis this is accomplished by running dataset-specific filtering scripts and saving new .csvs, which are then loaded using `load_dataset`. 
-
-We filter according to the following limitations:
-* Communities with very large numbers of individuals become computationally intractable. We set the upper limit at 40720, because this is the largest community we were able to sample given the available resources. This upper limit results in the removal of a total of 6 communities across all the datasets.
-* Communities for which N = S have only 1 possible SAD.
-* Communities with only 1 species have only 1 possible SAD.
-* The Miscellaneous Abundance Database includes communities with abundances reported as relative abundances as well as as counts. We exclude communities with relative abundance data. 
-* We additionally filter the FIA dataset, because it has many more communities than any other dataset and sampling all of them overwhelms our computational pipeline. We include all communities with more than 10 species (10,000), and an additional, randomly selected, 10,000 (of a remaining 90,000) with 3-10 species. 
-* Communities with only 2 species are removed from analyses for skewness, because `e1071::skewness()` always evaluates to 0 for a vector of length 2. 
-
-### BBS
-
-```{r}
-
-bbs <- read.csv(here::here("working-data", "abund_data", "bbs_spab.csv"),  stringsAsFactors = F, header = F, skip = 2)
-
-colnames(bbs) <- c("site", "year", "species", "abund")
-
-
-bbs_statevars <- bbs %>%
-  group_by(site) %>%
-  summarize(
-    nyears = length(unique(year)),
-    nspecies = dplyr::n(),
-    nind = sum(abund)
-  )
-
-ggplot(bbs_statevars, aes(nspecies, nind)) +
-  geom_point() +
-  ggtitle("BBS")
-
-unique(bbs_statevars$nyears)
-
-range(bbs_statevars$nspecies)
-range(bbs_statevars$nind)
-
-```
-All communities in BBS are used.
-
-### Gentry
-
-```{r}
-
-gentry <- read.csv(here::here("working-data", "abund_data", "gentry_spab.csv"),  stringsAsFactors = F, header = F, skip = 2)
-
-colnames(gentry) <- c("site", "year", "species", "abund")
-
-
-gentry_statevars <- gentry %>%
-  group_by(site) %>%
-  summarize(
-    nyears = length(unique(year)),
-    nspecies = dplyr::n(),
-    nind = sum(abund)
-  ) 
-
-ggplot(gentry_statevars, aes(nspecies, nind)) +
-  geom_point() +
-  ggtitle("gentry")
-
-
-range(gentry_statevars$nspecies)
-range(gentry_statevars$nind)
-
-sum(gentry_statevars$nspecies == 2)
-
-```
-
-All Gentry communities are kept. However, `r sum(gentry_statevars$nspecies == 2)` site only has 2 species and will be removed from skewness analyses later in the pipeline.
-
-### Mammal Community Database
-
-```{r}
-
-
-mcdb <- read.csv(here::here("working-data", "abund_data", "mcdb_spab.csv"), stringsAsFactors = F, header = F, skip = 2)
-
-colnames(mcdb) <- c("site", "year", "species", "abund")
-
-mcdb_statevars <- mcdb %>%
-  group_by(site) %>%
-  summarize(
-    nspecies = dplyr::n(),
-    nind = sum(abund)
-  )
-
-ggplot(mcdb_statevars, aes(nspecies, nind)) +
-  geom_point() +
-  geom_hline(yintercept = 40720) +
-  geom_vline(xintercept = 200) +
-  ggtitle("mcdb")
-
-
-range(mcdb_statevars$nspecies)
-range(mcdb_statevars$nind)
-
-
-```
-
-`r sum(mcdb_statevars$nspecies == 1)` communities are removed because they have only one species.  Additionally, `r sum(mcdb_statevars$nspecies == 2)
-` have 2 species and will be removed from skewness analyses. These removals happen post-pipeline.
+To filter, we can re-load the raw data files and go through the filtering process step by step. In the analysis this is accomplished by running dataset-specific filtering scripts and saving new .csvs, which are then loaded using `load_dataset`. We can manually load the datasets and then compare them to what is returned from `load_dataset`.
 
 
 ### Miscellaneous Abundance Database
 
-```{r} 
+- Misc. Abund includes datasets reported as relative abundance in addition to count data. We don't want any communities without counts, so we filter out records where abund = 0.
 
 
-miscabund <- read.csv(here::here("working-data", "abund_data", "misc_abund_spab.csv"))
+```{r}
 
-miscabund <- miscabund %>%
+misc_abund_raw <- read.csv(here::here("working-data", "abund_data", "misc_abund_spab.csv"))
+
+misc_abund_raw <- misc_abund_raw %>%
   dplyr::rename(site = Site_ID,
                 abund = Abundance)
 
-
-miscabund_statevars <- miscabund %>%
+misc_abund_raw <- misc_abund_raw %>%
+  mutate(site = as.character(site),
+         dat = "misc_abund",
+         singletons = F,
+         sim = -99,
+         source = "observed") %>%
+  filter(abund > 0) %>%
   group_by(site) %>%
-  summarize(
-    nspecies = dplyr::n(),
-    nind = sum(abund),
-    nind_na_rm=sum(abund, na.rm = T)
-  ) %>%
-  mutate(outside_maxima = (nind_na_rm > 40720))
+  arrange(abund) %>%
+  mutate(rank = row_number()) %>%
+  ungroup()
 
-ggplot(miscabund_statevars, aes(nspecies, nind_na_rm, color = outside_maxima)) +
-  geom_point() +
-  geom_hline(yintercept = 40720) +
-  geom_vline(xintercept = 200) +
-  ggtitle("miscabund")
-
-
-sum(is.na(miscabund_statevars$nind))
-
-# how many of those have 0
-
-nrow(filter(miscabund_statevars, is.na(nind), nind_na_rm == 0))
-
-filter(miscabund_statevars, is.na(nind), nind_na_rm >0 )
+misc_abund_loaded <- load_dataset("misc_abund")
 
 ```
 
-Misc abund has `{r} sum(miscabund_statevars$outside_maxima, na.rm =T)` communities that get removed. They are all removed because they have high numbers of individiuals.
+```{r}
+any(!(misc_abund_loaded$abund == misc_abund_raw$abund))
+any(!(misc_abund_loaded$site == misc_abund_raw$site))
 
-There are 130 datasets where there are a mixture of relative and count abundances included. of those, 124 have 0 individuals in the count. THose were not included. There were **6** that have a mixutre and a nonzero number counted. These were INCLUDED in the initial analysis, with relative abundance species completely removed. Upon realizing this we remove these 6 communities from the final analysis. Rather than re-run the whole pipeline, we manually remove them when we load the data to make the histograms and summary tables (see manuscript_main.Rmd). 
+```
+
+Check community sizes:
+
+```{r}
+
+misc_abund_statevars <- get_statevars(misc_abund_raw)
+
+ggplot(misc_abund_statevars, aes(s0, n0)) +
+  geom_point() +
+  theme_bw() +
+  geom_hline(yintercept = 40720, color = "red")
+
+```
+
+
+Misc abund has `r sum(misc_abund_statevars$n0 > 40720)` communities that get removed. They are all removed because they have high numbers of individuals.
+
+The filtered database is saved as a .csv and can be loaded with `load_dataset`. We can check that it matches the filtering we have done here:
+
+```{r}
+
+misc_abund_sv_filtered <- misc_abund_statevars %>%
+  filter(n0 <= 40720)
+
+misc_abund_filtered <- filter(misc_abund_raw, site %in% misc_abund_sv_filtered$site)
+
+misc_abund_short_loaded <- load_dataset("misc_abund_short")
+
+any(!(misc_abund_short_loaded$abund == misc_abund_filtered$abund))
+any(!(misc_abund_short_loaded$site == misc_abund_filtered$site))
+```
 
 
 ### FIA
 
+- Load raw FIA data
+- Add columns to match what we will get from `load_dataset`
+- Load from `load_dataset`
+
 ```{r}
 
-fia <- read.csv(here::here("working-data", "abund_data", "fia_spab.csv"), stringsAsFactors = F, header = F, skip = 2)
+fia_raw <- read.csv(here::here("working-data", "abund_data", "fia_spab.csv"), stringsAsFactors = F, header = F, skip = 2)
 
-colnames(fia) <- c("site", "year", "species", "abund")
+colnames(fia_raw) <- c("site", "year", "species", "abund")
 
-fia_statevars <- fia %>%
+fia_raw <- fia_raw %>%
+  mutate(site = as.character(site),
+         dat = "fia",
+         singletons = F,
+         sim = -99,
+         source = "observed") %>%
+  filter(abund > 0) %>%
   group_by(site) %>%
-  summarize(
-    nspecies = dplyr::n(),
-    nind = sum(abund),
-    nind_na_rm=sum(abund, na.rm = T)
-  ) 
+  arrange(abund) %>%
+  mutate(rank = row_number()) %>%
+  ungroup()
+
+fia_loaded <- load_dataset("fia")
+```
 
 
-
-ggplot(fia_statevars, aes(nspecies, nind)) +
-  geom_point() +
-  geom_hline(yintercept = 40720) +
-  geom_vline(xintercept = 200) +
-  ggtitle("fia")
+```{r}
+any(!(fia_loaded$abund == fia_raw$abund))
+any(!(fia_loaded$site == fia_raw$site))
 
 ```
 
-FIA has no extremely large datasets. However, it has `r nrow(fia_statevars)` communities, of which `r sum(fia_statevars$nspecies < 10)` have fewer than 10 species. This many communities overwhelms our computational pipeline. We therefore sample all `r sum(fia_statevars$nspecies >= 10)` communities with 10 or more species, and a random subsample of 10,000 communities with 3-9 species. We then run these through the pipeline as two separate databases. `fia_short` is the communities with 10 or more species, and `fia_small` is the 10,000 communities with 3-9 species.
-
-To go through this we re-load FIA using load_dataset, so we can get the `site` column in the correct format and order such that it will replicate when we run sample.
+Check community sizes:
 
 ```{r}
 
-fia <- load_dataset("fia")
+fia_statevars <- get_statevars(fia_raw)
 
-fia_sv_short <- get_statevars(fia) %>%
+ggplot(fia_statevars, aes(s0, n0)) +
+  geom_point() +
+  theme_bw() +
+  geom_vline(xintercept = c(1.5, 2.5, 9.5), color = "red")
+
+```
+
+FIA has no extremely large datasets; the largest number of individuals is `r max(fia_statevars$n0)`. However, it has `r nrow(fia_statevars)` communities, of which `r sum(fia_statevars$s0 < 10)` have fewer than 10 species. This many communities overwhelms our computational pipeline. We therefore sample all `r sum(fia_statevars$s0 >= 10)` communities with 10 or more species, and a random subsample of 10,000 communities with 3-9 species. We then run these through the pipeline as two separate databases. `fia_short` is the communities with 10 or more species, and `fia_small` is the 10,000 communities with 3-9 species. We re-combine them as "FIA" for aggregate analyses.
+
+
+```{r}
+
+fia_sv_short <- fia_statevars %>%
     dplyr::filter(s0 >= 10)
 
-fia_short <- fia %>%
+fia_short <- fia_raw %>%
   dplyr::filter(site %in% fia_sv_short$site) %>%
   dplyr::mutate(dat = "fia_short")
 
-fia_short_statevars <- fia_short %>%
-  group_by(site) %>%
-  summarize(
-    nspecies = dplyr::n(),
-    nind = sum(abund),
-    nind_na_rm=sum(abund, na.rm = T)
-  ) %>%
-  mutate(site = as.numeric(site))
+fia_short_statevars <- get_statevars(fia_short)
 
-ggplot(fia_short_statevars, aes(nspecies, nind)) +
+ggplot(fia_short_statevars, aes(s0, n0)) +
   geom_point() +
-  ggtitle("fia short")
+  ggtitle("fia short, >= 10 species") +
+  theme_bw()
 
-fia_sv_small <- get_statevars(fia) %>%
+fia_sv_small <- fia_statevars %>%
   dplyr::filter(s0 >= 3) %>%
   dplyr::filter(s0 <= 9)
 
@@ -234,61 +172,200 @@ fia_sv_small <- get_statevars(fia) %>%
 
 
 
-fia_small <- fia %>%
+fia_small <- fia_raw %>%
   dplyr::filter(site %in% fia_sv_small$site) %>%
   dplyr::mutate(dat = "fia_small")
 
-fia_small_statevars <-fia_small  %>%
-  group_by(site) %>%
-  summarize(
-    nspecies = dplyr::n(),
-    nind = sum(abund),
-    nind_na_rm=sum(abund, na.rm = T)
-  )  %>%
-  mutate(site = as.numeric(site))
+fia_small_statevars <- get_statevars(fia_small)
 
-ggplot(fia_small_statevars, aes(nspecies, nind)) +
+ggplot(fia_small_statevars, aes(s0, n0)) +
   geom_point() +
-  ggtitle("fia small")
+  ggtitle("fia small, 3-9 species")
+
+
+```
+
+The "short" and "small" datasets are saved as .csvs and can be loaded using `load_dataset`: 
+
+```{r}
 
 fia_small_loaded <- load_dataset("fia_small")
 
-setdiff(fia_small_loaded$site, fia_small$site)
+any(!(fia_small_loaded$abund == fia_small$abund))
+any(!(fia_small_loaded$site == fia_small$site))
 
-```
+fia_short_loaded <- load_dataset("fia_short")
 
-
-```{r}
-
-all_statevars <- miscabund_statevars %>%
-  select(-nind) %>%
-  rename(nind = nind_na_rm) %>%
-  bind_rows(bbs_statevars, fia_short_statevars, fia_small_statevars, gentry_statevars, mcdb_statevars) %>%
-  mutate(one_species = nspecies == 1,
-         two_species = nspecies == 2,
-         n_equals_s = nspecies == nind)
+any(!(fia_short_loaded$abund == fia_short$abund))
+any(!(fia_short_loaded$site == fia_short$site))
 
 
 ```
 
 
-Overall there are `r sum(all_statevars$one_species)` removed at the end because they have just 1 species. There are `r sum(all_statevars$two_species)` that will be removed from skewness because they ahve 2 species. There are `r sum(all_statevars$n_equals_s)` that are removed because N = S. 
+### BBS
 
-Note that, in practice, many more small ones end up getting removed because they have very few possible SADs and very few unique values for skewness and evenness.
-
+- Load raw BBS data
+- Add columns to match what we will get from `load_dataset`
+- Load from `load_dataset`
 
 ```{r}
+
+bbs_raw <- read.csv(here::here("working-data", "abund_data", "bbs_spab.csv"),  stringsAsFactors = F, header = F, skip = 2)
+
+colnames(bbs_raw) <- c("site", "year", "species", "abund")
+
+bbs_raw <- bbs_raw %>%
+  mutate(site = as.character(site),
+         dat = "bbs",
+         singletons = F,
+         sim = -99,
+         source = "observed") %>%
+  group_by(site) %>%
+  arrange(abund) %>%
+  mutate(rank = row_number()) %>%
+  ungroup()
+
+bbs_loaded <- load_dataset("bbs")
+```
+
+Compare loaded to raw:
+
+```{r}
+any(!(bbs_loaded$abund == bbs_raw$abund))
+any(!(bbs_loaded$site == bbs_raw$site))
+
+```
+
+
+Check community sizes:
+
+```{r}
+
+bbs_statevars <- get_statevars(bbs_raw)
+
+ggplot(bbs_statevars, aes(s0, n0)) +
+  geom_point() +
+  theme_bw() +
+  geom_hline(yintercept = 40720, color = "red")
+
+```
+
+No communities in BBS have more than 40720 individuals, so all are used at this stage. 
+
+
+### Gentry
+
+- Load raw Gentry data
+- Add columns to match what we will get from `load_dataset`
+- Load from `load_dataset`
+
+```{r}
+
+gentry_raw <- read.csv(here::here("working-data", "abund_data", "gentry_spab.csv"),  stringsAsFactors = F, header = F, skip = 2)
+
+colnames(gentry_raw) <- c("site", "year", "species", "abund")
+
+gentry_raw <- gentry_raw %>%
+  mutate(site = as.character(site),
+         dat = "gentry",
+         singletons = F,
+         sim = -99,
+         source = "observed") %>%
+  group_by(site) %>%
+  arrange(abund) %>%
+  mutate(rank = row_number()) %>%
+  ungroup()
+
+gentry_loaded <- load_dataset("gentry")
+```
+
+Compare loaded to raw:
+
+```{r}
+any(!(gentry_loaded$abund == gentry_raw$abund))
+any(!(gentry_loaded$site == gentry_raw$site))
+
+```
+
+
+Check community sizes:
+
+```{r}
+
+gentry_statevars <- get_statevars(gentry_raw)
+
+ggplot(gentry_statevars, aes(s0, n0)) +
+  geom_point() +
+  theme_bw() +
+  geom_hline(yintercept = 40720, color = "red")
+
+```
+
+No communities in Gentry have more than 40720 individuals, so all are used at this stage. 
+
+### Mammal Community Database
+
+- Load raw MCDB data
+- Add columns to match what we will get from `load_dataset`
+- Load from `load_dataset`
+
+```{r}
+
+mcdb_raw <- read.csv(here::here("working-data", "abund_data", "mcdb_spab.csv"),  stringsAsFactors = F, header = F, skip = 2)
+
+colnames(mcdb_raw) <- c("site", "year", "species", "abund")
+
+mcdb_raw <- mcdb_raw %>%
+  mutate(site = as.character(site),
+         dat = "mcdb",
+         singletons = F,
+         sim = -99,
+         source = "observed") %>%
+  group_by(site) %>%
+  arrange(abund) %>%
+  mutate(rank = row_number()) %>%
+  ungroup()
+
+mcdb_loaded <- load_dataset("mcdb")
+```
+
+Compare loaded to raw:
+
+```{r}
+any(!(mcdb_loaded$abund == mcdb_raw$abund))
+any(!(mcdb_loaded$site == mcdb_raw$site))
+
+```
+
+
+Check community sizes:
+
+```{r}
+
+mcdb_statevars <- get_statevars(mcdb_raw)
+
+ggplot(mcdb_statevars, aes(s0, n0)) +
+  geom_point() +
+  theme_bw() +
+  geom_hline(yintercept = 40720, color = "red")
+
+```
+
+No high N communities; so all are included at this stage.
+
+## Post-sampling
+
+We will remove additional communities for more substantive reasons. First we can load `all_di` ("all diversity indices"), which is the combined results across all the communities in all the datasets. Every community that was included for sampling is included in all_di. (Additionally, every community has a "singletons" counterpart, which is the same analysis run adjusted for rarefaction. That analysis is discussed elsewhere, and we ignore the rarefaction-adjusted versions here).
+
+```{r}
+all_statevars <- bind_rows(bbs_statevars, fia_short_statevars, fia_small_statevars, gentry_statevars, mcdb_statevars, misc_abund_sv_filtered)
+
+
 all_di <- read.csv(here::here("analysis", "reports", "all_di.csv"), stringsAsFactors = F)
 
 all_di <- all_di %>%
-  mutate(log_nparts = log(gmp:::as.double.bigz(nparts)),
-         log_nsamples = log(nsamples),
-         log_s0 = log(s0),
-         log_n0 = log(n0)) %>%
-  filter(n0 > s0,
-         s0 > 1,
-         !singletons,
-         dat %in% c("bbs", "fia_short", "fia_small", "gentry", "mcdb", "misc_abund_short")) %>%
+  filter(!singletons) %>%
   mutate(dat = ifelse(grepl(dat, pattern = "fia"), "fia", dat),
          dat = ifelse(dat == "misc_abund_short", "misc_abund", dat)) %>%
   mutate(Dataset = dat,
@@ -298,11 +375,54 @@ all_di <- all_di %>%
         Dataset = ifelse(Dataset == "gentry", "Gentry", Dataset),
         Dataset = ifelse(Dataset == "misc_abund", "Miscellaneous Abundance DB", Dataset))
 
-nrow(all_di)
+head(all_di)
 
-filtered_sv <- all_statevars %>%
-  filter(!n_equals_s,
-         !one_species)
+nrow(all_di) == nrow(all_statevars)
+```
 
-nrow(filtered_sv)
+We remove communities with only one possible SAD (N = S, N = S + 1, or S = 1).
+
+```{r}
+
+all_di %>%
+  group_by_all() %>%
+  mutate(only_one_sad = sum(s0 == n0, s0 == 1, n0 == (s0 + 1)) > 0) %>%
+  ungroup() %>%
+  group_by(dat) %>%
+  summarize(total_only_one_sad = sum(only_one_sad),
+            total_sites = dplyr::n()) %>%
+  ungroup() %>%
+  mutate(all_sites_one_sad = sum(total_only_one_sad),
+         all_sites = sum(total_sites))
+
+all_di_filtered <- all_di %>%
+  filter(s0 != n0,
+         s0 != 1,
+         n0 != (s0 + 1))
+
+nrow(all_di_filtered)
+
+```
+
+Removing those with only one SAD results in the removal of 258 sites total. 176 from FIA, 56 from MCDB, and 26 from Misc. Abund.
+
+
+Finally, we will restrict aggregate analyses to sites whose feasible sets have more than 20 unique values for whichever shape metric we're interested in, **and** we will restrict analyses with skewness to sites with >2 species. This results in these final totals:
+
+```{r}
+
+all_di_filtered %>%
+  filter(simpson_unique > 20) %>%
+  group_by(dat) %>%
+  summarize(sites_for_evenness = dplyr::n()) %>%
+  ungroup() %>%
+  mutate(total_sites_for_evenness = sum(sites_for_evenness))
+
+
+all_di_filtered %>%
+  filter(skew_unique > 20, s0 > 2) %>%
+  group_by(dat) %>%
+  summarize(sites_for_skewness = dplyr::n()) %>%
+  mutate(total_sites_for_skewness = sum(sites_for_skewness))
+
 ```

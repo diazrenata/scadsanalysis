@@ -33,15 +33,6 @@ all_di <- all_di %>%
         Dataset = ifelse(Dataset == "gentry", "Gentry", Dataset),
         Dataset = ifelse(Dataset == "misc_abund", "Miscellaneous Abundance DB", Dataset))
 
-miscabund_problems <- c(144, 145, 145, 146, 147, 178, 446)
-
-all_di <- all_di %>%
-  mutate(is.miscabund.problem = ifelse(dat == "misc_abund",
-                                       ifelse(site %in% miscabund_problems, T, F), F)) %>%
-  filter(!is.miscabund.problem) %>%
-  ungroup() %>%
-  select(-is.miscabund.problem)
-
 ```
 
 # Final dataset in S and N space
