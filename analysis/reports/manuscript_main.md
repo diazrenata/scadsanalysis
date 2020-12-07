@@ -1,7 +1,7 @@
 Figures and results for main manuscript
 ================
 Renata Diaz
-2020-11-30
+2020-12-07
 
 # Final dataset in S and N space
 
@@ -11,7 +11,7 @@ Renata Diaz
 
 To show the 95% interval, we need to load the distribution of shape
 metric values from the samples from the feasible set for a few
-communities.
+communities. See rov\_metric.md.
 
 # Skewness and evenness histograms by dataset
 

@@ -20,10 +20,10 @@ all_di <- all_di %>%
          log_nsamples = log(nsamples),
          log_s0 = log(s0),
          log_n0 = log(n0)) %>%
-  filter(n0 > s0,
-         s0 > 1,
+  filter(n0 != s0,
+         s0 != 1,
          !singletons,
-         dat %in% c("bbs", "fia_short", "fia_small", "gentry", "mcdb", "misc_abund_short")) %>%
+         n0 != (s0 + 1)) %>%
   mutate(dat = ifelse(grepl(dat, pattern = "fia"), "fia", dat),
          dat = ifelse(dat == "misc_abund_short", "misc_abund", dat)) %>%
   mutate(Dataset = dat,
@@ -75,7 +75,7 @@ ggplot(all_di, aes(x = log_s0, y = log_n0, color = Dataset)) +
 
 # Illustrations of 95% interval
 
-To show the 95% interval, we need to load the distribution of shape metric values from the samples from the feasible set for a few communities. 
+To show the 95% interval, we need to load the distribution of shape metric values from the samples from the feasible set for a few communities. See rov_metric.md.
 
 # Skewness and evenness histograms by dataset
 
