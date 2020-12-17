@@ -171,7 +171,7 @@ fig_3 <- gridExtra::grid.arrange(grobs = list(
     geom_histogram() +
     theme_bw() +
     facet_wrap(vars(Dataset), scales = "free_y") +
-    xlab("Breadth index") +
+    xlab("Breadth index (ranges 0-1, with 1 being very broad)") +
     ylab("Number of communities") +
     ggtitle("Skewness"),
   
@@ -179,7 +179,7 @@ fig_3 <- gridExtra::grid.arrange(grobs = list(
     geom_histogram() +
     theme_bw() +
     facet_wrap(vars(Dataset), scales = "free_y") +
-    xlab("Breadth index") +
+    xlab("Breadth index (ranges 0-1, with 1 being very broad)") +
     ylab("Number of communities") +
     ggtitle("Evenness")
 ))
@@ -307,19 +307,19 @@ plot(fig_4)
 ```
 
 ```{r}
-pdf("figure_1.pdf")
+pdf("figure_1.pdf", title = "Figure 1")
 plot(fig_1)
 dev.off()
 
-pdf("figure_2.pdf")
+pdf("figure_2.pdf", title = "Figure 2")
  plot(fig_2)
  dev.off()
  
-pdf("figure_3.pdf")
+pdf("figure_3.pdf", title = "Figure 3")
 plot(fig_3)
 dev.off()
 
-pdf("figure_4.pdf")
+pdf("figure_4.pdf", title = "Figure 4")
  plot(fig_4)
 dev.off()
 ```
