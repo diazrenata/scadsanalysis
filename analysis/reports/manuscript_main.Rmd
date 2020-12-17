@@ -27,163 +27,301 @@ all_di <- all_di %>%
   mutate(dat = ifelse(grepl(dat, pattern = "fia"), "fia", dat),
          dat = ifelse(dat == "misc_abund_short", "misc_abund", dat)) %>%
   mutate(Dataset = dat,
-    Dataset = ifelse(Dataset == "fia", "Forest Inventory and Analysis", Dataset),
-        Dataset = ifelse(Dataset == "bbs", "Breeding Bird Survey", Dataset),
-        Dataset = ifelse(Dataset == "mcdb", "Mammal Community DB", Dataset),
-        Dataset = ifelse(Dataset == "gentry", "Gentry", Dataset),
-        Dataset = ifelse(Dataset == "misc_abund", "Miscellaneous Abundance DB", Dataset))
+         Dataset = ifelse(Dataset == "fia", "FIA", Dataset),
+         Dataset = ifelse(Dataset == "bbs", "Breeding Bird Survey", Dataset),
+         Dataset = ifelse(Dataset == "mcdb", "Mammal Communities", Dataset),
+         Dataset = ifelse(Dataset == "gentry", "Gentry", Dataset),
+         Dataset = ifelse(Dataset == "misc_abund", "Misc. Abundance", Dataset))
 
 ```
 
-# Final dataset in S and N space
-
-```{r final dataset s and n space}
-
-ggplot(all_di, aes(x = log_s0, y = log_n0, color = Dataset)) +
-  geom_point(alpha = .1) +
-  geom_point(data = filter(all_di, log_nparts > log(50)), alpha = .4) +
-  theme_bw() +
-  scale_color_viridis_d() +
-  ggtitle("Communities by S and N") +
-  xlab("Log species richness (S)") +
-  ylab("Log total abundance (N)") 
-
-
-
-ggplot(all_di, aes(x = log_s0, y = log_n0, color = Dataset)) +
-  geom_point(alpha = .05) +
-  geom_point(data = filter(all_di, log_nparts > log(50)), alpha = .4) +
-  theme_bw() +
-  scale_color_viridis_d() +
-  ggtitle("Communities by S and N") +
-   facet_wrap(vars(Dataset), scales = "free") +
-  theme(legend.position = "bottom")
-  # geom_vline(xintercept = log(40)) +
-  # geom_hline(yintercept = log(1000))
-
-```
-
-
-# Illustrations of 95% interval
+# Illustrations of 95% interval (Figure 1)
 
 To show the 95% interval, we need to load the distribution of shape metric values from the samples from the feasible set for a few communities. See rov_metric.md.
 
-# Skewness and evenness histograms by dataset
+```{r, fig.dim = c(7,7)}
+library(drake)
 
-```{r first hists}
+db <- DBI::dbConnect(RSQLite::SQLite(), here::here("analysis", "drake", "drake-cache-net.sqlite"))
+cache <- storr::storr_dbi("datatable", "keystable", db)
+cache$del(key = "lock", namespace = "session")
 
-ggplot(filter(all_di, s0 > 2, skew_unique > 20), aes(skew_percentile_excl)) +
-  geom_histogram(bins = 100) +
-  geom_vline(xintercept = 95, color = "red") +
-  theme_bw() +
-  facet_wrap(vars(Dataset), scales = "free_y") + ggtitle("Skewness, all sites") +
-  xlab("Percentile rank of observed skewness value relative to feasible set") +
-  ylab("Number of communities")
+net_summary <- readd(all_di_summary, cache = cache)
 
-ggplot(filter(all_di, simpson_unique > 20), aes(simpson_percentile)) + 
- geom_histogram(bins = 100) +
-  geom_vline(xintercept = 5, color = "red") +
-  theme_bw() +
-  facet_wrap(vars(Dataset), scales = "free_y") + ggtitle("Evenness, all sites") +
-  xlab("Percentile rank of observed evenness value relative to feasible set") +
-  ylab("Number of communities")
+net_summary <- net_summary %>%
+  mutate(log_nparts = log(gmp:::as.double.bigz(nparts)))
+
+example_fs <- readd(fs_s_44_n_13360, cache = cache)
+
+example_di <- readd(di_fs_s_44_n_13360, cache =cache)
+
+example_fs <- example_fs %>%
+  left_join(example_di) %>%
+  left_join(net_summary)
+
+example_fs2 <- readd(fs_s_7_n_71, cache = cache)
+
+example_di2 <- readd(di_fs_s_7_n_71, cache =cache)
+
+example_fs2 <- example_fs2 %>%
+  left_join(example_di2) %>%
+  left_join(net_summary)
+
+
+
+example_fs3 <- readd(fs_s_4_n_34, cache = cache)
+
+example_di3 <- readd(di_fs_s_4_n_34, cache =cache)
+
+example_fs3 <- example_fs3 %>%
+  left_join(example_di3) %>%
+  left_join(net_summary)
+
+
+breadth_plots <- list(
+  
+  ggplot(example_fs3, aes(rank, abund, group = sim, color = skew)) +
+    geom_line(alpha = .25) +
+    theme_bw() +
+    scale_color_viridis_c(option = "plasma", end = .8) +
+    ggtitle("Small community", subtitle = paste0("S = ", (example_fs3$s0), "; N = ", (example_fs3$n0[1]))) +
+    theme(legend.position = "right"),
+  
+  ggplot(example_fs3, aes(skew, ..ndensity..)) +
+    geom_density() +
+    geom_histogram(bins = 50) +
+    theme_bw() +
+    geom_vline(xintercept = c(example_fs3$skew_95[1], example_fs3$skew_min[1]), color = "red") +
+    ggtitle("", subtitle = paste0("Breadth index (skewness): ", round((example_fs3$skew_95_ratio_1t[1]), 2))),
+  
+  ggplot(example_fs2, aes(rank, abund, group = sim, color = skew)) +
+    geom_line(alpha = .1) +
+    theme_bw() +
+    scale_color_viridis_c(option = "plasma", end = .8) +
+    ggtitle("Medium community", subtitle = paste0("S = ", (example_fs2$s0), "; N = ", (example_fs2$n0[1]))) +
+    theme(legend.position = "right"),
+  
+  ggplot(example_fs2, aes(skew, ..ndensity..)) +
+    geom_density() +
+    geom_histogram(bins = 50) +
+    theme_bw() +
+    geom_vline(xintercept = c(example_fs2$skew_95[1], example_fs2$skew_min[1]), color = "red") +
+    ggtitle("", subtitle =  paste0("Breadth index (skewness): ", round((example_fs2$skew_95_ratio_1t[1]), 2))),
+  
+  
+  ggplot(example_fs, aes(rank, abund, group = sim, color = skew)) +
+    geom_line(alpha = .1) +
+    theme_bw() +
+    scale_color_viridis_c(option = "plasma", end = .8) +
+    ggtitle("Large community", subtitle = paste0("S = ", (example_fs$s0), "; N = ", (example_fs$n0[1]))) +
+    theme(legend.position = "right"),
+  
+  ggplot(example_fs, aes(skew, ..ndensity..)) +
+    geom_density() +
+    geom_histogram(bins = 50) +
+    theme_bw() +
+    geom_vline(xintercept = c(example_fs$skew_95[1], example_fs$skew_min[1]), color = "red") +
+    ggtitle("", subtitle =  paste0("Breadth index (skewness): ", round((example_fs$skew_95_ratio_1t[1]), 2)))
+  
+)
+
+fig_1 <- gridExtra::grid.arrange(grobs = breadth_plots, ncol = 2)
+
+plot(fig_1)
+
+
+DBI::dbDisconnect(db)
+rm(cache)
 
 ```
 
-# Proportion of sites with highly skewed or uneven SADs
 
-```{r results table}
+# Skewness and evenness histograms by dataset (Figure 2)
 
-overall_skew_results <- all_di %>%
-  filter(s0 > 2, skew_unique > 20) %>%
-  mutate(high_skew = skew_percentile_excl > 95) %>%
-  group_by(Dataset) %>%
-  summarize(proportion_skew_high = mean(high_skew),
-            nsites_skew = dplyr::n())
+```{r first hists, fig.dim = c(7,7)}
+fig_2 <- gridExtra::grid.arrange(grobs = list(
+  
+  ggplot(filter(all_di, s0 > 2, skew_unique > 20), aes(skew_percentile_excl)) +
+    geom_histogram(bins = 100) +
+    geom_vline(xintercept = 95, color = "red") +
+    theme_bw() +
+    facet_wrap(vars(Dataset), scales = "free_y") + ggtitle("Skewness") +
+    xlab("Percentile rank of observed value relative to feasible set") +
+    ylab("Number of communities"),
+  
+  ggplot(filter(all_di, simpson_unique > 20), aes(simpson_percentile)) + 
+    geom_histogram(bins = 100) +
+    geom_vline(xintercept = 5, color = "red") +
+    theme_bw() +
+    facet_wrap(vars(Dataset), scales = "free_y") + ggtitle("Evenness") +
+    xlab("Percentile rank of observed value relative to feasible set") +
+    ylab("Number of communities")
+))
 
-overall_simpson_results <- all_di %>%
-  filter(simpson_unique > 20) %>%
-  mutate(low_even = simpson_percentile < 5) %>%
-  group_by(Dataset) %>%
-  summarize(proportion_even_low = mean(low_even),
-            nsites_even = dplyr::n())
-
-overall_results <- left_join(overall_skew_results, overall_simpson_results) %>%
-  rename("Proportion of communities with skewness above 95th percentile" = proportion_skew_high,
-         "Number of communities analyzed for skewness" = nsites_skew,
-         "Proportion of communities with evenness below 5th percentile" = proportion_even_low,
-         "Number of communities analyzed for evenness" = nsites_even)
-
-overall_results
-
-
-overall_skew_results2 <- all_di %>%
-   mutate(Dataset = ifelse(dat == "fia", "Forest Inventory and Analysis", "Other datasets")) %>%
-  filter(s0 > 2, skew_unique > 20) %>%
-  mutate(high_skew = skew_percentile_excl > 95) %>%
-  group_by(Dataset) %>%
-  summarize(proportion_skew_high = mean(high_skew),
-            nsites_skew = dplyr::n())
-
-overall_simpson_results2 <- all_di %>%
-  filter(simpson_unique > 20) %>%
-   mutate(Dataset = ifelse(dat == "fia", "Forest Inventory and Analysis", "Other datasets")) %>%
-  mutate(low_even = simpson_percentile < 5) %>%
-  group_by(Dataset) %>%
-  summarize(proportion_even_low = mean(low_even),
-            nsites_even = dplyr::n())
-
-overall_results2 <- left_join(overall_skew_results2, overall_simpson_results2) %>%
-   rename("Proportion of communities with skewness above 95th percentile" = proportion_skew_high,
-         "Number of communities analyzed for skewness" = nsites_skew,
-         "Proportion of communities with evenness below 5th percentile" = proportion_even_low,
-         "Number of communities analyzed for evenness" = nsites_even)
-
-overall_results2
-
+plot(fig_2)
 
 ```
 
-# 95 intervals by size of FS
+# Breadth index by dataset (Figure 3)
 
-```{r 95 intervals}
+```{r, fig.dim = c(7,7)}
 
-ggplot(filter(all_di, s0 > 2, skew_unique > 20), aes(x = log_nparts, y= skew_95_ratio_1t)) +
-  geom_point(alpha = .1) +
-  theme_bw() +
-  xlim(0, 100) +
-  ylim(0,1)+
-  xlab("Log number of elements in the feasible set") +
-  ylab("Narrowness of the distribution of sampled skewness values")
+fig_3 <- gridExtra::grid.arrange(grobs = list(
+  ggplot(filter(all_di, s0 > 2, skew_unique > 20), aes(x= skew_95_ratio_1t)) +
+    geom_histogram() +
+    theme_bw() +
+    facet_wrap(vars(Dataset), scales = "free_y") +
+    xlab("Breadth index") +
+    ylab("Number of communities") +
+    ggtitle("Skewness"),
+  
+  ggplot(filter(all_di, simpson_unique > 20), aes(x = simpson_95_ratio_1t)) +
+    geom_histogram() +
+    theme_bw() +
+    facet_wrap(vars(Dataset), scales = "free_y") +
+    xlab("Breadth index") +
+    ylab("Number of communities") +
+    ggtitle("Evenness")
+))
 
-ggplot(filter(all_di, simpson_unique > 20), aes(x = log_nparts, y= simpson_95_ratio_1t)) +
-  geom_point(alpha = .1) +
-  theme_bw() +
-  xlim(0, 100) +
-  ylim(0, 1)+
-  xlab("Log number of elements in the feasible set") +
-  ylab("Narrowness of the distribution of sampled evenness values")
+plot(fig_3)
+
 ```
 
-# 95 intervals by dataset
+# Comparison of FIA and comparably sized communities (Figure 4)
+
+```{r, fig.dim = c(7,7)}
+
+fia_max_s = max(filter(all_di, dat == "fia")$s0)
+fia_max_n = max(filter(all_di, dat == "fia")$n0)
+
+fia = filter(all_di, dat == "fia")
+
+small_di <- all_di %>%
+  filter(s0 <= fia_max_s,
+         n0 <= fia_max_n) %>%
+  mutate(fia_yn = ifelse(dat == "fia", "fia", "other datasets"),
+         right_corner = FALSE)
+
+for(i in 1:nrow(small_di)) {
+  if(small_di$dat[i] != "fia") {
+    fia_match_s0 = filter(fia, s0 >= small_di$s0[i])
+    
+    max_n0_for_this_s0 = max(fia_match_s0$n0)
+    
+    small_di$right_corner[i] = small_di$n0[i] > max_n0_for_this_s0
+    
+  }
+}
+
+
+small_di <- small_di %>%
+  filter(!right_corner)
+not_fia <- filter(small_di, fia_yn != "fia")
+fia = filter(small_di, dat == "fia")
+
+small_di_s_n <- small_di %>%
+  select(s0, n0) %>%
+  distinct() %>%
+  mutate(in_fia = FALSE,
+         in_not_fia = FALSE)
+
+for(i in 1:nrow(small_di_s_n)) {
+  
+  this_s0 = small_di_s_n$s0[i]
+  this_n0 = small_di_s_n$n0[i]
+  
+  fia_matches = filter(fia, s0 == this_s0, n0 == this_n0)
+  not_fia_matches = filter(not_fia, s0 == this_s0, n0 == this_n0)
+  
+  small_di_s_n$in_fia[i] = nrow(fia_matches) > 0 
+  small_di_s_n$in_not_fia[i] = nrow(not_fia_matches) > 0 
+  
+  
+}
+
+small_di_s_n <- filter(small_di_s_n, in_fia, in_not_fia)
+
+set.seed(1977)
+
+subsamples <- list()
+
+for(i in 1:nrow(small_di_s_n)) {
+  
+  this_s0 = small_di_s_n$s0[i]
+  this_n0 = small_di_s_n$n0[i]
+  
+  fia_matches = filter(fia, s0 == this_s0, n0 == this_n0)
+  
+  not_fia_matches = filter(not_fia, s0 == this_s0, n0 == this_n0)
+  
+  n_to_draw = min(nrow(fia_matches), nrow(not_fia_matches))
+  
+  fia_draw = sample.int(n = nrow(fia_matches), size = n_to_draw, replace = F)
+  not_fia_draw = sample.int(n = nrow(not_fia_matches), size = n_to_draw, replace = F)
+  
+  subsamples[[i]] <- (bind_rows(fia_matches[fia_draw,], not_fia_matches[not_fia_draw, ]))
+  
+}
+
+sub_di <- bind_rows(subsamples) %>%
+  mutate(Dataset = ifelse(fia_yn == "fia", "FIA", "Other datasets"))
+
+
+fig_4 <- gridExtra::grid.arrange(grobs = list(
+  ggplot(filter(sub_di, skew_unique > 20), aes(skew_95_ratio_1t)) +
+    geom_histogram()+
+    theme_bw() +
+    facet_wrap(vars(Dataset), scales = "free_y")  +
+    xlab("Breadth index") +
+    ylab("Number of communities") +
+    ggtitle("Breadth index", subtitle = "Skewness"),
+  
+  ggplot(filter(sub_di, simpson_unique > 20), aes(simpson_95_ratio_1t)) +
+    geom_histogram()+
+    theme_bw() +
+    facet_wrap(vars(Dataset), scales = "free_y")  +
+    xlab("Breadth index") +
+    ylab("") +
+    ggtitle("", subtitle = "Evenness"),
+  
+  ggplot(filter(sub_di, skew_unique > 20), aes(skew_percentile_excl)) +
+    geom_histogram()+
+    theme_bw() +
+    facet_wrap(vars(Dataset), scales = "free_y")  +
+    xlab("Percentile rank") +
+    ylab("Number of communities") +
+    ggtitle("Percentile rank", subtitle = "Skewness"),
+  
+  
+  ggplot(filter(sub_di, simpson_unique > 20), aes(simpson_percentile)) +
+    geom_histogram()+
+    theme_bw() +
+    facet_wrap(vars(Dataset), scales = "free_y")  +
+    xlab("Percentile rank") +
+    ylab("")+
+    ggtitle("", subtitle = "Evenness")), ncol = 2)
+
+plot(fig_4)
+
+```
 
 ```{r}
+pdf("figure_1.pdf")
+plot(fig_1)
+dev.off()
 
+pdf("figure_2.pdf")
+ plot(fig_2)
+ dev.off()
+ 
+pdf("figure_3.pdf")
+plot(fig_3)
+dev.off()
 
-ggplot(filter(all_di, s0 > 2, skew_unique > 20), aes(x= skew_95_ratio_1t)) +
-  geom_histogram() +
-  theme_bw() +
-  facet_wrap(vars(Dataset), scales = "free_y") +
-    xlab("Narrowness of the distribution of sampled skewness values") +
-  ylab("Number of communities")
-
-ggplot(filter(all_di, simpson_unique > 20), aes(x = simpson_95_ratio_1t)) +
-geom_histogram() +
-  theme_bw() +
-facet_wrap(vars(Dataset), scales = "free_y") +
-    xlab("Narrowness of the distribution of sampled evenness values") +
-  ylab("Number of communities")
-
-
-
+pdf("figure_4.pdf")
+ plot(fig_4)
+dev.off()
 ```
+
+
