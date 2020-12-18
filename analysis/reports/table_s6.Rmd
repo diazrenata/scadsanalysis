@@ -34,7 +34,7 @@ all_di <- all_di %>%
 ```
 
 
-# Table S6. Proportion of sites with highly skewed or uneven SADs for a subset of FIA communities compared to matching communities from other datasets
+# Table S6
 
 ```{r, include = F, echo = F}
 
@@ -135,3 +135,4 @@ sub_di %>%
 
 ```
 
+**Caption.** Proportion of sites with highly skewed or uneven SADs for a subset of FIA communities and comparably-sized communities from other datasets. We found 371 pairs of communities for which a community from FIA had a counterpart from another dataset with exactly matching S and N. For these communities, the proportion of communities whose observed SADs are highly skewed or uneven relative to their sampled feasible sets does not differ between FIA and other datasets. 

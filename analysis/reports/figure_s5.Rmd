@@ -1,7 +1,7 @@
 ---
 title: ""
 output: 
-    github_document:
+    word_document:
        df_print: kable
 ---
 
@@ -34,9 +34,9 @@ all_di <- all_di %>%
 ```
 
 
-# Figure S5. Breadth index by size of FS
+# Figure S5. 
 
-```{r 95 intervals}
+```{r 95 intervals, fig.dim = c(8,4)}
 s3_fig2 <- gridExtra::grid.arrange(grobs = list(
   ggplot(filter(all_di, s0 > 2, skew_unique > 20), aes(x = log_nparts, y= skew_95_ratio_1t)) +
   geom_point(alpha = .1) +
@@ -63,3 +63,4 @@ plot(s3_fig2)
 dev.off()
 ```
 
+**Legend.** The breadth index (defined as the ratio of the width of a one-tailed 95% density interval relative to the full range of a distribution) for the distributions of skewness and evenness obtained from the sampled feasible set declines as the number of elements in the feasible set increases. This indicates more narrow and well-resolved statistical baselines for large feasible sets.

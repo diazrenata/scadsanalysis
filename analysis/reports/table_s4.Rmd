@@ -34,7 +34,7 @@ all_di <- all_di %>%
 ```
 
 
-# Table S4. Proportion of sites with highly skewed or uneven SADs 
+# Table S4
 
 ```{r results table, echo = F}
 
@@ -62,32 +62,6 @@ overall_results <- left_join(overall_skew_results, overall_simpson_results) %>%
 ```{r}
 overall_results
 
-# 
-# overall_skew_results2 <- all_di %>%
-#   mutate(Dataset = ifelse(dat == "fia", "Forest Inventory and Analysis", "Other datasets")) %>%
-#   filter(s0 > 2, skew_unique > 20) %>%
-#   mutate(high_skew = skew_percentile_excl > 95) %>%
-#   group_by(Dataset) %>%
-#   summarize(proportion_skew_high = mean(high_skew),
-#             nsites_skew = dplyr::n())
-# 
-# overall_simpson_results2 <- all_di %>%
-#   filter(simpson_unique > 20) %>%
-#   mutate(Dataset = ifelse(dat == "fia", "Forest Inventory and Analysis", "Other datasets")) %>%
-#   mutate(low_even = simpson_percentile < 5) %>%
-#   group_by(Dataset) %>%
-#   summarize(proportion_even_low = mean(low_even),
-#             nsites_even = dplyr::n())
-# 
-# overall_results2 <- left_join(overall_skew_results2, overall_simpson_results2) %>%
-#   rename("Proportion of communities with skewness above 95th percentile" = proportion_skew_high,
-#          "Number of communities analyzed for skewness" = nsites_skew,
-#          "Proportion of communities with evenness below 5th percentile" = proportion_even_low,
-#          "Number of communities analyzed for evenness" = nsites_even)
-
-#overall_results2
-
-
 ```
 
-
+**Caption**. Proportion of communities in each dataset with highly skewed or uneven SADs compared to their sampled feasible sets. For most datasets, considerably more communities are extremely skewed and uneven relative to their feasible sets than would be expected by chance: at random, only 5% of communities should fall in these extremes. The FIA database differs from all the others in that no more than 5% of its communities are extremely skewed, and only 9% of its communities are highly uneven. 
