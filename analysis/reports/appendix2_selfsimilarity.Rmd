@@ -1,9 +1,7 @@
 ---
-title: "Self-similarity of the elements of the feasible set"
-author: Renata Diaz
-date: "`r Sys.Date()`"
+title: "Appendix 2 - Self-similarity of the elements of the feasible set"
 output: 
-    github_document:
+    word_document:
        df_print: kable
 ---
 
@@ -17,21 +15,19 @@ library(scadsanalysis)
 knitr::opts_chunk$set(fig.width=3, fig.height=2.5, warning = FALSE, message = FALSE) 
 ```
 
-We are interested in how the self-similarity of the elements of the feasible set varies over gradients in S and N. The intuition from "common-sense" probability theory, statistical mechanics, law-of-large-numbers intuition is that, as the number of possible arrangements becomes large, the different possible arrangements should become more self-similar. However, we don't know that this is the case for SADs, nor do we know the values for S and N where things really start to converge. 
+We are interested in how the self-similarity of the elements of the feasible set varies over gradients in S and N. The more self-similar the feasible set is, the less likely it is for us to obtain a SAD that differs from the majority of the feasible set by chance. The intuition from "common-sense" probability theory, and a common theme in statistical mechanics (Jaynes 1957) is that as the number of possible arrangements becomes large, the majority of  possible arrangements should become very similar to each other in broad-scale characteristics. However, we don't know that this is the case for SADs, nor do we know the values for S and N where this increase in self-similarity begins to occur. 
 
-In the manuscript, I use the ratio of the 95% interval of summary statistic values, to the full range of summary statistic values. This can be calculated quickly and without introducing new statistics, etc to the main manuscript. It also directly reflects the distributions to which we are comparing our observations. However, it may not tell the full story: if the summary statistic values are idiosyncratic (skewness in particular can behave counterintuitively), it reflects those idiosyncracies. 
+In the manuscript, we use a breadth index defined as ratio of the 95% interval of summary statistic values : the full range of summary statistic values. This can be calculated quickly and is easily interpretable. It also directly reflects the distributions to which we are comparing our observations. However, it is not a widely-used metric. Also, if the summary statistic values are idiosyncratic (skewness in particular can behave counterintuitively), it can reflect those idiosyncracies. 
 
 With more computing, we can explore how similar the elements of the feasible set are to each other by comparing them to each other directly. Then we can ask whether, as the feasible set gets large, the elements become more similar and converge on a dominant form. 
 
-I initially did this analysis in https://github.com/diazrenata/sadspace and am porting the functions and analysis over to this repo for the supplement. 
-
-## Directly establishing self-similarity
-
-### Overview 
+## Overview 
 
 We can describe how self-similar the elements of a feasible set are via numerous pairwise comparisons. Given a body of samples drawn from a feasible set, we draw two samples and compute some metric that describes how similar these two samples are to each other. We do this many times, making many pairwise comparisons, to generate a distribution of the self-similarity metric for that feasible set. We then compare how self-similar different feasible sets are by comparing the distributions of self-similarity metrics for the different feasible sets. 
 
-### Walkthrough
+Here we demonstrate this process for an example feasible set, and then present results for feasible sets spanning the range of S and N present in our data.
+
+## Example
 
 ```{r load net}
 
@@ -88,13 +84,13 @@ ggplot(comparison_fs, aes(x = rank, y = abund, color = sim)) +
 
 ```
 
-I have implemented 5 metrics of similarity for comparing samples:
+We have implemented 5 metrics of similarity for comparing samples:
 
-* R2
-* R2 on log-transformed abundances
-* The coefficient of determination from a linear model fitting one sample to the other
-* The proportion of individuals allocated to species of differing abundances
-* The estimated Kullbak-Lieber (sp) divergence between the two samples
+* R2 (`r2`). High R2 indicates higher self-similarity. 
+* R2 on log-transformed abundances (`r2_log`). Higher values indicate higher self-similarity.
+* The coefficient of determination from a linear model fitting one sample to the other (`cd`). Higher values indicate higher self-similarity.
+* The proportion of individuals allocated to species of differing abundances (`prop_off`). **Lower** values indicate greater self-similarity. 
+* The estimated Kullback–Leibler divergence between the two samples (`div`). **Lower** values indicate greater self-similarity.
 
 
 ```{r self similarity metrics}
@@ -103,7 +99,7 @@ comparison
 
 ```
 
-We repeat this comparison process numerous times to get numerous values for the self-similarity metrics.
+We draw numerous pairs of SADs and compare them numerous times to get distributions for the self similarity metrics.
 
 ```{r rep sampler, fig.dim = c(2,2)}
 
@@ -135,9 +131,10 @@ ggplot(comparisons, aes(div)) +
   theme_bw()
 ```
 
-We repeat this process for feasible sets with varying S and N, and compare the distribution of the self-similarity metrics across the variation in S and N.
 
-```{r comparison 2, fig.dim = c(2,2)}
+We repeat this process for feasible sets for different values of S and N, and compare the distributions for the self-similarity metrics for the different feasible sets. Here we compare the distributions for the self-similarity metrics for our original feasible set (S = 7, N = 71, "small" in the figure) and for a much larger community (S = 44, N = 13360, "large").
+
+```{r comparison 2, fig.dim = c(8,6)}
 
 example_fs2 <- readd(fs_s_44_n_13360, cache = cache)
 
@@ -150,43 +147,60 @@ example_fs2 <- example_fs2 %>%
 comparisons2 <- rep_diff_sampler(example_fs2, ndraws = 100) 
 
 both_comparisons <- bind_rows(comparisons, comparisons2) %>%
-  mutate(s_and_n = paste0("s_", s0, "_n_", n0))
+  mutate(community_size = ifelse(n0 > 13000, "large", "small")) 
 
-
-ggplot(both_comparisons, aes(r2, color = s_and_n)) +
+gridExtra::grid.arrange(grobs = list(
+  ggplot(both_comparisons, aes(1, community_size, color = community_size)) +
+    geom_point(size =8) +
+    geom_label(aes(label = community_size), nudge_x = .005, size = 8) +
+    theme_void() +
+  theme(legend.position = "none") +
+  scale_color_viridis_d(end = .8, option = "plasma") +
+    xlim(.99999, 1.006) 
+  
+    ,
+  
+ggplot(both_comparisons, aes(r2, color = community_size)) +
   geom_density() +
   theme_bw() +
-  theme(legend.position = "top")
+  theme(legend.position = "none") +
+  scale_color_viridis_d(end = .8, option = "plasma"),
 
-ggplot(both_comparisons, aes(r2_log, color = s_and_n)) +
+ggplot(both_comparisons, aes(r2_log, color = community_size)) +
   geom_density() +
   theme_bw() +
-  theme(legend.position = "top")
+  theme(legend.position = "none") +
+  scale_color_viridis_d(end = .8, option = "plasma"),
 
-ggplot(both_comparisons, aes(cd, color = s_and_n)) +
+ggplot(both_comparisons, aes(cd, color = community_size)) +
   geom_density() +
   theme_bw() +
-  theme(legend.position = "top")
+  theme(legend.position = "none") +
+  scale_color_viridis_d(end = .8, option = "plasma"),
 
 
-ggplot(both_comparisons, aes(prop_off, color = s_and_n)) +
+ggplot(both_comparisons, aes(prop_off, color = community_size)) +
   geom_density() +
   theme_bw() +
-  theme(legend.position = "top")
+  theme(legend.position = "none") +
+  scale_color_viridis_d(end = .8, option = "plasma"),
 
 
-ggplot(both_comparisons, aes(div, color = s_and_n)) +
+ggplot(both_comparisons, aes(div, color = community_size)) +
   geom_density() +
   theme_bw() +
-  theme(legend.position = "top")
+  theme(legend.position = "none") +
+  scale_color_viridis_d(end = .8, option = "plasma")
 
-
+), ncol = 3)
 ```
+
+For each metric, the large community is more self-similar than the smaller. That is, it has consistently higher R2, r2_log, and coefficient of determination values, and lower prop_off and K-L divergence.
 
 
 ## Across a range of S and N
 
-Here we have drawn samples from a "net" of points in S and N space that spans the range present in our datasets. For each feasible set we make 200 comparisons of elements (although for small feasible sets, 200 is not necessarily possible). Here is how that net is distributed in S and N space, colored by the log() number of elements in the feasible set. 
+Here we have drawn samples from a set of points in S and N space that spans the range present in our datasets. For each feasible set we make 200 comparisons of elements (although for small feasible sets, 200 is not necessarily possible). Here is how that set is distributed in S and N space, colored by the log() number of elements in the feasible set. 
 
 ```{r diffs}
 
@@ -212,8 +226,8 @@ We can make heat maps of the density distribution of self-similarity metrics and
 
 There are a couple of nuances to doing this:
 
-* We need to have the same number of comparisons for every feasible set, so that the density distributions will be comparable. In order to get a large swatch of S by N space, I've taken 50 comparisons from every feasible set. This is pretty low, so it lets us get even small feasible sets. Setting the minimum higher does not change the overall impression.
-* The metrics vary in how they are bounded. For some of them (R2, log r2) they can have nonsensical long tails towards very low values. For visualization, I've filtered out the long tail values (prior to selecting the 50 comparisons). The long tails tend to be most dominant in the comparisons made from small feasible sets. Removing them therefore makes the small feasible sets look *more* self-similar. 
+* We need to have the same number of comparisons for every feasible set, so that the density distributions will be comparable. In order to get a large swatch of S by N space, we have taken 50 comparisons from every feasible set. This is pretty low, so it lets us get even small feasible sets. Setting the minimum higher does not change the overall impression.
+* The metrics vary in how they are bounded. For some of them (R2, log r2) they can have nonsensical long tails towards very low values. For visualization, we filtered out the long tail values (prior to selecting the 50 comparisons). The long tails tend to be most prevalent in the comparisons made from small feasible sets. Removing them therefore makes the small feasible sets look *more* self-similar. 
 
 #### R2
 
@@ -266,7 +280,7 @@ ggplot(all_diffs_r2, aes(r2, group = s_and_n, color = log_nparts)) +
 ```
 
 
-Here is R2 for only "small" feasible sets (those with fewer than `r exp(20)` elements in the feasible set). This lets us zoom in on the distributions where they start to broaden out.
+Here is R2 for only relatively small feasible sets (those with fewer than $e^20$ elements in the feasible set). This lets us zoom in on the distributions where they start to broaden out.
 
 ```{r r2 small}
 
@@ -335,7 +349,7 @@ ggplot(all_diffs_r2_log, aes(r2_log, group = s_and_n, color = log_nparts)) +
 ```
 
 
-Here is R2 on logged vectors for only "small" feasible sets (those with fewer than `r exp(20)` elements in the feasible set). This lets us zoom in on the distributions where they start to broaden out.
+Here is R2 on logged vectors for only "small" feasible sets. This lets us zoom in on the distributions where they start to broaden out.
 
 ```{r r2 log small}
 
@@ -404,7 +418,7 @@ ggplot(all_diffs_cd, aes(cd, group = s_and_n, color = log_nparts)) +
 ```
 
 
-Here is cd for only "small" feasible sets (those with fewer than `r exp(20)` elements in the feasible set). This lets us zoom in on the distributions where they start to broaden out.
+Here is cd for only "small" feasible sets.
 
 ```{r cd small}
 
@@ -472,7 +486,7 @@ ggplot(all_diffs_prop_off, aes(prop_off, group = s_and_n, color = log_nparts)) +
 ```
 
 
-Here is prop_off for only "small" feasible sets (those with fewer than `r exp(20)` elements in the feasible set). This lets us zoom in on the distributions where they start to broaden out.
+Here is prop_off for only "small" feasible sets.
 
 ```{r prop_off small}
 
@@ -540,7 +554,7 @@ ggplot(all_diffs_div, aes(div, group = s_and_n, color = log_nparts)) +
 ```
 
 
-Here is K-L divergence for only "small" feasible sets (those with fewer than `r exp(20)` elements in the feasible set). This lets us zoom in on the distributions where they start to broaden out.
+Here is K-L divergence for only "small" feasible sets.
 
 ```{r div small}
 
@@ -558,6 +572,10 @@ ggplot(filter(all_diffs_div, log_nparts < 20), aes(div, group = s_and_n, color =
 ```
 
 
-### In summary
+## In summary
 
-Large feasible sets are consistently more self-similar than small ones.
+Large feasible sets are consistently more self-similar than small ones, regardless of the metric of self-similarity used. 
+
+## References
+
+Jaynes, E.T. (1957). Information Theory and Statistical Mechanics. *Phys. Rev.*, 106, 620–630.

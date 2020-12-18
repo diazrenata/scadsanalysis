@@ -1,57 +1,261 @@
 Filtering datasets
 ================
 Renata Diaz
-2020-12-17
+2020-12-18
 
-We filter datasets in two stages. First, **prior to trying to sample
-from the feasible set**, we remove communities that have a combined S
-and N too high for us to sample the feasible set. We also create a
-sub-sample of the FIA dataset, because it has so many communities
-(\~100,000) and so many of them are extremely small (\~90,000 with fewer
-than 10 species). Sampling all 100,000 communities overwhelms our
-computational pipeline, so we create a subsample of 20,000 communities
-comprising all communities with more than 10 species (approx. 10,000)
-and 10,000 randomly selected communities with 3-10 species. Second,
-**after sampling but before we aggregate results across communities**,
-we remove communities that are problematic for a number of more nuanced
-reasons. This includes having only 1 possible SAD (S = 1, N = S, or N =
-S + 1). We also filter to communities whose sampled feasible sets yield
-more than 20 unique values for skewness/evenness. We do this because, if
-there are fewer than 20 unique values in the comparison vector, it’s
-impossible to be in the 5th or 95th percentile. Finally, we remove
-communities with only 2 species from analyses for skewness, because
-`e1071::skewness()` always = 0 if S = 2.
+We filter datasets in two stages. First, we filter **prior to trying to
+sample from the feasible set**, in order to remove communities that have
+a combined S and N too high for us to sample the feasible set, and to
+reduce the Forest Inventory and Analysis dataset to a manageable size.
+Second,we filter **after sampling the feasible but before we aggregate
+results across communities**, to remove cases where mathematical
+constraints result in uninformative results. Below we elaborate on the
+logic and methods for these filtering processes, including code to allow
+others to see precisely what was implemented.
 
-## Pre-sampling
+## Pre-feasible set sampling
 
-The only filtering at this stage is removing large communities and
-subsampling the FIA database. Communities with very large numbers of
-individuals become computationally intractable. We set the upper limit
-at 40720, because this is the largest community we were able to sample
-given the available resources. This upper limit results in the removal
-of a total of 4 communities, all of them from the Miscellaneous
-Abundance Database.
+While our algorithm for sampling the feasible set improved our ability
+to assess the shape of the feasible set for larger communities, there
+were still computational limits on what we could do. We filtered out all
+communities with more than 40720 individuals, because this is the
+largest community we were able to sample given the available resources.
+This upper limit results in the removal of a total of 4 communities, all
+of them from the Miscellaneous Abundance Database.
+
+For computational reasons, we also created a sub-sample of the FIA
+dataset, because sampling the feasible set for all 103,343 FIA
+communities overwhelms our computational pipeline. Because the FIA has
+so many extremely small communities (92,988 with fewer than 10 species),
+we decided to randomly select a sample of the small communities for
+analysis. Thus our FIA dataset consisted of \~20 ,000 communities
+comprising all communities with more than 10 species (10,355) plus
+10,000 randomly selected communities with 3-10 species.
+
+Code for downloading the data (and all other analyses) used for this
+project can be found at www.github.com/diazrenata/scadsanalysis. The
+data download functions are at
+<https://github.com/diazrenata/scadsanalysis/blob/master/R/download_data.R>.
+
+### Overview
 
 The `download_data` function downloads raw data files from
 <https://github.com/weecology/sad-comparison/> (for BBS, Gentry, Mammal
-Community Database, and FIA) and figshare
+Community Database, and FIA; data from Baldridge (2016) and also used in
+White, Thibault, and Xiao (2012)) and figshare
 <http://figshare.com/files/3097079> (for the Miscellaneous Abundance
-Database). These raw files are stored in `working-data\abund_data` and
-are not edited.
+Database; Baldridge (2015)). These raw files are stored in
+`working-data\abund_data` and are not edited.
 
-To filter, we can re-load the raw data files and go through the
-filtering process step by step. In the analysis this is accomplished by
-running dataset-specific filtering scripts and saving new .csvs, which
-are then loaded using `load_dataset`. We can manually load the datasets
-and then compare them to what is returned from `load_dataset`.
+The Miscellaneous Abundance and FIA databases undergo additional
+filtering steps, implemented in the `filter_misc_abund` and
+`filter_fia_short` and `filter_fia_small` functions. These functions run
+automatically when the data are downloaded and save new files to
+`working-data\abund_data`.
 
-### Miscellaneous Abundance Database
+The `load_dataset` function loads either the filtered datasets (if
+specified, for Misc. Abund and FIA) or the raw data (for all others, or
+if specified for Misc. Abund and FIA), and adds additional columns and
+column types to prepare the data for the computational pipeline. The
+datasets as returned from `load_dataset` are exactly what goes into the
+analysis.
 
-  - Misc. Abund includes datasets reported as relative abundance in
-    addition to count data. We don’t want any communities without
-    counts, so we filter out records where abund = 0.
+In the following sections, we load the raw data files (as they were
+downloaded), perform the filtering process manually (if applicable), and
+compare the resulting data to the data that are used in the analysis,
+i.e. the data that we get if we use `load_dataset`.
 
-<!-- end list -->
+### BBS (no filtering)
+
+For BBS, and all datasets that are not filtered, we can simply load the
+data from the file downloaded by `download_data`, add the columns and
+column formats that are added by `load_data`, and compare the result to
+the result of `load_data`:
+
+``` r
+bbs_raw <- read.csv(here::here("working-data", "abund_data", "bbs_spab.csv"),  stringsAsFactors = F, header = F, skip = 2)
+
+colnames(bbs_raw) <- c("site", "year", "species", "abund")
+
+bbs_raw <- bbs_raw %>%
+  mutate(site = as.character(site),
+         dat = "bbs",
+         singletons = F,
+         sim = -99,
+         source = "observed") %>%
+  group_by(site) %>%
+  arrange(abund) %>%
+  mutate(rank = row_number()) %>%
+  ungroup()
+
+bbs_loaded <- load_dataset("bbs")
+```
+
+Here we confirm that all values for `abund` and `site` match between the
+version we get from `load_dataset` and the version we just created from
+the raw data file:
+
+``` r
+any(!(bbs_loaded$abund == bbs_raw$abund))
+```
+
+    ## [1] FALSE
+
+``` r
+any(!(bbs_loaded$site == bbs_raw$site))
+```
+
+    ## [1] FALSE
+
+Here we check to confirm that no communities have a total abundance
+exceeding our upper limit (40720, marked by the horizontal red line):
+
+``` r
+bbs_statevars <- get_statevars(bbs_raw)
+
+ggplot(bbs_statevars, aes(s0, n0)) +
+  geom_point() +
+  theme_bw() +
+  geom_hline(yintercept = 40720, color = "red")
+```
+
+![](appendix1_filtering_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
+
+No communities in BBS have more than 40720 individuals, so all are
+initially included in the analysis.
+
+### Gentry (no filtering)
+
+For Gentry, as with BBS, we can simply load the data from the file
+downloaded by `download_data`, add the columns and column formats that
+are added by `load_data`, and compare the result to the result of
+`load_data`:
+
+``` r
+gentry_raw <- read.csv(here::here("working-data", "abund_data", "gentry_spab.csv"),  stringsAsFactors = F, header = F, skip = 2)
+
+colnames(gentry_raw) <- c("site", "year", "species", "abund")
+
+gentry_raw <- gentry_raw %>%
+  mutate(site = as.character(site),
+         dat = "gentry",
+         singletons = F,
+         sim = -99,
+         source = "observed") %>%
+  group_by(site) %>%
+  arrange(abund) %>%
+  mutate(rank = row_number()) %>%
+  ungroup()
+
+gentry_loaded <- load_dataset("gentry")
+```
+
+Here we confirm that all values for `abund` and `site` match between the
+version we get from `load_dataset` and the version we just created from
+the raw data file:
+
+``` r
+any(!(gentry_loaded$abund == gentry_raw$abund))
+```
+
+    ## [1] FALSE
+
+``` r
+any(!(gentry_loaded$site == gentry_raw$site))
+```
+
+    ## [1] FALSE
+
+Here we check to confirm that no communities have a total abundance
+exceeding our upper limit (40720, marked by the horizontal red line):
+
+``` r
+gentry_statevars <- get_statevars(gentry_raw)
+
+ggplot(gentry_statevars, aes(s0, n0)) +
+  geom_point() +
+  theme_bw() +
+  geom_hline(yintercept = 40720, color = "red")
+```
+
+![](appendix1_filtering_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
+
+No communities in Gentry have more than 40720 individuals, so all are
+initially included in the analysis.
+
+### Mammal Community Database (not filtered)
+
+For MCDB, as with BBS and Gentry, we can simply load the data from the
+file downloaded by `download_data`, add the columns and column formats
+that are added by `load_data`, and compare the result to the result of
+`load_data`:
+
+``` r
+mcdb_raw <- read.csv(here::here("working-data", "abund_data", "mcdb_spab.csv"),  stringsAsFactors = F, header = F, skip = 2)
+
+colnames(mcdb_raw) <- c("site", "year", "species", "abund")
+
+mcdb_raw <- mcdb_raw %>%
+  mutate(site = as.character(site),
+         dat = "mcdb",
+         singletons = F,
+         sim = -99,
+         source = "observed") %>%
+  group_by(site) %>%
+  arrange(abund) %>%
+  mutate(rank = row_number()) %>%
+  ungroup()
+
+mcdb_loaded <- load_dataset("mcdb")
+```
+
+Here we confirm that all values for `abund` and `site` match between the
+version we get from `load_dataset` and the version we just created from
+the raw data file:
+
+``` r
+any(!(mcdb_loaded$abund == mcdb_raw$abund))
+```
+
+    ## [1] FALSE
+
+``` r
+any(!(mcdb_loaded$site == mcdb_raw$site))
+```
+
+    ## [1] FALSE
+
+Here we check to confirm that no communities have a total abundance
+exceeding our upper limit (40720, marked by the horizontal red line):
+
+``` r
+mcdb_statevars <- get_statevars(mcdb_raw)
+
+ggplot(mcdb_statevars, aes(s0, n0)) +
+  geom_point() +
+  theme_bw() +
+  geom_hline(yintercept = 40720, color = "red")
+```
+
+![](appendix1_filtering_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
+
+No communities in the MCDB have more than 40720 individuals, so all are
+initially included in the analysis.
+
+### Miscellaneous Abundance Database (filtered)
+
+For the Miscellaneous Abundance Database, we can proceed similarly to
+with the non-filtered datasets. We load the data from the file
+downloaded by `download_data`, add the columns and column formats that
+are added by `load_data`, and compare the result to the result of
+`load_data`.
+
+However, Misc. Abund includes datasets reported as relative abundance in
+addition to count data. Relative abundance data is not appropriate for
+this analysis, so we filter out records where abund = 0 to restrict our
+analysis to communities with count data. Also, because we will
+eventually filter out some highly abundant communities, at this stage we
+make sure to load the **unfiltered** version using `load_dataset`.
 
 ``` r
 misc_abund_raw <- read.csv(here::here("working-data", "abund_data", "misc_abund_spab.csv"))
@@ -75,6 +279,10 @@ misc_abund_raw <- misc_abund_raw %>%
 misc_abund_loaded <- load_dataset("misc_abund")
 ```
 
+Here we confirm that, if we load the unfiltered dataset using
+`load_dataset`, the records match the version we have created manually
+from the raw file:
+
 ``` r
 any(!(misc_abund_loaded$abund == misc_abund_raw$abund))
 ```
@@ -87,7 +295,8 @@ any(!(misc_abund_loaded$site == misc_abund_raw$site))
 
     ## [1] FALSE
 
-Check community sizes:
+Here we check whether any communities have more than 40720 individuals
+(horizontal red line):
 
 ``` r
 misc_abund_statevars <- get_statevars(misc_abund_raw)
@@ -98,21 +307,24 @@ ggplot(misc_abund_statevars, aes(s0, n0)) +
   geom_hline(yintercept = 40720, color = "red")
 ```
 
-![](appendix1_filtering_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
+![](appendix1_filtering_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
 
-Misc abund has 4 communities that get removed. They are all removed
-because they have high numbers of individuals.
-
-The filtered database is saved as a .csv and can be loaded with
-`load_dataset`. We can check that it matches the filtering we have done
-here:
+Misc abund has 4 communities with more than 40720 individuals, and these
+communities are removed:
 
 ``` r
 misc_abund_sv_filtered <- misc_abund_statevars %>%
   filter(n0 <= 40720)
 
 misc_abund_filtered <- filter(misc_abund_raw, site %in% misc_abund_sv_filtered$site)
+```
 
+We can access the **filtered** version of the dataset, as used in the
+analysis, using `load_dataset("misc_abund_short")`. We then check to
+confirm that the filtered version of the dataset that we get from
+`load_dataset` matches the version that we filtered manually:
+
+``` r
 misc_abund_short_loaded <- load_dataset("misc_abund_short")
 
 any(!(misc_abund_short_loaded$abund == misc_abund_filtered$abund))
@@ -126,13 +338,14 @@ any(!(misc_abund_short_loaded$site == misc_abund_filtered$site))
 
     ## [1] FALSE
 
-### FIA
+### FIA (filtered)
 
-  - Load raw FIA data
-  - Add columns to match what we will get from `load_dataset`
-  - Load from `load_dataset`
-
-<!-- end list -->
+Again, we can begin similarly to with the non-filtered datasets. We load
+the data from the file downloaded by `download_data`, add the columns
+and column formats that are added by `load_data`, and compare the result
+to the result of `load_data`. Because we will remove some communities
+from FIA, we make sure to load the **unfiltered** version using
+`load_data`.
 
 ``` r
 fia_raw <- read.csv(here::here("working-data", "abund_data", "fia_spab.csv"), stringsAsFactors = F, header = F, skip = 2)
@@ -154,6 +367,10 @@ fia_raw <- fia_raw %>%
 fia_loaded <- load_dataset("fia")
 ```
 
+Here we confirm that, if we load the unfiltered dataset using
+`load_dataset`, the records match the version we have created manually
+from the raw file:
+
 ``` r
 any(!(fia_loaded$abund == fia_raw$abund))
 ```
@@ -166,28 +383,40 @@ any(!(fia_loaded$site == fia_raw$site))
 
     ## [1] FALSE
 
-Check community sizes:
+Here we check whether any communities have more than 40720 individuals
+(horizontal red line):
 
 ``` r
 fia_statevars <- get_statevars(fia_raw)
-
 ggplot(fia_statevars, aes(s0, n0)) +
   geom_point() +
   theme_bw() +
-  geom_vline(xintercept = c(1.5, 2.5, 9.5), color = "red")
+  geom_hline(yintercept = 40720, color = "red")
 ```
 
-![](appendix1_filtering_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
+![](appendix1_filtering_files/figure-gfm/unnamed-chunk-17-1.png)<!-- -->
 
-FIA has no extremely large datasets; the largest number of individuals
-is 178. However, it has 103343 communities, of which 92988 have fewer
-than 10 species. This many communities overwhelms our computational
-pipeline. We therefore sample all 10355 communities with 10 or more
-species, and a random subsample of 10,000 communities with 3-9 species.
-We then run these through the pipeline as two separate databases.
-`fia_short` is the communities with 10 or more species, and `fia_small`
-is the 10,000 communities with 3-9 species. We re-combine them as “FIA”
-for aggregate analyses.
+FIA has no communities with more than 40720 individuals. However, it
+presents additional issues. It it has 103343 communities, of which 92988
+have fewer than 10 species (vertical red line in the figure below)
+
+``` r
+ggplot(fia_statevars, aes(s0, n0)) +
+  geom_point() +
+  theme_bw() +
+  geom_vline(xintercept = c(9.5), color = "red")
+```
+
+![](appendix1_filtering_files/figure-gfm/unnamed-chunk-18-1.png)<!-- -->
+
+This many communities overwhelms our computational pipeline. We
+therefore sample all 10355 communities with 10 or more species, and a
+random subsample of 10,000 communities with 3-9 species. We then run
+these through the pipeline as two separate databases. `fia_short` is the
+communities with 10 or more species, and `fia_small` is the 10,000
+communities with 3-9 species. We re-combine them as “FIA” for aggregate
+analyses. This results in a toal of 20,355 FIA communities in the
+analysis.
 
 ``` r
 fia_sv_short <- fia_statevars %>%
@@ -205,7 +434,7 @@ ggplot(fia_short_statevars, aes(s0, n0)) +
   theme_bw()
 ```
 
-![](appendix1_filtering_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
+![](appendix1_filtering_files/figure-gfm/unnamed-chunk-19-1.png)<!-- -->
 
 ``` r
 fia_sv_small <- fia_statevars %>%
@@ -228,14 +457,22 @@ ggplot(fia_small_statevars, aes(s0, n0)) +
   ggtitle("fia small, 3-9 species")
 ```
 
-![](appendix1_filtering_files/figure-gfm/unnamed-chunk-8-2.png)<!-- -->
+![](appendix1_filtering_files/figure-gfm/unnamed-chunk-19-2.png)<!-- -->
 
 The “short” and “small” datasets are saved as .csvs and can be loaded
-using `load_dataset`:
+using `load_dataset` as follows. These are the versions that are used in
+the analysis.
 
 ``` r
 fia_small_loaded <- load_dataset("fia_small")
 
+fia_short_loaded <- load_dataset("fia_short")
+```
+
+Here we confirm that versions of “fia\_short” and “fia\_small” that we
+created manually match the ones we obtain from `load_dataset`:
+
+``` r
 any(!(fia_small_loaded$abund == fia_small$abund))
 ```
 
@@ -248,8 +485,6 @@ any(!(fia_small_loaded$site == fia_small$site))
     ## [1] FALSE
 
 ``` r
-fia_short_loaded <- load_dataset("fia_short")
-
 any(!(fia_short_loaded$abund == fia_short$abund))
 ```
 
@@ -261,185 +496,31 @@ any(!(fia_short_loaded$site == fia_short$site))
 
     ## [1] FALSE
 
-### BBS
-
-  - Load raw BBS data
-  - Add columns to match what we will get from `load_dataset`
-  - Load from `load_dataset`
-
-<!-- end list -->
-
-``` r
-bbs_raw <- read.csv(here::here("working-data", "abund_data", "bbs_spab.csv"),  stringsAsFactors = F, header = F, skip = 2)
-
-colnames(bbs_raw) <- c("site", "year", "species", "abund")
-
-bbs_raw <- bbs_raw %>%
-  mutate(site = as.character(site),
-         dat = "bbs",
-         singletons = F,
-         sim = -99,
-         source = "observed") %>%
-  group_by(site) %>%
-  arrange(abund) %>%
-  mutate(rank = row_number()) %>%
-  ungroup()
-
-bbs_loaded <- load_dataset("bbs")
-```
-
-Compare loaded to raw:
-
-``` r
-any(!(bbs_loaded$abund == bbs_raw$abund))
-```
-
-    ## [1] FALSE
-
-``` r
-any(!(bbs_loaded$site == bbs_raw$site))
-```
-
-    ## [1] FALSE
-
-Check community sizes:
-
-``` r
-bbs_statevars <- get_statevars(bbs_raw)
-
-ggplot(bbs_statevars, aes(s0, n0)) +
-  geom_point() +
-  theme_bw() +
-  geom_hline(yintercept = 40720, color = "red")
-```
-
-![](appendix1_filtering_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
-
-No communities in BBS have more than 40720 individuals, so all are used
-at this stage.
-
-### Gentry
-
-  - Load raw Gentry data
-  - Add columns to match what we will get from `load_dataset`
-  - Load from `load_dataset`
-
-<!-- end list -->
-
-``` r
-gentry_raw <- read.csv(here::here("working-data", "abund_data", "gentry_spab.csv"),  stringsAsFactors = F, header = F, skip = 2)
-
-colnames(gentry_raw) <- c("site", "year", "species", "abund")
-
-gentry_raw <- gentry_raw %>%
-  mutate(site = as.character(site),
-         dat = "gentry",
-         singletons = F,
-         sim = -99,
-         source = "observed") %>%
-  group_by(site) %>%
-  arrange(abund) %>%
-  mutate(rank = row_number()) %>%
-  ungroup()
-
-gentry_loaded <- load_dataset("gentry")
-```
-
-Compare loaded to raw:
-
-``` r
-any(!(gentry_loaded$abund == gentry_raw$abund))
-```
-
-    ## [1] FALSE
-
-``` r
-any(!(gentry_loaded$site == gentry_raw$site))
-```
-
-    ## [1] FALSE
-
-Check community sizes:
-
-``` r
-gentry_statevars <- get_statevars(gentry_raw)
-
-ggplot(gentry_statevars, aes(s0, n0)) +
-  geom_point() +
-  theme_bw() +
-  geom_hline(yintercept = 40720, color = "red")
-```
-
-![](appendix1_filtering_files/figure-gfm/unnamed-chunk-15-1.png)<!-- -->
-
-No communities in Gentry have more than 40720 individuals, so all are
-used at this stage.
-
-### Mammal Community Database
-
-  - Load raw MCDB data
-  - Add columns to match what we will get from `load_dataset`
-  - Load from `load_dataset`
-
-<!-- end list -->
-
-``` r
-mcdb_raw <- read.csv(here::here("working-data", "abund_data", "mcdb_spab.csv"),  stringsAsFactors = F, header = F, skip = 2)
-
-colnames(mcdb_raw) <- c("site", "year", "species", "abund")
-
-mcdb_raw <- mcdb_raw %>%
-  mutate(site = as.character(site),
-         dat = "mcdb",
-         singletons = F,
-         sim = -99,
-         source = "observed") %>%
-  group_by(site) %>%
-  arrange(abund) %>%
-  mutate(rank = row_number()) %>%
-  ungroup()
-
-mcdb_loaded <- load_dataset("mcdb")
-```
-
-Compare loaded to raw:
-
-``` r
-any(!(mcdb_loaded$abund == mcdb_raw$abund))
-```
-
-    ## [1] FALSE
-
-``` r
-any(!(mcdb_loaded$site == mcdb_raw$site))
-```
-
-    ## [1] FALSE
-
-Check community sizes:
-
-``` r
-mcdb_statevars <- get_statevars(mcdb_raw)
-
-ggplot(mcdb_statevars, aes(s0, n0)) +
-  geom_point() +
-  theme_bw() +
-  geom_hline(yintercept = 40720, color = "red")
-```
-
-![](appendix1_filtering_files/figure-gfm/unnamed-chunk-18-1.png)<!-- -->
-
-No high N communities; so all are included at this stage.
-
 ## Post-sampling
 
-We will remove additional communities for more substantive reasons.
-First we can load `all_di` (“all diversity indices”), which is the
-combined results across all the communities in all the datasets. Every
-community that was included for sampling is included in all\_di.
-(Additionally, every community has a “singletons” counterpart, which is
-the same analysis run adjusted for rarefaction. That analysis is
-discussed elsewhere, and we ignore the rarefaction-adjusted versions
+Some communities fall into mathematically special spaces where basic
+constraints prevent informative results. We removed all communities that
+fell into any of the below cases:
+
+1)  When communities have only 1 mathematically possible SAD (S = 1, N =
+    S, or N = S + 1).
+2)  When the sampled feasible sets yield fewer than 20 unique values for
+    skewness/evenness. If there are fewer than 20 unique values in the
+    comparison vector, it is impossible to be in the 5th or 95th
+    percentile.
+3)  When a community consists of only 2 species, we excluded it from
+    analyses using skewness, because e1071::skewness() always evaluates
+    to 0 if S = 2.
+
+Below is the procedure for performing this filtering (after sampling the
+feasible set). First, we load our results from `all_di.csv`. This file
+contains the results of comparing the skewness and evenness for
+**observed** SADs to the distributions of skewness and evenness obtained
+from their sampled feasible sets; “all\_di” stands for “all diversity
+indices”. Every community that was included for sampling is included in
+all\_di. (Additionally, every community has a “singletons” counterpart,
+which is the same analysis run adjusted for rarefaction. That analysis
+is discussed elsewhere, and we ignore the rarefaction-adjusted versions
 here).
 
 ``` r
@@ -447,7 +528,9 @@ all_statevars <- bind_rows(bbs_statevars, fia_short_statevars, fia_small_stateva
 
 
 all_di <- read.csv(here::here("analysis", "reports", "all_di.csv"), stringsAsFactors = F)
+```
 
+``` r
 all_di <- all_di %>%
   filter(!singletons) %>%
   mutate(dat = ifelse(grepl(dat, pattern = "fia"), "fia", dat),
@@ -475,14 +558,17 @@ head(all_di)
 
 </div>
 
+Here we confirm that we have the same number of communities in `all_di`
+as we have in our set of communities included for sampling.
+
 ``` r
 nrow(all_di) == nrow(all_statevars)
 ```
 
     ## [1] TRUE
 
-We remove communities with only one possible SAD (N = S, N = S + 1, or S
-= 1).
+Here we remove communities for the first case, only one possible SAD (N
+= S, N = S + 1, or S = 1).
 
 ``` r
 all_di %>%
@@ -523,10 +609,36 @@ nrow(all_di_filtered)
 Removing those with only one SAD results in the removal of 258 sites
 total. 176 from FIA, 56 from MCDB, and 26 from Misc. Abund.
 
-Finally, we will restrict aggregate analyses to sites whose feasible
-sets have more than 20 unique values for whichever shape metric we’re
-interested in, **and** we will restrict analyses with skewness to sites
-with \>2 species. This results in these final totals:
+Finally, we filter for cases 2 and 3. That is, for aggregate analyses,
+we will restrict our analyses to sites whose feasible sets have more
+than 20 unique values for skewness or evenness (whichever metric we are
+focused on). For analyses with skewness, we will also remove sites with
+only 2 species. This results in these final total numbers of communities
+included for skewness and evenness.
+
+For skewness:
+
+``` r
+all_di_filtered %>%
+  filter(skew_unique > 20, s0 > 2) %>%
+  group_by(dat) %>%
+  summarize(sites_for_skewness = dplyr::n()) %>%
+  mutate(total_sites_for_skewness = sum(sites_for_skewness))
+```
+
+<div class="kable-table">
+
+| dat         | sites\_for\_skewness | total\_sites\_for\_skewness |
+| :---------- | -------------------: | --------------------------: |
+| bbs         |                 2773 |                       22325 |
+| fia         |                18300 |                       22325 |
+| gentry      |                  223 |                       22325 |
+| mcdb        |                  537 |                       22325 |
+| misc\_abund |                  492 |                       22325 |
+
+</div>
+
+For evenness:
 
 ``` r
 all_di_filtered %>%
@@ -549,22 +661,21 @@ all_di_filtered %>%
 
 </div>
 
-``` r
-all_di_filtered %>%
-  filter(skew_unique > 20, s0 > 2) %>%
-  group_by(dat) %>%
-  summarize(sites_for_skewness = dplyr::n()) %>%
-  mutate(total_sites_for_skewness = sum(sites_for_skewness))
-```
+## References
 
-<div class="kable-table">
+Baldridge, E. (2015). Miscellaneous Abundance Database. figshare.
+Available at: MiscAbundanceDB\_main.
+<https://doi.org/10.6084/m9.figshare.95843.v4>
 
-| dat         | sites\_for\_skewness | total\_sites\_for\_skewness |
-| :---------- | -------------------: | --------------------------: |
-| bbs         |                 2773 |                       22325 |
-| fia         |                18300 |                       22325 |
-| gentry      |                  223 |                       22325 |
-| mcdb        |                  537 |                       22325 |
-| misc\_abund |                  492 |                       22325 |
+Baldridge, E., Harris, D.J., Xiao, X. & White, E.P. (2016). Data from An
+extensive comparison of species-abundance distribution models. Zenodo.
+Available at: <https://zenodo.org/record/166725>. Accessed from
+<https://github.com/weecology/sad-comparison>.
 
-</div>
+Meyer, D., Dimitriadou, E., Hornik, K., Weingessel, A. & Leisch, F.
+(2019). e1071: Misc Functions of the Department of Statistics,
+Probability Theory Group (Formerly: E1071), TU Wien.
+
+White, E.P., Thibault, K.M. & Xiao, X. (2012). Characterizing species
+abundance distributions across taxa and ecosystems using a simple
+maximum entropy model. Ecology, 93, 1772–1778.
