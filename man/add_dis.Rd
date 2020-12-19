@@ -2,16 +2,20 @@
 % Please edit documentation in R/metrics.R
 \name{add_dis}
 \alias{add_dis}
-\title{Skewness}
+\title{Summarize sampled and observed SADs}
 \usage{
 add_dis(fs_samples_df)
 }
 \arguments{
-\item{fs_samples_df}{df of all samples, with column for abundance}
+\item{fs_samples_df}{df of all samples - observed and sampled - with column for abundance, \emph{for a single site}. Output of \code{sample_fs} or \code{sample_fs_wrapper}}
 }
 \value{
-summary of skewness per sample
+data frame with summary statistic values and percentile scores for each metric, for every sampled and observed SAD
 }
 \description{
-Skewness
+Given a dataframe of sampled and observed SAD vectors,
+\itemize{
+\item summarizes each vector with skewness, Shannon diversity, and Simpson evenness
+\item calculates the percentile rank for each diversity metric for every sample. The observed percentile rank is calculated against the distribution of sampled values for each metric.
+}
 }

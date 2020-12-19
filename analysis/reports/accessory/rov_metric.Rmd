@@ -1,0 +1,366 @@
+---
+title: "Explaining and exploring the 95% interval metric"
+author: Renata Diaz
+date: "`r Sys.Date()`"
+output: 
+    github_document:
+       df_print: kable
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(drake)
+library(dplyr)
+library(ggplot2)
+
+## Set up the cache and config
+db <- DBI::dbConnect(RSQLite::SQLite(), here::here("analysis", "drake", "drake-cache-net.sqlite"))
+cache <- storr::storr_dbi("datatable", "keystable", db)
+cache$del(key = "lock", namespace = "session")
+knitr::opts_chunk$set(fig.width=3, fig.height=2.5, warning = FALSE, message = FALSE) 
+```
+
+
+```{r real data, include=FALSE}
+
+all_di <- read.csv(here::here("analysis", "reports", "all_di.csv"), stringsAsFactors = F)
+
+all_di <- all_di %>%
+  mutate(log_nparts = log(gmp:::as.double.bigz(nparts)),
+         log_nsamples = log(nsamples),
+         log_s0 = log(s0),
+         log_n0 = log(n0)) %>%
+  filter(n0 > s0,
+         !singletons,
+         s0 > 1,
+         dat %in% c("bbs", "fia_short", "fia_small", "gentry", "mcdb", "misc_abund_short")) %>%
+  mutate(dat = ifelse(grepl(dat, pattern = "fia"), "fia", dat),
+         dat = ifelse(dat == "misc_abund_short", "misc_abund", dat))
+```
+
+One of the crucial threads of reasoning for comparing observations to an emergent statistical expectation is that the expectation be sufficiently specific to allow us to make robust comparisons. *Often*, with sufficiently large systems (also described as sufficiently large scale separation between the subcomponents and the aggregate characteristic of interest; H&L), we can rely on the expectation being extremely narrowly peaked. It is, however, not clear what "sufficiently large" means. We can expect that *some* ecological systems are definitely not large in this sense - if there are only 6 species and 3 individuals, the feasible set is trivially small. Nor is it a given that the expectations do actually get appreciably more peaked with increasing S and N. 
+
+We would like to know:
+
+* How the shape, and specifically the narrowness, of the expectation changes over an ecologically-relevant gradient in S and N
+* If, as we might expect given the above intuition about larger systems, small systems have less steep peaks: whether the change in the shape of the expectation corresponds with the change in our results. 
+* This is kind of slippery. Ideally we would find a way to measure our statistical power. 
+
+To do this we need to establish
+
+* A way of measuring the shape, and specifically the narrowness, of the expectation
+* How the shape changes over gradients
+* How the shape constrains the kind of deviation we *could* detect (?)
+* How the shape maps on to the presence/absence of detected deviations
+
+## Illustrating the expectation
+
+We obtain the expectation by drawing samples from the feasible set and constructing the distribution of values for *summary statistics* for all of those elements. 
+
+For example, for a community with 44 species and 13360 individuals, here is the feasible set:
+
+```{r example fs}
+
+net_summary <- readd(all_di_summary, cache = cache)
+
+net_summary <- net_summary %>%
+  mutate(log_nparts = log(gmp:::as.double.bigz(nparts)))
+
+example_fs <- readd(fs_s_44_n_13360, cache = cache)
+
+example_di <- readd(di_fs_s_44_n_13360, cache =cache)
+
+example_fs <- example_fs %>%
+  left_join(example_di) %>%
+  left_join(net_summary)
+
+example_fs2 <- readd(fs_s_7_n_71, cache = cache)
+
+example_di2 <- readd(di_fs_s_7_n_71, cache =cache)
+
+example_fs2 <- example_fs2 %>%
+  left_join(example_di2) %>%
+  left_join(net_summary)
+
+
+
+example_fs3 <- readd(fs_s_4_n_34, cache = cache)
+
+example_di3 <- readd(di_fs_s_4_n_34, cache =cache)
+
+example_fs3 <- example_fs3 %>%
+  left_join(example_di3) %>%
+  left_join(net_summary)
+
+ggplot(example_fs, aes(rank, abund, group = sim)) +
+  geom_line(alpha = .01) +
+  theme_bw()
+
+```
+
+Every vector in the feasible set can be summarized according to its skewness or evenness value:
+
+```{r example fs skew and even}
+
+ggplot(example_fs, aes(rank, abund, group = sim, color = skew)) +
+  geom_line(alpha = .05) +
+  theme_bw() +
+  scale_color_viridis_c()
+
+ggplot(example_fs, aes(rank, abund, group = sim, color = simpson)) +
+  geom_line(alpha = .05) +
+  theme_bw() +
+  scale_color_viridis_c(option = "plasma", end = .8)
+
+```
+
+We use the distribution of values for skewness and evenness, from our samples from the feasible set, as the expectation for the values of skewness and evenness for an observation.
+
+```{r example dists}
+
+ggplot(example_fs, aes(skew, ..ndensity..)) +
+  geom_density() +
+  geom_histogram(bins = 50) +
+  theme_bw()
+
+ggplot(example_fs, aes(simpson, ..ndensity..)) +
+  geom_density() +
+  geom_histogram(bins = 50) +
+  theme_bw()
+
+```
+
+Here is what this can look like for a smaller feasible set - for example, 7 species and 71 individuals:
+
+```{r smaller example}
+
+
+ggplot(example_fs2, aes(rank, abund, group = sim, color = skew)) +
+  geom_line(alpha = .05) +
+  theme_bw() +
+  scale_color_viridis_c()
+
+ggplot(example_fs2, aes(rank, abund, group = sim, color = simpson)) +
+  geom_line(alpha = .05) +
+  theme_bw() +
+  scale_color_viridis_c(option = "plasma", end = .8)
+
+
+ggplot(example_fs2, aes(skew, ..ndensity..)) +
+  geom_density() +
+  geom_histogram(bins = 50) +
+  theme_bw()
+
+ggplot(example_fs2, aes(simpson, ..ndensity..)) +
+  geom_density() +
+  geom_histogram(bins = 50) +
+  theme_bw()
+
+```
+
+And for a very small feasible set:
+
+```{r tiny example}
+
+
+ggplot(example_fs3, aes(rank, abund, group = sim, color = skew)) +
+  geom_line(alpha = .05) +
+  theme_bw() +
+  scale_color_viridis_c()
+
+ggplot(example_fs3, aes(rank, abund, group = sim, color = simpson)) +
+  geom_line(alpha = .05) +
+  theme_bw() +
+  scale_color_viridis_c(option = "plasma", end = .8)
+
+
+ggplot(example_fs3, aes(skew, ..ndensity..)) +
+  geom_density() +
+  geom_histogram(bins = 50) +
+  theme_bw()
+
+ggplot(example_fs3, aes(simpson, ..ndensity..)) +
+  geom_density() +
+  geom_histogram(bins = 50) +
+  theme_bw()
+
+```
+
+
+## Measuring the shape (narrowness)
+
+The actual values of skewness and evenness change over the gradients of S and N. Also, as evident above, these aren't necessarily normally distributed. 
+
+I have computed the ratio of a 95% interval relative to the full range of values. Here is what that looks like.
+
+```{r illustrate 95 interval}
+
+
+ggplot(example_fs, aes(skew, ..ndensity..)) +
+  geom_density() +
+  geom_histogram(bins = 50) +
+  theme_bw() +
+  geom_vline(xintercept = c(example_fs$skew_min[1], example_fs$skew_95[1]), color = "red") +
+  ggtitle(paste0("Skew 95% interval: ", round(example_fs$skew_95_ratio_1t[1], 2)))
+
+
+ggplot(example_fs, aes(simpson, ..ndensity..)) +
+  geom_density() +
+  geom_histogram(bins = 50) +
+  theme_bw() +
+  geom_vline(xintercept = c(example_fs$simpson_max[1], example_fs$simpson_5[1]), color = "red") +
+  ggtitle(paste0("Simpson 95% interval: ", round(example_fs$simpson_95_ratio_1t[1], 2)))
+
+ggplot(example_fs2, aes(skew, ..ndensity..)) +
+  geom_density() +
+  geom_histogram(bins = 50) +
+  theme_bw() +
+  geom_vline(xintercept = c(example_fs2$skew_min[1], example_fs2$skew_95[1]), color = "red") +
+  ggtitle(paste0("Skew 95% interval: ", round(example_fs2$skew_95_ratio_1t[1], 2)))
+
+
+ggplot(example_fs2, aes(simpson, ..ndensity..)) +
+  geom_density() +
+  geom_histogram(bins = 50) +
+  theme_bw() +
+  geom_vline(xintercept = c(example_fs2$simpson_max[1], example_fs2$simpson_5[1]), color = "red") +
+  ggtitle(paste0("Simpson 95% interval: ", round(example_fs2$simpson_95_ratio_1t[1], 2)))
+
+
+ggplot(example_fs3, aes(skew, ..ndensity..)) +
+  geom_density() +
+  geom_histogram(bins = 50) +
+  theme_bw() +
+  geom_vline(xintercept = c(example_fs3$skew_min[1], example_fs3$skew_95[1]), color = "red") +
+  ggtitle(paste0("Skew 95% interval: ", round(example_fs3$skew_95_ratio_1t[1], 2)))
+
+
+ggplot(example_fs3, aes(simpson, ..ndensity..)) +
+  geom_density() +
+  geom_histogram(bins = 50) +
+  theme_bw() +
+  geom_vline(xintercept = c(example_fs3$simpson_max[1], example_fs3$simpson_5[1]), color = "red") +
+  ggtitle(paste0("Simpson 95% interval: ", round(example_fs3$simpson_95_ratio_1t[1], 2)))
+
+hitting_the_ceiling <- example_fs3 %>%
+  select(sim, skew) %>%
+  distinct() %>%
+  mutate(max_skew = max(skew, na.rm = T)) %>%
+  mutate(equals_max = skew == max_skew)
+
+```
+```{r fig for manuscript, fig.dim = c(3, 9)}
+
+samples_plots <- list(
+  
+  ggplot(example_fs3, aes(rank, abund, group = sim, color = skew)) +
+    geom_line(alpha = .25) +
+    theme_bw() +
+    scale_color_viridis_c(option = "plasma", end = .8) +
+    ggtitle(paste0("S = ", (example_fs3$s0), "; N = ", (example_fs3$n0[1])), subtitle = paste0(round(exp(example_fs3$log_nparts[1]), 0), " elements in FS")) +
+    theme(legend.position = "top"),
+  
+  ggplot(example_fs2, aes(rank, abund, group = sim, color = skew)) +
+    geom_line(alpha = .1) +
+    theme_bw() +
+    scale_color_viridis_c(option = "plasma", end = .8) +
+    ggtitle(paste0("S = ", (example_fs2$s0), "; N = ", (example_fs2$n0[1])), subtitle = paste0(round(exp(example_fs2$log_nparts[1]), 0), " elements in FS")) +
+    theme(legend.position = "top"),
+  ggplot(example_fs, aes(rank, abund, group = sim, color = skew)) +
+    geom_line(alpha = .1) +
+    theme_bw() +
+    scale_color_viridis_c(option = "plasma", end = .8) +
+    ggtitle(paste0("S = ", (example_fs$s0), "; N = ", (example_fs$n0[1])), subtitle =  paste0(round(exp(example_fs$log_nparts[1]), 0), " elements in FS")) +
+    theme(legend.position = "top")
+)
+
+intervals_plots <- list(
+  
+  ggplot(example_fs3, aes(skew, ..ndensity..)) +
+    geom_density() +
+    geom_histogram(bins = 50) +
+    theme_bw() +
+    geom_vline(xintercept = c(example_fs3$skew_95[1], example_fs3$skew_min[1]), color = "red") +
+    ggtitle(paste0("S = ", (example_fs3$s0), "; N = ", (example_fs3$n0[1])), subtitle =  paste0("Skew 95% ratio: ", round((example_fs3$skew_95_ratio_1t[1]), 2))),
+  
+  ggplot(example_fs2, aes(skew, ..ndensity..)) +
+    geom_density() +
+    geom_histogram(bins = 50) +
+    theme_bw() +
+    geom_vline(xintercept = c(example_fs2$skew_95[1], example_fs2$skew_min[1]), color = "red") +
+    ggtitle(paste0("S = ", (example_fs2$s0), "; N = ", (example_fs2$n0[1])), subtitle =  paste0("Skew 95% ratio: ", round((example_fs2$skew_95_ratio_1t[1]), 2))),
+  
+  ggplot(example_fs, aes(skew, ..ndensity..)) +
+    geom_density() +
+    geom_histogram(bins = 50) +
+    theme_bw() +
+    geom_vline(xintercept = c(example_fs$skew_95[1], example_fs$skew_min[1]), color = "red") +
+    ggtitle(paste0("S = ", (example_fs$s0), "; N = ", (example_fs$n0[1])), subtitle =  paste0("Skew 95% ratio: ", round((example_fs$skew_95_ratio_1t[1]), 2)))
+  
+)
+
+gridExtra::grid.arrange(grobs = samples_plots, ncol = 1)
+gridExtra::grid.arrange(grobs = intervals_plots, ncol = 1)
+
+
+```
+
+
+## Mapping the shape over a gradient in S and N
+
+It can be difficult to interpret the distribution of interval values from our actual datasets, because they are irregularly distributed over S by N space. So we can drop a net over the relevant S by N gradient and sample *regularly* from it. 
+
+
+```{r define net}
+
+all_di_net <- all_di %>%
+  select(s0, n0) %>%
+  distinct()
+
+net <- readd(dat, cache = cache) 
+
+net <- net %>%
+  mutate(s0 = rank,
+         n0 = abund)
+
+ggplot(all_di_net, aes(log(s0), log(n0))) +
+  geom_point() +
+  geom_vline(xintercept = log(200)) +
+  geom_hline(yintercept = c(log(404420))) +
+  geom_point(data = net, color = "purple")
+
+```
+
+Here is how these 95% intervals vary over the *net* of points:
+
+```{r intervals on net}
+
+ggplot(filter(net_summary, s0 > 2, skew_unique > 1), aes(log(s0), log(n0), color = skew_95_ratio_1t)) +
+  geom_point() +
+  theme_bw() +
+  scale_color_viridis_c()
+
+ggplot(filter(net_summary,simpson_unique > 1), aes(log(s0), log(n0), color = simpson_95_ratio_1t)) +
+  geom_point() +
+  theme_bw() +
+  scale_color_viridis_c(option = "plamsa")
+
+
+```
+
+
+
+
+```{r nparts}
+
+ggplot(filter(net_summary, s0 > 2), aes(x = log_nparts, y = skew_95_ratio_1t, color = log(n0/s0))) +
+  geom_point() +
+  theme_bw()
+
+
+ggplot(net_summary, aes(x = log_nparts, y = simpson_95_ratio_1t, color = log(n0/s0))) +
+  geom_point() +
+  theme_bw()
+
+```
+

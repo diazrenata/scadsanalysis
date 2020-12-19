@@ -7,11 +7,11 @@
 add_singletons(dat, use_max = F)
 }
 \arguments{
-\item{dat}{dataframe, result of get sad}
+\item{dat}{dataframe with columns \code{rank}, \code{abund}, \code{site}, \code{dat}, \code{singletons}, \code{sim}, and \code{source}. This is the format you will get if you use \code{load_dataset} and filter to a single site}
 }
 \value{
-dataframe with some extra singletons
+dataframe with additional records for estimated rare species
 }
 \description{
-Add singletons
+Modifies an SAD to add rare species that may have been missed during sampling. Takes the difference between the number of species estimated by the bias-corrected Chao and ACE estimators (as implemented in vegan::estimateR) and the observed number of species. Adds the average of these two differences to the observed dataframe, with each added species getting one individual each. \code{use_max} is an option to use a high estimate (estimated mean + estimated standard error) from the estimators before calculating the mean difference. Returns the original SAD with added records for the estimated rare species.
 }

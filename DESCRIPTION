@@ -12,22 +12,24 @@ ByteCompile: true
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 6.1.1
+RoxygenNote: 7.1.1
 Imports: 
     drake (>= 7.0.0),
     dplyr,
     gmp,
     e1071,
+    entropy,
     feasiblesads,
     here,
     portalr,
     purrr,
+    reshape2,
     rmarkdown,
-    tidyr,
     magrittr,
+    tidyr,
     vegan
 Suggests:
     testthat
 Remotes: 
-    diazrenata/feasiblesads
-    
+    diazrenata/feasiblesads,
+    weecology/portalr

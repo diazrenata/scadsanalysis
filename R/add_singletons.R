@@ -1,8 +1,10 @@
 #' Add singletons
 #'
-#' @param dat dataframe, result of get sad
+#' Modifies an SAD to add rare species that may have been missed during sampling. Takes the difference between the number of species estimated by the bias-corrected Chao and ACE estimators (as implemented in vegan::estimateR) and the observed number of species. Adds the average of these two differences to the observed dataframe, with each added species getting one individual each. `use_max` is an option to use a high estimate (estimated mean + estimated standard error) from the estimators before calculating the mean difference. Returns the original SAD with added records for the estimated rare species.
 #'
-#' @return dataframe with some extra singletons
+#' @param dat dataframe with columns `rank`, `abund`, `site`, `dat`, `singletons`, `sim`, and `source`. This is the format you will get if you use `load_dataset` and filter to a single site
+#'
+#' @return dataframe with additional records for estimated rare species
 #' @export
 #'
 #' @importFrom dplyr select bind_rows mutate arrange row_number group_by n summarise filter
@@ -13,15 +15,18 @@ add_singletons <- function(dat, use_max =F) {
     as.matrix() %>%
     t()
 
+  # Observed richness and total abundance
   s0 <- ncol(freq)
   n0 <- sum(freq)
 
 
   est <- vegan::estimateR(freq)
 
+  # Calculate differences between estimates and observed richness
   chao_est <- est[2] - s0
   ace_est <- est[4] - s0
 
+  # Optioanlly use the high-end estimate for the estimated differences (estimate + se of estimate)
   if(use_max) {
     chao_est <- chao_est + est[3]
     ace_est <- ace_est + est[5]
@@ -41,14 +46,17 @@ add_singletons <- function(dat, use_max =F) {
     return(NA)
   }
 
+  # Choose how many species to add: mean of the estimates, rounded up to nearest integer
   est_nspp <- ceiling(mean(ests$est))
 
+  # If estimates do not add species, you can return the original dataframe
   if(est_nspp == 0) {
     dat <- dat %>%
       dplyr::mutate(singletons = TRUE)
     return(dat)
   }
 
+  # Otherwise add records for estimated missing species
   newdat <- data.frame(
     abund = rep(1, times = est_nspp)
   )

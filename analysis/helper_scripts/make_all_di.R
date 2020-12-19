@@ -1,12 +1,14 @@
+# This is a wrapper script to combine the results from each dataset-level pipeline into a single data frame.
+
 library(drake)
 library(dplyr)
 library(ggplot2)
 library(scadsanalysis)
 
 all_di <- list()
-datasets <- c("bbs", "fia_short", "gentry", "mcdb", "misc_abund_short", "portal_plants", "fia_small")
+datasets <- c("bbs",  "gentry", "fia_short", "mcdb", "misc_abund_short", "fia_small")
 
-#datasets <- c("fia", "gentry", "mcdb", "misc_abund_short", "portal_plants")
+
 
 for(i in 1:length(datasets)) {
 
@@ -28,10 +30,6 @@ for(i in 1:length(datasets)) {
 
   all_di[[i]] <- filter(all_di[[i]], source == "observed")
 
-  #this_dat <- readd(paste0("dat_s_dat_", this_dataset), cache = cache, character_only = T)
- # sv <- get_statevars(this_dat)
-#  all_di[[i]] <- left_join(all_di[[i]], sv, by = c("sim", "site", "source", "singletons", "dat"))
-
 
   DBI::dbDisconnect(db)
   rm(cache)
@@ -41,4 +39,4 @@ for(i in 1:length(datasets)) {
 
 all_di <- bind_rows(all_di)
 
-write.csv(all_di, "all_di.csv", row.names = F)
+write.csv(all_di, here::here("analysis", "reports", "all_di.csv"), row.names = F)

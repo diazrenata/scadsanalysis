@@ -8,7 +8,7 @@ datasets <- "mcdb"
 
 sites_list <- list_sites("mcdb")
 ndraws = 4000
-#sites_list <- sites_list[1:15, ]
+#sites_list <- sites_list[1:30, ]
 set.seed(1980)
 
 
@@ -33,10 +33,7 @@ all <- drake_plan(
                   transform = map(di)),
   di_obs_s = target(dplyr::bind_rows(di_obs),
                     transform = combine(di_obs, .by = singletons)),
-  all_di_obs = target(dplyr::bind_rows(di_obs_s_TRUE, di_obs_s_FALSE)),
-  report = target(render_report(here::here("analysis", "reports", "dat_report_template.Rmd"), dependencies = all_di_obs, is_template = TRUE, dat_name = !!datasets),
-                  trigger = trigger(condition = T),
-                  hpc = F)
+  all_di_obs = target(dplyr::bind_rows(di_obs_s_TRUE, di_obs_s_FALSE))
 )
 
 ## Set up the cache and config
@@ -57,7 +54,7 @@ nodename <- Sys.info()["nodename"]
 if(grepl("ufhpc", nodename)) {
   print("I know I am on the HiPerGator!")
   library(clustermq)
-  options(clustermq.scheduler = "slurm", clustermq.template = "slurm_clustermq.tmpl")
+  options(clustermq.scheduler = "slurm", clustermq.template = here::here("slurm_clustermq.tmpl"))
   ## Run the pipeline parallelized for HiPerGator
   make(all,
        force = TRUE,
@@ -68,10 +65,10 @@ if(grepl("ufhpc", nodename)) {
        jobs = 20,
        caching = "master") # Important for DBI caches!
 } else {
-  library(clustermq)
-  options(clustermq.scheduler = "multicore")
+ # library(clustermq)
+ # options(clustermq.scheduler = "multicore")
   # Run the pipeline on multiple local cores
-  system.time(make(all, cache = cache, cache_log_file = here::here("analysis", "drake", "cache_log_mcdb.txt"), parallelism = "clustermq", jobs = 2))
+  system.time(make(all, cache = cache, cache_log_file = here::here("analysis", "drake", "cache_log_mcdb.txt")))
 }
 
 DBI::dbDisconnect(db)

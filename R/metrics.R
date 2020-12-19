@@ -1,40 +1,12 @@
-#' Add dis wrapper
+#' Summarize sampled and observed SADs
 #'
-#' @param fs_df full fs df
+#' Given a dataframe of sampled and observed SAD vectors,
+#' - summarizes each vector with skewness, Shannon diversity, and Simpson evenness
+#' - calculates the percentile rank for each diversity metric for every sample. The observed percentile rank is calculated against the distribution of sampled values for each metric.
 #'
-#' @return full dis
-#' @export
+#' @param fs_samples_df df of all samples - observed and sampled - with column for abundance, *for a single site*. Output of `sample_fs` or `sample_fs_wrapper`
 #'
-#' @importFrom dplyr filter bind_rows
-dis_wrapper <- function(fs_df) {
-
-  fs_sites <- as.list(unique(fs_df$site))
-
-  fs_singletons <- lapply(fs_sites, FUN = function(fs_site_name, dataset)
-    return(dplyr::filter(dataset, site == fs_site_name, singletons == T)), dataset = fs_df)
-  fs_singletons_f <- lapply(fs_sites, FUN = function(fs_site_name, dataset)
-    return(dplyr::filter(dataset, site == fs_site_name, singletons == F)), dataset = fs_df)
-
-  if(any(fs_df$singletons)) {
-
-  all_fs_sites <- c(fs_singletons, fs_singletons_f)
-
-  } else {
-    all_fs_sites <- fs_singletons_f
-  }
-  all_dis <- lapply(all_fs_sites, FUN = add_dis)
-
-  all_dis <- dplyr::bind_rows(all_dis)
-
-  return(all_dis)
-
-}
-
-#' Skewness
-#'
-#' @param fs_samples_df df of all samples, with column for abundance
-#'
-#' @return summary of skewness per sample
+#' @return data frame with summary statistic values and percentile scores for each metric, for every sampled and observed SAD
 #' @export
 #'
 #' @importFrom e1071 skewness
@@ -65,7 +37,9 @@ add_dis <- function(fs_samples_df) {
     dplyr::filter(source == "observed", sim < 0) %>%
     dplyr::mutate(skew_percentile = get_percentile(skew, a_vector = sim_percentiles$skew),
                   shannon_percentile = get_percentile(shannon, a_vector = sim_percentiles$shannon),
-                  simpson_percentile = get_percentile(simpson, a_vector = sim_percentiles$simpson))
+                  simpson_percentile = get_percentile(simpson, a_vector = sim_percentiles$simpson),
+                  skew_percentile_excl = get_percentile(skew, a_vector = sim_percentiles$skew, incl =F),
+                  simpson_percentile_excl = get_percentile(simpson, a_vector = sim_percentiles$simpson, incl = F))
 
 
   sim_dis <- dplyr::bind_rows(sim_percentiles, sampled_percentile)
@@ -73,20 +47,21 @@ add_dis <- function(fs_samples_df) {
   return(sim_dis)
 }
 
-
-
 #' Get percentile values
 #'
+#' Calculate the percentile values (% of elements in the vector <= a value) for all values in a vector
+#'
 #' @param a_vector Vector of values
+#' @param incl tf lessthan or equal to or just less than
 #'
 #' @return Vector of percentile values for all values in the vector
 #' @export
 #'
-get_percentiles <- function(a_vector) {
+get_percentiles <- function(a_vector, incl = T) {
 
   nvals <- sum(!(is.na(a_vector)))
 
-  percentile_vals <- vapply(as.matrix(a_vector), FUN = count_below, a_vector = a_vector, FUN.VALUE = 100)
+  percentile_vals <- vapply(as.matrix(a_vector), FUN = count_below, a_vector = a_vector, incl = incl, FUN.VALUE = 100)
 
   for(i in 1:length(a_vector)) {
     if(!(is.nan(a_vector[i]))) {
@@ -99,29 +74,41 @@ get_percentiles <- function(a_vector) {
 }
 
 
-#' Count values below a value
+#' Count values less than or equal to a value
 #'
 #' @param a_value Focal value
 #' @param a_vector Vector for comparison
+#' @param incl include end or not? if true, <=, if false, <
 #'
-#' @return Number of values in vector below value
+#' @return Number of values in vector less than or equal to the focal value
 #' @export
 #'
-count_below <- function(a_value, a_vector) {
-  return(sum(a_vector < a_value, na.rm = T))
+count_below <- function(a_value, a_vector, incl = T) {
+  if(incl) {
+  return(sum(a_vector <= a_value, na.rm = T))
+  } else {
+    return(sum(a_vector < a_value, na.rm = T))
+  }
 }
 
 #' Get one percentile value
 #'
+#' Calculate the percentile value for a focal value relative to a comparison vector, as the % of elements in the comparison vector less than or equal to the focal value.
+#'
 #' @param a_value Focal value
 #' @param a_vector Comparison vector
+#' @param incl include end or not? if true, <=, if false, <
 #'
 #' @return Percentile of focal value within comparison vector
 #' @export
-get_percentile <- function(a_value, a_vector) {
+get_percentile <- function(a_value, a_vector, incl= T) {
 
-  count_below <- sum(a_vector < a_value, na.rm = T)
+  if(incl) {
+  count_below <- sum(a_vector <= a_value, na.rm = T)
+  } else {
+    count_below <- sum(a_vector < a_value, na.rm = T)
 
+}
   nvals <- length(a_vector)
 
   percentile_val <- 100 * (count_below / nvals)
@@ -129,35 +116,89 @@ get_percentile <- function(a_value, a_vector) {
   return(percentile_val)
 }
 
-#' Pull observed diversity indices and nb samples achieved
+#' Summarize observed vs. samples
+#'
+#' Extracts the percentile rank for the shape metric value for the observed SAD relative to the samples from its FS, as well as summary information about the distribution of shape metric values from the samples from the FS:
+#'
+#' - Number of unique samples found from the FS
+#' - Range, mean, standard deviation, min, max, .25, .95, and .975 quantiles for the distributions of skewness and evenness from the samples
+#' - Ratio of the width of two-tailed and one-tailed 95% intervals to the full range for both skewness and evenness. For skewness, the one-tailed interval is from 0-.95; for evenness, the one-tailed interval is from .05-1. The two-tailed intervals are from .025 to .975.
 #'
 #' @param di_df result of di_wrapper
 #'
 #' @return di_df for observed + n samples
 #' @export
 #'
-#' @importFrom dplyr filter mutate group_by ungroup
+#' @importFrom dplyr filter mutate group_by ungroup summarize left_join
 pull_di <- function(di_df) {
 
-  di_df <- di_df  %>%
-    dplyr::group_by(source) %>%
-    dplyr::mutate(skew_range = max(skew, na.rm = T) - min(skew, na.rm = T),
-                  simpson_range = max(simpson, na.rm = T) - min(simpson, na.rm = T),
-                  nsamples = length(unique(sim)),
-                  skew_sd = sd(skew, na.rm = T),
-                  skew_mean = mean(skew, na.rm = T),
-                  simpson_sd = sd(simpson, na.rm = T),
-                  simpson_mean = mean(simpson, na.rm = T)) %>%
+  di_sampled <- dplyr::filter(di_df, source != "observed") %>%
+    dplyr::group_by(s0, n0,dat, site) %>%
+    dplyr::summarize(skew_range = max(skew, na.rm = T) - min(skew, na.rm = T),
+                     simpson_range = max(simpson, na.rm = T) - min(simpson, na.rm = T),
+                     nsamples = length(unique(sim)),
+                     skew_unique = length(unique(skew, na.rm = T)),
+                     simpson_unique = length(unique(simpson, na.rm = T)),
+                     skew_2p5 = quantile(skew, probs = c(0.025), na.rm = T),
+                     skew_97p5 = quantile(skew, probs = c(0.975), na.rm = T),
+                     skew_95 = quantile(skew, probs = c(0.95), na.rm = T),
+                     skew_min = min(skew, na.rm = T),
+                     simpson_max = max(simpson, na.rm = T),
+                     simpson_2p5 = quantile(simpson, probs = c(0.025), na.rm = T),
+                     simpson_5 = quantile(simpson, probs = c(.05), na.rm = T),
+                     simpson_97p5 = quantile(simpson, probs = c(0.975), na.rm = T)) %>%
     dplyr::ungroup() %>%
-    dplyr::mutate(skew_range = max(skew_range, na.rm = T),
-                  simpson_range = max(simpson_range, na.rm = T),
-                  nsamples = max(nsamples, na.rm = T),
-                  skew_sd = max(skew_sd, na.rm = T),
-                  skew_mean = max(skew_mean, na.rm = T),
-                  simpson_sd = max(simpson_sd, na.rm = T),
-                  simpson_mean = max(simpson_mean, na.rm = T)) %>%
-    dplyr::filter(source == "observed")
+    dplyr::mutate(skew_95_ratio_2t = (skew_97p5 - skew_2p5)/skew_range,
+                  simpson_95_ratio_2t = (simpson_97p5 - simpson_2p5)/simpson_range,
+                  skew_95_ratio_1t = (skew_95 - skew_min)/skew_range,
+                  simpson_95_ratio_1t = (simpson_max - simpson_5)/simpson_range
+    )
 
-  return(di_df)
+  di_observed <- dplyr::filter(di_df, source == "observed") %>%
+    dplyr::left_join(di_sampled)
+
+  return(di_observed)
+
+}
+
+#' Summarize just samples
+#'
+#' Extracts summary information about the distribution of shape metric values from the samples from the FS:
+#'
+#' - Number of unique samples found from the FS
+#' - Range, mean, standard deviation, min, max, .25, .95, and .975 quantiles for the distributions of skewness and evenness from the samples
+#' - Ratio of the width of two-tailed and one-tailed 95% intervals to the full range for both skewness and evenness. For skewness, the one-tailed interval is from 0-.95; for evenness, the one-tailed interval is from .05-1. The two-tailed intervals are from .025 to .975.
+#'
+#' @param di_df result of di_wrapper
+#'
+#' @return di_df for ONLY samples
+#' @export
+#'
+#' @importFrom dplyr filter mutate group_by ungroup summarize left_join
+pull_di_net <- function(di_df) {
+
+  di_sampled <- di_df %>%
+    dplyr::group_by(s0, n0,dat, site, nparts) %>%
+    dplyr::summarize(skew_range = max(skew, na.rm = T) - min(skew, na.rm = T),
+                     simpson_range = max(simpson, na.rm = T) - min(simpson, na.rm = T),
+                     nsamples = length(unique(sim)),
+                     skew_unique = length(unique(skew, na.rm = T)),
+                     simpson_unique = length(unique(simpson, na.rm = T)),
+                     skew_2p5 = quantile(skew, probs = c(0.025), na.rm = T),
+                     skew_97p5 = quantile(skew, probs = c(0.975), na.rm = T),
+                     skew_95 = quantile(skew, probs = c(0.95), na.rm = T),
+                     skew_min = min(skew, na.rm = T),
+                     simpson_max = max(simpson, na.rm = T),
+                     simpson_2p5 = quantile(simpson, probs = c(0.025), na.rm = T),
+                     simpson_5 = quantile(simpson, probs = c(.05), na.rm = T),
+                     simpson_97p5 = quantile(simpson, probs = c(0.975), na.rm = T)) %>%
+    dplyr::ungroup() %>%
+    dplyr::mutate(skew_95_ratio_2t = (skew_97p5 - skew_2p5)/skew_range,
+                  simpson_95_ratio_2t = (simpson_97p5 - simpson_2p5)/simpson_range,
+                  skew_95_ratio_1t = (skew_95 - skew_min)/skew_range,
+                  simpson_95_ratio_1t = (simpson_max - simpson_5)/simpson_range
+    )
+
+  return(di_sampled)
 
 }

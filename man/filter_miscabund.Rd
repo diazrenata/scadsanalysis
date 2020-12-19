@@ -2,10 +2,14 @@
 % Please edit documentation in R/data_handling.R
 \name{filter_miscabund}
 \alias{filter_miscabund}
-\title{Filter misc abund data}
+\title{Filter Misc Abundance Database}
 \usage{
-filter_miscabund(max_s = 200, max_n = 40720,
-  storage_path = here::here("working-data", "abund_data"), save = TRUE)
+filter_miscabund(
+  max_s = 200,
+  max_n = 40720,
+  storage_path = here::here("working-data", "abund_data"),
+  save = TRUE
+)
 }
 \arguments{
 \item{max_s}{currently 200}
@@ -20,5 +24,5 @@ filter_miscabund(max_s = 200, max_n = 40720,
 nothing
 }
 \description{
-Misc abund dataset has some very large communities, which I am removing for now to keep the p table tractable. This function is to make that filtering documented.
+The Miscellaneous Abundance database (Baldridge 2014) has some very large communities, which have feasible sets larger than RMD has been able to sample. (Specifically, as S and N become very large, the \emph{p table} for \code{feasiblesads} becomes very large, making it computationally intensive to generate, difficult to store, and difficult to pass to R). We therefore filter out communities with more than 200 species or more than 40720 individuals, which results in removing 4 communities of 569 total. 40720 was selected via trial and error to get as many communities as possible. It allows sampling the largest-tractable community, with 40714 individuals; capturing the largest four (70939+ individuals) is a considerable jump in resource use.
 }

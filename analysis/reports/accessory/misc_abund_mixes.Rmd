@@ -1,0 +1,94 @@
+---
+title: "Filtering datasets"
+author: Renata Diaz
+date: "`r Sys.Date()`"
+output: 
+    github_document:
+       df_print: kable
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(drake)
+library(dplyr)
+library(ggplot2)
+library(scadsanalysis)
+
+theme_set(theme_bw())
+
+knitr::opts_chunk$set(fig.width=3, fig.height=2.5, warning = FALSE, message = FALSE) 
+```
+
+While preparing the filtering report, RMD noticed that some communities in Misc. Abund have a **mixture** of relative abundance and count data. This is a report to record that rabbit hole. It turned out not to be problematic. 
+
+Here we can also identify which of the Misc Abund communities have the *mixture* of relative and count data.
+
+```{r}
+
+misc_abund_raw <- read.csv(here::here("working-data", "abund_data", "misc_abund_spab.csv"))
+
+misc_abund_raw <- misc_abund_raw %>%
+  dplyr::rename(site = Site_ID,
+                abund = Abundance)
+
+misc_abund_raw <- misc_abund_raw %>%
+  mutate(site = as.character(site),
+         dat = "misc_abund",
+         singletons = F,
+         sim = -99,
+         source = "observed") %>%
+  filter(abund > 0) %>%
+  group_by(site) %>%
+  arrange(abund) %>%
+  mutate(rank = row_number()) %>%
+  ungroup()
+
+
+
+misc_abund_statevars <- get_statevars(misc_abund_raw)
+
+misc_abund_sv_filtered <- misc_abund_statevars %>%
+  filter(n0 <= 40720)
+
+misc_abund_filtered <- filter(misc_abund_raw, site %in% misc_abund_sv_filtered$site)
+
+misc_abund <- read.csv(here::here("working-data", "abund_data", "misc_abund_spab.csv"))
+
+misc_abund <- misc_abund %>%
+  dplyr::rename(site = Site_ID,
+                abund = Abundance)
+
+miscabund_issues <- misc_abund %>%
+  group_by(site) %>%
+  summarize(
+    nspecies = dplyr::n(),
+    nas.in.count = sum(is.na(abund)),
+    n.nonzero.species = sum(abund > 0, na.rm = T)
+  )
+
+filter(miscabund_issues, nas.in.count > 0, n.nonzero.species > 0)
+
+```
+
+There are 6 sites for Misc Abund that have **both** NA's recorded for counted abundance **and** any non-0, non-NA records for counted abundance. So that is, they have **some** actual count data (not 100% relative abundance), but they also have NA's for the counts. 
+
+For four of these - 144, 145, 146, and 147 - this appears to be because reptiles are recorded in counts and arachnids are recorded as relative abundances. Therefore, for these sites, the SAD we end up working with is just the one for reptiles. For example:
+
+```{r}
+filter(misc_abund, site == 145)
+filter(misc_abund_filtered, site == "145")
+```
+
+
+Given that this appears to reflect different conventions for very different **taxa** (and not a mix of data currencies for what we would in other contexts consider the same community), RMD is comfortable leaving these 4 sites in.
+
+For 178 and 446, there are individual species (one at each site) with "NA" and not 0 for abundance. RMD is leaving these in; it should have no impact on the final results. 
+
+```{r}
+
+filter(misc_abund, site == 178, is.na(abund))
+
+filter(misc_abund, site == 446, is.na(abund))
+
+```
+

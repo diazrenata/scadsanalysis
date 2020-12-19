@@ -2,10 +2,9 @@
 % Please edit documentation in R/download_data.R
 \name{download_data}
 \alias{download_data}
-\title{Download SAD data}
+\title{Download and filter SAD data}
 \usage{
-download_data(from_url = FALSE,
-  storage_path = here::here("working-data"))
+download_data(from_url = FALSE, storage_path = here::here("working-data"))
 }
 \arguments{
 \item{from_url}{defaults FALSE. If true, downloads White/Baldridge data directly from GitHub and figshare. Otherwise, loads data from storage internal to the package}
@@ -16,5 +15,10 @@ download_data(from_url = FALSE,
 nothing
 }
 \description{
-Download SAD data
+Downloads processed SAD data directly from the GitHub repo for White et al (2012) and figshare for Baldridge et al (2014), or copies pre-downloaded copies of these data that are included in the compenidum. These copies were downloaded in 2019 and the raw files are unedited.
+}
+\details{
+Also downloads a pre-processed version of the Portal plants data. These data were used by RMD for methods development, but not included in the final analysis because they differ from the other datasets in sampling - the Portal plants are repeated re-sampling of the same plots twice a year for 40 years, and may not be comparable to surveys of numerous independent communities.
+
+Then filters the raw datasets to the specifications for this analysis. For the Miscellaneous Abundance Database, this is filtering out communities with S >= 200 or N >= 40720, because these are too large to sample efficiently. We split the main FIA database into two subsets: those with fewer than 10 species (approximately 90,000 sites) and those with more than 10 species. We retain all sites with >= 10 species (a total of 10355). It creates memory problems to try and run all of the small communities, so we randomly selected 10,000 sites. We drew the 10,000 from the subset of sites with between 3 and 9 species, because a considerable proportion have fewer than 3 (26,667/92,988), and this analysis is poorly suited to SADs with only 1 or 2 species. We do not filter any of the other datasets, because they have S and N within the range we can sample effectively and they do not have as many different sites as FIA.
 }

@@ -2,10 +2,15 @@
 % Please edit documentation in R/data_handling.R
 \name{filter_fia_small}
 \alias{filter_fia_small}
-\title{Filter FIA data - tiny communities}
+\title{Filter FIA data - small communities}
 \usage{
-filter_fia_small(min_s0 = 3, max_s0 = 9, max_comm = 10000,
-  storage_path = here::here("working-data", "abund_data"), save = TRUE)
+filter_fia_small(
+  min_s0 = 3,
+  max_s0 = 9,
+  max_comm = 10000,
+  storage_path = here::here("working-data", "abund_data"),
+  save = TRUE
+)
 }
 \arguments{
 \item{min_s0}{min s0}
@@ -22,5 +27,5 @@ filter_fia_small(min_s0 = 3, max_s0 = 9, max_comm = 10000,
 nothing
 }
 \description{
-Following White et al 2012, filtering FIA data to sites with > 10 species. This brings it from 103343 sites to 10355.
+There are 66,321 FIA sites with between 3 and 9 species, and 26,667 with 1 or 2 species. Running so many different sites creates memory problems (drake plans become very long); the other datasets in this analysis have orders of magnitude fewer sites. We selected 10,000 small communities to analyze. We drew the 10,000 from the 66,321 with between 3 and 9 species, because SADs with only 1 or 2 species are not well-captured in this analysis. If S = 1, there is only one possible SAD. If S = 2, it is impossible to compute some summary statistics for shape, and it is unclear what we \emph{mean} by shape. The random selection uses seed = 1977, because 1977 is the year the Portal Project was initiated and it is therefore RMD's favorite seed.
 }

@@ -4,17 +4,19 @@
 \alias{list_sites}
 \title{List sites in a dataset}
 \usage{
-list_sites(dataset_name, storage_path = here::here("working-data",
-  "abund_data"))
+list_sites(
+  dataset_name,
+  storage_path = here::here("working-data", "abund_data")
+)
 }
 \arguments{
 \item{dataset_name}{"bbs", "fia", "gentry", "mcdb", or "misc_abund"}
 
-\item{storage_path}{where the data is living}
+\item{storage_path}{where the data is stored}
 }
 \value{
 dataframe of site names
 }
 \description{
-List sites in a dataset
+List the unique sites, or communities, in a dataset. Helper function for generating the lists of things to iterate over for other functions.
 }

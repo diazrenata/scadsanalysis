@@ -4,8 +4,10 @@
 \alias{filter_fia}
 \title{Filter FIA data}
 \usage{
-filter_fia(storage_path = here::here("working-data", "abund_data"),
-  save = TRUE)
+filter_fia(
+  storage_path = here::here("working-data", "abund_data"),
+  save = TRUE
+)
 }
 \arguments{
 \item{storage_path}{where to put it}
@@ -16,5 +18,5 @@ filter_fia(storage_path = here::here("working-data", "abund_data"),
 nothing
 }
 \description{
-Following White et al 2012, filtering FIA data to sites with > 10 species. This brings it from 103343 sites to 10355.
+Following White et al 2012, filtering FIA data to sites with >= 10 species. This brings it from 103343 sites to 10355.
 }

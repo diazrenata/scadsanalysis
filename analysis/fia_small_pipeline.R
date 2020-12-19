@@ -21,9 +21,9 @@ dat_plan <- drake_plan(
   dat_s = target(add_singletons_dataset(dat),
                  transform = map(dat),
                  hpc = F),
-  mamm_p = target(readRDS(here::here("analysis", "masterp_mamm.Rds")),
+  tall_p = target(readRDS(here::here("analysis", "masterp_tall.Rds")),
                   hpc = F),
-  fs = target(sample_fs_wrapper(dataset = dat_s_dat_fia_small, site_name = s, singletonsyn = singletons, n_samples = ndraws, p_table = mamm_p, seed = !!sample.int(10^6, size = 1)),
+  fs = target(sample_fs_wrapper(dataset = dat_s_dat_fia_small, site_name = s, singletonsyn = singletons, n_samples = ndraws, p_table = tall_p, seed = !!sample.int(10^6, size = 1)),
                    transform = cross(s = !!sites_list$site,
                                      singletons = !!c(TRUE, FALSE))),
   di = target(add_dis(fs),
@@ -32,10 +32,7 @@ dat_plan <- drake_plan(
                   transform = map(di)),
   di_obs_s = target(dplyr::bind_rows(di_obs),
                     transform = combine(di_obs, .by = singletons)),
-  all_di_obs = target(dplyr::bind_rows(di_obs_s_TRUE, di_obs_s_FALSE)),
-  report = target(render_report(here::here("analysis", "reports", "dat_report_template.Rmd"), dependencies = all_di_obs, is_template = TRUE, dat_name = !!datasets),
-                  trigger = trigger(condition = T),
-                  hpc = F)
+  all_di_obs = target(dplyr::bind_rows(di_obs_s_TRUE, di_obs_s_FALSE))
 )
 
 all <- dat_plan
@@ -58,7 +55,7 @@ nodename <- Sys.info()["nodename"]
 if(grepl("ufhpc", nodename)) {
   print("I know I am on the HiPerGator!")
   library(clustermq)
-  options(clustermq.scheduler = "slurm", clustermq.template = "slurm_clustermq.tmpl")
+  options(clustermq.scheduler = "slurm", clustermq.template = here::here("slurm_clustermq.tmpl"))
   ## Run the pipeline parallelized for HiPerGator
   make(all,
        force = TRUE,

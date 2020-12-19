@@ -25,4 +25,5 @@ comment:
   require_changes: no
 
 ignore:
-  - "R/download_data.R"  
+  - "R/download_data.R"
+  - "R/self_similarity_metrics.R"

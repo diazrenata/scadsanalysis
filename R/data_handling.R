@@ -1,6 +1,6 @@
-#' Filter misc abund data
+#' Filter Misc Abundance Database
 #'
-#' Misc abund dataset has some very large communities, which I am removing for now to keep the p table tractable. This function is to make that filtering documented.
+#' The Miscellaneous Abundance database (Baldridge 2014) has some very large communities, which have feasible sets larger than RMD has been able to sample. (Specifically, as S and N become very large, the _p table_ for `feasiblesads` becomes very large, making it computationally intensive to generate, difficult to store, and difficult to pass to R). We therefore filter out communities with more than 200 species or more than 40720 individuals, which results in removing 4 communities of 569 total. 40720 was selected via trial and error to get as many communities as possible. It allows sampling the largest-tractable community, with 40714 individuals; capturing the largest four (70939+ individuals) is a considerable jump in resource use.
 #'
 #' @param max_s currently 200
 #' @param max_n currently 40720
@@ -31,7 +31,7 @@ filter_miscabund <- function(max_s = 200, max_n = 40720, storage_path = here::he
 
 #' Filter FIA data
 #'
-#' Following White et al 2012, filtering FIA data to sites with > 10 species. This brings it from 103343 sites to 10355.
+#' Following White et al 2012, filtering FIA data to sites with >= 10 species. This brings it from 103343 sites to 10355.
 #'
 #' @param storage_path where to put it
 #' @param save save it?
@@ -59,9 +59,9 @@ filter_fia <- function(storage_path = here::here("working-data", "abund_data"), 
 }
 
 
-#' Filter FIA data - tiny communities
+#' Filter FIA data - small communities
 #'
-#' Following White et al 2012, filtering FIA data to sites with > 10 species. This brings it from 103343 sites to 10355.
+#' There are 66,321 FIA sites with between 3 and 9 species, and 26,667 with 1 or 2 species. Running so many different sites creates memory problems (drake plans become very long); the other datasets in this analysis have orders of magnitude fewer sites. We selected 10,000 small communities to analyze. We drew the 10,000 from the 66,321 with between 3 and 9 species, because SADs with only 1 or 2 species are not well-captured in this analysis. If S = 1, there is only one possible SAD. If S = 2, it is impossible to compute some summary statistics for shape, and it is unclear what we _mean_ by shape. The random selection uses seed = 1977, because 1977 is the year the Portal Project was initiated and it is therefore RMD's favorite seed.
 #'
 #' @param min_s0 min s0
 #' @param max_s0 max s0
@@ -102,10 +102,12 @@ filter_fia_small <- function(min_s0 = 3, max_s0 = 9, max_comm = 10000, storage_p
 
 #' Load a dataset
 #'
-#' @param dataset_name "bbs", "fia", "gentry", "mcdb", "portal_plants", "misc_abund_short", or "misc_abund"
-#' @param storage_path where the data is living
+#' Loads a (pre-downloaded, and filtered if relevant) dataset and processes it to the right shape for the rest of the functions.
 #'
-#' @return something
+#' @param dataset_name "bbs", "fia", "gentry", "mcdb", "portal_plants", "misc_abund_short", or "misc_abund"
+#' @param storage_path where the data is stored
+#'
+#' @return Dataset ready for analysis
 #' @export
 #'
 load_dataset <- function(dataset_name, storage_path = here::here("working-data", "abund_data")) {
@@ -160,8 +162,10 @@ load_dataset <- function(dataset_name, storage_path = here::here("working-data",
 
 #' List sites in a dataset
 #'
+#' List the unique sites, or communities, in a dataset. Helper function for generating the lists of things to iterate over for other functions.
+#'
 #' @param dataset_name "bbs", "fia", "gentry", "mcdb", or "misc_abund"
-#' @param storage_path where the data is living
+#' @param storage_path where the data is stored
 #'
 #' @return dataframe of site names
 #' @export
@@ -211,10 +215,10 @@ list_sites <- function(dataset_name, storage_path = here::here("working-data", "
 
 #' Add singletons to a dataset
 #'
-#' @param dataset the dataset
-#' @param use_max use max?
+#' @param dataset dataset, result of `load_dataset`, potentially with many sites
+#' @param use_max passed to `add_singletons`: use the high estimate, or no?
 #'
-#' @return dataset plus singletons
+#' @return dataset with estimated rare species added to each site
 #' @export
 #'
 #' @importFrom dplyr filter bind_rows
@@ -236,9 +240,11 @@ add_singletons_dataset <- function(dataset, use_max = TRUE) {
 
 #' Retrieve statevars
 #'
+#' Calculate the total abundance (N0) and species richness (S0) for each of the sites in a dataset
+#'
 #' @param a_dataset with columns site, dat, singletons, sim, source, abund
 #'
-#' @return summarzied to s0 and n0
+#' @return the dataset summarzied to s0 and n0 for each site
 #' @export
 #'
 #' @importFrom dplyr group_by summarize ungroup n

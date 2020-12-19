@@ -1,14 +1,16 @@
 #' Sample the feasible set
 #'
-#' @param dataset SAD df to base on
-#' @param nsamples nb samples
-#' @param p_table p table
+#' Draw samples from the feasible set for an SAD.
 #'
-#' @return long dataframe of sim, rank, and abundance
+#' @param dataset dataframe of the SAD for a single site; the result of load_dataset and then filtering to one community
+#' @param nsamples how many samples to draw. If the number of samples approaches the total number of elements in the feasible set, the samples may not all be unique. This function will only return unique samples, and so may not return `nsamples` samples if the feasible set is relatively small.
+#' @param p_table p table If provided, passes p table to feasiblesads to avoid re-generating it for every site
+#'
+#' @return long dataframe of simulated SADs in the same format as `dataset`, *and* the original dataset. Sims are distinguished from the observed via the `source` column (observed or sampled), and individual sims are identified with the `sim` column.
 #' @export
 #'
 #' @importFrom dplyr mutate group_by arrange ungroup row_number bind_rows
-#' @importFrom tidyr gather
+#' @importFrom reshape2 melt
 #' @importFrom feasiblesads fill_ps sample_fs
 sample_fs <- function(dataset, nsamples, p_table = NULL) {
 
@@ -33,7 +35,9 @@ sample_fs <- function(dataset, nsamples, p_table = NULL) {
     unique() %>%
     t() %>%
     as.data.frame() %>%
-    tidyr::gather(key = "sim", value = "abund") %>%
+    reshape2::melt(variable.name = "sim",
+                   value.name = "abund") %>%
+    dplyr::mutate(sim = as.character(sim)) %>%
     dplyr::mutate(sim = as.integer(substr(sim, 2, nchar(sim)))) %>%
     dplyr::group_by(sim) %>%
     dplyr::arrange(abund) %>%
@@ -54,14 +58,16 @@ sample_fs <- function(dataset, nsamples, p_table = NULL) {
 
 #' Sample fs wrapper
 #'
-#' @param dataset Full dataset
+#' Wrapper to sample the feasible set for a single site within a larger dataset; used to interface between the drake plan and `sample_fs`.
+#'
+#' @param dataset Full dataset - potentially including numerous sites
 #' @param site_name Which site within the dataset
-#' @param singletonsyn Singletons?
-#' @param n_samples nb samples
-#' @param p_table P table to pass
+#' @param singletonsyn T/F Whether to use the version that has been adjusted for rarefaction
+#' @param n_samples How many samples to draw. See `sample_fs`: if the feasible set is small, you may not necessarily get `n_samples` unique samples. These functions will only return unique samples.
+#' @param p_table Optionally, pass the p-table to avoid having to regenerate it
 #' @param seed pass a seed for reproducibility
 #'
-#' @return df of samples from fs
+#' @return Output of `sample_fs` for the selected site
 #' @export
 #'
 #' @importFrom dplyr filter

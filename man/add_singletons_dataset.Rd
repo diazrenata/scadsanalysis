@@ -7,12 +7,12 @@
 add_singletons_dataset(dataset, use_max = TRUE)
 }
 \arguments{
-\item{dataset}{the dataset}
+\item{dataset}{dataset, result of \code{load_dataset}, potentially with many sites}
 
-\item{use_max}{use max?}
+\item{use_max}{passed to \code{add_singletons}: use the high estimate, or no?}
 }
 \value{
-dataset plus singletons
+dataset with estimated rare species added to each site
 }
 \description{
 Add singletons to a dataset
