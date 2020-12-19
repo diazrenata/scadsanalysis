@@ -1,0 +1,91 @@
+Check that files from Zenodo match files from GitHub
+================
+Renata Diaz
+2020-12-19
+
+Download from Zenodo (<https://zenodo.org/record/166725>)
+
+``` r
+zip_download_dest  <- "~/Documents/sad-comparison.zip"
+
+download.file("https://zenodo.org/record/166725/files/weecology/sad-comparison-peerj.2.zip?download=1",zip_download_dest , quiet = TRUE, mode = "wb")
+unzip("~/Documents/sad-comparison.zip", exdir = "~/Documents/sad-comparison")
+file.remove(zip_download_dest)
+```
+
+    ## [1] TRUE
+
+Load data files from Zenodo downloads
+
+``` r
+zenodo_dir <- list.dirs("~/Documents/sad-comparison/", full.names = T)
+
+zenodo_dir <- zenodo_dir[ which(grepl("sad-data", zenodo_dir))]
+```
+
+BBS:
+
+``` r
+bbs_zenodo <- read.csv(file.path(zenodo_dir, "bbs_spab.csv"), stringsAsFactors = F, header = F, skip = 2)
+
+bbs_github <- read.csv(here::here("working-data", "abund_data", "bbs_spab.csv"), stringsAsFactors = F, header = F, skip = 2)
+
+
+any(!(bbs_github == bbs_zenodo))
+```
+
+    ## [1] FALSE
+
+FIA:
+
+``` r
+fia_zenodo <- read.csv(file.path(zenodo_dir, "fia_spab.csv"), stringsAsFactors = F, header = F, skip = 2)
+
+fia_github <- read.csv(here::here("working-data", "abund_data", "fia_spab.csv"), stringsAsFactors = F, header = F, skip = 2)
+
+
+any(!(fia_github == fia_zenodo))
+```
+
+    ## [1] FALSE
+
+Gentry:
+
+``` r
+gentry_zenodo <- read.csv(file.path(zenodo_dir, "gentry_spab.csv"), stringsAsFactors = F, header = F, skip = 2)
+
+gentry_github <- read.csv(here::here("working-data", "abund_data", "gentry_spab.csv"), stringsAsFactors = F, header = F, skip = 2)
+
+
+any(!(gentry_github == gentry_zenodo), na.rm = T)
+```
+
+    ## [1] FALSE
+
+``` r
+any(!(which(is.na(gentry_github)) == which(is.na(gentry_zenodo))))
+```
+
+    ## [1] FALSE
+
+MCDB:
+
+``` r
+mcdb_zenodo <- read.csv(file.path(zenodo_dir, "mcdb_spab.csv"), stringsAsFactors = F, header = F, skip = 2)
+
+mcdb_github <- read.csv(here::here("working-data", "abund_data", "mcdb_spab.csv"), stringsAsFactors = F, header = F, skip = 2)
+
+
+any(!(mcdb_github == mcdb_zenodo))
+```
+
+    ## [1] FALSE
+
+All the data files downloaded from GitHub exactly match their
+counterparts on Zenodo. (This is not surprising but good to check).
+
+The analyses for this manuscript were done using the files downloaded
+from GitHub. RMD doesn’t think it’s necessary (or really appropriate) to
+re-write `download_data` to download from Zenodo instead. This report
+demonstrates that the analyses should be replicable using the data files
+from Zenodo, should that be the only/the preferred option in the future.
