@@ -3,7 +3,7 @@ title: "Filtering datasets"
 author: Renata Diaz
 date: "`r Sys.Date()`"
 output: 
-    github_document:
+    word_document:
        df_print: kable
 ---
 
@@ -421,7 +421,7 @@ all_di <- all_di %>%
         Dataset = ifelse(Dataset == "gentry", "Gentry", Dataset),
         Dataset = ifelse(Dataset == "misc_abund", "Miscellaneous Abundance DB", Dataset))
 
-head(all_di)
+#head(all_di)
 
 ```
 
