@@ -87,8 +87,8 @@ breadth_plots <- list(
     ggtitle("Small community", subtitle = paste0("S = ", (example_fs3$s0), "; N = ", (example_fs3$n0[1]))) +
     theme(legend.position = "right"),
   
-  ggplot(example_fs3, aes(skew, ..ndensity..)) +
-    geom_density() +
+  ggplot(example_fs3, aes(skew)) +
+  #  geom_density() +
     geom_histogram(bins = 50) +
     theme_bw() +
     geom_vline(xintercept = c(example_fs3$skew_95[1], example_fs3$skew_min[1]), color = "red") +
@@ -101,8 +101,8 @@ breadth_plots <- list(
     ggtitle("Medium community", subtitle = paste0("S = ", (example_fs2$s0), "; N = ", (example_fs2$n0[1]))) +
     theme(legend.position = "right"),
   
-  ggplot(example_fs2, aes(skew, ..ndensity..)) +
-    geom_density() +
+  ggplot(example_fs2, aes(skew)) +
+  #  geom_density() +
     geom_histogram(bins = 50) +
     theme_bw() +
     geom_vline(xintercept = c(example_fs2$skew_95[1], example_fs2$skew_min[1]), color = "red") +
@@ -114,10 +114,12 @@ breadth_plots <- list(
     theme_bw() +
     scale_color_viridis_c(option = "plasma", end = .8) +
     ggtitle("Large community", subtitle = paste0("S = ", (example_fs$s0), "; N = ", (example_fs$n0[1]))) +
-    theme(legend.position = "right"),
+    theme(legend.position = "right") +
+    ylim(0, 5000) +
+    theme(axis.text.y = element_text(size = 6, angle = 60)),
   
-  ggplot(example_fs, aes(skew, ..ndensity..)) +
-    geom_density() +
+  ggplot(example_fs, aes(skew)) +
+   # geom_density() +
     geom_histogram(bins = 50) +
     theme_bw() +
     geom_vline(xintercept = c(example_fs$skew_95[1], example_fs$skew_min[1]), color = "red") +

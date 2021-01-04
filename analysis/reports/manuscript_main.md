@@ -1,7 +1,7 @@
 Figures and results for main manuscript
 ================
 Renata Diaz
-2020-12-17
+2021-01-04
 
 # Illustrations of 95% interval (Figure 1)
 
@@ -21,15 +21,11 @@ communities. See rov\_metric.md.
 
     ## Joining, by = c("dat", "site", "s0", "n0", "nparts")
 
-    ## Warning: Removed 1 rows containing non-finite values (stat_density).
-
+    ## Warning: Removed 1 rows containing non-finite values (stat_bin).
+    
     ## Warning: Removed 1 rows containing non-finite values (stat_bin).
 
-    ## Warning: Removed 1 rows containing non-finite values (stat_density).
-
-    ## Warning: Removed 1 rows containing non-finite values (stat_bin).
-
-    ## Warning: Removed 1 rows containing non-finite values (stat_density).
+    ## Warning: Removed 1 row(s) containing missing values (geom_path).
 
     ## Warning: Removed 1 rows containing non-finite values (stat_bin).
 
@@ -55,14 +51,14 @@ communities. See rov\_metric.md.
 
 ![](manuscript_main_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->![](manuscript_main_files/figure-gfm/unnamed-chunk-3-2.png)<!-- -->
 
-    ## png 
-    ##   2
+    ## quartz_off_screen 
+    ##                 2
 
-    ## png 
-    ##   2
+    ## quartz_off_screen 
+    ##                 2
 
-    ## png 
-    ##   2
+    ## quartz_off_screen 
+    ##                 2
 
-    ## png 
-    ##   2
+    ## quartz_off_screen 
+    ##                 2
