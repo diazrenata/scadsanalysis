@@ -38,14 +38,16 @@ all_di <- all_di %>%
 
 ```{r final dataset s and n space, echo = F}
 
-s3_fig1 <- ggplot(all_di, aes(x = log_s0, y = log_n0, color = Dataset)) +
+s3_fig1 <- ggplot(all_di, aes(x = s0, y = n0, color = Dataset)) +
   geom_point(alpha = .1) +
   geom_point(data = filter(all_di, log_nparts > log(50)), alpha = .4) +
   theme_bw() +
   scale_color_viridis_d(end = .9) +
   ggtitle("Communities by S and N") +
-  xlab("Log species richness (S)") +
-  ylab("Log total abundance (N)") 
+  xlab("Species richness (S); note log scale") +
+  ylab("Total abundance (N); note log scale") +
+  scale_x_log10() +
+  scale_y_log10()
 
 
 plot(s3_fig1)
