@@ -34,11 +34,11 @@ all_di <- all_di %>%
 ```
 
 
-# Figure S3
+# Figure S4
 
 ```{r final dataset s and n space, echo = F}
 
-s3_fig1 <- ggplot(all_di, aes(x = s0, y = n0, color = Dataset)) +
+s4_fig1 <- ggplot(all_di, aes(x = s0, y = n0, color = Dataset)) +
   geom_point(alpha = .1) +
   geom_point(data = filter(all_di, log_nparts > log(50)), alpha = .4) +
   theme_bw() +
@@ -50,7 +50,7 @@ s3_fig1 <- ggplot(all_di, aes(x = s0, y = n0, color = Dataset)) +
   scale_y_log10()
 
 
-plot(s3_fig1)
+plot(s4_fig1)
 # ggplot(all_di, aes(x = log_s0, y = log_n0, color = Dataset)) +
 #   geom_point(alpha = .05) +
 #   geom_point(data = filter(all_di, log_nparts > log(50)), alpha = .4) +
@@ -62,8 +62,8 @@ plot(s3_fig1)
 # # geom_vline(xintercept = log(40)) +
 # # geom_hline(yintercept = log(1000))
 
-pdf("figure_s3.pdf")
-plot(s3_fig1)
+pdf("figure_s4.pdf")
+plot(s4_fig1)
 dev.off()
 ```
 
