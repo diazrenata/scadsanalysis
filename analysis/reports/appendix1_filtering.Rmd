@@ -3,7 +3,7 @@ title: "Filtering datasets"
 author: Renata Diaz
 date: "`r Sys.Date()`"
 output: 
-    github_document:
+    word_document:
        df_print: kable
 ---
 
@@ -31,6 +31,8 @@ Code for downloading the data (and all other analyses) used for this project can
 ### Overview
 
 The `download_data` function downloads raw data files from https://github.com/weecology/sad-comparison/ (for BBS, Gentry, Mammal Community  Database, and FIA; data from Baldridge (2016) and also used in White, Thibault, and Xiao (2012)) and figshare http://figshare.com/files/3097079 (for the Miscellaneous Abundance Database; Baldridge (2015)). These raw files are stored in `working-data\abund_data` and are not edited. 
+
+The datasets downloaded from GitHub exactly match the corresponding data files in the Zenodo archive for Baldridge (2016), available here: (https://zenodo.org/record/166725). If in the future it is preferred or necessary to use the archival versions, they can be downloaded and stored in `working-data\abund_data` and the rest of the analysis should run just as if they had been downloaded from GitHub. 
 
 The Miscellaneous Abundance and FIA databases undergo additional filtering steps, implemented in the `filter_misc_abund` and `filter_fia_short` and `filter_fia_small` functions. These functions run automatically when the data are downloaded and save new files to `working-data\abund_data`.
 
@@ -421,7 +423,7 @@ all_di <- all_di %>%
         Dataset = ifelse(Dataset == "gentry", "Gentry", Dataset),
         Dataset = ifelse(Dataset == "misc_abund", "Miscellaneous Abundance DB", Dataset))
 
-head(all_di)
+#head(all_di)
 
 ```
 

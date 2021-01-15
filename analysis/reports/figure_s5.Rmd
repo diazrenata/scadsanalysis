@@ -58,7 +58,7 @@ ggplot(filter(all_di, simpson_unique > 20), aes(x = log_nparts, y= simpson_95_ra
 ), ncol = 2)
 
 
-pdf("figure_s5.pdf")
+pdf("figure_s5.pdf", bg = "white")
 plot(s3_fig2)
 dev.off()
 ```
