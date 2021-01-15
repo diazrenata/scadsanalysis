@@ -1,7 +1,7 @@
 Figures and results for main manuscript
 ================
 Renata Diaz
-2021-01-14
+2021-01-15
 
 # Illustrations of 95% interval (Figure 1)
 
@@ -33,7 +33,7 @@ communities. See rov\_metric.md.
 
 # Skewness and evenness histograms by dataset (Figure 2)
 
-![](manuscript_main_files/figure-gfm/first%20hists-1.png)<!-- -->![](manuscript_main_files/figure-gfm/first%20hists-2.png)<!-- -->
+![](manuscript_main_files/figure-gfm/first%20hists-1.png)<!-- -->
 
 # Breadth index by dataset (Figure 3)
 
@@ -105,6 +105,14 @@ communities. See rov\_metric.md.
 
     ## quartz_off_screen 
     ##                 2
+
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+    ## Warning: Removed 10 rows containing missing values (geom_bar).
+
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+    ## Warning: Removed 10 rows containing missing values (geom_bar).
 
     ## quartz_off_screen 
     ##                 2

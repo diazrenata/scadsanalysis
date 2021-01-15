@@ -62,7 +62,7 @@ plot(s4_fig1)
 # # geom_vline(xintercept = log(40)) +
 # # geom_hline(yintercept = log(1000))
 
-pdf("figure_s4.pdf")
+pdf("figure_s4.pdf", bg = "white")
 plot(s4_fig1)
 dev.off()
 ```

@@ -153,6 +153,7 @@ rm(cache)
 # Skewness and evenness histograms by dataset (Figure 2)
 
 ```{r first hists, fig.dim = c(7,7)}
+library(grid)
 fig_2 <- gridExtra::grid.arrange(grobs = list(
   
   ggplot(filter(all_di, s0 > 2, skew_unique > 20), aes(skew_percentile_excl)) +
@@ -175,10 +176,9 @@ fig_2 <- gridExtra::grid.arrange(grobs = list(
     #xlab("Percentile rank of observed value relative to feasible set") +
   #  ylab("Number of communities")
 ), ncol = 2,
-left = "Number of communities",
-bottom = "Percentile rank of observed value relative to feasible set")
+left = textGrob("Number of communities", rot = 90, gp = gpar(fill = "black")),
+bottom = textGrob("Percentile rank of observed value relative to feasible set"), gp = gpar(fill = "white"))
 
-plot(fig_2)
 
 ```
 
@@ -357,19 +357,63 @@ plot(fig_4)
 ```
 
 ```{r}
-pdf("figure_1.pdf", title = "Figure 1")
+pdf("figure_1.pdf", title = "Figure 1", bg = "white")
 plot(fig_1)
 dev.off()
 
-pdf("figure_2.pdf", title = "Figure 2")
- plot(fig_2)
+pdf("figure_2.pdf", title = "Figure 2", bg = "white")
+ gridExtra::grid.arrange(grobs = list(
+  
+  ggplot(filter(all_di, s0 > 2, skew_unique > 20), aes(skew_percentile_excl)) +
+    geom_histogram(bins = 100) +
+    geom_vline(xintercept = 95, color = "red") +
+    theme_bw() +
+    facet_wrap(vars(Dataset), scales = "free_y", ncol = 1) + ggtitle("Skewness") +
+    xlab("") +
+    ylab(""),# +
+  #  xlab("Percentile rank of observed value relative to feasible set") +
+    #ylab("Number of communities") ,
+  
+  ggplot(filter(all_di, simpson_unique > 20), aes(simpson_percentile)) + 
+    geom_histogram(bins = 100) +
+    geom_vline(xintercept = 5, color = "red") +
+    theme_bw() +
+    facet_wrap(vars(Dataset), scales = "free_y", ncol = 1) + ggtitle("Evenness") + 
+    xlab("") +
+    ylab("")#+
+    #xlab("Percentile rank of observed value relative to feasible set") +
+  #  ylab("Number of communities")
+), ncol = 2,
+left = textGrob("Number of communities", rot = 90, gp = gpar(fill = "black")),
+bottom = textGrob("Percentile rank of observed value relative to feasible set"), gp = gpar(fill = "white"))
  dev.off()
  
-pdf("figure_3.pdf", title = "Figure 3")
-plot(fig_3)
+pdf("figure_3.pdf", title = "Figure 3", bg = "white")
+gridExtra::grid.arrange(grobs = list(
+  ggplot(filter(all_di, s0 > 2, skew_unique > 20), aes(x= skew_95_ratio_1t)) +
+    geom_histogram() +
+    theme_bw() +
+    facet_wrap(vars(Dataset), scales = "free_y", ncol = 1) +
+    xlab("") +
+    ylab("") +
+    ggtitle("Skewness") +
+    xlim(0, 1),
+  
+  ggplot(filter(all_di, simpson_unique > 20), aes(x = simpson_95_ratio_1t)) +
+    geom_histogram() +
+    theme_bw() +
+    facet_wrap(vars(Dataset), scales = "free_y", ncol = 1) +
+    xlab("") +
+    ylab("") +
+    ggtitle("Evenness") +
+    xlim(0, 1)
+), ncol = 2,
+left = "Number of communities", 
+bottom = "Breadth index (ranges 0-1, with 1 being very broad)")
+
 dev.off()
 
-pdf("figure_4.pdf", title = "Figure 4")
+pdf("figure_4.pdf", title = "Figure 4", bg = "white")
  plot(fig_4)
 dev.off()
 ```
