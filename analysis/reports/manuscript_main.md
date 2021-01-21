@@ -1,7 +1,7 @@
 Figures and results for main manuscript
 ================
 Renata Diaz
-2021-01-15
+2021-01-21
 
 # Illustrations of 95% interval (Figure 1)
 
@@ -100,6 +100,14 @@ communities. See rov\_metric.md.
 
 ![](manuscript_main_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->![](manuscript_main_files/figure-gfm/unnamed-chunk-3-2.png)<!-- -->
 
+    ## Warning: Removed 1 rows containing non-finite values (stat_bin).
+    
+    ## Warning: Removed 1 rows containing non-finite values (stat_bin).
+
+    ## Warning: Removed 1 row(s) containing missing values (geom_path).
+
+    ## Warning: Removed 1 rows containing non-finite values (stat_bin).
+
     ## quartz_off_screen 
     ##                 2
 
@@ -116,6 +124,11 @@ communities. See rov\_metric.md.
 
     ## quartz_off_screen 
     ##                 2
+
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 
     ## quartz_off_screen 
     ##                 2
