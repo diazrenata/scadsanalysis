@@ -20,7 +20,7 @@ add_dis <- function(fs_samples_df) {
 
   groupvars <- colnames(fs_samples_df)[ which(!(colnames(fs_samples_df) %in% c("abund", "rank")))]
 
-  actual <- filter(fs_samples_df, sim == -99)
+  actual <- dplyr::filter(fs_samples_df, sim < 0)
 
 
   sim_dis <- fs_samples_df %>%
@@ -48,6 +48,8 @@ add_dis <- function(fs_samples_df) {
                   nsingletons_percentile = get_percentile(nsingletons, a_vector = sim_percentiles$nsingletons),
                   nsingletons_percentile_excl = get_percentile(nsingletons,
                                                                a_vector = sim_percentiles$nsingletons, incl =F),
+                  nsingletons_mean = mean(sim_percentiles$nsingletons, na.rm = T),
+                  nsingletons_95 = quantile(sim_percentiles$nsingletons, probs = 0.95, na.rm =T),
                   mean_prop_off_actual = mean(sim_percentiles$prop_off_actual),
                   prop_off_actual_2p5 = quantile( sim_percentiles$prop_off_actual, probs = 0.025, na.rm = T),
                   prop_off_actual_97p5 = quantile( sim_percentiles$prop_off_actual, probs = .975, na.rm = T))
