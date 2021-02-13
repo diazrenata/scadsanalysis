@@ -20,11 +20,16 @@ add_dis <- function(fs_samples_df) {
 
   groupvars <- colnames(fs_samples_df)[ which(!(colnames(fs_samples_df) %in% c("abund", "rank")))]
 
+  actual <- filter(fs_samples_df, sim == -99)
+
+
   sim_dis <- fs_samples_df %>%
     dplyr::group_by_at(.vars = groupvars) %>%
     dplyr::summarize(skew = e1071::skewness(abund),
                      shannon = vegan::diversity(abund, index = "shannon", base = exp(1)),
-                     simpson = vegan::diversity(abund, index = "simpson")) %>%
+                     simpson = vegan::diversity(abund, index = "simpson"),
+                     nsingletons = sum(abund == 1),
+                    prop_off_actual = proportion_off(t(cbind(actual$abund, abund)))) %>%
     dplyr::ungroup()
 
   sim_percentiles <- sim_dis %>%
@@ -39,7 +44,13 @@ add_dis <- function(fs_samples_df) {
                   shannon_percentile = get_percentile(shannon, a_vector = sim_percentiles$shannon),
                   simpson_percentile = get_percentile(simpson, a_vector = sim_percentiles$simpson),
                   skew_percentile_excl = get_percentile(skew, a_vector = sim_percentiles$skew, incl =F),
-                  simpson_percentile_excl = get_percentile(simpson, a_vector = sim_percentiles$simpson, incl = F))
+                  simpson_percentile_excl = get_percentile(simpson, a_vector = sim_percentiles$simpson, incl = F),
+                  nsingletons_percentile = get_percentile(nsingletons, a_vector = sim_percentiles$nsingletons),
+                  nsingletons_percentile_excl = get_percentile(nsingletons,
+                                                               a_vector = sim_percentiles$nsingletons, incl =F),
+                  mean_prop_off_actual = mean(sim_percentiles$prop_off_actual),
+                  prop_off_actual_2p5 = quantile( sim_percentiles$prop_off_actual, probs = 0.025, na.rm = T),
+                  prop_off_actual_97p5 = quantile( sim_percentiles$prop_off_actual, probs = .975, na.rm = T))
 
 
   sim_dis <- dplyr::bind_rows(sim_percentiles, sampled_percentile)
@@ -139,11 +150,18 @@ pull_di <- function(di_df) {
                      nsamples = length(unique(sim)),
                      skew_unique = length(unique(skew, na.rm = T)),
                      simpson_unique = length(unique(simpson, na.rm = T)),
+                     shannon_unique = length(unique(shannon, na.rm = T)),
                      skew_2p5 = quantile(skew, probs = c(0.025), na.rm = T),
                      skew_97p5 = quantile(skew, probs = c(0.975), na.rm = T),
                      skew_95 = quantile(skew, probs = c(0.95), na.rm = T),
                      skew_min = min(skew, na.rm = T),
                      simpson_max = max(simpson, na.rm = T),
+                     shannon_min = min(shannon, na.rm = T),
+                     shannon_2p5 = quantile(shannon, probs = c(0.025), na.rm = T),
+                     shannon_97p5 = quantile(shannon, probs = c(0.975), na.rm = T),
+                     shannon_max = max(shannon, na.rm = T),
+                     shannon_5 = quantile(shannon, probs = c(.05), na.rm = T),
+                     shannon_range = max(shannon, na.rm = T) - min(shannon, na.rm = T),
                      simpson_2p5 = quantile(simpson, probs = c(0.025), na.rm = T),
                      simpson_5 = quantile(simpson, probs = c(.05), na.rm = T),
                      simpson_97p5 = quantile(simpson, probs = c(0.975), na.rm = T)) %>%
@@ -151,7 +169,9 @@ pull_di <- function(di_df) {
     dplyr::mutate(skew_95_ratio_2t = (skew_97p5 - skew_2p5)/skew_range,
                   simpson_95_ratio_2t = (simpson_97p5 - simpson_2p5)/simpson_range,
                   skew_95_ratio_1t = (skew_95 - skew_min)/skew_range,
-                  simpson_95_ratio_1t = (simpson_max - simpson_5)/simpson_range
+                  simpson_95_ratio_1t = (simpson_max - simpson_5)/simpson_range,
+                  shannon_95_ratio_2t = (shannon_97p5 - shannon_2p5) / shannon_range,
+                  shannon_95_ratio_1t = (shannon_max - shannon_5) / shannon_range
     )
 
   di_observed <- dplyr::filter(di_df, source == "observed") %>%
