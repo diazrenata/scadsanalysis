@@ -62,7 +62,7 @@ add_dis <- function(fs_samples_df) {
 
   sim_dis <- dplyr::bind_rows(sim_percentiles, sampled_percentile)
 
-  if("observed" %in% fs_samples_df$source) {
+  if(!("observed" %in% fs_samples_df$source)) {
 
     prop_off_cols <- colnames(sim_dis)[ which(grepl("prop_off", colnames(sim_dis)))]
 
