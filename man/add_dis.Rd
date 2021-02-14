@@ -4,7 +4,7 @@
 \alias{add_dis}
 \title{Summarize sampled and observed SADs}
 \usage{
-add_dis(fs_samples_df)
+add_dis(fs_samples_df, sim_props_off = NULL)
 }
 \arguments{
 \item{fs_samples_df}{df of all samples - observed and sampled - with column for abundance, \emph{for a single site}. Output of \code{sample_fs} or \code{sample_fs_wrapper}}

@@ -12,7 +12,7 @@
 #' @importFrom e1071 skewness
 #' @importFrom dplyr group_by_at summarize ungroup filter mutate
 #' @importFrom vegan diversity
-add_dis <- function(fs_samples_df) {
+add_dis <- function(fs_samples_df, sim_props_off = NULL) {
 
   if(is.null(fs_samples_df)) {
     return(NA)
@@ -43,6 +43,7 @@ add_dis <- function(fs_samples_df) {
                   shannon_percentile = get_percentiles(shannon),
                   simpson_percentile = get_percentiles(simpson))
 
+
   sampled_percentile <- sim_dis %>%
     dplyr::filter(source == "observed", sim < 0) %>%
     dplyr::mutate(skew_percentile = get_percentile(skew, a_vector = sim_percentiles$skew),
@@ -57,8 +58,19 @@ add_dis <- function(fs_samples_df) {
                   nsingletons_95 = quantile(sim_percentiles$nsingletons, probs = 0.95, na.rm =T),
                   mean_prop_off_actual = mean(sim_percentiles$prop_off_actual),
                   prop_off_actual_2p5 = quantile( sim_percentiles$prop_off_actual, probs = 0.025, na.rm = T),
-                  prop_off_actual_97p5 = quantile( sim_percentiles$prop_off_actual, probs = .975, na.rm = T))
+                  prop_off_actual_97p5 = quantile( sim_percentiles$prop_off_actual, probs = .975, na.rm = T),
+                  prop_off_actual_5 = quantile(sim_percentiles$prop_off_actual, probs = .05, na.rm = T),
+                  prop_off_actual_95 = quantile(sim_percentiles$prop_off_actual, probs = .95, na.rm = T)
+                  )
 
+
+  if(!(is.null(sim_props_off))) {
+
+    sampled_percentile <- sampled_percentile %>%
+      dplyr::mutate(prop_off_sim_95 = quantile(sim_props_off$prop_off, probs = .95, na.rm = T),
+                    mean_prop_off_sim = mean(sim_props_off$prop_off, na.rm = T),
+                    prop_off_sim_95_1t = (quantile(sim_props_off$prop_off, probs = .95, na.rm = T) - min(sim_props_off$prop_off))/(max(sim_props_off$prop_off) - min(sim_props_off$prop_off)))
+}
 
   sim_dis <- dplyr::bind_rows(sim_percentiles, sampled_percentile)
 
@@ -69,6 +81,26 @@ add_dis <- function(fs_samples_df) {
     sim_dis[ , prop_off_cols] <- NA
   }
   return(sim_dis)
+}
+
+#' Get FS diff metrics
+#'
+#' @param fs_df samples
+#'
+#' @return diffs
+#' @export
+#' @importFrom dplyr filter select
+get_fs_diffs <- function(fs_df) {
+
+  fs_df <- fs_df %>%
+    dplyr::filter(source != "observed")
+
+  sim_props_off <- rep_diff_sampler(fs_df, ndraws = length(unique(fs_df$sim))) %>%
+    dplyr::select(-nparts, -s0, n0)
+
+  return(sim_props_off)
+
+
 }
 
 #' Get percentile values
