@@ -20,8 +20,13 @@ add_dis <- function(fs_samples_df) {
 
   groupvars <- colnames(fs_samples_df)[ which(!(colnames(fs_samples_df) %in% c("abund", "rank")))]
 
+  if("observed" %in% fs_samples_df$source) {
+
   actual <- dplyr::filter(fs_samples_df, sim < 0)
 
+  } else {
+    actual <- dplyr::filter(fs_samples_df, sim == min(fs_samples_df$sim, na.rm  = T))
+  }
 
   sim_dis <- fs_samples_df %>%
     dplyr::group_by_at(.vars = groupvars) %>%
@@ -57,6 +62,12 @@ add_dis <- function(fs_samples_df) {
 
   sim_dis <- dplyr::bind_rows(sim_percentiles, sampled_percentile)
 
+  if("observed" %in% fs_samples_df$source) {
+
+    prop_off_cols <- colnames(sim_dis)[ which(grepl("prop_off", colnames(sim_dis)))]
+
+    sim_dis[ , prop_off_cols] <- NA
+  }
   return(sim_dis)
 }
 
