@@ -56,6 +56,7 @@ add_dis <- function(fs_samples_df, sim_props_off = NULL) {
                                                                a_vector = sim_percentiles$nsingletons, incl =F),
                   nsingletons_mean = mean(sim_percentiles$nsingletons, na.rm = T),
                   nsingletons_95 = quantile(sim_percentiles$nsingletons, probs = 0.95, na.rm =T),
+                  nsingeltons_median = median(sim_percentiles$nsingletons),
                   mean_prop_off_actual = mean(sim_percentiles$prop_off_actual),
                   prop_off_actual_2p5 = quantile( sim_percentiles$prop_off_actual, probs = 0.025, na.rm = T),
                   prop_off_actual_97p5 = quantile( sim_percentiles$prop_off_actual, probs = .975, na.rm = T),
