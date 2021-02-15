@@ -26,8 +26,10 @@ dat_plan <- drake_plan(
   fs = target(sample_fs_wrapper(dataset = dat_s_dat_fia_small, site_name = s, singletonsyn = singletons, n_samples = ndraws, p_table = tall_p, seed = !!sample.int(10^6, size = 1)),
                    transform = cross(s = !!sites_list$site,
                                      singletons = !!c(TRUE, FALSE))),
-  di = target(add_dis(fs),
-              transform = map(fs)),
+  fs_diffs = target(get_fs_diffs(fs),
+                    transform = map(fs)),
+  di = target(add_dis(fs, fs_diffs),
+              transform = map(fs, fs_diffs)),
   di_obs = target(pull_di(di),
                   transform = map(di)),
   di_obs_s = target(dplyr::bind_rows(di_obs),
@@ -49,30 +51,30 @@ if (interactive())
   sankey_drake_graph(config, build_times = "none")  # requires "networkD3" package
   vis_drake_graph(config, build_times = "none")     # requires "visNetwork" package
 }
-#
-# ## Run the pipeline
-# nodename <- Sys.info()["nodename"]
-# if(grepl("ufhpc", nodename)) {
-#   print("I know I am on the HiPerGator!")
-#   library(clustermq)
-#   options(clustermq.scheduler = "slurm", clustermq.template = here::here("slurm_clustermq.tmpl"))
-#   ## Run the pipeline parallelized for HiPerGator
-#   make(all,
-#        force = TRUE,
-#        cache = cache,
-#        cache_log_file = here::here("analysis", "drake", "cache_log_fia_small.txt"),
-#        verbose = 2,
-#        parallelism = "clustermq",
-#        jobs = 20,
-#        caching = "master", memory_strategy = "autoclean") # Important for DBI caches!
-# } else {
-#   library(clustermq)
-#   options(clustermq.scheduler = "multicore")
-#   # Run the pipeline on multiple local cores
-#   system.time(make(all, cache = cache, cache_log_file = here::here("analysis", "drake", "cache_log_fia_small.txt"), parallelism = "clustermq", jobs = 2))
-# }
 
-system.time(make(all, cache = cache, cache_log_file = here::here("analysis", "drake", "cache_log_fia_small.txt")))
+## Run the pipeline
+nodename <- Sys.info()["nodename"]
+if(grepl("ufhpc", nodename)) {
+  print("I know I am on the HiPerGator!")
+  library(clustermq)
+  options(clustermq.scheduler = "slurm", clustermq.template = here::here("slurm_clustermq.tmpl"))
+  ## Run the pipeline parallelized for HiPerGator
+  make(all,
+       force = TRUE,
+       cache = cache,
+       cache_log_file = here::here("analysis", "drake", "cache_log_fia_small.txt"),
+       verbose = 2,
+       parallelism = "clustermq",
+       jobs = 20,
+       caching = "master", memory_strategy = "autoclean") # Important for DBI caches!
+} else {
+  library(clustermq)
+  options(clustermq.scheduler = "multicore")
+  # Run the pipeline on multiple local cores
+  system.time(make(all, cache = cache, cache_log_file = here::here("analysis", "drake", "cache_log_fia_small.txt"), parallelism = "clustermq", jobs = 2))
+}
+
+#system.time(make(all, cache = cache, cache_log_file = here::here("analysis", "drake", "cache_log_fia_small.txt")))
 
 
 DBI::dbDisconnect(db)

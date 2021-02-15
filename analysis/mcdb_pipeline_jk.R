@@ -7,7 +7,7 @@ expose_imports("scadsanalysis")
 
 dataset <- read.csv(here::here("analysis", "rev_prototyping", "jacknifed_datasets", "mcdb_jk.csv"))
 
-max_n_sites = 50
+max_n_sites = 1000
 
 sites_list <- dataset %>%
   select(site, dat) %>%
