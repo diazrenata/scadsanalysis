@@ -1,0 +1,133 @@
+---
+title: "Jackknife"
+author: Renata Diaz
+date: "`r Sys.Date()`"
+output: 
+    github_document:
+       df_print: kable
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(drake)
+library(dplyr)
+library(ggplot2)
+library(grid)
+theme_set(theme_bw())
+library(scadsanalysis)
+
+
+all_di <- read.csv(here::here("analysis", "reports", "all_di.csv"), stringsAsFactors = F)
+
+
+jk_di <- read.csv(here::here("analysis", "rev_prototyping", "mcdb_jk_di.csv"))
+
+jk_di <- jk_di %>%
+  group_by_all() %>%
+  mutate(site_source = unlist(strsplit(site, "_")[[1]][[1]])) %>%
+  ungroup()
+
+all_di <- all_di %>%
+  filter(dat == "mcdb") %>%
+  mutate(site = as.character(site)) %>%
+  filter(site %in% jk_di$site_source) %>%
+  filter(!singletons)
+
+```
+
+## actual
+
+```{r}
+
+ggplot(all_di, aes(skew_percentile)) +
+  geom_histogram()
+
+ggplot(all_di, aes(simpson_percentile)) +
+  geom_histogram()
+
+
+```
+
+```{r}
+
+all_di <- all_di %>%
+  select(-sim, -source, -singletons) %>%
+  rename(site_source = site)
+
+colnames(all_di)[3:48] <- paste0(colnames(all_di)[3:48], "_actual")
+
+
+change_key <- data.frame(change = c(0:2), description = c("both F", "change T to F", "both T"))
+
+
+wide_di <- left_join(jk_di, all_di) %>%
+  group_by(site_source) %>%
+  mutate(mean_skew_percentile_excl = mean(skew_percentile_excl),
+         mean_simpson_percentile = mean(simpson_percentile),
+         mean_nparts = mean(nparts)) %>%
+  ungroup() %>%
+  mutate(actual_sig_skew = skew_percentile_excl_actual > 95,
+         actual_sig_even = simpson_percentile_actual < 5,
+         mean_sig_skew = mean_skew_percentile_excl > 95,
+         mean_sig_even = mean_simpson_percentile < 5) %>%
+  mutate(skew_change = paste0("actual", actual_sig_skew, "_jk", mean_sig_skew),
+         even_change = paste0("actual", actual_sig_even,"_jk", mean_sig_even))
+
+```
+
+```{r}
+
+ggplot(wide_di, aes(site_source, skew_percentile_excl, color = skew_percentile_excl_actual > 95)) +
+  geom_boxplot() +
+  geom_point(aes(site_source, skew_percentile_excl_actual)) +
+  theme(legend.position = "top") +
+  geom_hline(yintercept = 95)
+
+
+ggplot(wide_di, aes(site_source, simpson_percentile, color = simpson_percentile_actual <5)) +
+  geom_boxplot() +
+  geom_point(aes(site_source, simpson_percentile_actual)) +
+  theme(legend.position = "top") +
+  geom_hline(yintercept = 5)
+
+
+ggplot(wide_di, aes(s0_actual, n0_actual, color = skew_change)) +
+  geom_point()
+
+
+ggplot(wide_di, aes(s0_actual, n0_actual, color = even_change)) +
+  geom_point()
+
+ggplot(wide_di, aes(nparts_actual, mean_nparts, color = skew_change)) +
+  geom_point() +
+  scale_x_log10() +
+  scale_y_log10() +
+  geom_line(aes(nparts_actual, nparts_actual), color = "black")
+
+```
+
+So for these 50 communities, resampling does not change the outcome for the 6-10 largest communities. It changes it for a handful of smaller communities. RMD suspects this is because the jacknifed samples, with 60% as many individuals, count as "small" in a way that the observed sample does not. However, it could also be that in drawing a smaller number of individuals you have more error, as in you aren't doing as good a job replicating the larger distribution?
+
+
+```{r, fig.dim = c(3,8)}
+
+mcdb <- load_dataset("mcdb")
+
+actual_sads <- filter(mcdb, site %in% wide_di$site_source)
+
+jacknife_sads <- read.csv(here::here("analysis", "rev_prototyping", "jacknifed_datasets", "mcdb_jk.csv"))
+
+interesting_sites <- filter(wide_di, skew_change != "actualFALSE_jkFALSE")
+
+actual_sad_plots <- ggplot(filter(actual_sads, site %in% interesting_sites$site_source), aes(rank, abund)) + geom_point() + geom_line() + facet_wrap(vars(site), scales = "free", ncol = 1)+ theme(legend.position = "none")
+
+jacknife_sads <- left_join(jacknife_sads, select(wide_di, site, site_source, skew_change, even_change))
+
+jacknife_sad_plots <- ggplot(filter(jacknife_sads, site_source %in% interesting_sites$site_source), aes(rank, abund, color = skew_change, group = site)) +geom_line() + facet_wrap(vars(site_source), scales = "free", ncol = 1) + theme(legend.position = "none")
+actual_sad_plots
+jacknife_sad_plots
+```
+
+I want to wait until I get results back from a larger sample of the MCDB. At the moment it seems pretty cool that a) it doesn't change much for high N communities but b) it super does for the small ones. 
+
+One interesting question is, whether it's the **tininess of the new sample** doing a poor job replicating the original shape, or whether it's the tininess of the new sample getting down to a fuzzy FS space. I'm not sure if you can take these apart, but it's fun to think about.
