@@ -25,8 +25,8 @@ all <- drake_plan(
   mamm_p = target(readRDS(here::here("analysis", "masterp_mamm.Rds")),
                   hpc = F),
   fs = target(sample_fs_wrapper(dataset = dat_s_dat_mcdb, site_name = s, singletonsyn = singletons, n_samples = ndraws, p_table = mamm_p, seed = !!sample.int(10^6, size = 1)),
-                   transform = cross(s = !!sites_list$site,
-                                     singletons = !!c(TRUE, FALSE))),
+              transform = cross(s = !!sites_list$site,
+                                singletons = !!c(TRUE, FALSE))),
   fs_diffs = target(get_fs_diffs(fs),
                     transform = map(fs)),
   di = target(add_dis(fs, fs_diffs),
@@ -53,25 +53,25 @@ if (interactive())
 
 ## Run the pipeline
 nodename <- Sys.info()["nodename"]
-# if(grepl("ufhpc", nodename)) {
-#   print("I know I am on the HiPerGator!")
-#   library(clustermq)
-#   options(clustermq.scheduler = "slurm", clustermq.template = here::here("slurm_clustermq.tmpl"))
-#   ## Run the pipeline parallelized for HiPerGator
-#   make(all,
-#        force = TRUE,
-#        cache = cache,
-#        cache_log_file = here::here("analysis", "drake", "cache_log_mcdb.txt"),
-#        verbose = 2,
-#        parallelism = "clustermq",
-#        jobs = 20,
-#        caching = "master") # Important for DBI caches!
-# } else {
- # library(clustermq)
- # options(clustermq.scheduler = "multicore")
+if(grepl("ufhpc", nodename)) {
+  print("I know I am on the HiPerGator!")
+  library(clustermq)
+  options(clustermq.scheduler = "slurm", clustermq.template = here::here("slurm_clustermq.tmpl"))
+  ## Run the pipeline parallelized for HiPerGator
+  make(all,
+       force = TRUE,
+       cache = cache,
+       cache_log_file = here::here("analysis", "drake", "cache_log_mcdb.txt"),
+       verbose = 2,
+       parallelism = "clustermq",
+       jobs = 20,
+       caching = "main") # Important for DBI caches!
+} else {
+  library(clustermq)
+  options(clustermq.scheduler = "multicore")
   # Run the pipeline on multiple local cores
   system.time(make(all, cache = cache, cache_log_file = here::here("analysis", "drake", "cache_log_mcdb.txt")))
-#}
+}
 
 DBI::dbDisconnect(db)
 rm(cache)
