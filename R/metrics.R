@@ -10,7 +10,7 @@
 #' @export
 #'
 #' @importFrom e1071 skewness
-#' @importFrom dplyr group_by_at summarize ungroup filter mutate
+#' @importFrom dplyr group_by_at summarize ungroup filter mutate left_join
 #' @importFrom vegan diversity
 add_dis <- function(fs_samples_df, sim_props_off = NULL) {
 
@@ -22,7 +22,7 @@ add_dis <- function(fs_samples_df, sim_props_off = NULL) {
 
   if("observed" %in% fs_samples_df$source) {
 
-  actual <- dplyr::filter(fs_samples_df, sim < 0)
+    actual <- dplyr::filter(fs_samples_df, sim < 0)
 
   } else {
     actual <- dplyr::filter(fs_samples_df, sim == min(fs_samples_df$sim, na.rm  = T))
@@ -34,7 +34,7 @@ add_dis <- function(fs_samples_df, sim_props_off = NULL) {
                      shannon = vegan::diversity(abund, index = "shannon", base = exp(1)),
                      simpson = vegan::diversity(abund, index = "simpson"),
                      nsingletons = sum(abund == 1),
-                    prop_off_actual = proportion_off(t(cbind(actual$abund, abund)))) %>%
+                     prop_off_actual = proportion_off(t(cbind(actual$abund, abund)))) %>%
     dplyr::ungroup()
 
   sim_percentiles <- sim_dis %>%
@@ -62,7 +62,7 @@ add_dis <- function(fs_samples_df, sim_props_off = NULL) {
                   prop_off_actual_97p5 = quantile( sim_percentiles$prop_off_actual, probs = .975, na.rm = T),
                   prop_off_actual_5 = quantile(sim_percentiles$prop_off_actual, probs = .05, na.rm = T),
                   prop_off_actual_95 = quantile(sim_percentiles$prop_off_actual, probs = .95, na.rm = T)
-                  )
+    )
 
 
   if(!(is.null(sim_props_off))) {
@@ -71,7 +71,7 @@ add_dis <- function(fs_samples_df, sim_props_off = NULL) {
       dplyr::mutate(prop_off_sim_95 = quantile(sim_props_off$prop_off, probs = .95, na.rm = T),
                     mean_prop_off_sim = mean(sim_props_off$prop_off, na.rm = T),
                     prop_off_sim_95_1t = (quantile(sim_props_off$prop_off, probs = .95, na.rm = T) - min(sim_props_off$prop_off))/(max(sim_props_off$prop_off) - min(sim_props_off$prop_off)))
-}
+  }
 
   sim_dis <- dplyr::bind_rows(sim_percentiles, sampled_percentile)
 
@@ -81,7 +81,53 @@ add_dis <- function(fs_samples_df, sim_props_off = NULL) {
 
     sim_dis[ , prop_off_cols] <- NA
   }
+
+
+  props_comparison <- lapply(unique(fs_samples_df$sim), FUN = compare_props_off, fs_df = fs_samples_df) %>%
+    dplyr::bind_rows()
+
+  sim_dis <- dplyr::left_join(sim_dis, props_comparison, by = c("sim" = "focal_sim"))
+
   return(sim_dis)
+}
+
+
+#' Compare proportion off of two sims
+#'
+#' @param focal_sim index of sim
+#' @param fs_df samples from FS
+#' @param ncomps how many comparisons
+#'
+#' @return mean proportion off of focal sim vs ncomparisons sims from fs_df
+#' @export
+#'
+#' @importFrom dplyr filter group_by summarize
+compare_props_off <- function(focal_sim, fs_df, ncomps = 100) {
+
+  fs_df$sim_char = as.character(fs_df$sim)
+
+  if(focal_sim != -99) {
+    fs_df <- dplyr::filter(fs_df, sim > 0)
+  }
+
+  nsims <- unique(fs_df$sim_char)[ which(unique(fs_df$sim_char) != as.character(focal_sim))]
+
+  if(length(nsims) == 0) {
+    return(data.frame(focal_sim = focal_sim, mean_po_comparison = NA, n_po_comparisons = 0))
+  }
+
+  focal_sad <- dplyr::filter(fs_samples, sim == focal_sim)
+
+  compare_sims <- sample(nsims, size = min(length(nsims), ncomps), replace =F)
+
+  compare_sads <- dplyr::filter(fs_df, sim_char %in% compare_sims)
+
+  compare_props <- compare_sads %>%
+    dplyr::group_by(sim) %>%
+    dplyr::summarize(prop_off = proportion_off(t(data.frame(abund, focal_sad$abund)))) %>%
+    dplyr::ungroup()
+
+  return(data.frame(focal_sim = focal_sim, mean_po_comparison = mean(compare_props$prop_off, na.rm = T), n_po_comparisons = nrow(compare_props)))
 }
 
 #' Get FS diff metrics
@@ -142,7 +188,7 @@ get_percentiles <- function(a_vector, incl = T) {
 #'
 count_below <- function(a_value, a_vector, incl = T) {
   if(incl) {
-  return(sum(a_vector <= a_value, na.rm = T))
+    return(sum(a_vector <= a_value, na.rm = T))
   } else {
     return(sum(a_vector < a_value, na.rm = T))
   }
@@ -161,11 +207,11 @@ count_below <- function(a_value, a_vector, incl = T) {
 get_percentile <- function(a_value, a_vector, incl= T) {
 
   if(incl) {
-  count_below <- sum(a_vector <= a_value, na.rm = T)
+    count_below <- sum(a_vector <= a_value, na.rm = T)
   } else {
     count_below <- sum(a_vector < a_value, na.rm = T)
 
-}
+  }
   nvals <- length(a_vector)
 
   percentile_val <- 100 * (count_below / nvals)
