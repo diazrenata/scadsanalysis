@@ -127,4 +127,25 @@ mcdb_jacknifes <- jacknife_whole_dataset(mcdb)
 
 write.csv(mcdb_jacknifes, here::here("analysis", "rev_prototyping", "jacknifed_datasets", "mcdb_jk.csv"), row.names = F)
 
+misc <- load_dataset("misc_abund_short")
+
+misc_jacknifes <- jacknife_whole_dataset(misc)
+
+write.csv(misc_jacknifes, here::here("analysis", "rev_prototyping", "jacknifed_datasets", "misc_jk.csv"), row.names = F)
+
+
+bbs <- load_dataset("bbs")
+
+bbs_jacknifes <- jacknife_whole_dataset(bbs)
+
+write.csv(bbs_jacknifes, here::here("analysis", "rev_prototyping", "jacknifed_datasets", "bbs_jk.csv"), row.names = F)
+
+
+gentry <- load_dataset("gentry")
+
+gentry_jacknifes <- jacknife_whole_dataset(gentry)
+
+write.csv(gentry_jacknifes, here::here("analysis", "rev_prototyping", "jacknifed_datasets", "gentry_jk.csv"), row.names = F)
+
+
 ```

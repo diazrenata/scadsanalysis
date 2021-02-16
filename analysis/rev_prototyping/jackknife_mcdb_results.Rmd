@@ -20,7 +20,7 @@ library(scadsanalysis)
 all_di <- read.csv(here::here("analysis", "reports", "all_di.csv"), stringsAsFactors = F)
 
 
-jk_di <- read.csv(here::here("analysis", "rev_prototyping", "mcdb_jk_di.csv"))
+jk_di <- read.csv(here::here("analysis", "rev_prototyping", "mcdb_di_jk.csv"))
 
 jk_di <- jk_di %>%
   group_by_all() %>%
@@ -64,18 +64,53 @@ wide_di <- left_join(jk_di, all_di) %>%
   group_by(site_source) %>%
   mutate(mean_skew_percentile_excl = mean(skew_percentile_excl),
          mean_simpson_percentile = mean(simpson_percentile),
+         mean_shannon_percentile = mean(shannon_percentile),
          mean_nparts = mean(nparts)) %>%
   ungroup() %>%
   mutate(actual_sig_skew = skew_percentile_excl_actual > 95,
          actual_sig_even = simpson_percentile_actual < 5,
          mean_sig_skew = mean_skew_percentile_excl > 95,
-         mean_sig_even = mean_simpson_percentile < 5) %>%
+         mean_sig_even = mean_simpson_percentile < 5,
+         actual_sig_shannon = shannon_percentile_actual < 5,
+         mean_sig_shannon=  mean_shannon_percentile < 5) %>%
   mutate(skew_change = paste0("actual", actual_sig_skew, "_jk", mean_sig_skew),
-         even_change = paste0("actual", actual_sig_even,"_jk", mean_sig_even))
+         even_change = paste0("actual", actual_sig_even,"_jk", mean_sig_even),
+         shannon_change = paste0("actual", actual_sig_shannon, "_jk", mean_sig_shannon))
 
 ```
 
 ```{r}
+
+wide_di_small <- wide_di %>%
+  select(site_source, mean_skew_percentile_excl, mean_simpson_percentile, s0, n0, mean_nparts, skew_change, even_change, actual_sig_skew, actual_sig_even, mean_sig_skew, mean_sig_even, mean_shannon_percentile, actual_sig_shannon, mean_sig_shannon, shannon_change) %>%
+  filter(s0 > 2,
+         s0 != n0,
+         n0 != s0 + 1) %>%
+  distinct()
+
+ggplot(wide_di_small, aes(mean_skew_percentile_excl)) +
+  geom_histogram()
+
+
+ggplot(wide_di_small, aes(mean_simpson_percentile)) +
+  geom_histogram()
+
+ggplot(wide_di_small, aes(mean_shannon_percentile)) +
+  geom_histogram()
+
+mean(wide_di_small$actual_sig_skew)
+mean(wide_di_small$mean_sig_skew)
+
+mean(wide_di_small$actual_sig_shannon)
+mean(wide_di_small$mean_sig_shannon)
+
+mean(wide_di_small$actual_sig_even)
+mean(wide_di_small$mean_sig_even)
+
+wide_di_small %>%
+  group_by(even_change) %>%
+  tally()
+
 
 ggplot(wide_di, aes(site_source, skew_percentile_excl, color = skew_percentile_excl_actual > 95)) +
   geom_boxplot() +
@@ -92,14 +127,15 @@ ggplot(wide_di, aes(site_source, simpson_percentile, color = simpson_percentile_
 
 
 ggplot(wide_di, aes(s0_actual, n0_actual, color = skew_change)) +
-  geom_point()
+  geom_point() +
+  facet_wrap(vars(skew_change))
 
 
 ggplot(wide_di, aes(s0_actual, n0_actual, color = even_change)) +
   geom_point()
 
 ggplot(wide_di, aes(nparts_actual, mean_nparts, color = skew_change)) +
-  geom_point() +
+  geom_point(alpha = .5) +
   scale_x_log10() +
   scale_y_log10() +
   geom_line(aes(nparts_actual, nparts_actual), color = "black")
@@ -131,3 +167,4 @@ jacknife_sad_plots
 I want to wait until I get results back from a larger sample of the MCDB. At the moment it seems pretty cool that a) it doesn't change much for high N communities but b) it super does for the small ones. 
 
 One interesting question is, whether it's the **tininess of the new sample** doing a poor job replicating the original shape, or whether it's the tininess of the new sample getting down to a fuzzy FS space. I'm not sure if you can take these apart, but it's fun to think about.
+
