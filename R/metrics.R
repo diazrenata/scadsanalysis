@@ -67,7 +67,8 @@ add_dis <- function(fs_samples_df, sim_props_off = NULL) {
                   prop_off_actual_2p5 = quantile( sim_percentiles$prop_off_actual, probs = 0.025, na.rm = T),
                   prop_off_actual_97p5 = quantile( sim_percentiles$prop_off_actual, probs = .975, na.rm = T),
                   prop_off_actual_5 = quantile(sim_percentiles$prop_off_actual, probs = .05, na.rm = T),
-                  prop_off_actual_95 = quantile(sim_percentiles$prop_off_actual, probs = .95, na.rm = T)
+                  prop_off_actual_95 = quantile(sim_percentiles$prop_off_actual, probs = .95, na.rm = T),
+                  mean_po_comparison_percentile = get_percentile(mean_po_comparison, a_vector = sim_percentiles$mean_po_comparison)
     )
 
 
