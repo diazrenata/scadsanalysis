@@ -116,7 +116,7 @@ compare_props_off <- function(focal_sim, fs_df, ncomps = 100) {
     return(data.frame(focal_sim = focal_sim, mean_po_comparison = NA, n_po_comparisons = 0))
   }
 
-  focal_sad <- dplyr::filter(fs_samples, sim == focal_sim)
+  focal_sad <- dplyr::filter(fs_df, sim == focal_sim)
 
   compare_sims <- sample(nsims, size = min(length(nsims), ncomps), replace =F)
 
