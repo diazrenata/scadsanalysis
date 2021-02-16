@@ -37,6 +37,12 @@ add_dis <- function(fs_samples_df, sim_props_off = NULL) {
                      prop_off_actual = proportion_off(t(cbind(actual$abund, abund)))) %>%
     dplyr::ungroup()
 
+  props_comparison <- lapply(unique(fs_samples_df$sim), FUN = compare_props_off, fs_df = fs_samples_df, ncomps = 1000) %>%
+    dplyr::bind_rows()
+
+  sim_dis <- dplyr::left_join(sim_dis, props_comparison, by = c("sim" = "focal_sim"))
+
+
   sim_percentiles <- sim_dis %>%
     dplyr::filter(source == "sampled", sim > 0) %>%
     dplyr::mutate(skew_percentile = get_percentiles(skew),
@@ -256,14 +262,18 @@ pull_di <- function(di_df) {
                      shannon_range = max(shannon, na.rm = T) - min(shannon, na.rm = T),
                      simpson_2p5 = quantile(simpson, probs = c(0.025), na.rm = T),
                      simpson_5 = quantile(simpson, probs = c(.05), na.rm = T),
-                     simpson_97p5 = quantile(simpson, probs = c(0.975), na.rm = T)) %>%
+                     simpson_97p5 = quantile(simpson, probs = c(0.975), na.rm = T),
+                     mean_po_comparison_95 = quantile(mean_po_comparison, probs = .95, na.rm = T),
+                     mean_po_comparison_min = min(mean_po_comparison, na.rm = T),
+                     mean_po_comparison_max = max(mean_po_comparison, na.rm = T)) %>%
     dplyr::ungroup() %>%
     dplyr::mutate(skew_95_ratio_2t = (skew_97p5 - skew_2p5)/skew_range,
                   simpson_95_ratio_2t = (simpson_97p5 - simpson_2p5)/simpson_range,
                   skew_95_ratio_1t = (skew_95 - skew_min)/skew_range,
                   simpson_95_ratio_1t = (simpson_max - simpson_5)/simpson_range,
                   shannon_95_ratio_2t = (shannon_97p5 - shannon_2p5) / shannon_range,
-                  shannon_95_ratio_1t = (shannon_max - shannon_5) / shannon_range
+                  shannon_95_ratio_1t = (shannon_max - shannon_5) / shannon_range,
+                  mean_po_comparison_95_ratio_1t = (mean_po_comparison_95 - mean_po_comparison_min) / (mean_po_comparison_max - mean_po_comparison_min)
     )
 
   di_observed <- dplyr::filter(di_df, source == "observed") %>%
