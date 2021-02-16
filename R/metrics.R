@@ -89,11 +89,6 @@ add_dis <- function(fs_samples_df, sim_props_off = NULL) {
   }
 
 
-  props_comparison <- lapply(unique(fs_samples_df$sim), FUN = compare_props_off, fs_df = fs_samples_df) %>%
-    dplyr::bind_rows()
-
-  sim_dis <- dplyr::left_join(sim_dis, props_comparison, by = c("sim" = "focal_sim"))
-
   return(sim_dis)
 }
 
