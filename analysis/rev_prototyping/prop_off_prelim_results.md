@@ -1,20 +1,28 @@
 Prop off
 ================
 Renata Diaz
-2021-02-15
+2021-02-17
+
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 
 ![](prop_off_prelim_results_files/figure-gfm/unnamed-chunk-1-1.png)<!-- -->
+
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+![](prop_off_prelim_results_files/figure-gfm/unnamed-chunk-1-2.png)<!-- -->
 
     ## `summarise()` ungrouping output (override with `.groups` argument)
 
 <div class="kable-table">
 
-| singletons | prop\_off\_m | prop\_off\_f |
-| :--------- | -----------: | -----------: |
-| FALSE      |    0.3970315 |    0.2133581 |
-| TRUE       |    0.4897959 |    0.2894249 |
+| singletons |   po\_sig |
+| :--------- | --------: |
+| FALSE      | 0.2640950 |
+| TRUE       | 0.4317507 |
 
 </div>
+
+![](prop_off_prelim_results_files/figure-gfm/unnamed-chunk-1-3.png)<!-- -->
 
     ## `summarise()` ungrouping output (override with `.groups` argument)
 
@@ -22,21 +30,21 @@ Renata Diaz
 
 | singletons |      diff |
 | :--------- | --------: |
-| FALSE      | 0.2637178 |
-| TRUE       | 0.2858799 |
+| FALSE      | 0.1015778 |
+| TRUE       | 0.1246915 |
 
 </div>
 
-    ## Warning: Removed 22 rows containing missing values (geom_point).
+    ## Warning: Removed 13 rows containing missing values (geom_point).
 
-![](prop_off_prelim_results_files/figure-gfm/unnamed-chunk-1-2.png)<!-- -->
+![](prop_off_prelim_results_files/figure-gfm/unnamed-chunk-1-4.png)<!-- -->
 
     ## Scale for 'x' is already present. Adding another scale for 'x', which will
     ## replace the existing scale.
 
-    ## Warning: Removed 918 rows containing missing values (geom_point).
+    ## Warning: Removed 676 rows containing missing values (geom_point).
 
-![](prop_off_prelim_results_files/figure-gfm/unnamed-chunk-1-3.png)<!-- -->
+![](prop_off_prelim_results_files/figure-gfm/unnamed-chunk-1-5.png)<!-- -->
 
 ### One where both are significant
 

@@ -15,7 +15,7 @@ library(ggplot2)
 library(grid)
 theme_set(theme_bw())
 
-all_di <- read.csv(here::here("miscabund_di.csv")) 
+all_di <- read.csv(here::here("analysis", "rev_prototyping", "mcdb_di.csv")) 
 
 all_di <- all_di %>%
   filter(s0 > 1,
@@ -26,167 +26,43 @@ all_di <- all_di %>%
 
 
 ```
+
+
 ```{r}
 
-ggplot(all_di, aes(prop_off_sim_95, mean_prop_off_actual, color = log(nparts))) +
+
+ggplot(filter(all_di, n_po_comparisons > 20), aes(mean_po_comparison_percentile)) +
+  geom_histogram() +
+  facet_wrap(vars(singletons), scales = "free_y")
+
+
+ggplot(filter(all_di, n_po_comparisons > 20), aes(n_po_comparisons)) +
+  geom_histogram()
+
+all_di %>% group_by(singletons) %>% summarize(po_sig = mean(mean_po_comparison_percentile > 95))
+
+
+ggplot(all_di, aes(mean_po_comparison_95, mean_po_comparison, color = log(nparts))) +
   geom_point() +
-  geom_line(aes(prop_off_sim_95, prop_off_sim_95))
+  geom_line(aes(mean_po_comparison_95, mean_po_comparison_95))
 
 
 all_di %>%
+  filter(mean_po_comparison_percentile > 95) %>%
   group_by(singletons) %>%
-  summarize(prop_off_m = mean(prop_off_sig_mean),
-            prop_off_f = mean(prop_off_sig_5pc))
+  summarize(diff = mean(mean_po_comparison - mean_po_comparison_95))
 
-all_di %>%
-  filter(prop_off_sig_mean) %>%
-  group_by(singletons) %>%
-  summarize(diff = mean(mean_prop_off_actual - mean_prop_off_sim))
-
-ggplot(all_di, aes(nparts, prop_off_sim_95_1t)) +
+ggplot(all_di, aes(nparts, mean_po_comparison_95_ratio_1t)) +
   geom_point() +
   scale_x_log10()
 
 
 
-ggplot(all_di, aes(nparts, prop_off_sim_95_1t)) +
+ggplot(all_di, aes(nparts, mean_po_comparison_95_ratio_1t)) +
   geom_point() +
   scale_x_log10() +
   xlim(0, 10000)
 
 ```
 
-### One where both are significant
-
-```{r}
-di_10 <- read.csv(here::here("misc_10_di.csv"))
-diffs_10 <- read.csv(here::here("misc_10_diffs.csv"))
-
-po_10 <- data.frame(
-  actual = di_10$prop_off_actual[1:nrow(diffs_10)],
-  sim = diffs_10$prop_off
-)
-
-
-po_long_10 <- po_10%>%
-  tidyr::pivot_longer(c(actual, sim), names_to = "source", values_to = "prop_off")
-
-
-ggplot(po_long_10, aes(prop_off, color = source)) +
-  geom_density()
-
-filter(di_10, source == "observed") %>%
-  select(mean_prop_off_actual, prop_off_actual_5, prop_off_sim_95, prop_off_sim_95_1t)
-
-
-ecdfs_10 <- data.frame(
-  actual = ecdf(po_10$actual)(seq(0, 1, length.out = 100)),
-  sim = ecdf(po_10$sim)(seq(0, 1, length.out = 100)),
-  val = seq(0, 1, length.out = 100)
-) %>%
-  tidyr::pivot_longer(-val, names_to = "source", values_to = "ecdf")
-
-ggplot(ecdfs_10, aes(val, ecdf, color = source)) +
-  geom_line()
-
-ks.test(po_10$actual, po_10$sim, alternative = "less")
-t.test(po_10$actual, po_10$sim)
-
-
-glm_10 <- (glm(prop_off ~ source, data = po_long_10, family = Gamma))
-
-summary(glm_10)
-
-predict(glm_10, newdata = data.frame(source = c('actual', 'sim')), type = "response")
-
-
-```
-
-### One where mean is and 95 is not
-
-```{r}
-di_11 <- read.csv(here::here("misc_11_di.csv"))
-diffs_11 <- read.csv(here::here("misc_11_diffs.csv"))
-
-po_11 <- data.frame(
-  actual = di_11$prop_off_actual[1:nrow(diffs_11)],
-  sim = diffs_11$prop_off
-)
-
-po_long_11 <- po_11%>%
-  tidyr::pivot_longer(c(actual, sim), names_to = "source", values_to = "prop_off")
-
-ggplot(po_long_11, aes(prop_off, color = source)) +
-  geom_density()
-
-filter(di_11, source == "observed") %>%
-  select(mean_prop_off_actual, prop_off_actual_5, prop_off_sim_95, prop_off_sim_95_1t)
-
-ecdfs_11 <- data.frame(
-  actual = ecdf(po_11$actual)(seq(0, 1, length.out = 100)),
-  sim = ecdf(po_11$sim)(seq(0, 1, length.out = 100)),
-  val = seq(0, 1, length.out = 100)
-) %>%
-  tidyr::pivot_longer(-val, names_to = "source", values_to = "ecdf")
-
-ggplot(ecdfs_11, aes(val, ecdf, color = source)) +
-  geom_line()
-
-ks.test(po_11$actual, po_11$sim, alternative = "less")
-t.test(po_11$actual, po_11$sim)
-
-glm_11 <- (glm(prop_off ~ source, data = po_long_11, family = Gamma))
-
-summary(glm_11)
-
-predict(glm_11, newdata = data.frame(source = c('actual', 'sim')), type = "response")
-
-```
-
-
-### One where neither is
-
-```{r}
-di_22 <- read.csv(here::here("misc_22_di.csv"))
-diffs_22 <- read.csv(here::here("misc_22_diffs.csv"))
-
-po_22 <- data.frame(
-  actual = di_22$prop_off_actual[1:nrow(diffs_22)],
-  sim = diffs_22$prop_off
-)
-
-po_long_22 <- po_22%>%
-  tidyr::pivot_longer(c(actual, sim), names_to = "source", values_to = "prop_off")
-
-ggplot(po_long_22, aes(prop_off, color = source)) +
-  geom_density()
-
-filter(di_22, source == "observed") %>%
-  select(mean_prop_off_actual, prop_off_actual_5, prop_off_sim_95, prop_off_sim_95_1t)
-
-ecdfs_22 <- data.frame(
-  actual = ecdf(po_22$actual)(seq(0, 1, length.out = 100)),
-  sim = ecdf(po_22$sim)(seq(0, 1, length.out = 100)),
-  val = seq(0, 1, length.out = 100)
-) %>%
-  tidyr::pivot_longer(-val, names_to = "source", values_to = "ecdf")
-
-ggplot(ecdfs_22, aes(val, ecdf, color = source)) +
-  geom_line()
-
-ks.test(po_22$actual, po_22$sim, alternative = "less")
-
-t.test(po_22$actual, po_22$sim)
-
-glm_22 <- (glm(prop_off ~ source, data = po_long_22, family = Gamma))
-
-summary(glm_22)
-
-predict(glm_22, newdata = data.frame(source = c('actual', 'sim')), type = "response")
-
-```
-
-The KS test finds even very small differences. Ditto t tests and Wilcox and GLMs.
-
-Is it valid to compare the **mean** of the actual to the **95%** of the sims? I raise this because comparing the 5% to the 95% seems awfully conservative. But I'm not sure. 
 

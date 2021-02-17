@@ -12,7 +12,7 @@
 #' @importFrom e1071 skewness
 #' @importFrom dplyr group_by_at summarize ungroup filter mutate left_join
 #' @importFrom vegan diversity
-add_dis <- function(fs_samples_df, sim_props_off = NULL) {
+add_dis <- function(fs_samples_df, sim_props_off = NULL, props_comparison = NULL) {
 
   if(is.null(fs_samples_df)) {
     return(NA)
@@ -28,6 +28,13 @@ add_dis <- function(fs_samples_df, sim_props_off = NULL) {
     actual <- dplyr::filter(fs_samples_df, sim == min(fs_samples_df$sim, na.rm  = T))
   }
 
+  if(is.null(props_comparison)) {
+
+    props_comparison <- lapply(unique(fs_samples_df$sim), FUN = compare_props_off, fs_df = fs_samples_df, ncomps = 1000) %>%
+      dplyr::bind_rows()
+  }
+
+
   sim_dis <- fs_samples_df %>%
     dplyr::group_by_at(.vars = groupvars) %>%
     dplyr::summarize(skew = e1071::skewness(abund),
@@ -37,8 +44,6 @@ add_dis <- function(fs_samples_df, sim_props_off = NULL) {
                      prop_off_actual = proportion_off(t(cbind(actual$abund, abund)))) %>%
     dplyr::ungroup()
 
-  props_comparison <- lapply(unique(fs_samples_df$sim), FUN = compare_props_off, fs_df = fs_samples_df, ncomps = 1000) %>%
-    dplyr::bind_rows()
 
   sim_dis <- dplyr::left_join(sim_dis, props_comparison, by = c("sim" = "focal_sim"))
 
@@ -68,7 +73,8 @@ add_dis <- function(fs_samples_df, sim_props_off = NULL) {
                   prop_off_actual_97p5 = quantile( sim_percentiles$prop_off_actual, probs = .975, na.rm = T),
                   prop_off_actual_5 = quantile(sim_percentiles$prop_off_actual, probs = .05, na.rm = T),
                   prop_off_actual_95 = quantile(sim_percentiles$prop_off_actual, probs = .95, na.rm = T),
-                  mean_po_comparison_percentile = get_percentile(mean_po_comparison, a_vector = sim_percentiles$mean_po_comparison)
+                  mean_po_comparison_percentile = get_percentile(mean_po_comparison, a_vector = sim_percentiles$mean_po_comparison),
+                  mean_po_comparison_sims = mean(sim_percentiles$mean_po_comparison, na.rm = T)
     )
 
 
@@ -93,6 +99,22 @@ add_dis <- function(fs_samples_df, sim_props_off = NULL) {
   return(sim_dis)
 }
 
+#' Compare PO over whole dataset
+#'
+#' @param fs_samples_df fs draws
+#' @param ncomps comparisons per focal
+#'
+#' @return comparisons for all draws
+#' @export
+#'
+#' @importFrom dplyr bind_rows
+compare_props_fs <- function(fs_samples_df, ncomps = 500) {
+
+  props_comparison <- lapply(unique(fs_samples_df$sim), FUN = compare_props_off, fs_df = fs_samples_df, ncomps = ncomps) %>%
+    dplyr::bind_rows()
+
+  return(props_comparison)
+}
 
 #' Compare proportion off of two sims
 #'
