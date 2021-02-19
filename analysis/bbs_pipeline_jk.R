@@ -15,9 +15,11 @@ sites_list <- dataset %>%
   group_by_all() %>%
   mutate(site_source = unlist(strsplit(site, "_")[[1]][[1]])) %>%
   ungroup()
+set.seed(1977)
+random_site <- sample.int(length(unique(sites_list$site_source)), size = 500, replace = F)
 
 sites_list <- sites_list %>%
-  filter(site_source %in% unique(sites_list$site_source)[1:max_n_sites]) %>%
+  filter(site_source %in% unique(sites_list$site_source)[random_site]) %>%
   select(-site_source)
 
 ndraws = 4000
@@ -35,8 +37,8 @@ all <- drake_plan(
                   hpc = F),
   fs = target(sample_fs_wrapper(dataset = dat, site_name = s, singletonsyn = FALSE, n_samples = ndraws, p_table = wide_p, seed = !!sample.int(10^6, size = 1)),
               transform = map(s = !!sites_list$site)),
-  fs_diffs = target(get_fs_diffs(fs),
-                    transform = map(fs)),
+#  fs_diffs = target(get_fs_diffs(fs),
+#                    transform = map(fs)),
   fs_pc = target(compare_props_fs(fs),
                  transform = map(fs)),
   di = target(add_dis(fs, props_comparison = fs_pc),
@@ -73,7 +75,7 @@ if(grepl("ufhpc", nodename)) {
        cache_log_file = here::here("analysis", "drake", "cache_log_bbs_jk.txt"),
        verbose = 1,
        parallelism = "clustermq",
-       jobs = 20,
+       jobs = 50,
        caching = "master",
        memory_strategy = "autoclean",
        garbage_collection = TRUE) # Important for DBI caches!
