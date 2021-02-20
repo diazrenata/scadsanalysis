@@ -18,6 +18,8 @@ sites_list <- dataset %>%
 set.seed(1977)
 random_site <- sample.int(length(unique(sites_list$site_source)), size = 500, replace = F)
 
+random_site <- random_site[1:200]
+
 sites_list <- sites_list %>%
   filter(site_source %in% unique(sites_list$site_source)[random_site]) %>%
   select(-site_source)
