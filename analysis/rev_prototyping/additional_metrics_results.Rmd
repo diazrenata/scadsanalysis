@@ -1,0 +1,85 @@
+---
+title: "Other metrics"
+author: Renata Diaz
+date: "`r Sys.Date()`"
+output: 
+    github_document:
+       df_print: kable
+       toc: true
+
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(drake)
+library(dplyr)
+library(ggplot2)
+library(grid)
+theme_set(theme_bw())
+
+all_di <- read.csv(here::here("analysis", "rev_prototyping", "all_di.csv")) 
+
+all_di <- all_di %>%
+  filter(s0 > 1,
+         s0 != n0,
+         n0 != s0 + 1) 
+
+
+```
+
+## Proportion off
+
+```{r}
+
+
+ggplot(filter(all_di), aes(mean_po_comparison_percentile)) +
+  geom_histogram() +
+  facet_wrap(vars(dat, singletons), scales = "free_y")
+
+
+all_di %>% group_by(singletons, dat) %>% summarize(po_sig = mean(mean_po_comparison_percentile > 95))
+
+
+ggplot(all_di, aes(mean_po_comparison_95, mean_po_comparison, color = log(nparts))) +
+  geom_point() +
+  geom_line(aes(mean_po_comparison_95, mean_po_comparison_95))
+
+
+all_di %>%
+  filter(mean_po_comparison_percentile > 95) %>%
+  group_by(singletons) %>%
+  summarize(diff = mean(mean_po_comparison - mean_po_comparison_95))
+
+ggplot(all_di, aes(nparts, mean_po_comparison_95_ratio_1t)) +
+  geom_point() +
+  scale_x_log10()
+
+
+
+ggplot(all_di, aes(nparts, mean_po_comparison_95_ratio_1t)) +
+  geom_point() +
+  scale_x_log10() +
+  xlim(0, 10000)
+
+```
+
+```{r}
+
+ggplot(all_di, aes(mean_po_comparison_sims, mean_po_comparison, color = mean_po_comparison_percentile > 95)) +
+  geom_point(alpha = .3) +
+  facet_wrap(vars(dat, singletons))
+
+
+ggplot(all_di, aes(mean_po_comparison - mean_po_comparison_sims, color = mean_po_comparison_percentile > 95)) +
+  geom_histogram(alpha = .3) +
+  facet_wrap(vars(dat, singletons))
+
+
+```
+
+
+## Number of singletons
+
+
+## Shannon diversity
+
