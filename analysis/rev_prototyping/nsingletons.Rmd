@@ -14,7 +14,9 @@ library(dplyr)
 library(ggplot2)
 library(grid)
 
-all_di <- read.csv(here::here("analysis", "reports", "all_di.csv"), stringsAsFactors = F)
+theme_set(theme_bw())
+
+all_di <- read.csv(here::here("analysis", "rev_prototyping", "all_di.csv"), stringsAsFactors = F)
 
 all_di <- all_di %>%
   mutate(log_nparts = log(gmp:::as.double.bigz(nparts)),
@@ -23,7 +25,7 @@ all_di <- all_di %>%
          log_n0 = log(n0)) %>%
   filter(n0 != s0,
          s0 != 1,
-         #!singletons,
+         !singletons,
          n0 != (s0 + 1)) %>%
   mutate(dat = ifelse(grepl(dat, pattern = "fia"), "fia", dat),
          dat = ifelse(dat == "misc_abund_short", "misc_abund", dat)) %>%
@@ -38,32 +40,91 @@ all_di <- all_di %>%
 ```{r}
 
 ggplot(all_di, aes(nsingletons_percentile)) +
-  geom_histogram() +
+  geom_histogram(bins = 100) +
   facet_wrap(vars(dat, singletons), scales = "free_y") +
   xlim(0, 100)
 
-
-ggplot(all_di, aes(nsingletons_95, nsingletons)) +
-  geom_point(alpha = .2) +
-  geom_line(aes(nsingletons_95, nsingletons_95)) +
-  facet_wrap(vars(dat, singletons), scales = "free")
+ggplot(all_di, aes(nsingletons_percentile_excl)) +
+  geom_histogram(bins = 100) +
+  facet_wrap(vars(dat, singletons), scales = "free_y") +
+  xlim(0, 100)
 
 all_di <- all_di %>%
   mutate(prop_singles_actual = nsingletons / s0,
          sim_prop_singles_95 = nsingletons_95 / s0,
          sim_prop_singles_mean = nsingletons_mean / s0) %>%
-  mutate(
-            actual_minus_95_prop = prop_singles_actual - sim_prop_singles_95)
+  mutate(actual_minus_95_prop = prop_singles_actual - sim_prop_singles_95) %>%
+  mutate(high_singles=nsingletons_percentile > 95,
+         high_singles_ex = nsingletons_percentile_excl > 95,
+         low_singles = nsingletons_percentile < 5,
+         low_singles_ex = nsingletons_percentile_excl < 5) %>%
+  mutate(singles_desc = ifelse(high_singles_ex, "high", ifelse(low_singles, "low", "int")))
+
+```
+
+```{r, fig.dim = c(8,8)}
+
+ggplot(all_di, aes(s0, n0, color = singles_desc)) +
+  geom_point(alpha = .3) +
+  facet_wrap(vars(dat), scales = "free") +
+  scale_x_log10()+ 
+  scale_y_log10()
+
+
+
 
 
 all_di %>%
-  mutate(high_singles=nsingletons >= nsingletons_95,
-         high_singles_ex = nsingletons > nsingletons_95,
-         high_singles_mean = nsingletons > nsingletons_mean) %>%
   group_by(dat, singletons) %>%
   summarize(prop_high_singles = mean(high_singles),
             prop_high_singles_ex = mean(high_singles_ex),
-            prop_high_singles_mean = mean(high_singles_mean),
+            prop_low_singles = mean(low_singles),
+            prop_low_singles_ex = mean(low_singles_ex),
+            nsites= dplyr::n()) %>%
+  ungroup()
+
+
+```
+
+```{r, echo = T}
+
+ggplot(all_di, aes(n0/s0, nsingletons_percentile_excl, color = singles_desc)) +
+  geom_point() +
+  facet_wrap(vars(dat), scales = "free") +
+  scale_x_log10() +
+  geom_vline(xintercept = c(3, 5, 10))
+
+
+
+ggplot(all_di, aes(n0/s0, nsingletons_percentile_excl, color = singles_desc)) +
+  geom_point(data = filter(all_di, singles_desc != "int")) +
+  geom_point(alpha = .1, color = "grey") +
+  facet_wrap(vars(dat), scales = "free") +
+  scale_x_log10() +
+  geom_vline(xintercept = c(3, 5, 10))
+
+
+
+
+all_di %>%
+  filter(n0/s0 < 3) %>%
+  group_by(dat, singletons) %>%
+  summarize(prop_high_singles = mean(high_singles),
+            prop_high_singles_ex = mean(high_singles_ex),
+            prop_low_singles = mean(low_singles),
+            prop_low_singles_ex = mean(low_singles_ex),
+            nsites= dplyr::n()) %>%
+  ungroup()
+
+
+
+all_di %>%
+  filter(n0/s0 > 10) %>%
+  group_by(dat, singletons) %>%
+  summarize(prop_high_singles = mean(high_singles),
+            prop_high_singles_ex = mean(high_singles_ex),
+            prop_low_singles = mean(low_singles),
+            prop_low_singles_ex = mean(low_singles_ex),
             nsites= dplyr::n()) %>%
   ungroup()
 
