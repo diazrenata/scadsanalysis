@@ -31,9 +31,9 @@ all <- drake_plan(
   dat = target(read.csv(here::here("analysis", "rev_prototyping", "jacknifed_datasets", "fia_small_jk.csv")),
                hpc = F
   ),
-  mamm_p = target(readRDS(here::here("analysis", "masterp_mamm.Rds")),
+  tall_p = target(readRDS(here::here("analysis", "masterp_tall.Rds")),
                   hpc = F),
-  fs = target(sample_fs_wrapper(dataset = dat, site_name = s, singletonsyn = FALSE, n_samples = ndraws, p_table = mamm_p, seed = !!sample.int(10^6, size = 1)),
+  fs = target(sample_fs_wrapper(dataset = dat, site_name = s, singletonsyn = FALSE, n_samples = ndraws, p_table = tall_p, seed = !!sample.int(10^6, size = 1)),
               transform = map(s = !!sites_list$site)),
  # fs_diffs = target(get_fs_diffs(fs),
   #                  transform = map(fs)),
