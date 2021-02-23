@@ -167,7 +167,7 @@ fia_small_sites <- list_sites("fia_small")
 
 fia_small_to_jk <- sample(fia_small_sites$site, size = 100, replace = F)
 
-fia_small <- filter(fia_small, site %in% fia_small)
+fia_small <- filter(fia_small, site %in% fia_small_to_jk)
 
 
 fia_small_jacknives <-jacknife_whole_dataset(fia_small)
