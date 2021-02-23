@@ -18,27 +18,31 @@ theme_set(theme_bw())
 library(scadsanalysis)
 
 
-all_di <- read.csv(here::here("analysis", "rev_prototyping", "all_di.csv"), stringsAsFactors = F)
+all_di <- read.csv(here::here("analysis", "rev_prototyping", "all_di.csv"), stringsAsFactors = F) %>%
+  filter(n0 != s0,
+         s0 != 1,
+         !singletons,
+         n0 != (s0 + 1))
 
 
-jk_di <- read.csv(here::here("analysis", "rev_prototyping", "all_di_jk.csv"))
+jk_di_full <- read.csv(here::here("analysis", "rev_prototyping", "all_di_jk.csv"))
 
-jk_di <- jk_di %>%
+jk_di <- jk_di_full %>%
   group_by_all() %>%
   mutate(site_source = unlist(strsplit(site, "_")[[1]][[1]])) %>%
   ungroup() %>%
-  select(dat, site, site_source, s0, n0, skew_percentile_excl, simpson_percentile, shannon_percentile, nsingletons_percentile, nsingletons_percentile_excl, nsingletons, nsingletons_95, mean_po_comparison_percentile, mean_po_comparison_sims, mean_po_comparison_95, skew_95_ratio_1t, simpson_95_ratio_1t, shannon_95_ratio_1t, mean_po_comparison_95_ratio_1t, nparts)
+  select(dat, site, site_source, s0, n0, skew_percentile_excl,skew_percentile, simpson_percentile, simpson_percentile_excl, shannon_percentile, nsingletons_percentile, nsingletons_percentile_excl, nsingletons, nsingeltons_median, nsingletons_95, mean_po_comparison_percentile, mean_po_comparison_sims, mean_po_comparison_95, skew_95_ratio_1t, simpson_95_ratio_1t, shannon_95_ratio_1t, mean_po_comparison_95_ratio_1t, nparts)
 
 jk_di_means <- jk_di %>%
   group_by(dat, site_source) %>%
   summarise_at(vars(-group_cols(), -site), mean)
 
 all_di_actual <- all_di %>%
-    filter(!singletons) %>%
+  filter(!singletons) %>%
   mutate(site_source = as.character(site)) %>%
-  select(dat, site_source, s0, n0, skew_percentile_excl, simpson_percentile, shannon_percentile, nsingletons_percentile, nsingletons_percentile_excl, nsingletons, nsingletons_95, mean_po_comparison_percentile, mean_po_comparison_sims, mean_po_comparison_95, skew_95_ratio_1t, simpson_95_ratio_1t, shannon_95_ratio_1t, mean_po_comparison_95_ratio_1t, nparts) 
+  select(dat, site_source, s0, n0, skew_percentile_excl, skew_percentile, simpson_percentile, simpson_percentile_excl, shannon_percentile, nsingletons_percentile, nsingletons_percentile_excl, nsingletons,nsingeltons_median,  nsingletons_95, mean_po_comparison_percentile, mean_po_comparison_sims, mean_po_comparison_95, skew_95_ratio_1t, simpson_95_ratio_1t, shannon_95_ratio_1t, mean_po_comparison_95_ratio_1t, nparts) 
 
-colnames(all_di_actual)[ 3:19] <- paste0(colnames(all_di_actual)[ 3:19], "_actual")
+colnames(all_di_actual)[ 3:ncol(all_di_actual)] <- paste0(colnames(all_di_actual)[3:ncol(all_di_actual)], "_actual")
 
 jk_di_results <- left_join(jk_di, all_di_actual)
 jk_di_mean_results <- left_join(jk_di_means, all_di_actual)
@@ -47,7 +51,8 @@ jk_di_mean_results <- left_join(jk_di_means, all_di_actual)
 jk_di_mean_results <- jk_di_mean_results %>%
   mutate(skew_actual_sig = skew_percentile_excl_actual > 95,
          skew_sig = skew_percentile_excl > 95) %>%
-  mutate(skew_change = paste0("actual", skew_actual_sig, "_jk", skew_sig))
+  mutate(skew_change = paste0("actual", skew_actual_sig, "_jk", skew_sig)) %>%
+  filter(nparts > 20)
 
 ```
 
@@ -73,21 +78,23 @@ jk_di_mean_results <- jk_di_mean_results %>%
 
 
 ```{r}
-ggplot(filter(jk_di_mean_results, s0 > 2), aes(skew_percentile_excl)) +
+ggplot(filter(jk_di_mean_results, s0 > 2, nparts > 20), aes(skew_percentile_excl)) +
   geom_histogram(bins = 100) +
   facet_wrap(vars(dat), scales = "free_y", ncol = 1) +
   geom_vline(xintercept = 95)
 
-ggplot(filter(jk_di_mean_results, s0 > 2), aes(skew_percentile_excl_actual)) +
+ggplot(filter(jk_di_mean_results, s0 > 2, nparts > 20), aes(skew_percentile_excl_actual)) +
   geom_histogram(bins = 100) +
   facet_wrap(vars(dat), scales = "free_y", ncol = 1) +
   geom_vline(xintercept = 95)
 
 jk_di_mean_results  %>% 
- filter(s0 > 2) %>%
+  filter(s0 > 2, nparts > 20) %>%
   group_by(dat) %>%
   summarize(prop_skew_high_jk = mean(skew_percentile_excl > 95),
             prop_skew_high_raw = mean(skew_percentile_excl_actual > 95),
+            prop_skew_low_jk = mean(skew_percentile < 5),
+            prop_skew_low_raw = mean(skew_percentile_actual < 5),
             nsites_included = dplyr::n())
 ```
 
@@ -96,20 +103,23 @@ jk_di_mean_results  %>%
 
 
 ```{r}
-ggplot(filter(jk_di_mean_results), aes(simpson_percentile)) +
+ggplot(filter(jk_di_mean_results, nparts > 20), aes(simpson_percentile)) +
   geom_histogram(bins = 100) +
   facet_wrap(vars(dat), scales = "free_y", ncol = 1) +
   geom_vline(xintercept = 5)
 
-ggplot(filter(jk_di_mean_results), aes(simpson_percentile_actual)) +
+ggplot(filter(jk_di_mean_results, nparts > 20), aes(simpson_percentile_actual)) +
   geom_histogram(bins = 100) +
   facet_wrap(vars(dat), scales = "free_y", ncol = 1) +
   geom_vline(xintercept = 5)
 
 jk_di_mean_results  %>% 
   group_by(dat) %>%
-  summarize(prop_simpson_high_jk = mean(simpson_percentile < 5),
-            prop_simpson_high_raw = mean(simpson_percentile_actual < 5),
+  filter(nparts > 20) %>%
+  summarize(prop_simpson_high_jk = mean(simpson_percentile_excl > 95),
+            prop_simpson_high_raw = mean(simpson_percentile_excl_actual > 95),
+            prop_simpson_low_jk = mean(simpson_percentile< 5),
+            prop_simpson_low_raw = mean(simpson_percentile_actual < 5),
             nsites_included = dplyr::n())
 
 ```
@@ -119,20 +129,24 @@ jk_di_mean_results  %>%
 
 
 ```{r}
-ggplot(filter(jk_di_mean_results), aes(shannon_percentile)) +
+ggplot(filter(jk_di_mean_results, nparts > 20), aes(shannon_percentile)) +
   geom_histogram(bins = 100) +
   facet_wrap(vars(dat), scales = "free_y", ncol = 1) +
   geom_vline(xintercept = 5)
 
-ggplot(filter(jk_di_mean_results), aes(shannon_percentile_actual)) +
+ggplot(filter(jk_di_mean_results, nparts > 20), aes(shannon_percentile_actual)) +
   geom_histogram(bins = 100) +
   facet_wrap(vars(dat), scales = "free_y", ncol = 1) +
   geom_vline(xintercept = 5)
+
 
 jk_di_mean_results  %>% 
   group_by(dat) %>%
-  summarize(prop_shannon_high_jk = mean(shannon_percentile < 5),
-            prop_shannon_high_raw = mean(shannon_percentile_actual < 5),
+  filter(nparts > 20) %>%
+  summarize(prop_shannon_high_jk = mean(shannon_percentile > 95),
+            prop_shannon_high_raw = mean(shannon_percentile_actual > 95),
+            prop_shannon_low_jk = mean(shannon_percentile< 5),
+            prop_shannon_low_raw = mean(shannon_percentile_actual < 5),
             nsites_included = dplyr::n())
 
 ```
@@ -143,65 +157,124 @@ jk_di_mean_results  %>%
 
 
 ```{r}
-ggplot(filter(jk_di_mean_results), aes(mean_po_comparison_percentile)) +
+ggplot(filter(jk_di_mean_results, nparts > 20), aes(mean_po_comparison_percentile)) +
   geom_histogram(bins = 100) +
   facet_wrap(vars(dat), scales = "free_y", ncol = 1) +
   geom_vline(xintercept = 95)
 
-ggplot(filter(jk_di_mean_results), aes(mean_po_comparison_percentile_actual)) +
+ggplot(filter(jk_di_mean_results, nparts > 20), aes(mean_po_comparison_percentile_actual)) +
   geom_histogram(bins = 100) +
   facet_wrap(vars(dat), scales = "free_y", ncol = 1) +
   geom_vline(xintercept = 95)
 
 jk_di_mean_results  %>% 
   group_by(dat) %>%
+  filter(nparts > 20) %>%
   summarize(prop_mean_po_comparison_high_jk = mean(mean_po_comparison_percentile > 95),
             prop_mean_po_comparison_high_raw = mean(mean_po_comparison_percentile_actual > 95),
             nsites_included = dplyr::n())
 
 ```
 
-## Nsingletons
+<!-- ## Nsingletons -->
 
 
-```{r}
-ggplot(filter(jk_di_mean_results), aes(nsingletons_percentile)) +
-  geom_histogram(bins = 100) +
-  facet_wrap(vars(dat), scales = "free_y", ncol = 1) +
-  geom_vline(xintercept = 95)
+<!-- ```{r} -->
+<!-- ggplot(filter(jk_di_mean_results, nparts > 20), aes(nsingletons_percentile_excl)) + -->
+<!--   geom_histogram(bins = 100) + -->
+<!--   facet_wrap(vars(dat), scales = "free_y", ncol = 1) + -->
+<!--   geom_vline(xintercept = 95) -->
 
-ggplot(filter(jk_di_mean_results), aes(nsingletons_percentile_actual)) +
-  geom_histogram(bins = 100) +
-  facet_wrap(vars(dat), scales = "free_y", ncol = 1) +
-  geom_vline(xintercept = 95)
+<!-- ggplot(filter(jk_di_mean_results, nparts > 20), aes(nsingletons_percentile_actual)) + -->
+<!--   geom_histogram(bins = 100) + -->
+<!--   facet_wrap(vars(dat), scales = "free_y", ncol = 1) + -->
+<!--   geom_vline(xintercept = 95) -->
 
-jk_di_mean_results  %>% 
-  group_by(dat) %>%
-  summarize(prop_nsingletons_high_jk = mean(nsingletons_percentile > 95),
-            prop_nsingletons_high_raw = mean(nsingletons_percentile_actual > 95),
-            nsites_included = dplyr::n())
+<!-- jk_di_mean_results  %>%  -->
+<!--   group_by(dat) %>% -->
+<!--   summarize(prop_nsingletons_high_jk = mean(nsingletons_percentile > 95), -->
+<!--             prop_nsingletons_high_raw = mean(nsingletons_percentile_actual > 95), -->
+<!--             nsites_included = dplyr::n()) -->
 
-```
+<!-- ``` -->
 
 
 ## Nsingletons excl
 
+Visualization and analysis of nsingletons has a little more nuance than the others, because there are often relatively few values for nsingletons at all. 80% of sites have fewer than 20 singletons as the 95th percentile, which is just a rough way of saying that a **lot** of these are going to be sensitive to whether you define the percentiles as > or >=. 
+
+In general the strict > percentile will give you an (appropriately) conservative estimate of how many are extraordinarily **high** and the >= will give you an appropriate estimate of how many are unusually **low**. For most metrics it doesn't really matter, writ large, which you use, because ties are rare. For this one, you get large numbers of sites where a lot of values are = to the observed values, and the >= decision will therefore give you a jump of a lot of percentile scores. 
+
+For the "proportions high/low" calculations, we use *the > percentile for high* and *the >= percentile for low*. For visualization, because we are interested in both unusually high and unusually low scores, we can't just pick one or the other. The histogram using >= is reliable at the high end but has a misleading spike at 0, and vice versa. I am making these plots using the *mean*, which doesn't have the misleading spikes at the extremes but does smear things out a little bit. 
+
+
+```{r, fig.dim = c(5,5)}
+
+jk_di_mean_results <- jk_di_mean_results %>%
+  group_by_all() %>%
+  mutate(singletons_percentile_jump = nsingletons_percentile - nsingletons_percentile_excl,
+         singletons_percentile_jump_actual = nsingletons_percentile_actual - nsingletons_percentile_excl_actual,
+         nsingletons_percentile_mean = sum(nsingletons_percentile, nsingletons_percentile_excl) / 2,
+         nsingletons_percentile_mean_actual = sum(nsingletons_percentile_actual, nsingletons_percentile_excl_actual)/2) %>%
+  ungroup()
+
+```
 
 ```{r}
-ggplot(filter(jk_di_mean_results), aes(nsingletons_percentile_excl)) +
+ggplot(filter(jk_di_mean_results, nparts > 20), aes(nsingletons_percentile_mean)) +
   geom_histogram(bins = 100) +
   facet_wrap(vars(dat), scales = "free_y", ncol = 1) +
   geom_vline(xintercept = 95)
 
-ggplot(filter(jk_di_mean_results), aes(nsingletons_percentile_excl_actual)) +
+ggplot(filter(jk_di_mean_results, nparts > 20), aes(nsingletons_percentile_mean_actual)) +
   geom_histogram(bins = 100) +
   facet_wrap(vars(dat), scales = "free_y", ncol = 1) +
   geom_vline(xintercept = 95)
 
 jk_di_mean_results  %>% 
   group_by(dat) %>%
+  filter(nparts > 20) %>%
   summarize(prop_nsingletons_high_jk = mean(nsingletons_percentile_excl > 95),
             prop_nsingletons_high_raw = mean(nsingletons_percentile_excl_actual > 95),
+         #   prop_nsingletons_mean_high_raw = mean(nsingletons_percentile_mean_actual > 95),
+      #      prop_nsingletons_mean_high_jk = mean(nsingletons_percentile_mean > 95),
+            prop_nsingletons_low_jk = mean(nsingletons_percentile < 5),
+            prop_nsingletons_low_raw = mean(nsingletons_percentile_actual  < 5),
             nsites_included = dplyr::n())
 
+
 ```
+
+<!-- ```{r, fig.dim = c(6,6)} -->
+
+<!-- jk_di_mean_results <- jk_di_mean_results %>% -->
+<!--  #select(-singletons_percentile_excl_high_insig, -singletons_percentile_low_insig) -->
+<!--   group_by_all() %>% -->
+<!--   mutate(prop_singletons = nsingletons / s0, -->
+<!--          prop_singletons_actual = nsingletons_actual / s0, -->
+<!--          singletons_percentile_high_change = paste0("actual", (nsingletons_percentile_excl_actual > 95), "_jk", (nsingletons_percentile_excl > 95)), -->
+<!--          singletons_percentile_low_change = paste0("actual", (nsingletons_percentile_actual <5), "_jk", (nsingletons_percentile < 5))) %>% -->
+<!--   ungroup() %>% -->
+<!--   mutate(prop_singletons_change = prop_singletons - prop_singletons_actual) -->
+
+
+<!-- ggplot(jk_di_mean_results, aes(prop_singletons_actual, prop_singletons, color =singletons_percentile_high_change)) + geom_point() + geom_line(aes(prop_singletons_actual,prop_singletons_actual), inherit.aes = F) -->
+
+
+<!-- ggplot(jk_di_mean_results, aes(nsingletons_actual, nsingletons,color = singletons_percentile_high_change)) + geom_point() + geom_line(aes(nsingletons_actual,nsingletons_actual), inherit.aes = F) +facet_wrap(vars(dat), scales = "free") + theme(legend.position = "top") -->
+
+<!-- ggplot(jk_di_mean_results, aes(s0,n0, color =  -->
+<!-- ggplot(jk_di_mean_results, aes(nsingletons_actual, nsingletons,color = singletons_percentile_high_change)) + geom_point() + geom_line(aes(nsingletons_actual,nsingletons_actual), inherit.aes = F) +facet_wrap(vars(dat), scales = "free") + theme(legend.position = "top") -->
+<!-- )) + geom_point() +scale_x_log10() +scale_y_log10() + -->
+<!--   facet_wrap(vars(dat), scales = "free") + -->
+<!--   theme(legend.position = "top") -->
+
+<!-- ggplot(jk_di_mean_results, aes(s0,n0, color = singletons_percentile_low_change)) + geom_point() +scale_x_log10() +scale_y_log10()+ -->
+<!--   facet_wrap(vars(dat), scales = "free") + -->
+<!--   theme(legend.position = "top") -->
+
+
+<!-- ggplot(jk_di_mean_results, aes(n0/s0, nsingletons_percentile_excl, color = singletons_percentile_high_change)) + geom_point()+ -->
+<!--   facet_wrap(vars(dat), scales = "free") + -->
+<!--   theme(legend.position = "top") -->
+<!-- ``` -->

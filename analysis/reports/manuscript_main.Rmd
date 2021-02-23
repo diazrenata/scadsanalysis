@@ -157,7 +157,7 @@ rm(cache)
 ```{r first hists, fig.dim = c(7,7)}
 fig_2 <- gridExtra::grid.arrange(grobs = list(
   
-  ggplot(filter(all_di, s0 > 2, skew_unique > 20), aes(skew_percentile_excl)) +
+  ggplot(filter(all_di, s0 > 2, nparts > 20), aes(skew_percentile_excl)) +
     geom_histogram(bins = 100) +
     geom_vline(xintercept = 95, color = "red") +
     theme_bw() +
@@ -167,7 +167,7 @@ fig_2 <- gridExtra::grid.arrange(grobs = list(
   #  xlab("Percentile rank of observed value relative to feasible set") +
     #ylab("Number of communities") ,
   
-  ggplot(filter(all_di, simpson_unique > 20), aes(simpson_percentile)) + 
+  ggplot(filter(all_di, nparts > 20), aes(simpson_percentile)) + 
     geom_histogram(bins = 100) +
     geom_vline(xintercept = 5, color = "red") +
     theme_bw() +
@@ -188,7 +188,7 @@ bottom = textGrob("Percentile rank of observed value relative to feasible set"),
 ```{r, fig.dim = c(7,7)}
 
 fig_3 <- gridExtra::grid.arrange(grobs = list(
-  ggplot(filter(all_di, s0 > 2, skew_unique > 20), aes(x= skew_95_ratio_1t)) +
+  ggplot(filter(all_di, s0 > 2, nparts > 20), aes(x= skew_95_ratio_1t)) +
     geom_histogram() +
     theme_bw() +
     facet_wrap(vars(Dataset), scales = "free_y", ncol = 1) +
@@ -197,7 +197,7 @@ fig_3 <- gridExtra::grid.arrange(grobs = list(
     ggtitle("Skewness") +
     xlim(0, 1),
   
-  ggplot(filter(all_di, simpson_unique > 20), aes(x = simpson_95_ratio_1t)) +
+  ggplot(filter(all_di, nparts > 20), aes(x = simpson_95_ratio_1t)) +
     geom_histogram() +
     theme_bw() +
     facet_wrap(vars(Dataset), scales = "free_y", ncol = 1) +
@@ -293,7 +293,7 @@ for(i in 1:nrow(small_di_s_n)) {
 sub_di <- bind_rows(subsamples) %>%
   mutate(Dataset = ifelse(fia_yn == "fia", "FIA", "Other datasets"))
 
-simpson_ks <- filter(sub_di, simpson_unique > 20) %>%
+simpson_ks <- filter(sub_di, nparts > 20) %>%
   select(simpson_95_ratio_1t, Dataset, simpson_percentile, s0, n0) %>% 
   group_by(Dataset, s0, n0) %>%
   mutate(pairing = dplyr::row_number()) %>%
@@ -306,7 +306,7 @@ simpson_percent <- ks.test(simpson_ks$simpson_percentile_FIA, simpson_ks$`simpso
 simpson_breadth
 simpson_percent
 
-skewness_ks <- filter(sub_di, skew_unique > 20) %>%
+skewness_ks <- filter(sub_di, nparts > 20) %>%
   select(skew_95_ratio_1t, Dataset, skew_percentile, s0, n0) %>% 
   group_by(Dataset, s0, n0) %>%
   mutate(pairing = dplyr::row_number()) %>%
@@ -321,7 +321,7 @@ skewness_percent
 
 
 fig_4 <- gridExtra::grid.arrange(grobs = list(
-  ggplot(filter(sub_di, skew_unique > 20), aes(skew_95_ratio_1t)) +
+  ggplot(filter(sub_di, nparts > 20), aes(skew_95_ratio_1t)) +
     geom_histogram()+
     theme_bw() +
     facet_wrap(vars(Dataset), scales = "free_y")  +
@@ -329,7 +329,7 @@ fig_4 <- gridExtra::grid.arrange(grobs = list(
     ylab("Number of communities") +
     ggtitle("Breadth index", subtitle = "Skewness"),
   
-  ggplot(filter(sub_di, simpson_unique > 20), aes(simpson_95_ratio_1t)) +
+  ggplot(filter(sub_di, nparts > 20), aes(simpson_95_ratio_1t)) +
     geom_histogram()+
     theme_bw() +
     facet_wrap(vars(Dataset), scales = "free_y")  +
@@ -337,7 +337,7 @@ fig_4 <- gridExtra::grid.arrange(grobs = list(
     ylab("") +
     ggtitle("", subtitle = "Evenness"),
   
-  ggplot(filter(sub_di, skew_unique > 20), aes(skew_percentile_excl)) +
+  ggplot(filter(sub_di, nparts > 20), aes(skew_percentile_excl)) +
     geom_histogram()+
     theme_bw() +
     facet_wrap(vars(Dataset), scales = "free_y")  +
@@ -346,7 +346,7 @@ fig_4 <- gridExtra::grid.arrange(grobs = list(
     ggtitle("Percentile rank", subtitle = "Skewness"),
   
   
-  ggplot(filter(sub_di, simpson_unique > 20), aes(simpson_percentile)) +
+  ggplot(filter(sub_di, nparts > 20), aes(simpson_percentile)) +
     geom_histogram()+
     theme_bw() +
     facet_wrap(vars(Dataset), scales = "free_y")  +
@@ -366,7 +366,7 @@ dev.off()
 pdf("figure_2.pdf", title = "Figure 2", bg = "white", paper = "letter", width = 6.5, height = 6.5)
  gridExtra::grid.arrange(grobs = list(
   
-  ggplot(filter(all_di, s0 > 2, skew_unique > 20), aes(skew_percentile_excl)) +
+  ggplot(filter(all_di, s0 > 2, nparts > 20), aes(skew_percentile_excl)) +
     geom_histogram(bins = 100) +
     geom_vline(xintercept = 95, color = "red") +
     theme_bw() +
@@ -376,7 +376,7 @@ pdf("figure_2.pdf", title = "Figure 2", bg = "white", paper = "letter", width = 
   #  xlab("Percentile rank of observed value relative to feasible set") +
     #ylab("Number of communities") ,
   
-  ggplot(filter(all_di, simpson_unique > 20), aes(simpson_percentile)) + 
+  ggplot(filter(all_di, nparts > 20), aes(simpson_percentile)) + 
     geom_histogram(bins = 100) +
     geom_vline(xintercept = 5, color = "red") +
     theme_bw() +
@@ -392,7 +392,7 @@ bottom = textGrob("Percentile rank of observed value relative to feasible set"),
  
 pdf("figure_3.pdf", title = "Figure 3", bg = "white", paper = "letter", width = 6.5, height = 6.5)
 gridExtra::grid.arrange(grobs = list(
-  ggplot(filter(all_di, s0 > 2, skew_unique > 20), aes(x= skew_95_ratio_1t)) +
+  ggplot(filter(all_di, s0 > 2, nparts > 20), aes(x= skew_95_ratio_1t)) +
     geom_histogram() +
     theme_bw() +
     facet_wrap(vars(Dataset), scales = "free_y", ncol = 1) +
@@ -401,7 +401,7 @@ gridExtra::grid.arrange(grobs = list(
     ggtitle("Skewness") +
     xlim(0, 1),
   
-  ggplot(filter(all_di, simpson_unique > 20), aes(x = simpson_95_ratio_1t)) +
+  ggplot(filter(all_di, nparts > 20), aes(x = simpson_95_ratio_1t)) +
     geom_histogram() +
     theme_bw() +
     facet_wrap(vars(Dataset), scales = "free_y", ncol = 1) +
@@ -418,7 +418,7 @@ dev.off()
 
 pdf("figure_4.pdf", title = "Figure 4", bg = "white", paper = "letter", width = 6.5, height = 6.5)
  gridExtra::grid.arrange(grobs = list(
-  ggplot(filter(sub_di, skew_unique > 20), aes(skew_95_ratio_1t)) +
+  ggplot(filter(sub_di, nparts > 20), aes(skew_95_ratio_1t)) +
     geom_histogram()+
     theme_bw() +
     facet_wrap(vars(Dataset), scales = "free_y")  +
@@ -426,7 +426,7 @@ pdf("figure_4.pdf", title = "Figure 4", bg = "white", paper = "letter", width = 
     ylab("Number of communities") +
     ggtitle("Breadth index", subtitle = "Skewness"),
   
-  ggplot(filter(sub_di, simpson_unique > 20), aes(simpson_95_ratio_1t)) +
+  ggplot(filter(sub_di, nparts > 20), aes(simpson_95_ratio_1t)) +
     geom_histogram()+
     theme_bw() +
     facet_wrap(vars(Dataset), scales = "free_y")  +
@@ -434,7 +434,7 @@ pdf("figure_4.pdf", title = "Figure 4", bg = "white", paper = "letter", width = 
     ylab("") +
     ggtitle("", subtitle = "Evenness"),
   
-  ggplot(filter(sub_di, skew_unique > 20), aes(skew_percentile_excl)) +
+  ggplot(filter(sub_di, nparts > 20), aes(skew_percentile_excl)) +
     geom_histogram()+
     theme_bw() +
     facet_wrap(vars(Dataset), scales = "free_y")  +
@@ -443,7 +443,7 @@ pdf("figure_4.pdf", title = "Figure 4", bg = "white", paper = "letter", width = 
     ggtitle("Percentile rank", subtitle = "Skewness"),
   
   
-  ggplot(filter(sub_di, simpson_unique > 20), aes(simpson_percentile)) +
+  ggplot(filter(sub_di, nparts > 20), aes(simpson_percentile)) +
     geom_histogram()+
     theme_bw() +
     facet_wrap(vars(Dataset), scales = "free_y")  +

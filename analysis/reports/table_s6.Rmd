@@ -119,8 +119,8 @@ sub_di <- bind_rows(subsamples) %>%
 sub_di %>%
   filter(s0 > 2) %>%
   group_by_all %>%
-  mutate(skew_percentile_excl = ifelse(skew_unique >= 20, skew_percentile_excl, NA),
-         simpson_percentile = ifelse(simpson_unique >= 20, simpson_percentile, NA)) %>%
+  mutate(skew_percentile_excl = ifelse(nparts >= 20, skew_percentile_excl, NA),
+         simpson_percentile = ifelse(nparts >= 20, simpson_percentile, NA)) %>%
   ungroup() %>%
   group_by(Dataset) %>%
   summarize(prop_skew_high = mean(skew_percentile_excl > 95, na.rm = T),
