@@ -15,10 +15,10 @@ sites_list <- dataset %>%
   group_by_all() %>%
   mutate(site_source = unlist(strsplit(site, "_")[[1]][[1]])) %>%
   ungroup()
-
-sites_list <- sites_list %>%
-  filter(site_source %in% unique(sites_list$site_source)[1:max_n_sites]) %>%
-  select(-site_source)
+#
+# sites_list <- sites_list %>%
+#   filter(site_source %in% unique(sites_list$site_source)[1:max_n_sites]) %>%
+#   select(-site_source)
 
 ndraws = 4000
 
@@ -29,7 +29,8 @@ set.seed(1980)
 
 all <- drake_plan(
   dat = target(read.csv(here::here("analysis", "rev_prototyping", "jacknifed_datasets", "fia_small_jk.csv")),
-               hpc = F
+               hpc = F,
+               trigger = T
   ),
   wide_p = target(readRDS(here::here("analysis", "masterp_wide.Rds")),
                   hpc = F),
