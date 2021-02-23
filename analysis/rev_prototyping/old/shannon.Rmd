@@ -15,7 +15,7 @@ library(ggplot2)
 library(grid)
 
 
-all_di <- read.csv(here::here("analysis", "reports", "all_di.csv"), stringsAsFactors = F)
+all_di <- read.csv(here::here("analysis", "rev_prototyping", "all_di.csv"), stringsAsFactors = F)
 
 all_di <- all_di %>%
   mutate(log_nparts = log(gmp:::as.double.bigz(nparts)),
@@ -102,6 +102,14 @@ ggplot(all_di, aes(s0, n0, color = shannon_cat)) +
   geom_point(data = filter(all_di, is.na(shannon_cat)), aes(s0, n0), inherit.aes = F, alpha = .1, color = "grey") +
     geom_point(alpha = .5)+
   facet_wrap(vars(Dataset))
+
+
+
+ggplot(all_di, aes(n0/s0, shannon_percentile, color = shannon_cat)) +
+  theme_bw()+
+  scale_x_log10() +
+    geom_point()+
+  facet_wrap(vars(Dataset), scales = "free")
 ```
 
 

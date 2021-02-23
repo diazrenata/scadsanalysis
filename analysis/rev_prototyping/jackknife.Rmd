@@ -148,4 +148,40 @@ gentry_jacknifes <- jacknife_whole_dataset(gentry)
 write.csv(gentry_jacknifes, here::here("analysis", "rev_prototyping", "jacknifed_datasets", "gentry_jk.csv"), row.names = F)
 
 
+fia <- load_dataset("fia_short")
+
+fia_sites <- list_sites("fia_short")
+
+fia_to_jk <- sample(fia_sites$site, size = nrow(fia_sites), replace = F)
+
+fia_to_jk <- fia_to_jk[1:1000]
+
+fia <- filter(fia, site %in% fia_to_jk)
+
+fia_jacknives <-jacknife_whole_dataset(fia)
+
+write.csv(fia_jacknives, here::here("analysis", "rev_prototyping", "jacknifed_datasets", "fia_jk.csv"), row.names = F)
+
+
+fia_small <- load_dataset("fia_small")
+
+fia_small_sites <- list_sites("fia_small")
+
+fia_small_to_jk <- sample(fia_small_sites$site, size = nrow(fia_small_sites), replace = F)
+
+fia_small_to_jk <- fia_small_to_jk[1:1000]
+
+
+
+fia_small <- filter(fia_small, site %in% fia_small_to_jk)
+
+
+fia_small_jacknives <-jacknife_whole_dataset(fia_small)
+
+write.csv(fia_small_jacknives, here::here("analysis", "rev_prototyping", "jacknifed_datasets", "fia_small_jk.csv"), row.names = F)
+
+
+
+
+
 ```
