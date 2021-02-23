@@ -30,8 +30,7 @@ set.seed(1980)
 
 all <- drake_plan(
   dat = target(read.csv(here::here("analysis", "rev_prototyping", "jacknifed_datasets", "fia_jk.csv")),
-               hpc = F,
-               trigger = T
+               hpc = F
   ),
   wide_p = target(readRDS(here::here("analysis", "masterp_wide.Rds")),
                   hpc = F),
