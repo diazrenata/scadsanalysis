@@ -16,7 +16,7 @@ library(grid)
 
 theme_set(theme_bw())
 
-all_di <- read.csv(here::here("analysis", "rev_prototyping", "all_di.csv"), stringsAsFactors = F)
+all_di <- read.csv(here::here("analysis", "reports", "all_di.csv"), stringsAsFactors = F)
 
 all_di <- all_di %>%
   mutate(log_nparts = log(gmp:::as.double.bigz(nparts)),
@@ -130,20 +130,19 @@ all_di %>%
 
 
 ```
+```{r}
 
+all_di <- all_di %>%
+  mutate(singletons_change = (nsingletons - nsingletons_95) / s0)
 
-<!-- ```{r} -->
+ggplot(filter(all_di, high_singles_ex), aes(singletons_change)) +
+  geom_histogram() +
+  facet_wrap(vars(dat), scales = "free")
 
+all_di %>%
+  filter(high_singles_ex) %>%
+  group_by(dat) %>%
+  summarize(mean_singles_change = mean(singletons_change),
+            n = dplyr::n())
 
-<!-- ggplot(filter(all_di, nsingletons >= nsingletons_95), aes(nsingletons_mean, nsingletons)) + -->
-<!--   geom_point(alpha = .2) + -->
-<!-- #  geom_line(aes(nsingletons_mean, nsingletons_mean)) + -->
-<!--     geom_line(aes(nsingletons_95, nsingletons_95)) + -->
-<!--   facet_wrap(vars(dat), scales = "free") -->
-
-
-<!-- ggplot(filter(all_di, nsingletons >= nsingletons_95), aes(nsingletons, nsingletons-nsingletons_95)) + -->
-<!--   geom_point(alpha = .2) + -->
-<!-- #  geom_line(aes(nsingletons_mean, nsingletons_mean)) + -->
-<!--   facet_wrap(vars(dat), scales = "free") -->
-<!-- ``` -->
+```
