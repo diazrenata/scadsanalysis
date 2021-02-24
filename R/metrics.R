@@ -18,15 +18,37 @@ add_dis <- function(fs_samples_df, sim_props_off = NULL, props_comparison = NULL
     return(NA)
   }
 
-  groupvars <- colnames(fs_samples_df)[ which(!(colnames(fs_samples_df) %in% c("abund", "rank")))]
-
-  if("observed" %in% fs_samples_df$source) {
-
-    actual <- dplyr::filter(fs_samples_df, sim < 0)
-
-  } else {
-    actual <- dplyr::filter(fs_samples_df, sim == min(fs_samples_df$sim, na.rm  = T))
+  if(fs_samples_df$dat[1] == "net") {
+    fs_samples_df <- fs_samples_df %>%
+      dplyr::filter(!is.na(sim))
   }
+
+  groupvars <- colnames(fs_samples_df)[ which(!(colnames(fs_samples_df) %in% c("abund", "rank")))]
+#
+#   if("observed" %in% fs_samples_df$source) {
+#
+#     actual <- dplyr::filter(fs_samples_df, sim < 0)
+#
+#
+#     sim_dis <- fs_samples_df %>%
+#       dplyr::group_by_at(.vars = groupvars) %>%
+#       dplyr::summarize(skew = e1071::skewness(abund),
+#                        shannon = vegan::diversity(abund, index = "shannon", base = exp(1)),
+#                        simpson = vegan::diversity(abund, index = "simpson"),
+#                        nsingletons = sum(abund == 1),
+#                        prop_off_actual = proportion_off(t(cbind(actual$abund, abund)))) %>%
+#       dplyr::ungroup()
+#
+#   } else {
+#
+#     sim_dis <- fs_samples_df %>%
+#       dplyr::group_by_at(.vars = groupvars) %>%
+#       dplyr::summarize(skew = e1071::skewness(abund),
+#                        shannon = vegan::diversity(abund, index = "shannon", base = exp(1)),
+#                        simpson = vegan::diversity(abund, index = "simpson"),
+#                        nsingletons = sum(abund == 1),
+#                        prop_off_actual = proportion_off(t(cbind(actual$abund, abund)))) %>%
+#       dplyr::ungroup()  }
 
   if(is.null(props_comparison)) {
 
@@ -35,15 +57,15 @@ add_dis <- function(fs_samples_df, sim_props_off = NULL, props_comparison = NULL
   }
 
 
+
   sim_dis <- fs_samples_df %>%
     dplyr::group_by_at(.vars = groupvars) %>%
     dplyr::summarize(skew = e1071::skewness(abund),
                      shannon = vegan::diversity(abund, index = "shannon", base = exp(1)),
                      simpson = vegan::diversity(abund, index = "simpson"),
-                     nsingletons = sum(abund == 1),
-                     prop_off_actual = proportion_off(t(cbind(actual$abund, abund)))) %>%
+                     nsingletons = sum(abund == 1)) %>% #,
+                    # prop_off_actual = proportion_off(t(cbind(actual$abund, abund)))) %>%
     dplyr::ungroup()
-
 
   sim_dis <- dplyr::left_join(sim_dis, props_comparison, by = c("sim" = "focal_sim"))
 
@@ -62,38 +84,44 @@ add_dis <- function(fs_samples_df, sim_props_off = NULL, props_comparison = NULL
                   simpson_percentile = get_percentile(simpson, a_vector = sim_percentiles$simpson),
                   skew_percentile_excl = get_percentile(skew, a_vector = sim_percentiles$skew, incl =F),
                   simpson_percentile_excl = get_percentile(simpson, a_vector = sim_percentiles$simpson, incl = F),
+                  shannon_percentile_excl =  get_percentile(shannon, a_vector = sim_percentiles$shannon, incl = F),
                   nsingletons_percentile = get_percentile(nsingletons, a_vector = sim_percentiles$nsingletons),
                   nsingletons_percentile_excl = get_percentile(nsingletons,
                                                                a_vector = sim_percentiles$nsingletons, incl =F),
-                  nsingletons_mean = mean(sim_percentiles$nsingletons, na.rm = T),
-                  nsingletons_95 = quantile(sim_percentiles$nsingletons, probs = 0.95, na.rm =T),
-                  nsingeltons_median = median(sim_percentiles$nsingletons),
-                  mean_prop_off_actual = mean(sim_percentiles$prop_off_actual),
-                  prop_off_actual_2p5 = quantile( sim_percentiles$prop_off_actual, probs = 0.025, na.rm = T),
-                  prop_off_actual_97p5 = quantile( sim_percentiles$prop_off_actual, probs = .975, na.rm = T),
-                  prop_off_actual_5 = quantile(sim_percentiles$prop_off_actual, probs = .05, na.rm = T),
-                  prop_off_actual_95 = quantile(sim_percentiles$prop_off_actual, probs = .95, na.rm = T),
+                  # nsingletons_mean = mean(sim_percentiles$nsingletons, na.rm = T),
+                  # nsingletons_95 = quantile(sim_percentiles$nsingletons, probs = 0.95, na.rm =T),
+                  # nsingletons_median = median(sim_percentiles$nsingletons),
+                  # nsingletons_min = min(sim_percentiles$nsingletons, na.rm = T),
+                  # nsingletons_max = max(sim_percentiles$nsingletons, na.rm = T),
+                  # nsingletons_2p5 = quantile(sim_percentiles$nsingletons, probs = 0.025, na.rm = T),
+                  # nsingletons_97p5 = quantile(sim_percentiles$nsingletons, probs = .975, na.rm = T),
+                  # mean_prop_off_actual = mean(sim_percentiles$prop_off_actual),
+                  # prop_off_actual_2p5 = quantile( sim_percentiles$prop_off_actual, probs = 0.025, na.rm = T),
+                  # prop_off_actual_97p5 = quantile( sim_percentiles$prop_off_actual, probs = .975, na.rm = T),
+                  # prop_off_actual_5 = quantile(sim_percentiles$prop_off_actual, probs = .05, na.rm = T),
+                  # prop_off_actual_95 = quantile(sim_percentiles$prop_off_actual, probs = .95, na.rm = T),
                   mean_po_comparison_percentile = get_percentile(mean_po_comparison, a_vector = sim_percentiles$mean_po_comparison),
+                  mean_po_comparison_percentile_excl = get_percentile(mean_po_comparison, a_vector = sim_percentiles$mean_po_comparison, incl = F),
                   mean_po_comparison_sims = mean(sim_percentiles$mean_po_comparison, na.rm = T)
     )
-
-
-  if(!(is.null(sim_props_off))) {
-
-    sampled_percentile <- sampled_percentile %>%
-      dplyr::mutate(prop_off_sim_95 = quantile(sim_props_off$prop_off, probs = .95, na.rm = T),
-                    mean_prop_off_sim = mean(sim_props_off$prop_off, na.rm = T),
-                    prop_off_sim_95_1t = (quantile(sim_props_off$prop_off, probs = .95, na.rm = T) - min(sim_props_off$prop_off))/(max(sim_props_off$prop_off) - min(sim_props_off$prop_off)))
-  }
+#
+#
+#   if(!(is.null(sim_props_off))) {
+#
+#     sampled_percentile <- sampled_percentile %>%
+#       dplyr::mutate(prop_off_sim_95 = quantile(sim_props_off$prop_off, probs = .95, na.rm = T),
+#                     mean_prop_off_sim = mean(sim_props_off$prop_off, na.rm = T),
+#                     prop_off_sim_95_1t = (quantile(sim_props_off$prop_off, probs = .95, na.rm = T) - min(sim_props_off$prop_off))/(max(sim_props_off$prop_off) - min(sim_props_off$prop_off)))
+#   }
 
   sim_dis <- dplyr::bind_rows(sim_percentiles, sampled_percentile)
 
-  if(!("observed" %in% fs_samples_df$source)) {
-
-    prop_off_cols <- colnames(sim_dis)[ which(grepl("prop_off", colnames(sim_dis)))]
-
-    sim_dis[ , prop_off_cols] <- NA
-  }
+  # if(!("observed" %in% fs_samples_df$source)) {
+  #
+  #   prop_off_cols <- colnames(sim_dis)[ which(grepl("prop_off", colnames(sim_dis)))]
+  #
+  #   sim_dis[ , prop_off_cols] <- NA
+  # }
 
 
   return(sim_dis)
@@ -283,7 +311,14 @@ pull_di <- function(di_df) {
                      simpson_97p5 = quantile(simpson, probs = c(0.975), na.rm = T),
                      mean_po_comparison_95 = quantile(mean_po_comparison, probs = .95, na.rm = T),
                      mean_po_comparison_min = min(mean_po_comparison, na.rm = T),
-                     mean_po_comparison_max = max(mean_po_comparison, na.rm = T)) %>%
+                     mean_po_comparison_max = max(mean_po_comparison, na.rm = T),
+                     nsingletons_mean = mean(nsingletons, na.rm = T),
+                     nsingletons_95 = quantile(nsingletons, probs = 0.95, na.rm =T),
+                     nsingletons_median = median(nsingletons),
+                     nsingletons_min = min(nsingletons, na.rm = T),
+                     nsingletons_max = max(nsingletons, na.rm = T),
+                     nsingletons_2p5 = quantile(nsingletons, probs = 0.025, na.rm = T),
+                     nsingletons_97p5 = quantile(nsingletons, probs = .975, na.rm = T)) %>%
     dplyr::ungroup() %>%
     dplyr::mutate(skew_95_ratio_2t = (skew_97p5 - skew_2p5)/skew_range,
                   simpson_95_ratio_2t = (simpson_97p5 - simpson_2p5)/simpson_range,
@@ -291,7 +326,9 @@ pull_di <- function(di_df) {
                   simpson_95_ratio_1t = (simpson_max - simpson_5)/simpson_range,
                   shannon_95_ratio_2t = (shannon_97p5 - shannon_2p5) / shannon_range,
                   shannon_95_ratio_1t = (shannon_max - shannon_5) / shannon_range,
-                  mean_po_comparison_95_ratio_1t = (mean_po_comparison_95 - mean_po_comparison_min) / (mean_po_comparison_max - mean_po_comparison_min)
+                  mean_po_comparison_95_ratio_1t = (mean_po_comparison_95 - mean_po_comparison_min) / (mean_po_comparison_max - mean_po_comparison_min),
+                  nsingletons_95_ratio_1t = (nsingletons_95 - nsingletons_min) / (nsingletons_max - nsingletons_min),
+                  nsingletons_95_ratio_2t = (nsingletons_97p5 - nsingletons_2p5) / (nsingletons_max - nsingletons_min)
     )
 
   di_observed <- dplyr::filter(di_df, source == "observed") %>%
@@ -324,19 +361,41 @@ pull_di_net <- function(di_df) {
                      nsamples = length(unique(sim)),
                      skew_unique = length(unique(skew, na.rm = T)),
                      simpson_unique = length(unique(simpson, na.rm = T)),
+                     shannon_unique = length(unique(shannon, na.rm = T)),
                      skew_2p5 = quantile(skew, probs = c(0.025), na.rm = T),
                      skew_97p5 = quantile(skew, probs = c(0.975), na.rm = T),
                      skew_95 = quantile(skew, probs = c(0.95), na.rm = T),
                      skew_min = min(skew, na.rm = T),
                      simpson_max = max(simpson, na.rm = T),
+                     shannon_min = min(shannon, na.rm = T),
+                     shannon_2p5 = quantile(shannon, probs = c(0.025), na.rm = T),
+                     shannon_97p5 = quantile(shannon, probs = c(0.975), na.rm = T),
+                     shannon_max = max(shannon, na.rm = T),
+                     shannon_5 = quantile(shannon, probs = c(.05), na.rm = T),
+                     shannon_range = max(shannon, na.rm = T) - min(shannon, na.rm = T),
                      simpson_2p5 = quantile(simpson, probs = c(0.025), na.rm = T),
                      simpson_5 = quantile(simpson, probs = c(.05), na.rm = T),
-                     simpson_97p5 = quantile(simpson, probs = c(0.975), na.rm = T)) %>%
+                     simpson_97p5 = quantile(simpson, probs = c(0.975), na.rm = T),
+                     mean_po_comparison_95 = quantile(mean_po_comparison, probs = .95, na.rm = T),
+                     mean_po_comparison_min = min(mean_po_comparison, na.rm = T),
+                     mean_po_comparison_max = max(mean_po_comparison, na.rm = T),
+                     nsingletons_mean = mean(nsingletons, na.rm = T),
+                     nsingletons_95 = quantile(nsingletons, probs = 0.95, na.rm =T),
+                     nsingletons_median = median(nsingletons),
+                     nsingletons_min = min(nsingletons, na.rm = T),
+                     nsingletons_max = max(nsingletons, na.rm = T),
+                     nsingletons_2p5 = quantile(nsingletons, probs = 0.025, na.rm = T),
+                     nsingletons_97p5 = quantile(nsingletons, probs = .975, na.rm = T)) %>%
     dplyr::ungroup() %>%
     dplyr::mutate(skew_95_ratio_2t = (skew_97p5 - skew_2p5)/skew_range,
                   simpson_95_ratio_2t = (simpson_97p5 - simpson_2p5)/simpson_range,
                   skew_95_ratio_1t = (skew_95 - skew_min)/skew_range,
-                  simpson_95_ratio_1t = (simpson_max - simpson_5)/simpson_range
+                  simpson_95_ratio_1t = (simpson_max - simpson_5)/simpson_range,
+                  shannon_95_ratio_2t = (shannon_97p5 - shannon_2p5) / shannon_range,
+                  shannon_95_ratio_1t = (shannon_max - shannon_5) / shannon_range,
+                  mean_po_comparison_95_ratio_1t = (mean_po_comparison_95 - mean_po_comparison_min) / (mean_po_comparison_max - mean_po_comparison_min),
+                  nsingletons_95_ratio_1t = (nsingletons_95 - nsingletons_min) / (nsingletons_max - nsingletons_min),
+                  nsingletons_95_ratio_2t = (nsingletons_97p5 - nsingletons_2p5) / (nsingletons_max - nsingletons_min)
     )
 
   return(di_sampled)

@@ -1,7 +1,7 @@
 Other metrics
 ================
 Renata Diaz
-2021-02-22
+2021-02-24
 
   - [Proportion off](#proportion-off)
   - [Number of singletons](#number-of-singletons)

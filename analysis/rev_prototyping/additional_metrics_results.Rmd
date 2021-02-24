@@ -22,7 +22,8 @@ all_di <- read.csv(here::here("analysis", "rev_prototyping", "all_di.csv"))
 all_di <- all_di %>%
   filter(s0 > 1,
          s0 != n0,
-         n0 != s0 + 1) 
+         n0 != s0 + 1,
+         !singletons) 
 
 
 ```
