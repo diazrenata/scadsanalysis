@@ -1,7 +1,7 @@
 Jackknife
 ================
 Renata Diaz
-2021-02-23
+2021-02-24
 
   - [Skewness](#skewness)
   - [Evenness](#evenness)
@@ -33,13 +33,19 @@ Renata Diaz
 
 ## Skewness
 
-![](jacknife_results_files/figure-gfm/unnamed-chunk-1-1.png)<!-- -->![](jacknife_results_files/figure-gfm/unnamed-chunk-1-2.png)<!-- -->
+![](jacknife_results_files/figure-gfm/unnamed-chunk-1-1.png)<!-- -->
+
+    ## Warning: Removed 1392 rows containing non-finite values (stat_bin).
+
+![](jacknife_results_files/figure-gfm/unnamed-chunk-1-2.png)<!-- -->
 
 <div class="kable-table">
 
 | dat                | prop\_skew\_high\_jk | prop\_skew\_high\_raw | prop\_skew\_low\_jk | prop\_skew\_low\_raw | nsites\_included |
 | :----------------- | -------------------: | --------------------: | ------------------: | -------------------: | ---------------: |
 | bbs                |            0.1100000 |             0.1366667 |           0.0366667 |            0.0366667 |              300 |
+| fia\_short         |            0.0204082 |                    NA |           0.0000000 |                   NA |              784 |
+| fia\_small         |            0.0197368 |                    NA |           0.0000000 |                   NA |              608 |
 | gentry             |            0.0986547 |             0.1883408 |           0.0762332 |            0.0896861 |              223 |
 | mcdb               |            0.1194969 |             0.1781971 |           0.0020964 |            0.0146751 |              477 |
 | misc\_abund\_short |            0.2955975 |             0.3563941 |           0.0020964 |            0.0041929 |              477 |
@@ -48,13 +54,19 @@ Renata Diaz
 
 ## Evenness
 
-![](jacknife_results_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->![](jacknife_results_files/figure-gfm/unnamed-chunk-2-2.png)<!-- -->
+![](jacknife_results_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->
+
+    ## Warning: Removed 1392 rows containing non-finite values (stat_bin).
+
+![](jacknife_results_files/figure-gfm/unnamed-chunk-2-2.png)<!-- -->
 
 <div class="kable-table">
 
 | dat                | prop\_simpson\_high\_jk | prop\_simpson\_high\_raw | prop\_simpson\_low\_jk | prop\_simpson\_low\_raw | nsites\_included |
 | :----------------- | ----------------------: | -----------------------: | ---------------------: | ----------------------: | ---------------: |
 | bbs                |               0.0433333 |                0.0333333 |              0.1866667 |               0.2900000 |              300 |
+| fia\_short         |               0.0000000 |                       NA |              0.0344388 |                      NA |              784 |
+| fia\_small         |               0.0000000 |                       NA |              0.0723684 |                      NA |              608 |
 | gentry             |               0.2276786 |                0.2723214 |              0.0758929 |               0.1517857 |              224 |
 | mcdb               |               0.0062112 |                0.0103520 |              0.2567288 |               0.3830228 |              483 |
 | misc\_abund\_short |               0.0020877 |                0.0041754 |              0.5073069 |               0.6096033 |              479 |
@@ -63,13 +75,19 @@ Renata Diaz
 
 ## Shannon
 
-![](jacknife_results_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->![](jacknife_results_files/figure-gfm/unnamed-chunk-3-2.png)<!-- -->
+![](jacknife_results_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
+
+    ## Warning: Removed 1392 rows containing non-finite values (stat_bin).
+
+![](jacknife_results_files/figure-gfm/unnamed-chunk-3-2.png)<!-- -->
 
 <div class="kable-table">
 
 | dat                | prop\_shannon\_high\_jk | prop\_shannon\_high\_raw | prop\_shannon\_low\_jk | prop\_shannon\_low\_raw | nsites\_included |
 | :----------------- | ----------------------: | -----------------------: | ---------------------: | ----------------------: | ---------------: |
 | bbs                |               0.0333333 |                0.0266667 |              0.1900000 |               0.3200000 |              300 |
+| fia\_short         |               0.0000000 |                       NA |              0.0280612 |                      NA |              784 |
+| fia\_small         |               0.0000000 |                       NA |              0.0723684 |                      NA |              608 |
 | gentry             |               0.2500000 |                0.3080357 |              0.0669643 |               0.1294643 |              224 |
 | mcdb               |               0.0062112 |                0.0103520 |              0.2939959 |               0.4161491 |              483 |
 | misc\_abund\_short |               0.0020877 |                0.0083507 |              0.5219207 |               0.6367432 |              479 |
@@ -78,13 +96,19 @@ Renata Diaz
 
 ## Percent off
 
-![](jacknife_results_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->![](jacknife_results_files/figure-gfm/unnamed-chunk-4-2.png)<!-- -->
+![](jacknife_results_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
+
+    ## Warning: Removed 1392 rows containing non-finite values (stat_bin).
+
+![](jacknife_results_files/figure-gfm/unnamed-chunk-4-2.png)<!-- -->
 
 <div class="kable-table">
 
 | dat                | prop\_mean\_po\_comparison\_high\_jk | prop\_mean\_po\_comparison\_high\_raw | nsites\_included |
 | :----------------- | -----------------------------------: | ------------------------------------: | ---------------: |
 | bbs                |                            0.1433333 |                             0.2500000 |              300 |
+| fia\_short         |                            0.0216837 |                                    NA |              784 |
+| fia\_small         |                            0.0509868 |                                    NA |              608 |
 | gentry             |                            0.1741071 |                             0.3125000 |              224 |
 | mcdb               |                            0.2401656 |                             0.3519669 |              483 |
 | misc\_abund\_short |                            0.4885177 |                             0.6033403 |              479 |
@@ -148,16 +172,58 @@ the high end but has a misleading spike at 0, and vice versa. I am
 making these plots using the *mean*, which doesn’t have the misleading
 spikes at the extremes but does smear things out a little bit.
 
-![](jacknife_results_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->![](jacknife_results_files/figure-gfm/unnamed-chunk-6-2.png)<!-- -->
+![](jacknife_results_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
+
+    ## Warning: Removed 1392 rows containing non-finite values (stat_bin).
+
+![](jacknife_results_files/figure-gfm/unnamed-chunk-6-2.png)<!-- -->
 
 <div class="kable-table">
 
 | dat                | prop\_nsingletons\_high\_jk | prop\_nsingletons\_high\_raw | prop\_nsingletons\_low\_jk | prop\_nsingletons\_low\_raw | nsites\_included |
 | :----------------- | --------------------------: | ---------------------------: | -------------------------: | --------------------------: | ---------------: |
 | bbs                |                   0.0466667 |                    0.0833333 |                  0.0000000 |                   0.0000000 |              300 |
+| fia\_short         |                   0.0000000 |                           NA |                  0.0000000 |                          NA |              784 |
+| fia\_small         |                   0.0082237 |                           NA |                  0.0000000 |                          NA |              608 |
 | gentry             |                   0.0133929 |                    0.0178571 |                  0.2366071 |                   0.2991071 |              224 |
 | mcdb               |                   0.0559006 |                    0.1718427 |                  0.0000000 |                   0.0000000 |              483 |
 | misc\_abund\_short |                   0.2066806 |                    0.3444676 |                  0.0000000 |                   0.0000000 |              479 |
+
+</div>
+
+    ## Warning: Removed 1392 rows containing missing values (geom_point).
+
+![](jacknife_results_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
+
+<div class="kable-table">
+
+| dat                | jk\_small | actual\_small | nsites |
+| :----------------- | --------: | ------------: | -----: |
+| bbs                | 0.0166667 |     0.0100000 |    300 |
+| fia\_short         | 1.0000000 |            NA |    784 |
+| fia\_small         | 1.0000000 |            NA |    608 |
+| gentry             | 0.1517857 |     0.0669643 |    224 |
+| mcdb               | 0.7204969 |     0.5734990 |    483 |
+| misc\_abund\_short | 0.4342380 |     0.3173278 |    479 |
+
+</div>
+
+    ## `summarise()` has grouped output by 'dat'. You can override using the `.groups` argument.
+
+<div class="kable-table">
+
+| dat                | fiasized | nsingletons\_high | nsites |
+| :----------------- | :------- | ----------------: | -----: |
+| bbs                | FALSE    |         0.0474576 |    295 |
+| bbs                | TRUE     |         0.0000000 |      5 |
+| fia\_short         | TRUE     |         0.0000000 |    784 |
+| fia\_small         | TRUE     |         0.0082237 |    608 |
+| gentry             | FALSE    |         0.0000000 |    190 |
+| gentry             | TRUE     |         0.0882353 |     34 |
+| mcdb               | FALSE    |         0.1185185 |    135 |
+| mcdb               | TRUE     |         0.0316092 |    348 |
+| misc\_abund\_short | FALSE    |         0.3247232 |    271 |
+| misc\_abund\_short | TRUE     |         0.0528846 |    208 |
 
 </div>
 

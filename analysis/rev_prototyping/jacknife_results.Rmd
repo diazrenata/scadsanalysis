@@ -245,6 +245,40 @@ jk_di_mean_results  %>%
 
 ```
 
+
+
+```{r, fig.dim = c(8,8)}
+
+fia_max_n = 150
+fia_max_s = 21
+
+ggplot(jk_di_mean_results, aes(s0, n0, color = dat)) +
+  geom_point(aes(s0_actual, n0_actual), color = "grey", alpha  = .2)+
+    geom_point(aes(s0, n0, color = dat), alpha = .5) +
+  theme_bw() +
+  scale_x_log10() +
+  scale_y_log10() +
+  facet_wrap(vars(dat)) +
+  geom_vline(xintercept = fia_max_s) +
+  geom_hline(yintercept = fia_max_n) +
+  theme(legend.position = "top")
+
+jk_di_mean_results <- jk_di_mean_results %>%
+  group_by_all() %>%
+  mutate(fiasized = (s0 <= fia_max_s) && (n0 <= fia_max_n),
+         fiasized_acutal =(s0_actual <= fia_max_s) && (n0_actual <= fia_max_n) ) %>%
+  ungroup()
+
+jk_di_mean_results %>%
+  group_by(dat) %>%
+  summarize(jk_small = mean(fiasized), actual_small = mean(fiasized_acutal), nsites = dplyr::n())
+
+jk_di_mean_results %>%
+  group_by(dat, fiasized) %>%
+  summarize( nsingletons_high  = mean(nsingletons_percentile_excl > 95), nsites = dplyr::n())
+
+
+```
 <!-- ```{r, fig.dim = c(6,6)} -->
 
 <!-- jk_di_mean_results <- jk_di_mean_results %>% -->
