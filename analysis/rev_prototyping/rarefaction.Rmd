@@ -19,7 +19,7 @@ knitr::opts_chunk$set(fig.width=4, fig.height=3, warning = FALSE, message = FALS
 all_di <- read.csv(here::here("analysis", "rev_prototyping", "all_di.csv"), stringsAsFactors = F)
 
 all_di <- all_di %>%
-   mutate(log_nparts = log(gmp:::as.double.bigz(nparts)),
+  mutate(log_nparts = log(gmp:::as.double.bigz(nparts)),
          log_nsamples = log(nsamples),
          log_s0 = log(s0),
          log_n0 = log(n0)) %>%
@@ -83,53 +83,106 @@ adjusted_comparison <- all_di %>%
 
 
 
-overall_skew_results <- adjusted_comparison %>%
-  filter(s0_FALSE > 2, skew_unique_TRUE > 20, skew_unique_FALSE > 20) %>%
+overall_results <- adjusted_comparison %>%
+  filter(s0_FALSE > 2, log_nparts_TRUE > log(20), log_nparts_FALSE > log(20)) %>%
   mutate(high_skew_raw = skew_percentile_excl_FALSE > 95,
-         high_skew_adjusted = skew_percentile_excl_TRUE > 95) %>%
+         high_skew_adjusted = skew_percentile_excl_TRUE > 95,
+         low_even_raw = simpson_percentile_FALSE < 5,
+         low_even_adjusted = simpson_percentile_TRUE < 5,
+         low_shannon_raw = shannon_percentile_FALSE <5,
+         low_shannon_adjusted = shannon_percentile_TRUE < 5,
+         high_singletons_raw = nsingletons_percentile_excl_FALSE > 95,
+         high_singletons_adjusted = nsingletons_percentile_excl_TRUE > 95,
+         low_singletons_raw = nsingletons_percentile_FALSE < 5,
+         low_singletons_adjusted = nsingletons_percentile_TRUE < 5,
+         high_po_raw = mean_po_comparison_percentile_FALSE > 95,
+         high_po_adjusted = mean_po_comparison_percentile_TRUE > 95)
+
+summary_vars <- colnames(overall_results)[ c(which(grepl("raw", colnames(overall_results))), which(grepl("adjusted", colnames(overall_results))))]
+
+overall_results <- overall_results %>%
   group_by(dat) %>%
-  summarize(proportion_skew_high_raw = mean(high_skew_raw),
-            proportion_skew_high_adjusted = mean(high_skew_adjusted),
-            nsites_skew = dplyr::n())
+  summarize_at(summary_vars, mean)
 
-overall_simpson_results <- adjusted_comparison %>%
-   filter(simpson_unique_TRUE > 20, simpson_unique_FALSE > 20) %>%
-  mutate(low_simpson_raw = simpson_percentile_FALSE < 5,
-         low_simpson_adjusted = simpson_percentile_TRUE < 5) %>%
-  group_by(dat) %>%
-  summarize(proportion_simpson_low_raw = mean(low_simpson_raw),
-            proportion_simpson_low_adjusted = mean(low_simpson_adjusted),
-            nsites_simpson = dplyr::n())
+# overall_simpson_results <- adjusted_comparison %>%
+#    filter(log_nparts_TRUE > log(20), log_nparts_FALSE > log(20)) %>%
+#   mutate(low_simpson_raw = simpson_percentile_FALSE < 5,
+#          low_simpson_adjusted = simpson_percentile_TRUE < 5) %>%
+#   group_by(dat) %>%
+#   summarize(proportion_simpson_low_raw = mean(low_simpson_raw),
+#             proportion_simpson_low_adjusted = mean(low_simpson_adjusted),
+#             nsites_simpson = dplyr::n())
+# 
+# overall_results <- left_join(overall_skew_results, overall_simpson_results)
 
-overall_results <- left_join(overall_skew_results, overall_simpson_results)
+overall_results
 
-
-ggplot(filter(adjusted_comparison, s0_FALSE > 2, skew_unique_TRUE > 20, skew_unique_FALSE > 20), aes(skew_percentile_excl_FALSE, skew_percentile_excl_TRUE)) +
+ggplot(filter(adjusted_comparison, s0_FALSE > 2, log_nparts_TRUE > log(20), log_nparts_FALSE > 20), aes(skew_percentile_excl_FALSE, skew_percentile_excl_TRUE)) +
   geom_point(alpha = .1) +
   theme_bw() +
   geom_abline(intercept = 0, slope = 1, color = "green")
 
 
-ggplot(filter(adjusted_comparison, s0_FALSE > 2, skew_unique_TRUE > 20, skew_unique_FALSE > 20), aes(skew_percentile_excl_FALSE, skew_percentile_excl_TRUE)) +
+ggplot(filter(adjusted_comparison, s0_FALSE > 2, log_nparts_TRUE > 20, log_nparts_FALSE > log(20)), aes(skew_percentile_excl_FALSE, skew_percentile_excl_TRUE)) +
   geom_point(alpha = .1) +
   theme_bw() +
   geom_abline(intercept = 0, slope = 1, color = "green") +
   facet_wrap(vars(dat)) 
 
-overall_skew_results
 
-ggplot(filter(adjusted_comparison, simpson_unique_TRUE > 20, simpson_unique_FALSE > 20), aes(simpson_percentile_FALSE, simpson_percentile_TRUE)) +
+
+ggplot(filter(adjusted_comparison, log_nparts_TRUE > log(20), log_nparts_FALSE > log(20)), aes(simpson_percentile_FALSE, simpson_percentile_TRUE)) +
   geom_point(alpha = .1) +
   theme_bw() +
   geom_abline(intercept = 0, slope = 1, color = "green")
 
 
-ggplot(filter(adjusted_comparison, simpson_unique_TRUE > 20, simpson_unique_FALSE > 20), aes(simpson_percentile_FALSE, simpson_percentile_TRUE)) +
+ggplot(filter(adjusted_comparison, log_nparts_TRUE > log(20), log_nparts_FALSE > log(20)), aes(simpson_percentile_FALSE, simpson_percentile_TRUE)) +
   geom_point(alpha = .1) +
   theme_bw() +
   geom_abline(intercept = 0, slope = 1, color = "green") +
   facet_wrap(vars(dat)) 
-overall_simpson_results
+
+
+
+ggplot(filter(adjusted_comparison, log_nparts_TRUE > log(20), log_nparts_FALSE > log(20)), aes(shannon_percentile_FALSE, shannon_percentile_TRUE)) +
+  geom_point(alpha = .1) +
+  theme_bw() +
+  geom_abline(intercept = 0, slope = 1, color = "green")
+
+
+ggplot(filter(adjusted_comparison, log_nparts_TRUE > log(20), log_nparts_FALSE > log(20)), aes(shannon_percentile_FALSE, shannon_percentile_TRUE)) +
+  geom_point(alpha = .1) +
+  theme_bw() +
+  geom_abline(intercept = 0, slope = 1, color = "green") +
+  facet_wrap(vars(dat))
+
+
+ggplot(filter(adjusted_comparison, log_nparts_TRUE > log(20), log_nparts_FALSE > log(20)), aes(nsingletons_percentile_excl_FALSE, nsingletons_percentile_excl_TRUE)) +
+  geom_point(alpha = .1) +
+  theme_bw() +
+  geom_abline(intercept = 0, slope = 1, color = "green")
+
+
+ggplot(filter(adjusted_comparison, log_nparts_TRUE > log(20), log_nparts_FALSE > log(20)), aes(nsingletons_percentile_excl_FALSE, nsingletons_percentile_excl_TRUE)) +
+  geom_point(alpha = .1) +
+  theme_bw() +
+  geom_abline(intercept = 0, slope = 1, color = "green") +
+  facet_wrap(vars(dat)) 
+
+
+ggplot(filter(adjusted_comparison, log_nparts_TRUE > log(20), log_nparts_FALSE > log(20)), aes(mean_po_comparison_percentile_FALSE, mean_po_comparison_percentile_TRUE)) +
+  geom_point(alpha = .1) +
+  theme_bw() +
+  geom_abline(intercept = 0, slope = 1, color = "green")
+
+
+ggplot(filter(adjusted_comparison, log_nparts_TRUE > log(20), log_nparts_FALSE > log(20)), aes(mean_po_comparison_percentile_FALSE, mean_po_comparison_percentile_TRUE)) +
+  geom_point(alpha = .1) +
+  theme_bw() +
+  geom_abline(intercept = 0, slope = 1, color = "green") +
+  facet_wrap(vars(dat)) 
+
 ```
 
 
