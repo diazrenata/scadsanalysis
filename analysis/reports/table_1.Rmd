@@ -39,14 +39,14 @@ all_di <- all_di %>%
 ```{r results table, echo = F}
 
 overall_skew_results <- all_di %>%
-  filter(s0 > 2, skew_unique > 20) %>%
+  filter(s0 > 2, nparts > 20) %>%
   mutate(high_skew = skew_percentile_excl > 95) %>%
   group_by(Dataset) %>%
   summarize(proportion_skew_high = mean(high_skew),
             nsites_skew = dplyr::n())
 
 overall_simpson_results <- all_di %>%
-  filter(simpson_unique > 20) %>%
+  filter(nparts > 20) %>%
   mutate(low_even = simpson_percentile < 5) %>%
   group_by(Dataset) %>%
   summarize(proportion_even_low = mean(low_even),

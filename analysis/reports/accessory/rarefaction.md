@@ -1,7 +1,7 @@
 Effects of rarefaction
 ================
 Renata Diaz
-2020-08-12
+2021-02-23
 
 It is often not possible to exhaustively sample all the species and
 individuals present in a real system. Therefore empirical observations

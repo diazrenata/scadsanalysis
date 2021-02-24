@@ -34,20 +34,19 @@ all_di <- all_di %>%
          Dataset = ifelse(Dataset == "bbs", "Breeding Bird Survey", Dataset),
          Dataset = ifelse(Dataset == "mcdb", "Mammal Communities", Dataset),
          Dataset = ifelse(Dataset == "gentry", "Gentry", Dataset),
-         Dataset = ifelse(Dataset == "misc_abund", "Misc. Abundance", Dataset))
+         Dataset = ifelse(Dataset == "misc_abund", "Misc. Abundance", Dataset)) %>%
+  filter(nparts > 20)
 
 ```
 ```{r}
 
 ggplot(all_di, aes(nsingletons_percentile)) +
   geom_histogram(bins = 100) +
-  facet_wrap(vars(dat, singletons), scales = "free_y") +
-  xlim(0, 100)
+  facet_wrap(vars(dat, singletons), scales = "free_y") 
 
 ggplot(all_di, aes(nsingletons_percentile_excl)) +
   geom_histogram(bins = 100) +
-  facet_wrap(vars(dat, singletons), scales = "free_y") +
-  xlim(0, 100)
+  facet_wrap(vars(dat, singletons), scales = "free_y")
 
 all_di <- all_di %>%
   mutate(prop_singles_actual = nsingletons / s0,
