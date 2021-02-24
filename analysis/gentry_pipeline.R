@@ -66,7 +66,7 @@ if(grepl("ufhpc", nodename)) {
        cache_log_file = here::here("analysis", "drake", "cache_log_gentry.txt"),
        verbose = 1,
        parallelism = "clustermq",
-       jobs = 20,
+       jobs = 100,
        caching = "master",
        memory_strategy = "autoclean",
        garbage_collection = TRUE) # Important for DBI caches!

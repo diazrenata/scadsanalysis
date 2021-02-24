@@ -37,6 +37,8 @@ richness for the raw SAD (purple points).
 
 ### Adjusted vs. raw results
 
+![](rarefaction_files/figure-gfm/skew-1.png)<!-- -->![](rarefaction_files/figure-gfm/skew-2.png)<!-- -->![](rarefaction_files/figure-gfm/skew-3.png)<!-- -->![](rarefaction_files/figure-gfm/skew-4.png)<!-- -->![](rarefaction_files/figure-gfm/skew-5.png)<!-- -->![](rarefaction_files/figure-gfm/skew-6.png)<!-- -->![](rarefaction_files/figure-gfm/skew-7.png)<!-- -->![](rarefaction_files/figure-gfm/skew-8.png)<!-- -->![](rarefaction_files/figure-gfm/skew-9.png)<!-- -->![](rarefaction_files/figure-gfm/skew-10.png)<!-- -->
+
 <div class="kable-table">
 
 | dat         | high\_skew\_raw | low\_even\_raw | low\_shannon\_raw | high\_singletons\_raw | low\_singletons\_raw | high\_po\_raw | high\_skew\_adjusted | low\_even\_adjusted | low\_shannon\_adjusted | high\_singletons\_adjusted | low\_singletons\_adjusted | high\_po\_adjusted |
@@ -48,7 +50,7 @@ richness for the raw SAD (purple points).
 
 </div>
 
-![](rarefaction_files/figure-gfm/skew-1.png)<!-- -->![](rarefaction_files/figure-gfm/skew-2.png)<!-- -->![](rarefaction_files/figure-gfm/skew-3.png)<!-- -->![](rarefaction_files/figure-gfm/skew-4.png)<!-- -->![](rarefaction_files/figure-gfm/skew-5.png)<!-- -->![](rarefaction_files/figure-gfm/skew-6.png)<!-- -->![](rarefaction_files/figure-gfm/skew-7.png)<!-- -->![](rarefaction_files/figure-gfm/skew-8.png)<!-- -->![](rarefaction_files/figure-gfm/skew-9.png)<!-- -->![](rarefaction_files/figure-gfm/skew-10.png)<!-- -->
+![](rarefaction_files/figure-gfm/unnamed-chunk-1-1.png)<!-- -->
 
 In all cases, adjusting for rarefaction increases the proportion of
 extreme values. Most adjusted SADs have more extreme values than their

@@ -16,6 +16,8 @@ library(scadsanalysis)
 
 knitr::opts_chunk$set(fig.width=4, fig.height=3, warning = FALSE, message = FALSE) 
 
+theme_set(theme_bw())
+
 all_di <- read.csv(here::here("analysis", "rev_prototyping", "all_di.csv"), stringsAsFactors = F)
 
 all_di <- all_di %>%
@@ -104,6 +106,15 @@ overall_results <- overall_results %>%
   group_by(dat) %>%
   summarize_at(summary_vars, mean)
 
+overall_results_long <- overall_results %>%
+  tidyr::pivot_longer(-dat, names_to = "varname", values_to = "proportion") %>%
+  group_by_all() %>%
+  mutate(direction = unlist(strsplit(varname, "_"))[[1]],
+         metric = unlist(strsplit(varname, "_"))[[2]],
+         adjusted = unlist(strsplit(varname, "_"))[[3]]) %>%
+  ungroup() %>%
+  mutate(dir_metric = paste(direction, metric, sep= "_"))
+
 # overall_simpson_results <- adjusted_comparison %>%
 #    filter(log_nparts_TRUE > log(20), log_nparts_FALSE > log(20)) %>%
 #   mutate(low_simpson_raw = simpson_percentile_FALSE < 5,
@@ -115,7 +126,7 @@ overall_results <- overall_results %>%
 # 
 # overall_results <- left_join(overall_skew_results, overall_simpson_results)
 
-overall_results
+
 
 ggplot(filter(adjusted_comparison, s0_FALSE > 2, log_nparts_TRUE > log(20), log_nparts_FALSE > 20), aes(skew_percentile_excl_FALSE, skew_percentile_excl_TRUE)) +
   geom_point(alpha = .1) +
@@ -182,6 +193,16 @@ ggplot(filter(adjusted_comparison, log_nparts_TRUE > log(20), log_nparts_FALSE >
   theme_bw() +
   geom_abline(intercept = 0, slope = 1, color = "green") +
   facet_wrap(vars(dat)) 
+```
+
+```{r, fig.dim = c(8,8)}
+
+
+overall_results
+ggplot(overall_results_long, aes(adjusted, proportion, color = adjusted)) +
+  geom_point() +
+  facet_grid(cols = vars(dir_metric), rows = vars(dat), scales = "free", switch = "y") +
+  theme(legend.position = "top")
 
 ```
 
