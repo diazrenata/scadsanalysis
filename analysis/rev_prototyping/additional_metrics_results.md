@@ -89,76 +89,13 @@ each other, we can ask how much *more* dissimilar the SAD is than the
 
 That is, e.g. for BBS, the significant deviation is that the
 observed-to-FS dissimilarity is on average .07 higher than the 95th
-percentile of FS-to-FS dissimilarity.
+percentile of FS-to-FS dissimilarity. I am not 100% sure that this is
+the best way to make this comparison….
 
 We can examine how a one-tailed 95% breadth index changes over the size
 of the feasible set:
 
 ![](additional_metrics_results_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
-
-<!-- Or we can ask what the difference in dissimilarity scores is on average: -->
-
-<!-- ```{r} -->
-
-<!-- all_di %>% -->
-
-<!--   group_by(singletons, dat) %>% -->
-
-<!--   summarize(mean_actual = mean(mean_po_comparison), -->
-
-<!--             mean_sims = mean(mean_po_comparison_sims), -->
-
-<!--             mean_diff = mean(mean_po_comparison - mean_po_comparison_sims)) -->
-
-<!-- ggplot(filter(all_di), aes(mean_po_comparison_sims, mean_po_comparison, color =  mean_po_comparison_percentile > 95)) + -->
-
-<!--   geom_point() + -->
-
-<!--   facet_wrap(vars(dat)) + -->
-
-<!--   geom_abline(slope = 1, intercept = 0) + -->
-
-<!--   theme(legend.position = "top") -->
-
-<!-- #  -->
-
-<!-- # po_long <- all_di %>% -->
-
-<!-- #   select(dat, singletons, mean_po_comparison, mean_po_comparison_sims) %>% -->
-
-<!-- #   tidyr::pivot_longer(cols = c("mean_po_comparison", "mean_po_comparison_sims"), names_to = "comp", values_to = "val")  %>% -->
-
-<!-- #   mutate(source = ifelse(grepl("sims", comp), "fs_to_fs", "obs_to_fs")) -->
-
-<!-- #  -->
-
-<!-- # ggplot(po_long, aes(source, val)) + -->
-
-<!-- #   geom_boxplot() + -->
-
-<!-- ggplot(filter(all_di), aes( mean_po_comparison - mean_po_comparison_sims)) + -->
-
-<!--   geom_histogram() + -->
-
-<!--   facet_wrap(vars(dat), scales = "free_y") -->
-
-<!-- ``` -->
-
-<!-- ```{r} -->
-
-<!-- ggplot(all_di, aes(mean_po_comparison_sims, mean_po_comparison, color = mean_po_comparison_percentile > 95)) + -->
-
-<!--   geom_point(alpha = .3) + -->
-
-<!--   facet_wrap(vars(dat, singletons)) -->
-
-<!-- ggplot(all_di, aes(mean_po_comparison - mean_po_comparison_sims, color = mean_po_comparison_percentile > 95)) + -->
-
-<!--   geom_histogram(alpha = .3) + -->
-
-<!--   facet_wrap(vars(dat, singletons)) -->
-
-<!-- ``` -->
 
 ## Number of singletons
 

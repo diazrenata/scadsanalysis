@@ -1,7 +1,7 @@
 Shannon diversity
 ================
 Renata Diaz
-2021-02-23
+2021-02-24
 
 ![](shannon_files/figure-gfm/unnamed-chunk-1-1.png)<!-- -->
 
@@ -11,8 +11,8 @@ Renata Diaz
 | :------------------- | -----------------------: | -----------: |
 | Breeding Bird Survey |                0.2802019 |         2773 |
 | Gentry               |                0.1294643 |          224 |
-| Mammal Communities   |                0.3115727 |          674 |
-| Misc. Abundance      |                0.5658627 |          539 |
+| Mammal Communities   |                0.3804348 |          552 |
+| Misc. Abundance      |                0.6174089 |          494 |
 
 </div>
 
@@ -22,8 +22,8 @@ Renata Diaz
 | :------------------- | -----------------------: | ------------------------: | -----------: |
 | Breeding Bird Survey |                0.2802019 |                 0.0100974 |         2773 |
 | Gentry               |                0.1294643 |                 0.3080357 |          224 |
-| Mammal Communities   |                0.3115727 |                 0.0163205 |          674 |
-| Misc. Abundance      |                0.5658627 |                 0.0129870 |          539 |
+| Mammal Communities   |                0.3804348 |                 0.0108696 |          552 |
+| Misc. Abundance      |                0.6174089 |                 0.0080972 |          494 |
 
 </div>
 
