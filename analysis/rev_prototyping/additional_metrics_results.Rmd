@@ -271,8 +271,53 @@ nsingletons_results %>%
 ```
 
 
-Working on a breadth index here (stuff needs to run).
+Breadth index - note use of 2 tailed because of interest in low numbers of singletons for Gentry.
 
+I haven't fully groked the breadth index, but I think...
+
+- It declines with increasing size of the feasible set, but not as dramatically as the other indices.
+- The Gentry region (low N/S tail on the right) is not remarkable for the size of the FS or the (2-tailed) breadth index, but has an extremely high median propotion of singletons. 
+
+```{r}
+
+ggplot(all_di, aes(nparts, nsingletons_95_ratio_2t, color = dat)) +
+  geom_point(alpha = .3) +
+  scale_x_log10() 
+
+# 
+# ggplot(all_di, aes(s0, n0, color = nsingletons_95_ratio_2t)) +
+#   geom_point(alpha = .3) +
+#   scale_x_log10() +
+#   scale_y_log10() +
+#   scale_color_viridis_c()
+# 
+# 
+# ggplot(all_di, aes(n0/s0, nsingletons_95_ratio_2t, color = dat)) +
+#   geom_point(alpha = .3) +
+#   scale_x_log10()
+# 
+# 
+# ggplot(all_di, aes(n0/s0, nparts, color = dat)) +
+#   geom_point(alpha = .3) +
+#   scale_x_log10() +
+#   scale_y_log10()
+
+
+ggplot(all_di, aes(s0, n0, color = nsingletons_median / s0)) +
+  geom_point(alpha = .3) +
+  scale_x_log10() +
+  scale_y_log10() +
+  scale_color_viridis_c()
+
+# 
+# ggplot(all_di, aes(s0, n0, color = nsingletons / s0)) +
+#   geom_point(alpha = .3) +
+#   scale_x_log10() +
+#   scale_y_log10() +
+#   scale_color_viridis_c()
+
+
+```
 
 
 ## Shannon diversity
@@ -297,4 +342,38 @@ all_di  %>%
             nsites_included = dplyr::n())
 ```
 
-Working on the breadth index (stuff needs to run).
+```{r}
+
+ggplot(all_di, aes(nparts, shannon_95_ratio_2t, color = dat)) +
+  geom_point(alpha = .3) +
+  scale_x_log10()
+
+ggplot(all_di, aes(nparts, shannon_95_ratio_2t, color = dat)) +
+  geom_point(alpha = .3) +
+  scale_x_log10() +
+  xlim(0, 100000)
+
+```
+
+
+## 2 tailed breadth indices
+
+```{r}
+
+ggplot(all_di, aes(nparts, shannon_95_ratio_2t, color = dat)) +
+  geom_point(alpha = .3) +
+  scale_x_log10()
+
+ggplot(all_di, aes(nparts, skew_95_ratio_2t, color = dat)) +
+  geom_point(alpha = .3) +
+  scale_x_log10()
+
+ggplot(all_di, aes(nparts, simpson_95_ratio_2t, color = dat)) +
+  geom_point(alpha = .3) +
+  scale_x_log10()
+
+ggplot(all_di, aes(nparts, nsingletons_95_ratio_2t, color = dat)) +
+  geom_point(alpha = .3) +
+  scale_x_log10()
+
+```

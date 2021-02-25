@@ -6,6 +6,7 @@ Renata Diaz
   - [Proportion off](#proportion-off)
   - [Number of singletons](#number-of-singletons)
   - [Shannon diversity](#shannon-diversity)
+  - [2 tailed breadth indices](#tailed-breadth-indices)
 
 All of these currently exclude FIA because those are still running.
 
@@ -190,13 +191,24 @@ For N/S \> 10:
 
 </div>
 
-Working on a breadth index here (stuff needs to run).
+Breadth index - note use of 2 tailed because of interest in low numbers
+of singletons for Gentry.
+
+I haven’t fully groked the breadth index, but I think…
+
+  - It declines with increasing size of the feasible set, but not as
+    dramatically as the other indices.
+  - The Gentry region (low N/S tail on the right) is not remarkable for
+    the size of the FS or the (2-tailed) breadth index, but has an
+    extremely high median propotion of singletons.
+
+![](additional_metrics_results_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->![](additional_metrics_results_files/figure-gfm/unnamed-chunk-12-2.png)<!-- -->
 
 ## Shannon diversity
 
 Most datasets have very low Shannon diversity, except for Gentry:
 
-![](additional_metrics_results_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
+![](additional_metrics_results_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
 
 <div class="kable-table">
 
@@ -209,4 +221,8 @@ Most datasets have very low Shannon diversity, except for Gentry:
 
 </div>
 
-Working on the breadth index (stuff needs to run).
+![](additional_metrics_results_files/figure-gfm/unnamed-chunk-14-1.png)<!-- -->![](additional_metrics_results_files/figure-gfm/unnamed-chunk-14-2.png)<!-- -->
+
+## 2 tailed breadth indices
+
+![](additional_metrics_results_files/figure-gfm/unnamed-chunk-15-1.png)<!-- -->![](additional_metrics_results_files/figure-gfm/unnamed-chunk-15-2.png)<!-- -->![](additional_metrics_results_files/figure-gfm/unnamed-chunk-15-3.png)<!-- -->![](additional_metrics_results_files/figure-gfm/unnamed-chunk-15-4.png)<!-- -->
