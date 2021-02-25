@@ -1,11 +1,13 @@
 Other metrics
 ================
 Renata Diaz
-2021-02-24
+2021-02-25
 
   - [Proportion off](#proportion-off)
   - [Number of singletons](#number-of-singletons)
   - [Shannon diversity](#shannon-diversity)
+
+All of these currently exclude FIA because those are still running.
 
 ## Proportion off
 
@@ -55,12 +57,12 @@ then be compared directly to the score from the observed sample.
 
 <div class="kable-table">
 
-| singletons | dat                | high\_proportion\_off |
-| :--------- | :----------------- | --------------------: |
-| FALSE      | bbs                |             0.2300757 |
-| FALSE      | gentry             |             0.3125000 |
-| FALSE      | mcdb               |             0.3206522 |
-| FALSE      | misc\_abund\_short |             0.5850202 |
+| singletons | dat         | high\_proportion\_off |
+| :--------- | :---------- | --------------------: |
+| FALSE      | bbs         |             0.2300757 |
+| FALSE      | gentry      |             0.3125000 |
+| FALSE      | mcdb        |             0.3206522 |
+| FALSE      | misc\_abund |             0.5850202 |
 
 </div>
 
@@ -76,12 +78,12 @@ each other, we can ask how much *more* dissimilar the SAD is than the
 
 <div class="kable-table">
 
-| singletons | dat                | diff\_from\_95 |
-| :--------- | :----------------- | -------------: |
-| FALSE      | bbs                |      0.0739987 |
-| FALSE      | gentry             |      0.0463732 |
-| FALSE      | mcdb               |      0.1018986 |
-| FALSE      | misc\_abund\_short |      0.1653867 |
+| singletons | dat         | diff\_from\_95 |
+| :--------- | :---------- | -------------: |
+| FALSE      | bbs         |      0.0739987 |
+| FALSE      | gentry      |      0.0463732 |
+| FALSE      | mcdb        |      0.1018986 |
+| FALSE      | misc\_abund |      0.1653867 |
 
 </div>
 
@@ -99,4 +101,112 @@ of the feasible set:
 
 ## Number of singletons
 
+Visualization and analysis of nsingletons has a little more nuance than
+the others, because there are often relatively few values for
+nsingletons at all. 80% of sites have fewer than 20 singletons as the
+95th percentile, which is just a rough way of saying that a **lot** of
+these are going to be sensitive to whether you define the percentiles as
+\> or \>=.
+
+In general the strict \> percentile will give you an (appropriately)
+conservative estimate of how many are extraordinarily **high** and the
+\>= will give you an appropriate estimate of how many are unusually
+**low**. For most metrics it doesn’t really matter, writ large, which
+you use, because ties are rare. For this one, you get large numbers of
+sites where a lot of values are = to the observed values, and the \>=
+decision will therefore give you a jump of a lot of percentile scores.
+
+For the “proportions high/low” calculations, we use *the \> percentile
+for high* and *the \>= percentile for low*. For visualization, because
+we are interested in both unusually high and unusually low scores, we
+can’t just pick one or the other. The histogram using \>= is reliable at
+the high end but has a misleading spike at 0, and vice versa. I am
+making these plots using the *mean*, which doesn’t have the misleading
+spikes at the extremes but does smear things out a little bit.
+
+BBS, MCDB, and Misc have too many rare species, while Gentry has too
+few:
+
+![](additional_metrics_results_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
+
+<div class="kable-table">
+
+| dat         | prop\_nsingletons\_high\_raw | prop\_nsingletons\_low\_raw | nsites\_included |
+| :---------- | ---------------------------: | --------------------------: | ---------------: |
+| bbs         |                    0.0796971 |                   0.0000000 |             2773 |
+| gentry      |                    0.0178571 |                   0.2991071 |              224 |
+| mcdb        |                    0.1630435 |                   0.0000000 |              552 |
+| misc\_abund |                    0.3340081 |                   0.0000000 |              494 |
+
+</div>
+
+*Of sites where the nsingletons value is extreme*, we’re looking at -
+for example, in MCDB - an increase of .2 in the proportion of singleton
+species in the observed vector over the 95th percentile of scores for
+the proportion of singleton species for the feasible set:
+
+![](additional_metrics_results_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
+
+<div class="kable-table">
+
+| dat         | mean\_singles\_change |   n |
+| :---------- | --------------------: | --: |
+| bbs         |             0.0667465 | 221 |
+| gentry      |             0.1054487 |   4 |
+| mcdb        |             0.2015754 |  90 |
+| misc\_abund |             0.1607340 | 165 |
+
+</div>
+
+Broken out by N/S, you can see that the low values are concentrated in
+the Gentry where N/S \< 3, and that high values are most common as N/S
+\> 10:
+
+![](additional_metrics_results_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
+
+For N/S \< 3:
+
+<div class="kable-table">
+
+| dat         | singletons | prop\_high\_singles\_ex | prop\_low\_singles | nsites |
+| :---------- | :--------- | ----------------------: | -----------------: | -----: |
+| bbs         | FALSE      |                       0 |          0.0000000 |      1 |
+| gentry      | FALSE      |                       0 |          0.7093023 |     86 |
+| mcdb        | FALSE      |                       0 |          0.0000000 |     10 |
+| misc\_abund | FALSE      |                       0 |          0.0000000 |     13 |
+
+</div>
+
+For N/S \> 10:
+
+<div class="kable-table">
+
+| dat         | singletons | prop\_high\_singles\_ex | prop\_low\_singles | nsites |
+| :---------- | :--------- | ----------------------: | -----------------: | -----: |
+| bbs         | FALSE      |               0.1060461 |                  0 |   2084 |
+| gentry      | FALSE      |               0.1904762 |                  0 |     21 |
+| mcdb        | FALSE      |               0.2136986 |                  0 |    365 |
+| misc\_abund | FALSE      |               0.4398827 |                  0 |    341 |
+
+</div>
+
+Working on a breadth index here (stuff needs to run).
+
 ## Shannon diversity
+
+Most datasets have very low Shannon diversity, except for Gentry:
+
+![](additional_metrics_results_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
+
+<div class="kable-table">
+
+| dat         | prop\_shannon\_high\_raw | prop\_shannon\_low\_raw | nsites\_included |
+| :---------- | -----------------------: | ----------------------: | ---------------: |
+| bbs         |                0.0100974 |               0.2802019 |             2773 |
+| gentry      |                0.3080357 |               0.1294643 |              224 |
+| mcdb        |                0.0108696 |               0.3804348 |              552 |
+| misc\_abund |                0.0080972 |               0.6174089 |              494 |
+
+</div>
+
+Working on the breadth index (stuff needs to run).

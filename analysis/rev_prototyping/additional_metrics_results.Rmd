@@ -19,16 +19,30 @@ theme_set(theme_bw())
 
 all_di <- read.csv(here::here("analysis", "rev_prototyping", "all_di.csv")) 
 
-mcdb_new_di <-read.csv(here::here("mcdb_new_di.csv"))
 
 all_di <- all_di %>%
-  filter(s0 > 1,
-         s0 != n0,
-         n0 != s0 + 1,
-         !singletons) 
+  mutate(log_nparts = log(gmp:::as.double.bigz(nparts)),
+         log_nsamples = log(nsamples),
+         log_s0 = log(s0),
+         log_n0 = log(n0)) %>%
+  filter(n0 != s0,
+         s0 != 1,
+         !singletons,
+         n0 != (s0 + 1)) %>%
+  mutate(dat = ifelse(grepl(dat, pattern = "fia"), "fia", dat),
+         dat = ifelse(dat == "misc_abund_short", "misc_abund", dat)) %>%
+  mutate(Dataset = dat,
+         Dataset = ifelse(Dataset == "fia", "FIA", Dataset),
+         Dataset = ifelse(Dataset == "bbs", "Breeding Bird Survey", Dataset),
+         Dataset = ifelse(Dataset == "mcdb", "Mammal Communities", Dataset),
+         Dataset = ifelse(Dataset == "gentry", "Gentry", Dataset),
+         Dataset = ifelse(Dataset == "misc_abund", "Misc. Abundance", Dataset)) %>%
+  filter(nparts > 20) 
 
 
 ```
+
+All of these currently exclude FIA because those are still running.
 
 ## Proportion off
 
@@ -139,6 +153,148 @@ ggplot(all_di, aes(nparts, mean_po_comparison_95_ratio_1t, color = dat)) +
 
 ## Number of singletons
 
+Visualization and analysis of nsingletons has a little more nuance than the others, because there are often relatively few values for nsingletons at all. 80% of sites have fewer than 20 singletons as the 95th percentile, which is just a rough way of saying that a **lot** of these are going to be sensitive to whether you define the percentiles as > or >=. 
+
+In general the strict > percentile will give you an (appropriately) conservative estimate of how many are extraordinarily **high** and the >= will give you an appropriate estimate of how many are unusually **low**. For most metrics it doesn't really matter, writ large, which you use, because ties are rare. For this one, you get large numbers of sites where a lot of values are = to the observed values, and the >= decision will therefore give you a jump of a lot of percentile scores. 
+
+For the "proportions high/low" calculations, we use *the > percentile for high* and *the >= percentile for low*. For visualization, because we are interested in both unusually high and unusually low scores, we can't just pick one or the other. The histogram using >= is reliable at the high end but has a misleading spike at 0, and vice versa. I am making these plots using the *mean*, which doesn't have the misleading spikes at the extremes but does smear things out a little bit. 
+
+
+```{r, fig.dim = c(5,5)}
+
+nsingletons_results <- all_di %>%
+  group_by_all() %>%
+  mutate(singletons_percentile_jump = nsingletons_percentile - nsingletons_percentile_excl,
+         nsingletons_percentile_mean = sum(nsingletons_percentile, nsingletons_percentile_excl) / 2) %>%
+  ungroup() %>%
+  mutate(prop_singles_actual = nsingletons / s0,
+         sim_prop_singles_95 = nsingletons_95 / s0,
+         sim_prop_singles_mean = nsingletons_mean / s0) %>%
+  mutate(actual_minus_95_prop = prop_singles_actual - sim_prop_singles_95) %>%
+  mutate(high_singles=nsingletons_percentile > 95,
+         high_singles_ex = nsingletons_percentile_excl > 95,
+         low_singles = nsingletons_percentile < 5,
+         low_singles_ex = nsingletons_percentile_excl < 5) %>%
+  mutate(singles_desc = ifelse(high_singles_ex, "high", ifelse(low_singles, "low", "int")))
+
+```
+
+
+BBS, MCDB, and Misc have too many rare species, while Gentry has too few:
+
+
+```{r}
+ggplot(filter(nsingletons_results, nparts > 20), aes(nsingletons_percentile_mean)) +
+  geom_histogram(bins = 100) +
+  facet_wrap(vars(dat), scales = "free_y", ncol = 1) +
+  geom_vline(xintercept = 95)
+
+
+
+nsingletons_results  %>% 
+  group_by(dat) %>%
+  filter(nparts > 20) %>%
+  summarize(            prop_nsingletons_high_raw = mean(nsingletons_percentile_excl > 95),
+         #   prop_nsingletons_mean_high_raw = mean(nsingletons_percentile_mean_actual > 95),
+      #      prop_nsingletons_mean_high_jk = mean(nsingletons_percentile_mean > 95),
+            prop_nsingletons_low_raw = mean(nsingletons_percentile  < 5),
+            nsites_included = dplyr::n())
+
+```
+
+
+_Of sites where the nsingletons value is extreme_, we're looking at - for example, in MCDB - an increase of .2 in the proportion of singleton species in the observed vector over the 95th percentile of scores for the proportion of singleton species for the feasible set:
+
+```{r}
+
+nsingletons_results <- nsingletons_results %>%
+  mutate(singletons_change = (nsingletons - nsingletons_95) / s0)
+
+ggplot(filter(nsingletons_results, high_singles_ex), aes(singletons_change)) +
+  geom_histogram() +
+  facet_wrap(vars(dat), scales = "free")
+
+nsingletons_results %>%
+  filter(high_singles_ex) %>%
+  group_by(dat) %>%
+  summarize(mean_singles_change = mean(singletons_change),
+            n = dplyr::n())
+
+```
+
+
+Broken out by N/S, you can see that the low values are concentrated in the Gentry where N/S < 3, and that high values are most common as N/S > 10:
+
+```{r}
+
+ggplot(nsingletons_results, aes(n0/s0, nsingletons_percentile_excl, color = singles_desc)) +
+  geom_point(data = filter(nsingletons_results, singles_desc != "int")) +
+  geom_point(alpha = .1, color = "grey") +
+  facet_wrap(vars(dat), scales = "free") +
+  scale_x_log10() +
+  geom_vline(xintercept = c(3, 10))
+
+
+
+```
+
+
+For N/S < 3: 
+
+```{r}
+nsingletons_results %>%
+  filter(n0/s0 < 3) %>%
+  group_by(dat, singletons) %>%
+  summarize(
+            prop_high_singles_ex = mean(high_singles_ex),
+            prop_low_singles = mean(low_singles),
+            nsites= dplyr::n()) %>%
+  ungroup()
+
+```
+
+For N/S  > 10:
+
+```{r}
+
+nsingletons_results %>%
+  filter(n0/s0 > 10) %>%
+  group_by(dat, singletons) %>%
+  summarize(
+            prop_high_singles_ex = mean(high_singles_ex),
+            prop_low_singles = mean(low_singles),
+            nsites= dplyr::n()) %>%
+  ungroup()
+
+
+
+```
+
+
+Working on a breadth index here (stuff needs to run).
+
+
 
 ## Shannon diversity
 
+
+Most datasets have very low Shannon diversity, except for Gentry:
+
+```{r}
+
+ggplot(filter(all_di, nparts > 20), aes(shannon_percentile)) +
+  geom_histogram(bins = 100) +
+  facet_wrap(vars(dat), scales = "free_y", ncol = 1) +
+  geom_vline(xintercept = 5)
+
+
+all_di  %>% 
+  group_by(dat) %>%
+  filter(nparts > 20) %>%
+  summarize(
+            prop_shannon_high_raw = mean(shannon_percentile > 95),
+            prop_shannon_low_raw = mean(shannon_percentile < 5),
+            nsites_included = dplyr::n())
+```
+
+Working on the breadth index (stuff needs to run).
