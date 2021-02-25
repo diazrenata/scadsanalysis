@@ -7,6 +7,7 @@ Renata Diaz
   - [Number of singletons](#number-of-singletons)
   - [Shannon diversity](#shannon-diversity)
   - [2 tailed breadth indices](#tailed-breadth-indices)
+  - [Epic synthesizing figure](#epic-synthesizing-figure)
 
 All of these currently exclude FIA because those are still running.
 
@@ -226,3 +227,40 @@ Most datasets have very low Shannon diversity, except for Gentry:
 ## 2 tailed breadth indices
 
 ![](additional_metrics_results_files/figure-gfm/unnamed-chunk-15-1.png)<!-- -->![](additional_metrics_results_files/figure-gfm/unnamed-chunk-15-2.png)<!-- -->![](additional_metrics_results_files/figure-gfm/unnamed-chunk-15-3.png)<!-- -->![](additional_metrics_results_files/figure-gfm/unnamed-chunk-15-4.png)<!-- -->
+
+## Epic synthesizing figure
+
+![](additional_metrics_results_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
+
+This is an EPIC figure.
+
+Specs:
+
+  - The row panels are different datasets.
+  - The left column of panels is the “usual” direction of the effect -
+    the way most datasets behave. The right column is the “reverse”
+    direction - the way Gentry behaves.
+  - The x axis is different metrics.
+  - The y axis is the proportion of sites with an extreme value (\> 97.5
+    or \< 2.5 percentile, depending on if the metric is “high” or “low”
+    respectively) for that metric.
+  - The horizontal line is 2.5. Because this is now making a 2tailed
+    comparison, the 2.5 cutoff is the proportion of percentile values we
+    would expect to be in this range at random.
+  - The BLACK points are for raw SADs. The BLUE dots are for SADs
+    corrected for nondetection of rare species. The RED dots are for
+    SADs resampled via jacknife resampling.
+  - Note that a lot of FIA stuff hasn’t finished running, so don’t take
+    those panels seriously.
+
+Interpretation:
+
+  - All datasets (except maybe FIA) have extreme values more often than
+    usual for almost all metrics.
+  - Adjusting for rare species always increases this effect if it has
+    any impact at all.
+  - Jacknife resampling decreases it, but only to no significance for
+    BBS and MCDB \# of singletons.
+  - While Gentry often has extreme values in the same direction as the
+    other datasets, it also has them very strongly in the *opposite*
+    direction.

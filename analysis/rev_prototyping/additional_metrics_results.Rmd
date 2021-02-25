@@ -337,7 +337,7 @@ all_di  %>%
   group_by(dat) %>%
   filter(nparts > 20) %>%
   summarize(
-            prop_shannon_high_raw = mean(shannon_percentile > 95),
+            prop_shannon_high_raw = mean(shannon_percentile_excl > 95),
             prop_shannon_low_raw = mean(shannon_percentile < 5),
             nsites_included = dplyr::n())
 ```
@@ -360,6 +360,8 @@ ggplot(all_di, aes(nparts, shannon_95_ratio_2t, color = dat)) +
 
 ```{r}
 
+  
+
 ggplot(all_di, aes(nparts, shannon_95_ratio_2t, color = dat)) +
   geom_point(alpha = .3) +
   scale_x_log10()
@@ -377,3 +379,122 @@ ggplot(all_di, aes(nparts, nsingletons_95_ratio_2t, color = dat)) +
   scale_x_log10()
 
 ```
+
+## Epic synthesizing figure
+
+```{r, fig.dim = c(5, 10)}
+
+
+
+
+all_di_with_resamples <- read.csv(here::here("analysis", "rev_prototyping", "all_di.csv")) 
+
+jk_di_full <- read.csv(here::here("analysis", "rev_prototyping", "all_di_jk.csv"))
+
+jk_di <- jk_di_full %>%
+  group_by_all() %>%
+  mutate(site_source = unlist(strsplit(site, "_")[[1]][[1]])) %>%
+  ungroup() %>%
+  select(dat, site, site_source, s0, n0, skew_percentile_excl,skew_percentile, simpson_percentile, simpson_percentile_excl, shannon_percentile, nsingletons_percentile, nsingletons_percentile_excl, nsingletons, nsingeltons_median, nsingletons_95, mean_po_comparison_percentile, mean_po_comparison_sims, mean_po_comparison_95, skew_95_ratio_1t, simpson_95_ratio_1t, shannon_95_ratio_1t, mean_po_comparison_95_ratio_1t, nparts)
+
+jk_di_means <- jk_di %>%
+  group_by(dat, site_source) %>%
+  summarise_at(vars(-group_cols(), -site), mean) %>%
+  mutate(resampling = "jacknife") %>%
+  mutate(site = as.integer(site_source)) %>%
+  select(-site_source) %>%
+  filter(n0 != s0,
+         s0 != 1,
+         n0 != (s0 + 1)) %>%
+  mutate(dat = ifelse(grepl(dat, pattern = "fia"), "fia", dat),
+         dat = ifelse(dat == "misc_abund_short", "misc_abund", dat)) %>%
+  mutate(Dataset = dat,
+         Dataset = ifelse(Dataset == "fia", "FIA", Dataset),
+         Dataset = ifelse(Dataset == "bbs", "Breeding Bird Survey", Dataset),
+         Dataset = ifelse(Dataset == "mcdb", "Mammal Communities", Dataset),
+         Dataset = ifelse(Dataset == "gentry", "Gentry", Dataset),
+         Dataset = ifelse(Dataset == "misc_abund", "Misc. Abundance", Dataset)) %>%
+  filter(nparts > 20) 
+
+
+
+all_di_with_resamples <- all_di_with_resamples %>%
+  mutate(log_nparts = log(gmp:::as.double.bigz(nparts)),
+         log_nsamples = log(nsamples),
+         log_s0 = log(s0),
+         log_n0 = log(n0)) %>%
+  filter(n0 != s0,
+         s0 != 1,
+       #  !singletons,
+         n0 != (s0 + 1)) %>%
+  mutate(dat = ifelse(grepl(dat, pattern = "fia"), "fia", dat),
+         dat = ifelse(dat == "misc_abund_short", "misc_abund", dat)) %>%
+  mutate(Dataset = dat,
+         Dataset = ifelse(Dataset == "fia", "FIA", Dataset),
+         Dataset = ifelse(Dataset == "bbs", "Breeding Bird Survey", Dataset),
+         Dataset = ifelse(Dataset == "mcdb", "Mammal Communities", Dataset),
+         Dataset = ifelse(Dataset == "gentry", "Gentry", Dataset),
+         Dataset = ifelse(Dataset == "misc_abund", "Misc. Abundance", Dataset)) %>%
+  filter(nparts > 20) %>%
+  mutate(resampling = ifelse(singletons, "rarefaction", "none")) %>%
+  bind_rows(jk_di_means)
+
+prop_results <- all_di_with_resamples %>%
+ # filter(!singletons) %>%
+  group_by(Dataset, resampling) %>%
+  summarize(
+    skew_high = mean(skew_percentile_excl > 97.5),
+    skew_low = mean(skew_percentile < 2.5),
+    even_high = mean(simpson_percentile_excl > 97.5),
+    even_low = mean(simpson_percentile < 2.5),
+    shannon_high = mean(shannon_percentile > 97.5),
+    shannon_low = mean(shannon_percentile < 2.5),
+    nsingletons_high = mean(nsingletons_percentile_excl > 97.5),
+    nsingletons_low = mean(nsingletons_percentile < 2.5),
+    po_high = mean(mean_po_comparison_percentile > 97.5),
+    po_low = mean(mean_po_comparison_percentile < 2.5)
+  ) %>%
+  ungroup() %>%
+  tidyr::pivot_longer((-c("Dataset","resampling")), names_to = "metric", values_to = "value") %>%
+  mutate(ometric = ordered(metric, levels = c("skew_high", "skew_low", "even_low", "even_high", "shannon_low", "shannon_high", "nsingletons_high", "nsingletons_low", "po_high", "po_low")),
+         ometric2 = ordered(metric, levels = c("skew_high",  "even_low",  "shannon_low",  "nsingletons_high", "po_high", "skew_low","even_high","shannon_high", "nsingletons_low", "po_low"))) %>%
+  mutate(weird_dir = as.numeric(ometric2) > 5)
+
+# 
+# ggplot(prop_results, aes(Dataset, value, color = resampling)) +
+#   geom_point() +
+#   geom_point(data = filter(prop_results, resampling == "none"), color = "black", size = 2) +
+#   geom_hline(yintercept = .025) +
+#   facet_wrap(vars(ometric), ncol = 2, scales = "free_y") +
+#   theme(legend.position = "top")
+
+
+
+ggplot(prop_results, aes(ometric2, value, color = resampling)) +
+  geom_point() +
+  geom_point(data = filter(prop_results, resampling == "none"), color = "black", size = 2) +
+  geom_hline(yintercept = .025) +
+  facet_grid(rows = vars(Dataset), cols = vars(weird_dir), scales = "free_x", switch = "y") +
+  theme(legend.position = "top") +
+  theme(axis.text.x = element_text(angle = 75, hjust= 1))
+```
+
+
+This is an EPIC figure. 
+
+Specs:
+
+- The row panels are different datasets. 
+- The left column of panels is the "usual" direction of the effect - the way most datasets behave. The right column is the "reverse" direction - the way Gentry behaves.
+- The x axis is different metrics.
+- The y axis is the proportion of sites with an extreme value (> 97.5 or < 2.5 percentile, depending on if the metric is "high" or "low" respectively) for that metric. 
+- The horizontal line is 2.5. Because this is now making a 2tailed comparison, the 2.5 cutoff is the proportion of percentile values we would expect to be in this range at random.
+- The BLACK points are for raw SADs. The BLUE dots are for SADs corrected for nondetection of rare species. The RED dots are for SADs resampled via jacknife resampling.
+- Note that a lot of FIA stuff hasn't finished running, so don't take those panels seriously.
+
+Interpretation:
+
+- All datasets (except maybe FIA) have extreme values more often than usual for almost all metrics.
+- Adjusting for rare species always increases this effect if it has any impact at all.
+- Jacknife resampling decreases it, but only to no significance for BBS and MCDB # of singletons.
+- While Gentry often has extreme values in the same direction as the other datasets, it also has them very strongly in the *opposite* direction. 
