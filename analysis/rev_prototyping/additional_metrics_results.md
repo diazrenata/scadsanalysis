@@ -1,7 +1,7 @@
 Other metrics
 ================
 Renata Diaz
-2021-02-25
+2021-03-02
 
   - [Proportion off](#proportion-off)
   - [Number of singletons](#number-of-singletons)
@@ -62,6 +62,7 @@ then be compared directly to the score from the observed sample.
 | singletons | dat         | high\_proportion\_off |
 | :--------- | :---------- | --------------------: |
 | FALSE      | bbs         |             0.2300757 |
+| FALSE      | fia         |             0.0766520 |
 | FALSE      | gentry      |             0.3125000 |
 | FALSE      | mcdb        |             0.3206522 |
 | FALSE      | misc\_abund |             0.5850202 |
@@ -83,6 +84,7 @@ each other, we can ask how much *more* dissimilar the SAD is than the
 | singletons | dat         | diff\_from\_95 |
 | :--------- | :---------- | -------------: |
 | FALSE      | bbs         |      0.0739987 |
+| FALSE      | fia         |      0.0602401 |
 | FALSE      | gentry      |      0.0463732 |
 | FALSE      | mcdb        |      0.1018986 |
 | FALSE      | misc\_abund |      0.1653867 |
@@ -136,6 +138,7 @@ few:
 | dat         | prop\_nsingletons\_high\_raw | prop\_nsingletons\_low\_raw | nsites\_included |
 | :---------- | ---------------------------: | --------------------------: | ---------------: |
 | bbs         |                    0.0796971 |                   0.0000000 |             2773 |
+| fia         |                    0.0264542 |                   0.0000000 |            18447 |
 | gentry      |                    0.0178571 |                   0.2991071 |              224 |
 | mcdb        |                    0.1630435 |                   0.0000000 |              552 |
 | misc\_abund |                    0.3340081 |                   0.0000000 |              494 |
@@ -154,6 +157,7 @@ the proportion of singleton species for the feasible set:
 | dat         | mean\_singles\_change |   n |
 | :---------- | --------------------: | --: |
 | bbs         |             0.0667465 | 221 |
+| fia         |             0.2174023 | 488 |
 | gentry      |             0.1054487 |   4 |
 | mcdb        |             0.2015754 |  90 |
 | misc\_abund |             0.1607340 | 165 |
@@ -172,10 +176,11 @@ For N/S \< 3:
 
 | dat         | singletons | prop\_high\_singles\_ex | prop\_low\_singles | nsites |
 | :---------- | :--------- | ----------------------: | -----------------: | -----: |
-| bbs         | FALSE      |                       0 |          0.0000000 |      1 |
-| gentry      | FALSE      |                       0 |          0.7093023 |     86 |
-| mcdb        | FALSE      |                       0 |          0.0000000 |     10 |
-| misc\_abund | FALSE      |                       0 |          0.0000000 |     13 |
+| bbs         | FALSE      |               0.0000000 |          0.0000000 |      1 |
+| fia         | FALSE      |               0.0026311 |          0.0000000 |   5321 |
+| gentry      | FALSE      |               0.0000000 |          0.7093023 |     86 |
+| mcdb        | FALSE      |               0.0000000 |          0.0000000 |     10 |
+| misc\_abund | FALSE      |               0.0000000 |          0.0000000 |     13 |
 
 </div>
 
@@ -186,6 +191,7 @@ For N/S \> 10:
 | dat         | singletons | prop\_high\_singles\_ex | prop\_low\_singles | nsites |
 | :---------- | :--------- | ----------------------: | -----------------: | -----: |
 | bbs         | FALSE      |               0.1060461 |                  0 |   2084 |
+| fia         | FALSE      |               0.0865318 |                  0 |   1433 |
 | gentry      | FALSE      |               0.1904762 |                  0 |     21 |
 | mcdb        | FALSE      |               0.2136986 |                  0 |    365 |
 | misc\_abund | FALSE      |               0.4398827 |                  0 |    341 |
@@ -216,6 +222,7 @@ Most datasets have very low Shannon diversity, except for Gentry:
 | dat         | prop\_shannon\_high\_raw | prop\_shannon\_low\_raw | nsites\_included |
 | :---------- | -----------------------: | ----------------------: | ---------------: |
 | bbs         |                0.0100974 |               0.2802019 |             2773 |
+| fia         |                0.0038489 |               0.0899875 |            18447 |
 | gentry      |                0.3080357 |               0.1294643 |              224 |
 | mcdb        |                0.0108696 |               0.3804348 |              552 |
 | misc\_abund |                0.0080972 |               0.6174089 |              494 |
