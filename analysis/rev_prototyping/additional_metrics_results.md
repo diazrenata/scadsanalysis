@@ -257,8 +257,6 @@ Specs:
   - The BLACK points are for raw SADs. The BLUE dots are for SADs
     corrected for nondetection of rare species. The RED dots are for
     SADs resampled via jacknife resampling.
-  - Note that a lot of FIA stuff hasn’t finished running, so don’t take
-    those panels seriously.
 
 Interpretation:
 
