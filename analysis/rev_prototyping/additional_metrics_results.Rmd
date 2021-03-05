@@ -97,7 +97,7 @@ ggplot(filter(all_di, nparts > 20), aes(mean_po_comparison_percentile)) +
   facet_wrap(vars(dat, singletons), scales = "free_y")
 
 
-all_di %>% filter(nparts >20) %>% group_by(singletons, dat) %>% summarize(high_proportion_off = mean(mean_po_comparison_percentile > 95))
+all_di %>% filter(nparts >20) %>% group_by(singletons, dat) %>% summarize(high_proportion_off = mean(mean_po_comparison_percentile_excl > 95))
 
 ```
 
@@ -114,7 +114,7 @@ all_di %>%
   summarize(diff_from_95 = mean(mean_po_comparison - mean_po_comparison_95))
 
 
-ggplot(filter(all_di, mean_po_comparison_percentile > 95), aes( mean_po_comparison - mean_po_comparison_95)) +
+ggplot(filter(all_di, mean_po_comparison_percentile_excl > 95), aes( mean_po_comparison - mean_po_comparison_95)) +
   geom_histogram() +
   facet_wrap(vars(dat), scales = "free_y")
 
@@ -395,7 +395,7 @@ jk_di <- jk_di_full %>%
   group_by_all() %>%
   mutate(site_source = unlist(strsplit(site, "_")[[1]][[1]])) %>%
   ungroup() %>%
-  select(dat, site, site_source, s0, n0, skew_percentile_excl,skew_percentile, simpson_percentile, simpson_percentile_excl, shannon_percentile, nsingletons_percentile, nsingletons_percentile_excl, nsingletons, nsingeltons_median, nsingletons_95, mean_po_comparison_percentile, mean_po_comparison_sims, mean_po_comparison_95, skew_95_ratio_1t, simpson_95_ratio_1t, shannon_95_ratio_1t, mean_po_comparison_95_ratio_1t, nparts)
+  select(dat, site, site_source, s0, n0, skew_percentile_excl,skew_percentile, simpson_percentile, simpson_percentile_excl, shannon_percentile, shannon_percentile_excl, nsingletons_percentile, nsingletons_percentile_excl, nsingletons, nsingletons_median, nsingletons_95, mean_po_comparison_percentile, mean_po_comparison_sims, mean_po_comparison_percentile_excl, mean_po_comparison_95, skew_95_ratio_1t, simpson_95_ratio_1t, shannon_95_ratio_1t, mean_po_comparison_95_ratio_1t, nparts)
 
 jk_di_means <- jk_di %>%
   group_by(dat, site_source) %>%
@@ -447,11 +447,11 @@ prop_results <- all_di_with_resamples %>%
     skew_low = mean(skew_percentile < 2.5),
     even_high = mean(simpson_percentile_excl > 97.5),
     even_low = mean(simpson_percentile < 2.5),
-    shannon_high = mean(shannon_percentile > 97.5),
+    shannon_high = mean(shannon_percentile_excl > 97.5),
     shannon_low = mean(shannon_percentile < 2.5),
     nsingletons_high = mean(nsingletons_percentile_excl > 97.5),
     nsingletons_low = mean(nsingletons_percentile < 2.5),
-    po_high = mean(mean_po_comparison_percentile > 97.5),
+    po_high = mean(mean_po_comparison_percentile_excl > 97.5),
     po_low = mean(mean_po_comparison_percentile < 2.5)
   ) %>%
   ungroup() %>%
@@ -490,7 +490,6 @@ Specs:
 - The y axis is the proportion of sites with an extreme value (> 97.5 or < 2.5 percentile, depending on if the metric is "high" or "low" respectively) for that metric. 
 - The horizontal line is 2.5. Because this is now making a 2tailed comparison, the 2.5 cutoff is the proportion of percentile values we would expect to be in this range at random.
 - The BLACK points are for raw SADs. The BLUE dots are for SADs corrected for nondetection of rare species. The RED dots are for SADs resampled via jacknife resampling.
-- Note that a lot of FIA stuff hasn't finished running, so don't take those panels seriously.
 
 Interpretation:
 

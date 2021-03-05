@@ -45,14 +45,14 @@ all <- dat_plan
 db <- DBI::dbConnect(RSQLite::SQLite(), here::here("analysis", "drake", "drake-cache-fia.sqlite"))
 cache <- storr::storr_dbi("datatable", "keystable", db)
 cache$del(key = "lock", namespace = "session")
-
-## View the graph of the plan
-if (interactive())
-{
-  config <- drake_config(all, cache = cache)
-  sankey_drake_graph(config, build_times = "none")  # requires "networkD3" package
-  vis_drake_graph(config, build_times = "none")     # requires "visNetwork" package
-}
+#
+# ## View the graph of the plan
+# if (interactive())
+# {
+#   config <- drake_config(all, cache = cache)
+#   sankey_drake_graph(config, build_times = "none")  # requires "networkD3" package
+#   vis_drake_graph(config, build_times = "none")     # requires "visNetwork" package
+# }
 
 ## Run the pipeline
 nodename <- Sys.info()["nodename"]
