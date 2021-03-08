@@ -471,4 +471,6 @@ po_central_tendency <- function(fs_df, fs_po_df) {
       real_po_percentile_excl = get_percentile(real_po, ct_pos$prop_off, incl = F)
     )
 
+  return(out)
+
 }
