@@ -37,7 +37,11 @@ all <- drake_plan(
                   transform = map(di)),
   di_obs_s = target(dplyr::bind_rows(di_obs),
                     transform = combine(di_obs, .by = singletons)),
-  all_di_obs = target(dplyr::bind_rows(di_obs_s_TRUE, di_obs_s_FALSE))
+  all_di_obs = target(dplyr::bind_rows(di_obs_s_TRUE, di_obs_s_FALSE)),
+  cts = target(po_central_tendency(fs, fs_pc),
+               transform = map(fs, fs_pc)),
+  all_cts = target(dplyr::bind_rows(cts),
+                   transform = combine(cts))
 )
 
 ## Set up the cache and config

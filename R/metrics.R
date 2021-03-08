@@ -182,6 +182,43 @@ compare_props_off <- function(focal_sim, fs_df, ncomps = 100) {
   return(data.frame(focal_sim = focal_sim, mean_po_comparison = mean(compare_props$prop_off, na.rm = T), n_po_comparisons = nrow(compare_props)))
 }
 
+#' Compare proportion off of two sims
+#'
+#' @param focal_sim index of sim
+#' @param fs_df samples from FS
+#' @param ncomps how many comparisons
+#'
+#' @return mean proportion off of focal sim vs ncomparisons sims from fs_df
+#' @export
+#'
+#' @importFrom dplyr filter group_by summarize
+compare_props_off_full <- function(focal_sim, fs_df, ncomps = 100) {
+
+  fs_df$sim_char = as.character(fs_df$sim)
+
+  if(focal_sim != -99) {
+    fs_df <- dplyr::filter(fs_df, sim > 0)
+  }
+
+  nsims <- unique(fs_df$sim_char)[ which(unique(fs_df$sim_char) != as.character(focal_sim))]
+
+  if(length(nsims) == 0) {
+    return(data.frame(sim = focal_sim, prop_off = NA))
+  }
+
+  focal_sad <- dplyr::filter(fs_df, sim == focal_sim)
+
+  compare_sims <- sample(nsims, size = min(length(nsims), ncomps), replace =F)
+
+  compare_sads <- dplyr::filter(fs_df, sim_char %in% compare_sims)
+
+  compare_props <- compare_sads %>%
+    dplyr::group_by(sim) %>%
+    dplyr::summarize(prop_off = proportion_off(t(data.frame(abund, focal_sad$abund)))) %>%
+    dplyr::ungroup()
+
+  return(compare_props)
+}
 #' Get FS diff metrics
 #'
 #' @param fs_df samples
@@ -399,5 +436,39 @@ pull_di_net <- function(di_df) {
     )
 
   return(di_sampled)
+
+}
+
+
+#' PO CT
+#'
+#' @param fs_df fs
+#' @param fs_po_df pcs
+#'
+#' @return df
+#' @export
+#'
+#' @importFrom dplyr filter select distinct mutate
+po_central_tendency <- function(fs_df, fs_po_df) {
+
+  ct_sim <- dplyr::filter(fs_po_df, mean_po_comparison == min(fs_po_df$mean_po_comparison))$focal_sim[1]
+
+  ct_pos <- compare_props_off_full(ct_sim, fs_df, ncomps = length(unique(fs_df$sim)) - 2) %>%
+    dplyr::distinct()
+
+  real_po <- proportion_off(t(data.frame(dplyr::filter(fs_df, source == "observed")$abund, dplyr::filter(fs_df, sim == ct_sim)$abund)))
+
+  out <- fs_df %>%
+    dplyr::filter(source == "observed") %>%
+    dplyr::select(source, dat, site, singletons, s0, n0, sim, nparts) %>%
+    dplyr::distinct() %>%
+    dplyr::mutate(
+      real_po = real_po,
+      best_po_sim = ct_sim,
+      sim_devs_from_best = mean(ct_pos$prop_off),
+      ncomparisons = nrow(ct_pos),
+      real_po_percentile = get_percentile(real_po, ct_pos$prop_off),
+      real_po_percentile_excl = get_percentile(real_po, ct_pos$prop_off, incl = F)
+    )
 
 }

@@ -1,0 +1,90 @@
+---
+title: "Comparing to lognormal, Poisson, exponential"
+author: Renata Diaz
+date: "`r Sys.Date()`"
+output: 
+    github_document:
+       df_print: kable
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(drake)
+library(dplyr)
+library(ggplot2)
+library(scadsanalysis)
+
+knitr::opts_chunk$set(fig.width=4, fig.height=3, warning = FALSE, message = FALSE) 
+
+theme_set(theme_bw())
+
+```
+
+
+```{r}
+
+tiny_sad_draws <- feasiblesads::sample_fs(3, 10, 1)
+# 
+# tiny_sad_tally <- feasiblesads::tally_sets(tiny_sad_draws)
+# 
+# count_if_species_distinguishable <- function(sad) {
+#   
+#   tallies <- data.frame(
+#     species = unique(sad)
+#   )
+#   
+#   for(i in 1:nrow(tallies)) {
+#   tallies$abund[i] = sum(sad == tallies$species[i])
+#   }
+#   
+#   uniques <- data.frame(
+#     abund = unique(tallies$abund)
+#   )
+# 
+#   for(i in 1:nrow(uniques)) {
+#     uniques$nspp[i] = sum(tallies$abund == uniques$abund[i])
+#   }
+#   
+#   ties <- filter(uniques, nspp > 1)
+#     
+#   
+#   for(i in 1:nrow(ties)) {
+#     ties$norders <- factorial(ties$nspp)
+#   }
+#   
+#   nways <- 
+# }
+
+
+```
+
+
+Say we care which species has which abundance, and to start, we can tell them apart even if they have different abundances. 
+Then each element of the feasible set can be reshuffled however many ways there are to order S things, which is S!.
+
+1,2,7
+1,7,2
+2,1,7
+2,7,1
+7,1,2
+7,2,1
+
+but also
+
+2,4,4
+2,4,4
+4,2,4
+4,2,4
+4,4,2
+4,4,2
+
+If we can't tell them apart if they have different abundances...
+you need to do some offset based on the number of ties.
+
+2,4,4
+4,2,4
+4,4,2
+
+Within a feasible set this would down-weight hte probability of landing on a FS with ties in species' abundances. Depending on whether those elements are more commonly the ones with long rare tails, or ones with lots of abundant species - which I think may depend on N/S - this would push things to be more or less even.
+
+
