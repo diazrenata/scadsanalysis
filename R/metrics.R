@@ -214,7 +214,8 @@ compare_props_off_full <- function(focal_sim, fs_df, ncomps = 100) {
 
   compare_props <- compare_sads %>%
     dplyr::group_by(sim) %>%
-    dplyr::summarize(prop_off = proportion_off(t(data.frame(abund, focal_sad$abund)))) %>%
+    dplyr::summarize(prop_off = proportion_off(t(data.frame(abund, focal_sad$abund))),
+                     rsq = fs_r2(t(data.frame(abund, focal_sad$abund)))) %>%
     dplyr::ungroup()
 
   return(compare_props)
@@ -451,12 +452,32 @@ pull_di_net <- function(di_df) {
 #' @importFrom dplyr filter select distinct mutate
 po_central_tendency <- function(fs_df, fs_po_df) {
 
+  if(length(unique(fs_df$sim)) < 3) {
+    return(fs_df %>%
+             dplyr::filter(source == "observed") %>%
+             dplyr::select(source, dat, site, singletons, s0, n0, sim, nparts) %>%
+             dplyr::distinct() %>%
+             dplyr::mutate(
+               real_po = NA,
+               real_r2 = NA,
+               best_po_sim = NA,
+               sim_pos_from_best = NA,
+               sim_r2_from_best = NA,
+               ncomparisons = 0,
+               real_po_percentile = NA,
+               real_po_percentile_excl = NA,
+               real_r2_percentile = NA,
+               real_r2_percentile_excl = NA
+             ))
+  }
+
   ct_sim <- dplyr::filter(fs_po_df, mean_po_comparison == min(fs_po_df$mean_po_comparison))$focal_sim[1]
 
   ct_pos <- compare_props_off_full(ct_sim, fs_df, ncomps = length(unique(fs_df$sim)) - 2) %>%
     dplyr::distinct()
 
   real_po <- proportion_off(t(data.frame(dplyr::filter(fs_df, source == "observed")$abund, dplyr::filter(fs_df, sim == ct_sim)$abund)))
+  real_rsq <- fs_r2(t(data.frame(dplyr::filter(fs_df, source == "observed")$abund, dplyr::filter(fs_df, sim == ct_sim)$abund)))
 
   out <- fs_df %>%
     dplyr::filter(source == "observed") %>%
@@ -464,11 +485,15 @@ po_central_tendency <- function(fs_df, fs_po_df) {
     dplyr::distinct() %>%
     dplyr::mutate(
       real_po = real_po,
+      real_r2 = real_r2,
       best_po_sim = ct_sim,
-      sim_devs_from_best = mean(ct_pos$prop_off),
+      sim_pos_from_best = mean(ct_pos$prop_off),
+      sim_r2_from_best = mean(ct_pos$rsq),
       ncomparisons = nrow(ct_pos),
       real_po_percentile = get_percentile(real_po, ct_pos$prop_off),
-      real_po_percentile_excl = get_percentile(real_po, ct_pos$prop_off, incl = F)
+      real_po_percentile_excl = get_percentile(real_po, ct_pos$prop_off, incl = F),
+      real_r2_percentile = get_percentile(real_r2, ct_pos$rsq),
+      real_r2_percentile_excl = get_percentile(real_r2, ct_pos$rsq, incl = F)
     )
 
   return(out)
