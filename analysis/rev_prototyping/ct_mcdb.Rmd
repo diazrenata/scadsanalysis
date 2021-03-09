@@ -59,7 +59,10 @@ ggplot(all_di, aes(sim_pos_from_best, real_po)) +
   geom_line(aes(sim_pos_from_best, sim_pos_from_best)) 
 
 
+ggplot(all_di, aes(real_po_percentile_excl)) + geom_histogram()
 
-
+ggplot(all_di, aes(nparts, sim_pos_from_best)) +
+  geom_point() +
+  scale_x_log10()
 
 ```
