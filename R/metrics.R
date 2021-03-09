@@ -485,15 +485,15 @@ po_central_tendency <- function(fs_df, fs_po_df) {
     dplyr::distinct() %>%
     dplyr::mutate(
       real_po = real_po,
-      real_r2 = real_r2,
+      real_r2 = real_rsq,
       best_po_sim = ct_sim,
       sim_pos_from_best = mean(ct_pos$prop_off),
       sim_r2_from_best = mean(ct_pos$rsq),
       ncomparisons = nrow(ct_pos),
       real_po_percentile = get_percentile(real_po, ct_pos$prop_off),
       real_po_percentile_excl = get_percentile(real_po, ct_pos$prop_off, incl = F),
-      real_r2_percentile = get_percentile(real_r2, ct_pos$rsq),
-      real_r2_percentile_excl = get_percentile(real_r2, ct_pos$rsq, incl = F)
+      real_r2_percentile = get_percentile(real_rsq, ct_pos$rsq),
+      real_r2_percentile_excl = get_percentile(real_rsq, ct_pos$rsq, incl = F)
     )
 
   return(out)
