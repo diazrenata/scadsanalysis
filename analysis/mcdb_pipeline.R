@@ -78,7 +78,7 @@ nodename <- Sys.info()["nodename"]
   library(clustermq)
   options(clustermq.scheduler = "multicore")
   # Run the pipeline on multiple local cores
-  system.time(make(all, cache = cache, cache_log_file = here::here("analysis", "drake", "cache_log_mcdb.txt"), verbose = 1))
+  system.time(make(all, cache = cache, cache_log_file = here::here("analysis", "drake", "cache_log_mcdb.txt"), verbose = 1, memory_strategy = "autoclean"))
 #}
 
 DBI::dbDisconnect(db)
