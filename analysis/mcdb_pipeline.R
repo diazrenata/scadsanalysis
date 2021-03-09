@@ -59,27 +59,27 @@ if (interactive())
 
 ## Run the pipeline
 nodename <- Sys.info()["nodename"]
-if(grepl("ufhpc", nodename)) {
-  print("I know I am on the HiPerGator!")
-  library(clustermq)
-  options(clustermq.scheduler = "slurm", clustermq.template = here::here("slurm_clustermq.tmpl"))
-  ## Run the pipeline parallelized for HiPerGator
-  make(all,
-       force = TRUE,
-       cache = cache,
-       cache_log_file = here::here("analysis", "drake", "cache_log_mcdb.txt"),
-       verbose = 1,
-       parallelism = "clustermq",
-       jobs = 20,
-       caching = "master",
-      memory_strategy = "autoclean",
-      garbage_collection = TRUE) # Important for DBI caches!
-} else {
+#if(grepl("ufhpc", nodename)) {
+#  print("I know I am on the HiPerGator!")
+#  library(clustermq)
+#  options(clustermq.scheduler = "slurm", clustermq.template = here::here("slurm_clustermq.tmpl"))
+#  ## Run the pipeline parallelized for HiPerGator
+#  make(all,
+#       force = TRUE,
+#       cache = cache,
+#       cache_log_file = here::here("analysis", "drake", "cache_log_mcdb.txt"),
+#       verbose = 1,
+#       parallelism = "clustermq",
+#       jobs = 20,
+#       caching = "master",
+#      memory_strategy = "autoclean",
+#      garbage_collection = TRUE) # Important for DBI caches!
+#} else {
   library(clustermq)
   options(clustermq.scheduler = "multicore")
   # Run the pipeline on multiple local cores
-  system.time(make(all, cache = cache, cache_log_file = here::here("analysis", "drake", "cache_log_mcdb.txt")))
-}
+  system.time(make(all, cache = cache, cache_log_file = here::here("analysis", "drake", "cache_log_mcdb.txt"), verbose = 1))
+#}
 
 DBI::dbDisconnect(db)
 rm(cache)
