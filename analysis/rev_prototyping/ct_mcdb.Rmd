@@ -54,9 +54,10 @@ ggplot(all_di, aes(sim_pos_from_best)) +
   geom_histogram()
 
 
-ggplot(all_di, aes(sim_pos_from_best, real_po)) +
+ggplot(all_di, aes(sim_pos_from_best, real_po, color = real_po_percentile_excl > 95)) +
   geom_point() +
-  geom_line(aes(sim_pos_from_best, sim_pos_from_best)) 
+  geom_line(aes(sim_pos_from_best, sim_pos_from_best)) +
+  theme(legend.position = "top")
 
 
 ggplot(all_di, aes(real_po_percentile_excl)) + geom_histogram()
