@@ -66,3 +66,24 @@ ggplot(all_di, aes(nparts, sim_pos_from_best)) +
   scale_x_log10()
 
 ```
+
+
+```{r}
+
+ggplot(all_di, aes(sim_r2_from_best_median)) +
+  geom_histogram()
+
+
+ggplot(all_di, aes(sim_r2_from_best_median, real_r2)) +
+  geom_point() +
+  geom_line(aes(sim_r2_from_best_median, sim_r2_from_best_median)) +
+  ylim(0,1)
+
+
+ggplot(all_di, aes(real_po_percentile_excl)) + geom_histogram()
+
+ggplot(all_di, aes(nparts, sim_r2_from_best_median)) +
+  geom_point() +
+  scale_x_log10()
+
+```
