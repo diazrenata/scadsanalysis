@@ -17,33 +17,6 @@ library(scadsanalysis)
 knitr::opts_chunk$set(fig.width=4, fig.height=3, warning = FALSE, message = FALSE) 
 
 theme_set(theme_bw())
-compare_props_off2 <- function(focal_sim, fs_df, ncomps = 100) {
-
-  fs_df$sim_char = as.character(fs_df$sim)
-
-  if(focal_sim != -99) {
-    fs_df <- dplyr::filter(fs_df, sim > 0)
-  }
-
-  nsims <- unique(fs_df$sim_char)[ which(unique(fs_df$sim_char) != as.character(focal_sim))]
-
-  if(length(nsims) == 0) {
-    return(data.frame(focal_sim = focal_sim, mean_po_comparison = NA, n_po_comparisons = 0))
-  }
-
-  focal_sad <- dplyr::filter(fs_df, sim == focal_sim)
-
-  compare_sims <- sample(nsims, size = min(length(nsims), ncomps), replace =F)
-
-  compare_sads <- dplyr::filter(fs_df, sim_char %in% compare_sims)
-
-  compare_props <- compare_sads %>%
-    dplyr::group_by(sim) %>%
-    dplyr::summarize(prop_off = proportion_off(t(data.frame(abund, focal_sad$abund)))) %>%
-    dplyr::ungroup()
-
-  return(compare_props)
-}
 
 ```
 
@@ -65,7 +38,7 @@ ggplot(ct_sad, aes(rank, abund)) +
   geom_line(data = real_sad, inherit.aes = T, color='blue')
 
 real_po <- proportion_off(t(data.frame(real_sad$abund, ct_sad$abund)))
-sim_po <- compare_props_off2(ct_sad$sim[1], fs, ncomps = 3999)
+sim_po <- compare_props_off_full(ct_sad$sim[1], fs, ncomps = 3999)
 
 
 ggplot(sim_po, aes(prop_off)) +

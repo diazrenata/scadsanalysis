@@ -1,0 +1,206 @@
+---
+title: "Updated results"
+author: Renata Diaz
+date: "`r Sys.Date()`"
+output: 
+    github_document:
+       df_print: kable
+       toc: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(drake)
+library(dplyr)
+library(ggplot2)
+library(scadsanalysis)
+
+knitr::opts_chunk$set(fig.width=4, fig.height=3, warning = FALSE, message = FALSE) 
+
+theme_set(theme_bw())
+
+
+all_di <- read.csv(here::here("analysis", "rev_prototyping", "all_di.csv"), stringsAsFactors = F)
+
+all_ct <-  read.csv(here::here("analysis", "rev_prototyping", "all_ct.csv"), stringsAsFactors = F)
+
+fia_ct <- read.csv(here::here("fia_cts.csv"))
+
+all_ct <- rbind(all_ct, fia_ct)
+
+all_ct <- all_ct %>%
+  mutate(dat = ifelse(grepl(dat, pattern = "fia"), "fia", dat),
+         dat = ifelse(dat == "misc_abund_short", "misc_abund", dat))
+
+all_di <- all_di %>%
+  mutate(log_nparts = log(gmp:::as.double.bigz(nparts)),
+         log_nsamples = log(nsamples),
+         log_s0 = log(s0),
+         log_n0 = log(n0)) %>%
+  filter(n0 != s0,
+         s0 != 1,
+         !singletons,
+         n0 != (s0 + 1)) %>%
+  mutate(dat = ifelse(grepl(dat, pattern = "fia"), "fia", dat),
+         dat = ifelse(dat == "misc_abund_short", "misc_abund", dat)) %>%
+  mutate(Dataset = dat,
+         Dataset = ifelse(Dataset == "fia", "FIA", Dataset),
+         Dataset = ifelse(Dataset == "bbs", "Breeding Bird Survey", Dataset),
+         Dataset = ifelse(Dataset == "mcdb", "Mammal Communities", Dataset),
+         Dataset = ifelse(Dataset == "gentry", "Gentry", Dataset),
+         Dataset = ifelse(Dataset == "misc_abund", "Misc. Abundance", Dataset)) %>%
+  filter(nparts > 20) %>%
+  left_join(all_ct) 
+
+all_di <- all_di %>%
+  group_by_all() %>%
+  mutate(real_po_percentile_mean = mean(real_po_percentile, real_po_percentile_excl)) %>%
+  ungroup()
+
+all_di <- all_di %>%
+  mutate(in_fia = ifelse(Dataset == "FIA", "FIA", "Other datasets"))
+
+```
+
+
+## Comparing observed to the baseline
+
+### Central tendency
+
+```{r}
+# 
+# ggplot(all_di, aes(sim_pos_from_best)) +
+#   geom_histogram() +
+#   facet_wrap(vars(dat), scales = "free_y") 
+# 
+# ggplot(all_di, aes(real_po_percentile_excl)) + geom_histogram() +
+#   facet_wrap(vars(dat), scales = "free_y") + geom_vline(xintercept = 95)
+
+ggplot(all_di, aes(real_po_percentile_mean)) + geom_histogram() +
+  facet_wrap(vars(dat), scales = "free_y") + geom_vline(xintercept = 95)
+
+
+all_di %>%
+  group_by(dat) %>%
+  summarize(prop_high_po = mean(real_po_percentile_excl > 95, na.rm = T),
+            nsites = dplyr::n())
+
+
+
+all_di %>%
+  group_by(in_fia) %>%
+  summarize(prop_high_po = mean(real_po_percentile_excl > 95, na.rm = T),
+            nsites = dplyr::n())
+
+
+ggplot(all_di, aes(sim_pos_from_best, real_po, color = real_po_percentile_excl > 95)) +
+  geom_point(alpha = .3) +
+  geom_abline(slope = 1, intercept = 0) +
+  theme(legend.position = "top") +
+  scale_color_viridis_d(end = .8) +
+  facet_wrap(vars(dat), scales = "fixed")
+
+ggplot(all_di, aes(sim_pos_from_best, real_po, color = real_po_percentile_excl > 95)) +
+  geom_point(alpha = .3) +
+  geom_abline(slope = 1, intercept = 0) +
+  theme(legend.position = "top") +
+  scale_color_viridis_d(end = .8)# +
+#  facet_wrap(vars(dat), scales = "fixed")
+
+filter(all_di, real_po_percentile_excl > 95) %>%
+  mutate(real_to_mean_sim_po_ratio = real_po / sim_pos_from_best,
+         real_to_mean_sim_po_difference = real_po - sim_pos_from_best,
+         real_to_mean_sim_po_logratio = log(real_po / sim_pos_from_best)) %>%
+  select(real_to_mean_sim_po_ratio, real_to_mean_sim_po_difference) %>%
+  summarize_all(.funs = list(min = min,max = max))
+```
+
+
+### Shape metrics
+
+```{r, fig.dim = c(12,12)}
+
+all_di_shapes_long <- all_di  %>%
+  filter(nparts > 40) %>%
+  select(dat, skew_percentile, skew_percentile_excl, simpson_percentile, simpson_percentile_excl, shannon_percentile, shannon_percentile_excl, nsingletons_percentile, nsingletons_percentile_excl) %>%
+  rename(skew = skew_percentile,
+         skewX = skew_percentile_excl,
+         simp = simpson_percentile,
+         simpX = simpson_percentile_excl,
+         shan = shannon_percentile,
+         shanX = shannon_percentile_excl,
+         nsng = nsingletons_percentile,
+         nsngX = nsingletons_percentile_excl) %>%
+  mutate(skewM = (skew + skewX) / 2,
+         simpM = (simp+ simpX)/2,
+         shanM = (shan+ shanX)/2,
+         nsngM = (nsng+ nsngX)/2) %>%
+  tidyr::pivot_longer(-dat, names_to = "metric", values_to = "value") %>%
+  mutate(metric_name = substr(metric, 0, 4),
+         metric_mod = ifelse(substr(metric, 5, 5) == "X", "excl", ifelse(substr(metric, 5,5) == "M", "mean", "incl")))
+
+
+ggplot(filter(all_di_shapes_long, metric_mod == "mean"), aes(value)) +
+  geom_histogram(bins = 40) +
+  #facet_grid(rows = vars(dat), cols = vars(metric_name), scales = "free", switch = "y") +
+  facet_wrap(vars(metric_name, dat), scales = "free", ncol = 5) +
+  geom_vline(xintercept = c(2.5, 97.5))
+
+all_di_shapes_high <- all_di_shapes_long %>%
+  filter(metric_mod == "excl") %>%
+  group_by(dat, metric_name) %>%
+  summarize(proportion_high = mean(value > 95))
+
+all_di_shapes_high %>%
+  tidyr::pivot_wider(id_cols = dat, names_from = metric_name, values_from = proportion_high) %>% mutate(dir = "HIGH")
+
+
+all_di_shapes_low <- all_di_shapes_long %>%
+  filter(metric_mod == "incl") %>%
+  group_by(dat, metric_name) %>%
+  summarize(proportion_low = mean(value <5))
+
+
+all_di_shapes_low %>%
+  tidyr::pivot_wider(id_cols = dat, names_from = metric_name, values_from = proportion_low) %>%
+  mutate(dir = "LOW")
+
+```
+<!-- ``` -->
+<!-- ```{r} -->
+
+
+
+<!-- ggplot(all_di, aes((real_po / sim_pos_from_best), real_po_percentile_excl, color =  real_po_percentile_excl > 95)) + -->
+<!--   geom_point(alpha = .3)  -->
+
+
+<!-- all_di %>% -->
+<!--   mutate(rat = real_po / sim_pos_from_best, -->
+<!--          dev = real_po_percentile_excl > 95) %>% -->
+<!--   group_by(dev) %>% -->
+<!--   summarize(minrat = min(rat), -->
+<!--             maxrat = max(rat), -->
+<!--             meanrat = mean(rat), -->
+<!--             mindis = min(real_po - sim_pos_from_best), -->
+<!--             maxdis = max(real_po - sim_pos_from_best)) -->
+
+<!-- ggplot(all_di, aes(nparts, sim_pos_from_best)) + -->
+<!--   geom_point() + -->
+<!--   scale_x_log10() -->
+
+
+<!-- ggplot(all_di, aes(nparts, sim_pos_from_best, color = dat)) + -->
+<!--   geom_point() + -->
+<!--   scale_x_log10()  + -->
+<!--   scale_color_viridis_d() + -->
+<!--   theme(legend.position = "top") -->
+
+
+<!-- ggplot(all_di, aes(s0, n0, color =  sim_pos_from_best)) + -->
+<!--   geom_point() + -->
+<!--   scale_x_log10()  + -->
+<!--   scale_y_log10() + -->
+<!--   scale_color_viridis_c() + -->
+<!--   theme(legend.position = "top") -->
+<!-- ``` -->
