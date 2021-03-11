@@ -44,7 +44,11 @@ all <- drake_plan(
   di_obs = target(pull_di(di),
                   transform = map(di)),
   all_di_obs = target(dplyr::bind_rows(di_obs),
-                    transform = combine(di_obs))
+                    transform = combine(di_obs)),
+ cts = target(po_central_tendency(fs, fs_pc),
+              transform = map(fs, fs_pc)),
+ all_cts = target(dplyr::bind_rows(cts),
+                  transform = combine(cts))
 )
 
 ## Set up the cache and config
@@ -61,28 +65,28 @@ cache$del(key = "lock", namespace = "session")
 # }
 #
 ## Run the pipeline
-nodename <- Sys.info()["nodename"]
-if(grepl("ufhpc", nodename)) {
-  print("I know I am on the HiPerGator!")
-  library(clustermq)
-  options(clustermq.scheduler = "slurm", clustermq.template = here::here("slurm_clustermq.tmpl"))
-  ## Run the pipeline parallelized for HiPerGator
-  make(all,
-       force = TRUE,
-       cache = cache,
-       cache_log_file = here::here("analysis", "drake", "cache_log_fia_small_jk.txt"),
-       verbose = 1,
-       parallelism = "clustermq",
-       jobs = 50,
-       caching = "master",
-       memory_strategy = "autoclean",
-       garbage_collection = TRUE) # Important for DBI caches!
-} else {
+# nodename <- Sys.info()["nodename"]
+# if(grepl("ufhpc", nodename)) {
+#   print("I know I am on the HiPerGator!")
+#   library(clustermq)
+#   options(clustermq.scheduler = "slurm", clustermq.template = here::here("slurm_clustermq.tmpl"))
+#   ## Run the pipeline parallelized for HiPerGator
+#   make(all,
+#        force = TRUE,
+#        cache = cache,
+#        cache_log_file = here::here("analysis", "drake", "cache_log_fia_small_jk.txt"),
+#        verbose = 1,
+#        parallelism = "clustermq",
+#        jobs = 50,
+#        caching = "master",
+#        memory_strategy = "autoclean",
+#        garbage_collection = TRUE) # Important for DBI caches!
+# } else {
   # library(clustermq)
   # options(clustermq.scheduler = "multicore")
   # Run the pipeline on multiple local cores
-  system.time(make(all, cache = cache, cache_log_file = here::here("analysis", "drake", "cache_log_fia_small_jk.txt")))
-}
+  system.time(make(all, cache = cache, cache_log_file = here::here("analysis", "drake", "cache_log_fia_small_jk.txt"), verbose = 1, memory_strategy = "autoclean"))
+#}
 
 DBI::dbDisconnect(db)
 rm(cache)
