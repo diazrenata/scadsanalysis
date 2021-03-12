@@ -15,7 +15,7 @@ library(ggplot2)
 library(grid)
 
 
-all_di <- read.csv(here::here("analysis", "reports", "all_di.csv"), stringsAsFactors = F)
+all_di <- read.csv(here::here("analysis", "rev_prototyping", "all_di.csv"), stringsAsFactors = F)
 
 all_di <- all_di %>%
   mutate(log_nparts = log(gmp:::as.double.bigz(nparts)),
@@ -293,7 +293,7 @@ for(i in 1:nrow(small_di_s_n)) {
 sub_di <- bind_rows(subsamples) %>%
   mutate(Dataset = ifelse(fia_yn == "fia", "FIA", "Other datasets"))
 
-simpson_ks <- filter(sub_di, nparts > 20) %>%
+simpson_ks <- filter(sub_di, nparts > 40) %>%
   select(simpson_95_ratio_1t, Dataset, simpson_percentile, s0, n0) %>% 
   group_by(Dataset, s0, n0) %>%
   mutate(pairing = dplyr::row_number()) %>%
@@ -306,7 +306,7 @@ simpson_percent <- ks.test(simpson_ks$simpson_percentile_FIA, simpson_ks$`simpso
 simpson_breadth
 simpson_percent
 
-skewness_ks <- filter(sub_di, nparts > 20) %>%
+skewness_ks <- filter(sub_di, nparts > 40) %>%
   select(skew_95_ratio_1t, Dataset, skew_percentile, s0, n0) %>% 
   group_by(Dataset, s0, n0) %>%
   mutate(pairing = dplyr::row_number()) %>%

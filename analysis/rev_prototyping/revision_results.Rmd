@@ -122,6 +122,7 @@ filter(all_di, real_po_percentile_excl > 95) %>%
 
 all_di_shapes_long <- all_di  %>%
   filter(nparts > 40) %>%
+  mutate(dat = ifelse(nparts < 1000, paste0(dat, "_small"), dat)) %>%
   select(dat, skew_percentile, skew_percentile_excl, simpson_percentile, simpson_percentile_excl, shannon_percentile, shannon_percentile_excl, nsingletons_percentile, nsingletons_percentile_excl) %>%
   rename(skew = skew_percentile,
          skewX = skew_percentile_excl,
@@ -149,10 +150,11 @@ ggplot(filter(all_di_shapes_long, metric_mod == "mean"), aes(value)) +
 all_di_shapes_high <- all_di_shapes_long %>%
   filter(metric_mod == "excl") %>%
   group_by(dat, metric_name) %>%
-  summarize(proportion_high = mean(value > 95))
+  summarize(proportion_high = mean(value > 95),
+            n = dplyr::n())
 
 all_di_shapes_high %>%
-  tidyr::pivot_wider(id_cols = dat, names_from = metric_name, values_from = proportion_high) %>% mutate(dir = "HIGH")
+  tidyr::pivot_wider(id_cols = c(dat, n), names_from = metric_name, values_from = proportion_high) %>% mutate(dir = "HIGH")
 
 
 all_di_shapes_low <- all_di_shapes_long %>%
@@ -165,42 +167,359 @@ all_di_shapes_low %>%
   tidyr::pivot_wider(id_cols = dat, names_from = metric_name, values_from = proportion_low) %>%
   mutate(dir = "LOW")
 
+
+
+all_di_shapes_high <- all_di_shapes_long %>%
+  mutate(in_fia = ifelse(dat == "fia", "FIA", "Other")) %>%
+  filter(metric_mod == "excl") %>%
+  group_by(in_fia, metric_name) %>%
+  summarize(proportion_high = mean(value >95))
+
+
+all_di_shapes_high %>%
+  tidyr::pivot_wider(id_cols = in_fia, names_from = metric_name, values_from = proportion_high) %>%
+  mutate(dir = "high")
+
+all_di_shapes_low <- all_di_shapes_long %>%
+  mutate(in_fia = ifelse(grepl("fia", dat), "FIA", "Other")) %>%
+  filter(metric_mod == "incl") %>%
+  group_by(in_fia, metric_name) %>%
+  summarize(proportion_low = mean(value <5))
+
+
+all_di_shapes_low %>%
+  tidyr::pivot_wider(id_cols = in_fia, names_from = metric_name, values_from = proportion_low) %>%
+  mutate(dir = "LOW")
+
 ```
-<!-- ``` -->
-<!-- ```{r} -->
+
+## Narrowness of the expectation
+
+### Central tendency
+
+```{r}
+ggplot(all_di, aes(nparts, sim_pos_from_best, color = log(n0/s0))) +
+  geom_point() +
+  scale_x_log10() +
+  scale_color_viridis_c(option = "plasma")
+ 
+```
+
+```{r, fig.dim = c(3,6)}
+
+all_di <- all_di %>%
+  mutate(tiny = nparts < 2000)
+
+
+ggplot(all_di, aes(sim_pos_from_best)) +
+geom_histogram(bins = 100) +
+  facet_wrap(vars(tiny), scales = "free_y", ncol = 1)
+
+
+```
+
+### Shape metric
+
+```{r}
+
+ggplot(filter(all_di, nparts < 1e56, s0 > 2), aes(nparts, skew_95_ratio_2t, color = log(n0/s0))) +
+  geom_point() +
+  scale_x_log10() +
+  scale_color_viridis_c(option = "plasma")
+
+
+ggplot(filter(all_di, nparts < 1e56), aes(nparts, simpson_95_ratio_2t, color = log(n0/s0))) +
+  geom_point() +
+  scale_x_log10() +
+  scale_color_viridis_c(option = "plasma")
+
+
+ggplot(filter(all_di, nparts < 1e56), aes(nparts, shannon_95_ratio_2t, color = log(n0/s0))) +
+  geom_point() +
+  scale_x_log10() +
+  scale_color_viridis_c(option = "plasma")
+
+
+ggplot(filter(all_di, nparts < 1e56), aes(nparts, nsingletons_95_ratio_2t, color = log(n0/s0))) +
+  geom_point() +
+  scale_x_log10() +
+  scale_color_viridis_c(option = "plasma")
+
+```
+
+
+```{r, fig.dim = c(4, 6)}
+
+ggplot(filter(all_di), aes(sim_pos_from_best)) +
+geom_histogram() +
+  facet_wrap(vars(tiny), scales = "free_y", ncol = 1)
+ggplot(filter(all_di, s0 > 2), aes(skew_95_ratio_2t)) +
+geom_histogram() +
+  facet_wrap(vars(tiny), scales = "free_y", ncol = 1)
+
+ggplot(filter(all_di), aes(simpson_95_ratio_2t)) +
+geom_histogram() +
+  facet_wrap(vars(tiny), scales = "free_y", ncol = 1)
+
+ggplot(filter(all_di), aes(shannon_95_ratio_2t)) +
+geom_histogram() +
+  facet_wrap(vars(tiny), scales = "free_y", ncol = 1)
+
+ggplot(filter(all_di), aes(nsingletons_95_ratio_2t)) +
+geom_histogram() +
+  facet_wrap(vars(tiny), scales = "free_y", ncol = 1)
+```
+
+```{r, fig.dim = c(3, 6)}
 
 
 
-<!-- ggplot(all_di, aes((real_po / sim_pos_from_best), real_po_percentile_excl, color =  real_po_percentile_excl > 95)) + -->
-<!--   geom_point(alpha = .3)  -->
+
+ggplot(filter(all_di, dat  %in% c("fia", "mcdb", "misc_abund")), aes(sim_pos_from_best)) +
+geom_histogram() +
+  facet_wrap(vars(tiny, dat), scales = "free_y", ncol = 3)
+ggplot(filter(all_di, s0 > 2, dat  %in% c("fia", "mcdb", "misc_abund")), aes(skew_95_ratio_2t)) +
+geom_histogram() +
+  facet_wrap(vars(tiny, dat), scales = "free_y", ncol = 3)
+
+ggplot(filter(all_di, dat  %in% c("fia", "mcdb", "misc_abund")), aes(simpson_95_ratio_2t)) +
+geom_histogram() +
+  facet_wrap(vars(tiny, dat), scales = "free_y", ncol = 3)
+
+ggplot(filter(all_di, dat  %in% c("fia", "mcdb", "misc_abund")), aes(shannon_95_ratio_2t)) +
+geom_histogram() +
+  facet_wrap(vars(tiny, dat), scales = "free_y", ncol = 3)
+
+ggplot(filter(all_di, dat  %in% c("fia", "mcdb", "misc_abund")), aes(nsingletons_95_ratio_2t)) +
+geom_histogram() +
+  facet_wrap(vars(tiny, dat), scales = "free_y", ncol = 3)
 
 
-<!-- all_di %>% -->
-<!--   mutate(rat = real_po / sim_pos_from_best, -->
-<!--          dev = real_po_percentile_excl > 95) %>% -->
-<!--   group_by(dev) %>% -->
-<!--   summarize(minrat = min(rat), -->
-<!--             maxrat = max(rat), -->
-<!--             meanrat = mean(rat), -->
-<!--             mindis = min(real_po - sim_pos_from_best), -->
-<!--             maxdis = max(real_po - sim_pos_from_best)) -->
-
-<!-- ggplot(all_di, aes(nparts, sim_pos_from_best)) + -->
-<!--   geom_point() + -->
-<!--   scale_x_log10() -->
+```
 
 
-<!-- ggplot(all_di, aes(nparts, sim_pos_from_best, color = dat)) + -->
-<!--   geom_point() + -->
-<!--   scale_x_log10()  + -->
-<!--   scale_color_viridis_d() + -->
-<!--   theme(legend.position = "top") -->
 
 
-<!-- ggplot(all_di, aes(s0, n0, color =  sim_pos_from_best)) + -->
-<!--   geom_point() + -->
-<!--   scale_x_log10()  + -->
-<!--   scale_y_log10() + -->
-<!--   scale_color_viridis_c() + -->
-<!--   theme(legend.position = "top") -->
-<!-- ``` -->
+
+```{r, fig.dim = c(7,7)}
+library(grid)
+
+fia_max_s = max(filter(all_di, dat == "fia")$s0)
+fia_max_n = max(filter(all_di, dat == "fia")$n0)
+
+fia = filter(all_di, dat == "fia")
+
+small_di <- all_di %>%
+  filter(s0 <= fia_max_s,
+         n0 <= fia_max_n) %>%
+  mutate(fia_yn = ifelse(dat == "fia", "fia", "other datasets"),
+         right_corner = FALSE)
+
+for(i in 1:nrow(small_di)) {
+  if(small_di$dat[i] != "fia") {
+    fia_match_s0 = filter(fia, s0 >= small_di$s0[i])
+    
+    max_n0_for_this_s0 = max(fia_match_s0$n0)
+    
+    small_di$right_corner[i] = small_di$n0[i] > max_n0_for_this_s0
+    
+  }
+}
+
+
+small_di <- small_di %>%
+  filter(!right_corner)
+not_fia <- filter(small_di, fia_yn != "fia")
+fia = filter(small_di, dat == "fia")
+
+small_di_s_n <- small_di %>%
+  select(s0, n0) %>%
+  distinct() %>%
+  mutate(in_fia = FALSE,
+         in_not_fia = FALSE)
+
+for(i in 1:nrow(small_di_s_n)) {
+  
+  this_s0 = small_di_s_n$s0[i]
+  this_n0 = small_di_s_n$n0[i]
+  
+  fia_matches = filter(fia, s0 == this_s0, n0 == this_n0)
+  not_fia_matches = filter(not_fia, s0 == this_s0, n0 == this_n0)
+  
+  small_di_s_n$in_fia[i] = nrow(fia_matches) > 0 
+  small_di_s_n$in_not_fia[i] = nrow(not_fia_matches) > 0 
+  
+  
+}
+
+small_di_s_n <- filter(small_di_s_n, in_fia, in_not_fia)
+
+set.seed(1977)
+
+subsamples <- list()
+
+for(i in 1:nrow(small_di_s_n)) {
+  
+  this_s0 = small_di_s_n$s0[i]
+  this_n0 = small_di_s_n$n0[i]
+  
+  fia_matches = filter(fia, s0 == this_s0, n0 == this_n0)
+  
+  not_fia_matches = filter(not_fia, s0 == this_s0, n0 == this_n0)
+  
+  n_to_draw = min(nrow(fia_matches), nrow(not_fia_matches))
+  
+  fia_draw = sample.int(n = nrow(fia_matches), size = n_to_draw, replace = F)
+  not_fia_draw = sample.int(n = nrow(not_fia_matches), size = n_to_draw, replace = F)
+  
+  subsamples[[i]] <- (bind_rows(fia_matches[fia_draw,], not_fia_matches[not_fia_draw, ]))
+  
+}
+
+sub_di <- bind_rows(subsamples) %>%
+  mutate(Dataset = ifelse(fia_yn == "fia", "FIA", "Other datasets"))
+
+simpson_ks <- filter(sub_di, nparts > 40) %>%
+  select(simpson_95_ratio_2t, Dataset, simpson_percentile, s0, n0) %>% 
+  group_by(Dataset, s0, n0) %>%
+  mutate(pairing = dplyr::row_number()) %>%
+  ungroup() %>%
+  tidyr::pivot_wider(id_cols = c(s0, n0, pairing), names_from = Dataset, values_from = c(simpson_95_ratio_2t, simpson_percentile))
+
+simpson_breadth <- ks.test(simpson_ks$simpson_95_ratio_2t_FIA, simpson_ks$`simpson_95_ratio_2t_Other datasets`)
+
+simpson_percent <- ks.test(simpson_ks$simpson_percentile_FIA, simpson_ks$`simpson_percentile_Other datasets`)
+simpson_breadth
+simpson_percent
+
+skewness_ks <- filter(sub_di, nparts > 40) %>%
+  select(skew_95_ratio_2t, Dataset, skew_percentile_excl, s0, n0) %>% 
+  group_by(Dataset, s0, n0) %>%
+  mutate(pairing = dplyr::row_number()) %>%
+  ungroup() %>%
+  tidyr::pivot_wider(id_cols = c(s0, n0, pairing), names_from = Dataset, values_from = c(skew_95_ratio_2t, skew_percentile_excl))
+
+skewness_breadth <- ks.test(skewness_ks$skew_95_ratio_2t_FIA, skewness_ks$`skew_95_ratio_2t_Other datasets`)
+
+skewness_percent <- ks.test(skewness_ks$skew_percentile_excl_FIA, skewness_ks$`skew_percentile_excl_Other datasets`)
+skewness_breadth
+skewness_percent
+
+ggplot(filter(sub_di, nparts > 40), aes(real_po_percentile_excl)) +
+  geom_histogram() +
+  facet_wrap(vars(fia_yn))
+
+ggplot(filter(sub_di, nparts > 40), aes(sim_pos_from_best)) +
+  geom_histogram() +
+  facet_wrap(vars(fia_yn))
+
+
+ggplot(filter(sub_di, nparts > 40), aes(skew_percentile_excl)) +
+  geom_histogram() +
+  facet_wrap(vars(fia_yn))
+
+ggplot(filter(sub_di, nparts > 40), aes(skew_95_ratio_2t)) +
+  geom_histogram() +
+  facet_wrap(vars(fia_yn))
+
+ggplot(filter(sub_di, nparts > 40), aes(nsingletons_percentile_excl)) +
+  geom_histogram() +
+  facet_wrap(vars(fia_yn))
+
+ggplot(filter(sub_di, nparts > 40), aes(nsingletons_95_ratio_2t)) +
+  geom_histogram() +
+  facet_wrap(vars(fia_yn))
+
+ggplot(filter(sub_di, nparts > 20), aes(simpson_percentile)) +
+  geom_histogram() +
+  facet_wrap(vars(fia_yn))
+
+ggplot(filter(sub_di, nparts > 40), aes(simpson_95_ratio_2t)) +
+  geom_histogram() +
+  facet_wrap(vars(fia_yn))
+ggplot(filter(sub_di, nparts > 40), aes(shannon_percentile)) +
+  geom_histogram() +
+  facet_wrap(vars(fia_yn))
+
+ggplot(filter(sub_di, nparts > 40), aes(shannon_95_ratio_2t)) +
+  geom_histogram() +
+  facet_wrap(vars(fia_yn))
+
+```
+
+```{r}
+# 
+# fig_4 <- gridExtra::grid.arrange(grobs = list(
+#   ggplot(filter(sub_di, nparts > 40), aes(skew_95_ratio_2t)) +
+#     geom_histogram()+
+#     theme_bw() +
+#     facet_wrap(vars(Dataset), scales = "free_y")  +
+#     xlab("Breadth index") +
+#     ylab("Number of communities") +
+#     ggtitle("Breadth index", subtitle = "Skewness"),
+#   
+#   ggplot(filter(sub_di, nparts > 40), aes(simpson_95_ratio_2t)) +
+#     geom_histogram()+
+#     theme_bw() +
+#     facet_wrap(vars(Dataset), scales = "free_y")  +
+#     xlab("Breadth index") +
+#     ylab("") +
+#     ggtitle("", subtitle = "Evenness"),
+#   
+#   ggplot(filter(sub_di, nparts > 40), aes(skew_percentile_excl)) +
+#     geom_histogram()+
+#     theme_bw() +
+#     facet_wrap(vars(Dataset), scales = "free_y")  +
+#     xlab("Percentile rank") +
+#     ylab("Number of communities") +
+#     ggtitle("Percentile rank", subtitle = "Skewness"),
+#   
+#   
+#   ggplot(filter(sub_di, nparts > 40), aes(simpson_percentile)) +
+#     geom_histogram()+
+#     theme_bw() +
+#     facet_wrap(vars(Dataset), scales = "free_y")  +
+#     xlab("Percentile rank") +
+#     ylab("")+
+#     ggtitle("", subtitle = "Evenness")), ncol = 2, top = textGrob("Figure 4", gp = gpar(fill = "white")))
+# 
+# plot(fig_4)
+```
+
+
+```{r}
+
+all_di <- all_di %>%
+  mutate(tiny = nparts < exp(10))
+
+ggplot(filter(all_di, nparts > 40, s0 > 2), aes(sim_pos_from_best, color = tiny)) +
+  geom_density()
+ggplot(filter(all_di, nparts > 40, s0 > 2), aes(skew_95_ratio_2t, color = tiny)) +
+  geom_density()
+
+ggplot(filter(all_di, nparts > 40), aes(simpson_95_ratio_2t, color = tiny)) +
+  geom_density()
+
+ggplot(filter(all_di, nparts > 40), aes(shannon_95_ratio_2t, color = tiny)) +
+  geom_density()
+```
+
+
+```{r}
+
+## Set up the cache and config
+db <- DBI::dbConnect(RSQLite::SQLite(), here::here("analysis", "drake", "drake-cache-net.sqlite"))
+cache <- storr::storr_dbi("datatable", "keystable", db)
+cache$del(key = "lock", namespace = "session")
+knitr::opts_chunk$set(fig.width=3, fig.height=2.5, warning = FALSE, message = FALSE) 
+
+
+net_summary <- readd(all_di_summary, cache = cache)
+
+net_summary <- net_summary %>%
+  mutate(log_nparts = log(gmp:::as.double.bigz(nparts)))
+
+ggplot(net_summary, aes(log_nparts, skew_95_ratio_2t)) +
+  geom_point()
+
+```

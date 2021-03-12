@@ -1,7 +1,7 @@
 Figures and results for main manuscript
 ================
 Renata Diaz
-2021-02-23
+2021-03-11
 
 # Illustrations of 95% interval (Figure 1)
 
@@ -61,14 +61,14 @@ communities. See rov\_metric.md.
     ##  Two-sample Kolmogorov-Smirnov test
     ## 
     ## data:  simpson_ks$simpson_95_ratio_1t_FIA and simpson_ks$`simpson_95_ratio_1t_Other datasets`
-    ## D = 0.040214, p-value = 0.9236
+    ## D = 0.045455, p-value = 0.8849
     ## alternative hypothesis: two-sided
 
     ## 
     ##  Two-sample Kolmogorov-Smirnov test
     ## 
     ## data:  simpson_ks$simpson_percentile_FIA and simpson_ks$`simpson_percentile_Other datasets`
-    ## D = 0.042895, p-value = 0.8825
+    ## D = 0.048485, p-value = 0.8327
     ## alternative hypothesis: two-sided
 
     ## Warning in ks.test(skewness_ks$skew_95_ratio_1t_FIA,
@@ -83,14 +83,14 @@ communities. See rov\_metric.md.
     ##  Two-sample Kolmogorov-Smirnov test
     ## 
     ## data:  skewness_ks$skew_95_ratio_1t_FIA and skewness_ks$`skew_95_ratio_1t_Other datasets`
-    ## D = 0.029491, p-value = 0.9969
+    ## D = 0.033333, p-value = 0.993
     ## alternative hypothesis: two-sided
 
     ## 
     ##  Two-sample Kolmogorov-Smirnov test
     ## 
     ## data:  skewness_ks$skew_percentile_FIA and skewness_ks$`skew_percentile_Other datasets`
-    ## D = 0.067024, p-value = 0.3719
+    ## D = 0.090909, p-value = 0.1308
     ## alternative hypothesis: two-sided
 
     ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.

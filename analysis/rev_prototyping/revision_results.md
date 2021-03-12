@@ -7,6 +7,9 @@ Renata Diaz
     baseline](#comparing-observed-to-the-baseline)
       - [Central tendency](#central-tendency)
       - [Shape metrics](#shape-metrics)
+  - [Narrowness of the expectation](#narrowness-of-the-expectation)
+      - [Central tendency](#central-tendency-1)
+      - [Shape metric](#shape-metric)
 
 ## Comparing observed to the baseline
 
@@ -51,80 +54,100 @@ Renata Diaz
 
 <div class="kable-table">
 
-| dat         |      nsng |      shan |      simp |      skew | dir  |
-| :---------- | --------: | --------: | --------: | --------: | :--- |
-| bbs         | 0.0796971 | 0.0100974 | 0.0176704 | 0.1301839 | HIGH |
-| fia         | 0.0258472 | 0.0037909 | 0.0036186 | 0.0564618 | HIGH |
-| gentry      | 0.0179372 | 0.3094170 | 0.2735426 | 0.1883408 | HIGH |
-| mcdb        | 0.1682975 | 0.0097847 | 0.0097847 | 0.1663405 | HIGH |
-| misc\_abund | 0.3395062 | 0.0082305 | 0.0041152 | 0.3497942 | HIGH |
+| dat                |    n |      nsng |      shan |      simp |      skew | dir  |
+| :----------------- | ---: | --------: | --------: | --------: | --------: | :--- |
+| bbs                | 2772 | 0.0797258 | 0.0101010 | 0.0176768 | 0.1302309 | HIGH |
+| bbs\_small         |    1 | 0.0000000 | 0.0000000 | 0.0000000 | 0.0000000 | HIGH |
+| fia                | 7959 | 0.0325418 | 0.0025129 | 0.0028898 | 0.0894585 | HIGH |
+| fia\_small         | 9451 | 0.0202095 | 0.0048672 | 0.0042324 | 0.0286742 | HIGH |
+| gentry             |  223 | 0.0179372 | 0.3094170 | 0.2735426 | 0.1883408 | HIGH |
+| mcdb               |  377 | 0.2068966 | 0.0132626 | 0.0132626 | 0.2175066 | HIGH |
+| mcdb\_small        |  134 | 0.0597015 | 0.0000000 | 0.0000000 | 0.0223881 | HIGH |
+| misc\_abund        |  464 | 0.3534483 | 0.0086207 | 0.0043103 | 0.3599138 | HIGH |
+| misc\_abund\_small |   22 | 0.0454545 | 0.0000000 | 0.0000000 | 0.1363636 | HIGH |
 
 </div>
 
 <div class="kable-table">
 
-| dat         |      nsng |      shan |      simp |      skew | dir |
-| :---------- | --------: | --------: | --------: | --------: | :-- |
-| bbs         | 0.0000000 | 0.2802019 | 0.2596466 | 0.0281284 | LOW |
-| fia         | 0.0000000 | 0.0931648 | 0.0962665 | 0.0125790 | LOW |
-| gentry      | 0.3004484 | 0.1300448 | 0.1524664 | 0.0896861 | LOW |
-| mcdb        | 0.0000000 | 0.4031311 | 0.3718200 | 0.0156556 | LOW |
-| misc\_abund | 0.0000000 | 0.6275720 | 0.6008230 | 0.0041152 | LOW |
+| dat                |      nsng |      shan |      simp |      skew | dir |
+| :----------------- | --------: | --------: | --------: | --------: | :-- |
+| bbs                | 0.0000000 | 0.2803030 | 0.2597403 | 0.0281385 | LOW |
+| bbs\_small         | 0.0000000 | 0.0000000 | 0.0000000 | 0.0000000 | LOW |
+| fia                | 0.0000000 | 0.1248901 | 0.1290363 | 0.0124387 | LOW |
+| fia\_small         | 0.0000000 | 0.0664480 | 0.0686700 | 0.0126971 | LOW |
+| gentry             | 0.3004484 | 0.1300448 | 0.1524664 | 0.0896861 | LOW |
+| mcdb               | 0.0000000 | 0.4748011 | 0.4323607 | 0.0159151 | LOW |
+| mcdb\_small        | 0.0000000 | 0.2014925 | 0.2014925 | 0.0149254 | LOW |
+| misc\_abund        | 0.0000000 | 0.6508621 | 0.6228448 | 0.0043103 | LOW |
+| misc\_abund\_small | 0.0000000 | 0.1363636 | 0.1363636 | 0.0000000 | LOW |
 
 </div>
 
-<!-- ``` -->
+<div class="kable-table">
 
-<!-- ```{r} -->
+| in\_fia |      nsng |      shan |      simp |      skew | dir  |
+| :------ | --------: | --------: | --------: | --------: | :--- |
+| FIA     | 0.0325418 | 0.0025129 | 0.0028898 | 0.0894585 | high |
+| Other   | 0.0496132 | 0.0113062 | 0.0116781 | 0.0691015 | high |
 
-<!-- ggplot(all_di, aes((real_po / sim_pos_from_best), real_po_percentile_excl, color =  real_po_percentile_excl > 95)) + -->
+</div>
 
-<!--   geom_point(alpha = .3)  -->
+<div class="kable-table">
 
-<!-- all_di %>% -->
+| in\_fia |      nsng |      shan |      simp |      skew | dir |
+| :------ | --------: | --------: | --------: | --------: | :-- |
+| FIA     | 0.0000000 | 0.0931648 | 0.0962665 | 0.0125790 | LOW |
+| Other   | 0.0167794 | 0.3298272 | 0.3095417 | 0.0270473 | LOW |
 
-<!--   mutate(rat = real_po / sim_pos_from_best, -->
+</div>
 
-<!--          dev = real_po_percentile_excl > 95) %>% -->
+## Narrowness of the expectation
 
-<!--   group_by(dev) %>% -->
+### Central tendency
 
-<!--   summarize(minrat = min(rat), -->
+![](revision_results_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
 
-<!--             maxrat = max(rat), -->
+![](revision_results_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
 
-<!--             meanrat = mean(rat), -->
+### Shape metric
 
-<!--             mindis = min(real_po - sim_pos_from_best), -->
+![](revision_results_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->![](revision_results_files/figure-gfm/unnamed-chunk-5-2.png)<!-- -->![](revision_results_files/figure-gfm/unnamed-chunk-5-3.png)<!-- -->![](revision_results_files/figure-gfm/unnamed-chunk-5-4.png)<!-- -->
 
-<!--             maxdis = max(real_po - sim_pos_from_best)) -->
+![](revision_results_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->![](revision_results_files/figure-gfm/unnamed-chunk-6-2.png)<!-- -->![](revision_results_files/figure-gfm/unnamed-chunk-6-3.png)<!-- -->![](revision_results_files/figure-gfm/unnamed-chunk-6-4.png)<!-- -->![](revision_results_files/figure-gfm/unnamed-chunk-6-5.png)<!-- -->
 
-<!-- ggplot(all_di, aes(nparts, sim_pos_from_best)) + -->
+![](revision_results_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->![](revision_results_files/figure-gfm/unnamed-chunk-7-2.png)<!-- -->![](revision_results_files/figure-gfm/unnamed-chunk-7-3.png)<!-- -->![](revision_results_files/figure-gfm/unnamed-chunk-7-4.png)<!-- -->![](revision_results_files/figure-gfm/unnamed-chunk-7-5.png)<!-- -->
 
-<!--   geom_point() + -->
+    ## 
+    ##  Two-sample Kolmogorov-Smirnov test
+    ## 
+    ## data:  simpson_ks$simpson_95_ratio_2t_FIA and simpson_ks$`simpson_95_ratio_2t_Other datasets`
+    ## D = 0.039394, p-value = 0.96
+    ## alternative hypothesis: two-sided
 
-<!--   scale_x_log10() -->
+    ## 
+    ##  Two-sample Kolmogorov-Smirnov test
+    ## 
+    ## data:  simpson_ks$simpson_percentile_FIA and simpson_ks$`simpson_percentile_Other datasets`
+    ## D = 0.057576, p-value = 0.6447
+    ## alternative hypothesis: two-sided
 
-<!-- ggplot(all_di, aes(nparts, sim_pos_from_best, color = dat)) + -->
+    ## 
+    ##  Two-sample Kolmogorov-Smirnov test
+    ## 
+    ## data:  skewness_ks$skew_95_ratio_2t_FIA and skewness_ks$`skew_95_ratio_2t_Other datasets`
+    ## D = 0.033333, p-value = 0.993
+    ## alternative hypothesis: two-sided
 
-<!--   geom_point() + -->
+    ## 
+    ##  Two-sample Kolmogorov-Smirnov test
+    ## 
+    ## data:  skewness_ks$skew_percentile_excl_FIA and skewness_ks$`skew_percentile_excl_Other datasets`
+    ## D = 0.09697, p-value = 0.08982
+    ## alternative hypothesis: two-sided
 
-<!--   scale_x_log10()  + -->
+![](revision_results_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->![](revision_results_files/figure-gfm/unnamed-chunk-8-2.png)<!-- -->![](revision_results_files/figure-gfm/unnamed-chunk-8-3.png)<!-- -->![](revision_results_files/figure-gfm/unnamed-chunk-8-4.png)<!-- -->![](revision_results_files/figure-gfm/unnamed-chunk-8-5.png)<!-- -->![](revision_results_files/figure-gfm/unnamed-chunk-8-6.png)<!-- -->![](revision_results_files/figure-gfm/unnamed-chunk-8-7.png)<!-- -->![](revision_results_files/figure-gfm/unnamed-chunk-8-8.png)<!-- -->![](revision_results_files/figure-gfm/unnamed-chunk-8-9.png)<!-- -->![](revision_results_files/figure-gfm/unnamed-chunk-8-10.png)<!-- -->
 
-<!--   scale_color_viridis_d() + -->
+![](revision_results_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->![](revision_results_files/figure-gfm/unnamed-chunk-10-2.png)<!-- -->![](revision_results_files/figure-gfm/unnamed-chunk-10-3.png)<!-- -->![](revision_results_files/figure-gfm/unnamed-chunk-10-4.png)<!-- -->
 
-<!--   theme(legend.position = "top") -->
-
-<!-- ggplot(all_di, aes(s0, n0, color =  sim_pos_from_best)) + -->
-
-<!--   geom_point() + -->
-
-<!--   scale_x_log10()  + -->
-
-<!--   scale_y_log10() + -->
-
-<!--   scale_color_viridis_c() + -->
-
-<!--   theme(legend.position = "top") -->
-
-<!-- ``` -->
+![](revision_results_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
