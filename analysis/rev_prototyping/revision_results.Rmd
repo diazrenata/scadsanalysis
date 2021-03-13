@@ -24,10 +24,10 @@ all_di <- read.csv(here::here("analysis", "rev_prototyping", "all_di.csv"), stri
 
 all_ct <-  read.csv(here::here("analysis", "rev_prototyping", "all_ct.csv"), stringsAsFactors = F)
 
+
 fia_ct <- read.csv(here::here("fia_cts.csv"))
 
 all_ct <- rbind(all_ct, fia_ct)
-
 all_ct <- all_ct %>%
   mutate(dat = ifelse(grepl(dat, pattern = "fia"), "fia", dat),
          dat = ifelse(dat == "misc_abund_short", "misc_abund", dat))
@@ -122,7 +122,7 @@ filter(all_di, real_po_percentile_excl > 95) %>%
 
 all_di_shapes_long <- all_di  %>%
   filter(nparts > 40) %>%
-  mutate(dat = ifelse(nparts < 1000, paste0(dat, "_small"), dat)) %>%
+  #mutate(dat = ifelse(nparts < 1000, paste0(dat, "_small"), dat)) %>%
   select(dat, skew_percentile, skew_percentile_excl, simpson_percentile, simpson_percentile_excl, shannon_percentile, shannon_percentile_excl, nsingletons_percentile, nsingletons_percentile_excl) %>%
   rename(skew = skew_percentile,
          skewX = skew_percentile_excl,
@@ -140,17 +140,10 @@ all_di_shapes_long <- all_di  %>%
   mutate(metric_name = substr(metric, 0, 4),
          metric_mod = ifelse(substr(metric, 5, 5) == "X", "excl", ifelse(substr(metric, 5,5) == "M", "mean", "incl")))
 
-
-ggplot(filter(all_di_shapes_long, metric_mod == "mean"), aes(value)) +
-  geom_histogram(bins = 40) +
-  #facet_grid(rows = vars(dat), cols = vars(metric_name), scales = "free", switch = "y") +
-  facet_wrap(vars(metric_name, dat), scales = "free", ncol = 5) +
-  geom_vline(xintercept = c(2.5, 97.5))
-
 all_di_shapes_high <- all_di_shapes_long %>%
   filter(metric_mod == "excl") %>%
   group_by(dat, metric_name) %>%
-  summarize(proportion_high = mean(value > 95),
+  summarize(proportion_high = mean(value > 97.5),
             n = dplyr::n())
 
 all_di_shapes_high %>%
@@ -160,7 +153,7 @@ all_di_shapes_high %>%
 all_di_shapes_low <- all_di_shapes_long %>%
   filter(metric_mod == "incl") %>%
   group_by(dat, metric_name) %>%
-  summarize(proportion_low = mean(value <5))
+  summarize(proportion_low = mean(value <2.5))
 
 
 all_di_shapes_low %>%
@@ -173,7 +166,7 @@ all_di_shapes_high <- all_di_shapes_long %>%
   mutate(in_fia = ifelse(dat == "fia", "FIA", "Other")) %>%
   filter(metric_mod == "excl") %>%
   group_by(in_fia, metric_name) %>%
-  summarize(proportion_high = mean(value >95))
+  summarize(proportion_high = mean(value >97.5))
 
 
 all_di_shapes_high %>%
@@ -184,7 +177,7 @@ all_di_shapes_low <- all_di_shapes_long %>%
   mutate(in_fia = ifelse(grepl("fia", dat), "FIA", "Other")) %>%
   filter(metric_mod == "incl") %>%
   group_by(in_fia, metric_name) %>%
-  summarize(proportion_low = mean(value <5))
+  summarize(proportion_low = mean(value <2.5))
 
 
 all_di_shapes_low %>%
@@ -193,333 +186,412 @@ all_di_shapes_low %>%
 
 ```
 
+### For very small communities
+
+
+```{r}
+all_di <- all_di %>%
+  mutate(very_small = nparts < 2000)
+
+```
+
+
+#### Central tendency
+
+```{r}
+
+all_di %>%
+  filter(nparts > 20) %>%
+  group_by(dat, very_small) %>%
+  summarize(prop_high_po = mean(real_po_percentile_excl > 97.5, na.rm = T),
+            nsites = dplyr::n()) %>%
+  tidyr::pivot_wider(id_cols = dat, names_from = very_small, values_from = c(prop_high_po, nsites))
+
+
+ggplot(filter(all_di, dat %in% c("fia", "mcdb", "misc_abund"), nparts > 20), aes(real_po_percentile_mean)) +
+  geom_histogram(bins = 40) +
+  facet_wrap(vars(dat, very_small), scales = "free_y", ncol = 2)
+```
+#### Shape metrics
+
+```{r}
+
+all_di_shapes_long <- all_di  %>%
+  filter(nparts > 40, dat %in% c("mcdb", "misc_abund", "fia")) %>%
+  #mutate(dat = ifelse(nparts < 1000, paste0(dat, "_small"), dat)) %>%
+  select(dat, very_small, skew_percentile, skew_percentile_excl, simpson_percentile, simpson_percentile_excl, shannon_percentile, shannon_percentile_excl, nsingletons_percentile, nsingletons_percentile_excl) %>%
+  rename(skew = skew_percentile,
+         skewX = skew_percentile_excl,
+         simp = simpson_percentile,
+         simpX = simpson_percentile_excl,
+         shan = shannon_percentile,
+         shanX = shannon_percentile_excl,
+         nsng = nsingletons_percentile,
+         nsngX = nsingletons_percentile_excl) %>%
+  mutate(skewM = (skew + skewX) / 2,
+         simpM = (simp+ simpX)/2,
+         shanM = (shan+ shanX)/2,
+         nsngM = (nsng+ nsngX)/2) %>%
+  tidyr::pivot_longer(c(-dat, -very_small), names_to = "metric", values_to = "value") %>%
+  mutate(metric_name = substr(metric, 0, 4),
+         metric_mod = ifelse(substr(metric, 5, 5) == "X", "excl", ifelse(substr(metric, 5,5) == "M", "mean", "incl")))
+
+
+ggplot(filter(all_di_shapes_long, metric_mod == "mean"), aes(value)) +
+  geom_histogram(bins = 40) +
+  #facet_grid(rows = vars(dat), cols = vars(metric_name), scales = "free", switch = "y") +
+  facet_wrap(vars(metric_name, dat, very_small), scales = "free", ncol = 5) +
+  geom_vline(xintercept = c(2.5, 97.5))
+
+
+all_di_shapes_high <- all_di_shapes_long %>%
+  filter(metric_mod == "excl") %>%
+  group_by(dat, metric_name, very_small) %>%
+  summarize(proportion_high = mean(value > 97.5),
+            n = dplyr::n())
+
+all_di_shapes_high %>%
+  tidyr::pivot_wider(id_cols = c(dat, n, very_small), names_from = metric_name, values_from = proportion_high) %>% mutate(dir = "HIGH")
+
+
+all_di_shapes_low <- all_di_shapes_long %>%
+  filter(metric_mod == "incl") %>%
+  group_by(dat, metric_name, very_small) %>%
+  summarize(proportion_low = mean(value <2.5),
+            n = dplyr::n())
+
+
+all_di_shapes_low %>%
+  tidyr::pivot_wider(id_cols = c(dat, n, very_small), names_from = metric_name, values_from = proportion_low) %>%
+  mutate(dir = "LOW")
+
+
+```
+
+
 ## Narrowness of the expectation
 
 ### Central tendency
 
 ```{r}
-ggplot(all_di, aes(nparts, sim_pos_from_best, color = log(n0/s0))) +
+
+ggplot(filter(all_di, nparts > 20), aes(nparts, sim_pos_from_best, color = log(n0/s0))) +
   geom_point() +
-  scale_x_log10() +
-  scale_color_viridis_c(option = "plasma")
- 
-```
-
-```{r, fig.dim = c(3,6)}
-
-all_di <- all_di %>%
-  mutate(tiny = nparts < 2000)
-
-
-ggplot(all_di, aes(sim_pos_from_best)) +
-geom_histogram(bins = 100) +
-  facet_wrap(vars(tiny), scales = "free_y", ncol = 1)
-
-
-```
-
-### Shape metric
-
-```{r}
-
-ggplot(filter(all_di, nparts < 1e56, s0 > 2), aes(nparts, skew_95_ratio_2t, color = log(n0/s0))) +
-  geom_point() +
-  scale_x_log10() +
-  scale_color_viridis_c(option = "plasma")
-
-
-ggplot(filter(all_di, nparts < 1e56), aes(nparts, simpson_95_ratio_2t, color = log(n0/s0))) +
-  geom_point() +
-  scale_x_log10() +
-  scale_color_viridis_c(option = "plasma")
-
-
-ggplot(filter(all_di, nparts < 1e56), aes(nparts, shannon_95_ratio_2t, color = log(n0/s0))) +
-  geom_point() +
-  scale_x_log10() +
-  scale_color_viridis_c(option = "plasma")
-
-
-ggplot(filter(all_di, nparts < 1e56), aes(nparts, nsingletons_95_ratio_2t, color = log(n0/s0))) +
-  geom_point() +
-  scale_x_log10() +
-  scale_color_viridis_c(option = "plasma")
-
-```
-
-
-```{r, fig.dim = c(4, 6)}
-
-ggplot(filter(all_di), aes(sim_pos_from_best)) +
-geom_histogram() +
-  facet_wrap(vars(tiny), scales = "free_y", ncol = 1)
-ggplot(filter(all_di, s0 > 2), aes(skew_95_ratio_2t)) +
-geom_histogram() +
-  facet_wrap(vars(tiny), scales = "free_y", ncol = 1)
-
-ggplot(filter(all_di), aes(simpson_95_ratio_2t)) +
-geom_histogram() +
-  facet_wrap(vars(tiny), scales = "free_y", ncol = 1)
-
-ggplot(filter(all_di), aes(shannon_95_ratio_2t)) +
-geom_histogram() +
-  facet_wrap(vars(tiny), scales = "free_y", ncol = 1)
-
-ggplot(filter(all_di), aes(nsingletons_95_ratio_2t)) +
-geom_histogram() +
-  facet_wrap(vars(tiny), scales = "free_y", ncol = 1)
-```
-
-```{r, fig.dim = c(3, 6)}
-
-
-
-
-ggplot(filter(all_di, dat  %in% c("fia", "mcdb", "misc_abund")), aes(sim_pos_from_best)) +
-geom_histogram() +
-  facet_wrap(vars(tiny, dat), scales = "free_y", ncol = 3)
-ggplot(filter(all_di, s0 > 2, dat  %in% c("fia", "mcdb", "misc_abund")), aes(skew_95_ratio_2t)) +
-geom_histogram() +
-  facet_wrap(vars(tiny, dat), scales = "free_y", ncol = 3)
-
-ggplot(filter(all_di, dat  %in% c("fia", "mcdb", "misc_abund")), aes(simpson_95_ratio_2t)) +
-geom_histogram() +
-  facet_wrap(vars(tiny, dat), scales = "free_y", ncol = 3)
-
-ggplot(filter(all_di, dat  %in% c("fia", "mcdb", "misc_abund")), aes(shannon_95_ratio_2t)) +
-geom_histogram() +
-  facet_wrap(vars(tiny, dat), scales = "free_y", ncol = 3)
-
-ggplot(filter(all_di, dat  %in% c("fia", "mcdb", "misc_abund")), aes(nsingletons_95_ratio_2t)) +
-geom_histogram() +
-  facet_wrap(vars(tiny, dat), scales = "free_y", ncol = 3)
-
-
-```
-
-
-
-
-
-```{r, fig.dim = c(7,7)}
-library(grid)
-
-fia_max_s = max(filter(all_di, dat == "fia")$s0)
-fia_max_n = max(filter(all_di, dat == "fia")$n0)
-
-fia = filter(all_di, dat == "fia")
-
-small_di <- all_di %>%
-  filter(s0 <= fia_max_s,
-         n0 <= fia_max_n) %>%
-  mutate(fia_yn = ifelse(dat == "fia", "fia", "other datasets"),
-         right_corner = FALSE)
-
-for(i in 1:nrow(small_di)) {
-  if(small_di$dat[i] != "fia") {
-    fia_match_s0 = filter(fia, s0 >= small_di$s0[i])
-    
-    max_n0_for_this_s0 = max(fia_match_s0$n0)
-    
-    small_di$right_corner[i] = small_di$n0[i] > max_n0_for_this_s0
-    
-  }
-}
-
-
-small_di <- small_di %>%
-  filter(!right_corner)
-not_fia <- filter(small_di, fia_yn != "fia")
-fia = filter(small_di, dat == "fia")
-
-small_di_s_n <- small_di %>%
-  select(s0, n0) %>%
-  distinct() %>%
-  mutate(in_fia = FALSE,
-         in_not_fia = FALSE)
-
-for(i in 1:nrow(small_di_s_n)) {
-  
-  this_s0 = small_di_s_n$s0[i]
-  this_n0 = small_di_s_n$n0[i]
-  
-  fia_matches = filter(fia, s0 == this_s0, n0 == this_n0)
-  not_fia_matches = filter(not_fia, s0 == this_s0, n0 == this_n0)
-  
-  small_di_s_n$in_fia[i] = nrow(fia_matches) > 0 
-  small_di_s_n$in_not_fia[i] = nrow(not_fia_matches) > 0 
-  
-  
-}
-
-small_di_s_n <- filter(small_di_s_n, in_fia, in_not_fia)
-
-set.seed(1977)
-
-subsamples <- list()
-
-for(i in 1:nrow(small_di_s_n)) {
-  
-  this_s0 = small_di_s_n$s0[i]
-  this_n0 = small_di_s_n$n0[i]
-  
-  fia_matches = filter(fia, s0 == this_s0, n0 == this_n0)
-  
-  not_fia_matches = filter(not_fia, s0 == this_s0, n0 == this_n0)
-  
-  n_to_draw = min(nrow(fia_matches), nrow(not_fia_matches))
-  
-  fia_draw = sample.int(n = nrow(fia_matches), size = n_to_draw, replace = F)
-  not_fia_draw = sample.int(n = nrow(not_fia_matches), size = n_to_draw, replace = F)
-  
-  subsamples[[i]] <- (bind_rows(fia_matches[fia_draw,], not_fia_matches[not_fia_draw, ]))
-  
-}
-
-sub_di <- bind_rows(subsamples) %>%
-  mutate(Dataset = ifelse(fia_yn == "fia", "FIA", "Other datasets"))
-
-simpson_ks <- filter(sub_di, nparts > 40) %>%
-  select(simpson_95_ratio_2t, Dataset, simpson_percentile, s0, n0) %>% 
-  group_by(Dataset, s0, n0) %>%
-  mutate(pairing = dplyr::row_number()) %>%
-  ungroup() %>%
-  tidyr::pivot_wider(id_cols = c(s0, n0, pairing), names_from = Dataset, values_from = c(simpson_95_ratio_2t, simpson_percentile))
-
-simpson_breadth <- ks.test(simpson_ks$simpson_95_ratio_2t_FIA, simpson_ks$`simpson_95_ratio_2t_Other datasets`)
-
-simpson_percent <- ks.test(simpson_ks$simpson_percentile_FIA, simpson_ks$`simpson_percentile_Other datasets`)
-simpson_breadth
-simpson_percent
-
-skewness_ks <- filter(sub_di, nparts > 40) %>%
-  select(skew_95_ratio_2t, Dataset, skew_percentile_excl, s0, n0) %>% 
-  group_by(Dataset, s0, n0) %>%
-  mutate(pairing = dplyr::row_number()) %>%
-  ungroup() %>%
-  tidyr::pivot_wider(id_cols = c(s0, n0, pairing), names_from = Dataset, values_from = c(skew_95_ratio_2t, skew_percentile_excl))
-
-skewness_breadth <- ks.test(skewness_ks$skew_95_ratio_2t_FIA, skewness_ks$`skew_95_ratio_2t_Other datasets`)
-
-skewness_percent <- ks.test(skewness_ks$skew_percentile_excl_FIA, skewness_ks$`skew_percentile_excl_Other datasets`)
-skewness_breadth
-skewness_percent
-
-ggplot(filter(sub_di, nparts > 40), aes(real_po_percentile_excl)) +
-  geom_histogram() +
-  facet_wrap(vars(fia_yn))
-
-ggplot(filter(sub_di, nparts > 40), aes(sim_pos_from_best)) +
-  geom_histogram() +
-  facet_wrap(vars(fia_yn))
-
-
-ggplot(filter(sub_di, nparts > 40), aes(skew_percentile_excl)) +
-  geom_histogram() +
-  facet_wrap(vars(fia_yn))
-
-ggplot(filter(sub_di, nparts > 40), aes(skew_95_ratio_2t)) +
-  geom_histogram() +
-  facet_wrap(vars(fia_yn))
-
-ggplot(filter(sub_di, nparts > 40), aes(nsingletons_percentile_excl)) +
-  geom_histogram() +
-  facet_wrap(vars(fia_yn))
-
-ggplot(filter(sub_di, nparts > 40), aes(nsingletons_95_ratio_2t)) +
-  geom_histogram() +
-  facet_wrap(vars(fia_yn))
-
-ggplot(filter(sub_di, nparts > 20), aes(simpson_percentile)) +
-  geom_histogram() +
-  facet_wrap(vars(fia_yn))
-
-ggplot(filter(sub_di, nparts > 40), aes(simpson_95_ratio_2t)) +
-  geom_histogram() +
-  facet_wrap(vars(fia_yn))
-ggplot(filter(sub_di, nparts > 40), aes(shannon_percentile)) +
-  geom_histogram() +
-  facet_wrap(vars(fia_yn))
-
-ggplot(filter(sub_di, nparts > 40), aes(shannon_95_ratio_2t)) +
-  geom_histogram() +
-  facet_wrap(vars(fia_yn))
-
-```
-
-```{r}
+  scale_x_log10()
 # 
-# fig_4 <- gridExtra::grid.arrange(grobs = list(
-#   ggplot(filter(sub_di, nparts > 40), aes(skew_95_ratio_2t)) +
-#     geom_histogram()+
-#     theme_bw() +
-#     facet_wrap(vars(Dataset), scales = "free_y")  +
-#     xlab("Breadth index") +
-#     ylab("Number of communities") +
-#     ggtitle("Breadth index", subtitle = "Skewness"),
-#   
-#   ggplot(filter(sub_di, nparts > 40), aes(simpson_95_ratio_2t)) +
-#     geom_histogram()+
-#     theme_bw() +
-#     facet_wrap(vars(Dataset), scales = "free_y")  +
-#     xlab("Breadth index") +
-#     ylab("") +
-#     ggtitle("", subtitle = "Evenness"),
-#   
-#   ggplot(filter(sub_di, nparts > 40), aes(skew_percentile_excl)) +
-#     geom_histogram()+
-#     theme_bw() +
-#     facet_wrap(vars(Dataset), scales = "free_y")  +
-#     xlab("Percentile rank") +
-#     ylab("Number of communities") +
-#     ggtitle("Percentile rank", subtitle = "Skewness"),
-#   
-#   
-#   ggplot(filter(sub_di, nparts > 40), aes(simpson_percentile)) +
-#     geom_histogram()+
-#     theme_bw() +
-#     facet_wrap(vars(Dataset), scales = "free_y")  +
-#     xlab("Percentile rank") +
-#     ylab("")+
-#     ggtitle("", subtitle = "Evenness")), ncol = 2, top = textGrob("Figure 4", gp = gpar(fill = "white")))
+# ggplot(filter(all_di, nparts > 20, nparts < 1000), aes(nparts, sim_pos_from_best, color = log(n0/s0))) +
+#   geom_point() +
+#   scale_x_log10() +
+#   theme(legend.position = "top")
 # 
-# plot(fig_4)
+# ggplot(filter(all_di, nparts > 10, nparts < 100000), aes(nparts, sim_pos_from_best, color = log(n0/s0))) +
+#   geom_point() +
+#   scale_x_log10() +
+#   theme(legend.position = "top")
+# 
+# 
+# ggplot(filter(all_di, nparts > 10, nparts > 100000), aes(nparts, sim_pos_from_best, color = log(n0/s0))) +
+#   geom_point() +
+#   scale_x_log10() +
+#   theme(legend.position = "top")
 ```
+
+
+### Shape metrics
+
+```{r}
+
+ggplot(filter(all_di, nparts > 40, s0 > 2), aes(nparts, skew_95_ratio_2t, color = log(n0/s0))) +
+  geom_point() +
+  scale_x_log10()
+
+ggplot(filter(all_di, nparts > 40), aes(nparts, simpson_95_ratio_2t, color = log(n0/s0))) +
+  geom_point() +
+  scale_x_log10()
+
+ggplot(filter(all_di, nparts > 40), aes(nparts, shannon_95_ratio_2t, color = log(n0/s0))) +
+  geom_point() +
+  scale_x_log10()
+
+ggplot(filter(all_di, nparts > 40), aes(nparts, nsingletons_95_ratio_2t, color = log(n0/s0))) +
+  geom_point() +
+  scale_x_log10()
+
+
+```
+
+## Resampling
+
+### Undersampling of rare species
+
+#### Central tendency
+
+```{r}
+
+all_di_singletons <- read.csv(here::here("analysis", "rev_prototyping", "all_di.csv"), stringsAsFactors = F) %>%
+  mutate(log_nparts = log(gmp:::as.double.bigz(nparts)),
+         log_nsamples = log(nsamples),
+         log_s0 = log(s0),
+         log_n0 = log(n0)) %>%
+  filter(n0 != s0,
+         s0 != 1,
+         singletons,
+         n0 != (s0 + 1)) %>%
+  mutate(dat = ifelse(grepl(dat, pattern = "fia"), "fia", dat),
+         dat = ifelse(dat == "misc_abund_short", "misc_abund", dat)) %>%
+  mutate(Dataset = dat,
+         Dataset = ifelse(Dataset == "fia", "FIA", Dataset),
+         Dataset = ifelse(Dataset == "bbs", "Breeding Bird Survey", Dataset),
+         Dataset = ifelse(Dataset == "mcdb", "Mammal Communities", Dataset),
+         Dataset = ifelse(Dataset == "gentry", "Gentry", Dataset),
+         Dataset = ifelse(Dataset == "misc_abund", "Misc. Abundance", Dataset)) %>%
+  filter(nparts > 20) %>%
+  left_join(all_ct) %>%
+  mutate(in_fia = ifelse(Dataset == "FIA", "FIA", "Other datasets")) %>%
+  right_join(select(all_di, dat, site))
+
+
+
+all_di_singletons %>%
+  group_by(dat) %>%
+  summarize(prop_high_po = mean(real_po_percentile_excl > 95, na.rm = T),
+            nsites = dplyr::n()) %>%
+  left_join(
+    all_di %>%
+       group_by(dat) %>%
+  summarize(prop_high_po_real = mean(real_po_percentile_excl > 95, na.rm = T),
+            nsites_real = dplyr::n())
+  )
+
+```
+
+#### Shape metrics
+
+```{r}
+
+
+all_di_shapes_long <- all_di  %>%
+  filter(nparts > 40) %>%
+  #mutate(dat = ifelse(nparts < 1000, paste0(dat, "_small"), dat)) %>%
+  select(dat, skew_percentile, skew_percentile_excl, simpson_percentile, simpson_percentile_excl, shannon_percentile, shannon_percentile_excl, nsingletons_percentile, nsingletons_percentile_excl) %>%
+  rename(skew = skew_percentile,
+         skewX = skew_percentile_excl,
+         simp = simpson_percentile,
+         simpX = simpson_percentile_excl,
+         shan = shannon_percentile,
+         shanX = shannon_percentile_excl,
+         nsng = nsingletons_percentile,
+         nsngX = nsingletons_percentile_excl) %>%
+  mutate(skewM = (skew + skewX) / 2,
+         simpM = (simp+ simpX)/2,
+         shanM = (shan+ shanX)/2,
+         nsngM = (nsng+ nsngX)/2) %>%
+  tidyr::pivot_longer(-dat, names_to = "metric", values_to = "value") %>%
+  mutate(metric_name = substr(metric, 0, 4),
+         metric_mod = ifelse(substr(metric, 5, 5) == "X", "excl", ifelse(substr(metric, 5,5) == "M", "mean", "incl")))
+
+all_di_shapes_high <- all_di_shapes_long %>%
+  filter(metric_mod == "excl") %>%
+  group_by(dat, metric_name) %>%
+  summarize(proportion_high = mean(value > 97.5),
+            n = dplyr::n())
+all_di_shapes_low <- all_di_shapes_long %>%
+  filter(metric_mod == "incl") %>%
+  group_by(dat, metric_name) %>%
+  summarize(proportion_low = mean(value <2.5),
+            n = dplyr::n())
+
+
+all_di_shapes_long_s <- all_di_singletons  %>%
+  right_join(select(filter(all_di, nparts > 40), dat, site)) %>%
+  #mutate(dat = ifelse(nparts < 1000, paste0(dat, "_small"), dat)) %>%
+  select(dat, skew_percentile, skew_percentile_excl, simpson_percentile, simpson_percentile_excl, shannon_percentile, shannon_percentile_excl, nsingletons_percentile, nsingletons_percentile_excl) %>%
+  rename(skew = skew_percentile,
+         skewX = skew_percentile_excl,
+         simp = simpson_percentile,
+         simpX = simpson_percentile_excl,
+         shan = shannon_percentile,
+         shanX = shannon_percentile_excl,
+         nsng = nsingletons_percentile,
+         nsngX = nsingletons_percentile_excl) %>%
+  mutate(skewM = (skew + skewX) / 2,
+         simpM = (simp+ simpX)/2,
+         shanM = (shan+ shanX)/2,
+         nsngM = (nsng+ nsngX)/2) %>%
+  tidyr::pivot_longer(-dat, names_to = "metric", values_to = "value") %>%
+  mutate(metric_name = substr(metric, 0, 4),
+         metric_mod = ifelse(substr(metric, 5, 5) == "X", "excl", ifelse(substr(metric, 5,5) == "M", "mean", "incl")))
+
+all_di_shapes_high_s <- all_di_shapes_long_s %>%
+  filter(metric_mod == "excl") %>%
+  group_by(dat, metric_name) %>%
+  summarize(proportion_high = mean(value > 97.5),
+            n = dplyr::n())
+all_di_shapes_low_s <- all_di_shapes_long_s %>%
+  filter(metric_mod == "incl") %>%
+  group_by(dat, metric_name) %>%
+  summarize(proportion_low = mean(value <2.5),
+            n = dplyr::n())
+
+
+
+
+
+all_di_shapes_high %>%
+  tidyr::pivot_wider(id_cols = c(dat, n), names_from = metric_name, values_from = proportion_high) %>% mutate(dir = "HIGH", adj = F) %>%
+  bind_rows(all_di_shapes_high_s %>%
+  tidyr::pivot_wider(id_cols = c(dat, n), names_from = metric_name, values_from = proportion_high) %>% mutate(dir = "HIGH", adj = T)) %>%
+  arrange(dat, adj)
+
+
+all_di_shapes_low %>%
+  tidyr::pivot_wider(id_cols = c(dat, n), names_from = metric_name, values_from = proportion_low) %>%
+  mutate(dir = "LOW", adj = F) %>%
+  bind_rows(all_di_shapes_low_s %>%
+       tidyr::pivot_wider(id_cols = c(dat, n), names_from = metric_name, values_from = proportion_low) %>% mutate(dir = "LOW", adj = T)) %>%
+  arrange(dat, adj)
+
+
+
+
+```
+
+### Jackknife resampling
+
+```{r}
+
+jk_di_full <- read.csv(here::here("analysis", "rev_prototyping", "all_di_jk.csv")) %>%
+  mutate(dat = ifelse(grepl(dat, pattern = "fia"), "fia", dat),
+         dat = ifelse(dat == "misc_abund_short", "misc_abund", dat)) %>%
+  mutate(Dataset = dat,
+         Dataset = ifelse(Dataset == "fia", "FIA", Dataset),
+         Dataset = ifelse(Dataset == "bbs", "Breeding Bird Survey", Dataset),
+         Dataset = ifelse(Dataset == "mcdb", "Mammal Communities", Dataset),
+         Dataset = ifelse(Dataset == "gentry", "Gentry", Dataset),
+         Dataset = ifelse(Dataset == "misc_abund", "Misc. Abundance", Dataset)) %>%
+  filter(nparts > 20) 
+
+jk_cts <- read.csv(here::here("analysis", "rev_prototyping", "all_ct_jk.csv")) %>%
+  
+  mutate(dat = ifelse(grepl(dat, pattern = "fia"), "fia", dat),
+         dat = ifelse(dat == "misc_abund_short", "misc_abund", dat)) %>%
+  mutate(Dataset = dat,
+         Dataset = ifelse(Dataset == "fia", "FIA", Dataset),
+         Dataset = ifelse(Dataset == "bbs", "Breeding Bird Survey", Dataset),
+         Dataset = ifelse(Dataset == "mcdb", "Mammal Communities", Dataset),
+         Dataset = ifelse(Dataset == "gentry", "Gentry", Dataset),
+         Dataset = ifelse(Dataset == "misc_abund", "Misc. Abundance", Dataset)) %>%
+  filter(nparts > 20) 
+
+jk_di <- jk_di_full %>%
+  left_join(jk_cts) %>%
+  group_by_all() %>%
+  mutate(site_source = unlist(strsplit(site, "_")[[1]][[1]])) %>%
+  ungroup() %>%
+  select(dat, site, site_source, s0, n0, skew_percentile_excl,skew_percentile, simpson_percentile, simpson_percentile_excl, shannon_percentile,shannon_percentile_excl,  nsingletons_percentile, nsingletons_percentile_excl, nsingletons, nsingletons_95_ratio_2t, skew_95_ratio_2t, simpson_95_ratio_2t, shannon_95_ratio_2t, sim_pos_from_best, real_po_percentile, real_po_percentile_excl, nparts)
+
+jk_di_means <- jk_di %>%
+  group_by(dat, site_source) %>%
+  summarise_at(vars(-group_cols(), -site), mean)
+
+all_di_actual <- all_di %>%
+  filter(!singletons) %>%
+  mutate(site_source = as.character(site)) %>%
+  select(dat, site_source,  s0, n0, skew_percentile_excl,skew_percentile, simpson_percentile, simpson_percentile_excl, shannon_percentile,shannon_percentile_excl,  nsingletons_percentile, nsingletons_percentile_excl, nsingletons, nsingletons_95_ratio_2t, skew_95_ratio_2t, simpson_95_ratio_2t, shannon_95_ratio_2t, sim_pos_from_best, real_po_percentile, real_po_percentile_excl, nparts) 
+
+colnames(all_di_actual)[ 3:ncol(all_di_actual)] <- paste0(colnames(all_di_actual)[3:ncol(all_di_actual)], "_actual")
+
+jk_di_results <- left_join(jk_di, all_di_actual)
+jk_di_mean_results <- left_join(jk_di_means, all_di_actual)
+
+```
+
+#### Central tendency
+
+
+```{r}
+jk_di_mean_results %>%
+  filter(nparts > 20) %>%
+  select(dat, real_po_percentile_excl, real_po_percentile_excl_actual) %>%
+  group_by(dat) %>%
+  summarize(high_dissimilarity_actual = mean(real_po_percentile_excl_actual > 95, na.rm = T),
+            high_dissimilarity_jk = mean(real_po_percentile_excl > 95, na.rm= T),
+            n = dplyr::n())
+
+```
+
+#### Shape metrics
 
 
 ```{r}
 
-all_di <- all_di %>%
-  mutate(tiny = nparts < exp(10))
+shapecols <- c(colnames(jk_di_mean_results)[ grepl("skew", colnames(jk_di_mean_results))],
+               colnames(jk_di_mean_results)[ grepl("simpson", colnames(jk_di_mean_results))],
+               colnames(jk_di_mean_results)[ grepl("shannon", colnames(jk_di_mean_results))],
+               colnames(jk_di_mean_results)[ grepl("nsingletons", colnames(jk_di_mean_results))])
 
-ggplot(filter(all_di, nparts > 40, s0 > 2), aes(sim_pos_from_best, color = tiny)) +
-  geom_density()
-ggplot(filter(all_di, nparts > 40, s0 > 2), aes(skew_95_ratio_2t, color = tiny)) +
-  geom_density()
+shapecols <- shapecols[ grepl("percentile", shapecols)]
 
-ggplot(filter(all_di, nparts > 40), aes(simpson_95_ratio_2t, color = tiny)) +
-  geom_density()
+shapecols_high <- shapecols[ grepl("excl", shapecols)]
 
-ggplot(filter(all_di, nparts > 40), aes(shannon_95_ratio_2t, color = tiny)) +
-  geom_density()
+is.high <- function(x) {
+  return(x > 97.5)
+}
+
+jk_shapes_high <- jk_di_mean_results %>%
+  filter(nparts > 40, nparts_actual > 40) %>%
+  select(dat, (shapecols_high)) %>%
+  mutate_at(vars(shapecols_high), .funs = is.high) %>%
+  group_by(dat) %>%
+  summarize_at(vars(shapecols_high), .funs = mean) %>%
+  mutate(dir = "HIGH")
+
+shapecols_low <- shapecols[ !grepl("excl", shapecols)]
+jk_shapes_high
+is.low <- function(x) {
+  return(x < 2.5)
+}
+
+jk_shapes_low <- jk_di_mean_results %>%
+    filter(nparts > 40, nparts_actual > 40) %>%
+
+  select(dat, (shapecols_low)) %>%
+  mutate_at(vars(shapecols_low), .funs = is.low) %>%
+  group_by(dat) %>%
+  summarize_at(vars(shapecols_low), .funs = mean) %>%
+  mutate(dir = "LOW")
+jk_shapes_low
 ```
 
+### Narrowness
 
 ```{r}
 
-## Set up the cache and config
-db <- DBI::dbConnect(RSQLite::SQLite(), here::here("analysis", "drake", "drake-cache-net.sqlite"))
-cache <- storr::storr_dbi("datatable", "keystable", db)
-cache$del(key = "lock", namespace = "session")
-knitr::opts_chunk$set(fig.width=3, fig.height=2.5, warning = FALSE, message = FALSE) 
+ggplot(jk_di_mean_results, aes(sim_pos_from_best_actual)) +
+  geom_histogram(alpha = .5) +
+  geom_histogram(aes(sim_pos_from_best), fill="blue", alpha = .5) +
+  facet_wrap(vars(dat), scales = "free_y")
+
+ggplot(filter(jk_di_mean_results, s0 > 2, nparts > 40, nparts_actual > 40), aes(skew_95_ratio_2t_actual)) +
+  geom_histogram(alpha = .5) +
+  geom_histogram(aes(skew_95_ratio_2t), fill="blue", alpha = .5) +
+  facet_wrap(vars(dat), scales = "free_y")
 
 
-net_summary <- readd(all_di_summary, cache = cache)
+ggplot(filter(jk_di_mean_results, nparts > 40, nparts_actual > 40), aes(simpson_95_ratio_2t_actual)) +
+  geom_histogram(alpha = .5) +
+  geom_histogram(aes(simpson_95_ratio_2t), fill="blue", alpha = .5) +
+  facet_wrap(vars(dat), scales = "free_y")
 
-net_summary <- net_summary %>%
-  mutate(log_nparts = log(gmp:::as.double.bigz(nparts)))
+ggplot(filter(jk_di_mean_results, nparts > 40, nparts_actual > 40), aes(shannon_95_ratio_2t_actual)) +
+  geom_histogram(alpha = .5) +
+  geom_histogram(aes(shannon_95_ratio_2t), fill="blue", alpha = .5) +
+  facet_wrap(vars(dat), scales = "free_y")
 
-ggplot(net_summary, aes(log_nparts, skew_95_ratio_2t)) +
-  geom_point()
+ggplot(filter(jk_di_mean_results, nparts > 40, nparts_actual > 40), aes(nsingletons_95_ratio_2t_actual)) +
+  geom_histogram(alpha = .5) +
+  geom_histogram(aes(nsingletons_95_ratio_2t), fill="blue", alpha = .5) +
+  facet_wrap(vars(dat), scales = "free_y")
+
 
 ```
