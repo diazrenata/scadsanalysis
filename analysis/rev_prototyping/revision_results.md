@@ -1,8 +1,9 @@
 Updated results
 ================
 Renata Diaz
-2021-03-12
+2021-03-13
 
+  - [Datasets](#datasets)
   - [Comparing observed to the
     baseline](#comparing-observed-to-the-baseline)
       - [Central tendency](#central-tendency)
@@ -10,17 +11,26 @@ Renata Diaz
       - [For very small communities](#for-very-small-communities)
   - [Narrowness of the expectation](#narrowness-of-the-expectation)
       - [Central tendency](#central-tendency-2)
-      - [Shape metrics](#shape-metrics-1)
+      - [Shape metrics](#shape-metrics-2)
   - [Resampling](#resampling)
       - [Undersampling of rare species](#undersampling-of-rare-species)
       - [Jackknife resampling](#jackknife-resampling)
       - [Narrowness](#narrowness)
+  - [Gentry](#gentry)
+  - [Comparison of FIA to other small
+    communities](#comparison-of-fia-to-other-small-communities)
+      - [Central tendency](#central-tendency-5)
+      - [Shape metrics](#shape-metrics-5)
+
+## Datasets
+
+![](revision_results_files/figure-gfm/unnamed-chunk-1-1.png)<!-- -->
 
 ## Comparing observed to the baseline
 
 ### Central tendency
 
-![](revision_results_files/figure-gfm/unnamed-chunk-1-1.png)<!-- -->
+![](revision_results_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->
 
 <div class="kable-table">
 
@@ -43,7 +53,7 @@ Renata Diaz
 
 </div>
 
-![](revision_results_files/figure-gfm/unnamed-chunk-1-2.png)<!-- -->![](revision_results_files/figure-gfm/unnamed-chunk-1-3.png)<!-- -->
+![](revision_results_files/figure-gfm/unnamed-chunk-2-2.png)<!-- -->![](revision_results_files/figure-gfm/unnamed-chunk-2-3.png)<!-- -->
 
 <div class="kable-table">
 
@@ -54,6 +64,8 @@ Renata Diaz
 </div>
 
 ### Shape metrics
+
+![](revision_results_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
 
 <div class="kable-table">
 
@@ -113,10 +125,9 @@ Renata Diaz
 
 </div>
 
-![](revision_results_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
-\#\#\#\# Shape metrics
-
 ![](revision_results_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
+
+#### Shape metrics
 
 <div class="kable-table">
 
@@ -148,11 +159,11 @@ Renata Diaz
 
 ### Central tendency
 
-![](revision_results_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
+![](revision_results_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
 
 ### Shape metrics
 
-![](revision_results_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->![](revision_results_files/figure-gfm/unnamed-chunk-7-2.png)<!-- -->![](revision_results_files/figure-gfm/unnamed-chunk-7-3.png)<!-- -->![](revision_results_files/figure-gfm/unnamed-chunk-7-4.png)<!-- -->
+![](revision_results_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->![](revision_results_files/figure-gfm/unnamed-chunk-8-2.png)<!-- -->![](revision_results_files/figure-gfm/unnamed-chunk-8-3.png)<!-- -->![](revision_results_files/figure-gfm/unnamed-chunk-8-4.png)<!-- -->
 
 ## Resampling
 
@@ -219,8 +230,8 @@ Renata Diaz
 | bbs         |                   0.2500000 |               0.1566667 |  300 |
 | fia         |                   0.0828877 |               0.0354278 | 1496 |
 | gentry      |                   0.3392857 |               0.1651786 |  224 |
-| mcdb        |                   0.3516260 |                     NaN |  492 |
-| misc\_abund |                   0.6096033 |                     NaN |  479 |
+| mcdb        |                   0.3516260 |               0.2560976 |  492 |
+| misc\_abund |                   0.6096033 |               0.4801670 |  479 |
 
 </div>
 
@@ -252,4 +263,100 @@ Renata Diaz
 
 ### Narrowness
 
-![](revision_results_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->![](revision_results_files/figure-gfm/unnamed-chunk-13-2.png)<!-- -->![](revision_results_files/figure-gfm/unnamed-chunk-13-3.png)<!-- -->![](revision_results_files/figure-gfm/unnamed-chunk-13-4.png)<!-- -->![](revision_results_files/figure-gfm/unnamed-chunk-13-5.png)<!-- -->
+![](revision_results_files/figure-gfm/unnamed-chunk-14-1.png)<!-- -->![](revision_results_files/figure-gfm/unnamed-chunk-14-2.png)<!-- -->![](revision_results_files/figure-gfm/unnamed-chunk-14-3.png)<!-- -->![](revision_results_files/figure-gfm/unnamed-chunk-14-4.png)<!-- -->![](revision_results_files/figure-gfm/unnamed-chunk-14-5.png)<!-- -->
+
+## Gentry
+
+![](revision_results_files/figure-gfm/unnamed-chunk-15-1.png)<!-- -->
+
+<div class="kable-table">
+
+| low\_avgn | low\_nsingles | high\_even | high\_shannon | low\_skew |   n |
+| :-------- | ------------: | ---------: | ------------: | --------: | --: |
+| FALSE     |     0.0291971 |  0.0510949 |     0.0510949 | 0.0291971 | 137 |
+| TRUE      |     0.4767442 |  0.4767442 |     0.5581395 | 0.1744186 |  86 |
+
+</div>
+
+![](revision_results_files/figure-gfm/unnamed-chunk-15-2.png)<!-- -->![](revision_results_files/figure-gfm/unnamed-chunk-15-3.png)<!-- -->![](revision_results_files/figure-gfm/unnamed-chunk-15-4.png)<!-- -->![](revision_results_files/figure-gfm/unnamed-chunk-15-5.png)<!-- -->![](revision_results_files/figure-gfm/unnamed-chunk-15-6.png)<!-- -->![](revision_results_files/figure-gfm/unnamed-chunk-15-7.png)<!-- -->
+
+## Comparison of FIA to other small communities
+
+### Central tendency
+
+<div class="kable-table">
+
+| Dataset        | high\_diss |
+| :------------- | ---------: |
+| FIA            |  0.1689008 |
+| Other datasets |  0.1662198 |
+
+</div>
+
+![](revision_results_files/figure-gfm/unnamed-chunk-17-1.png)<!-- -->
+
+    ## 
+    ##  Two-sample Kolmogorov-Smirnov test
+    ## 
+    ## data:  fia_di$real_po_percentile_excl and other_di$real_po_percentile_excl
+    ## D = 0.045576, p-value = 0.8333
+    ## alternative hypothesis: two-sided
+
+![](revision_results_files/figure-gfm/unnamed-chunk-17-2.png)<!-- -->
+
+    ## 
+    ##  Two-sample Kolmogorov-Smirnov test
+    ## 
+    ## data:  fia_di$sim_pos_from_best and other_di$sim_pos_from_best
+    ## D = 0.02681, p-value = 0.9993
+    ## alternative hypothesis: two-sided
+
+### Shape metrics
+
+![](revision_results_files/figure-gfm/unnamed-chunk-18-1.png)<!-- -->
+
+<div class="kable-table">
+
+| Dataset        |   n |      nsng |      shan |      simp |      skew | dir  |
+| :------------- | --: | --------: | --------: | --------: | --------: | :--- |
+| FIA            | 330 | 0.0484848 | 0.0090909 | 0.0090909 | 0.0696970 | HIGH |
+| Other datasets | 330 | 0.0606061 | 0.0000000 | 0.0000000 | 0.0636364 | HIGH |
+
+</div>
+
+<div class="kable-table">
+
+| Dataset        | nsng |      shan |      simp |      skew | dir |
+| :------------- | ---: | --------: | --------: | --------: | :-- |
+| FIA            |    0 | 0.1636364 | 0.1545455 | 0.0000000 | LOW |
+| Other datasets |    0 | 0.1484848 | 0.1484848 | 0.0090909 | LOW |
+
+</div>
+
+    ## 
+    ##  Two-sample Kolmogorov-Smirnov test
+    ## 
+    ## data:  fia_di$nsingletons_percentile_excl and other_di$nsingletons_percentile_excl
+    ## D = 0.050938, p-value = 0.7185
+    ## alternative hypothesis: two-sided
+
+    ## 
+    ##  Two-sample Kolmogorov-Smirnov test
+    ## 
+    ## data:  fia_di$skew_percentile_excl and other_di$skew_percentile_excl
+    ## D = 0.077748, p-value = 0.2096
+    ## alternative hypothesis: two-sided
+
+    ## 
+    ##  Two-sample Kolmogorov-Smirnov test
+    ## 
+    ## data:  fia_di$simpson_percentile and other_di$simpson_percentile
+    ## D = 0.048257, p-value = 0.7779
+    ## alternative hypothesis: two-sided
+
+    ## 
+    ##  Two-sample Kolmogorov-Smirnov test
+    ## 
+    ## data:  fia_di$shannon_percentile and other_di$shannon_percentile
+    ## D = 0.045576, p-value = 0.8333
+    ## alternative hypothesis: two-sided
