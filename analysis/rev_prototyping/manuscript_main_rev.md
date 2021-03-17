@@ -11,6 +11,7 @@ Renata Diaz
     4)](#metric-histograms-by-dataset-figure-4)
   - [Results table](#results-table)
   - [Narrowness](#narrowness)
+  - [Gentry](#gentry)
   - [Comparison of FIA and comparably sized communities (Figure
     4)](#comparison-of-fia-and-comparably-sized-communities-figure-4)
 
@@ -243,6 +244,10 @@ communities. See rov\_metric.md.
 
 ![](manuscript_main_rev_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
 
+# Gentry
+
+![](manuscript_main_rev_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
+
 # Comparison of FIA and comparably sized communities (Figure 4)
 
     ## Warning in ks.test(fia_df[[compare_var]], other_df[[compare_var]]): p-value will
@@ -299,7 +304,7 @@ communities. See rov\_metric.md.
 
 </div>
 
-![](manuscript_main_rev_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->![](manuscript_main_rev_files/figure-gfm/unnamed-chunk-9-2.png)<!-- -->
+![](manuscript_main_rev_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->![](manuscript_main_rev_files/figure-gfm/unnamed-chunk-10-2.png)<!-- -->
 
     ## Joining, by = "Dataset"
     ## Joining, by = "Dataset"

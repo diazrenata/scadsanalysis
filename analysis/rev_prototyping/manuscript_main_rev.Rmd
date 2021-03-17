@@ -465,6 +465,31 @@ fig_2 <- gridExtra::grid.arrange(grobs = list(
 
 ```
 
+# Gentry
+
+
+```{r}
+
+gentry_di <- filter(all_di, Dataset == "Gentry")
+
+gentry_di <- gentry_di %>%
+  mutate(low_avg_abund = ifelse(n0/s0 < 3, "N:S < 3", "N:S > 3"))
+
+
+fig_2 <- gridExtra::grid.arrange(grobs = list(
+  
+  plot_percentile_hist(gentry_di, "nsingletons_percentile_mean", "\nNumber of rare species", facetvar = "low_avg_abund"),
+  plot_percentile_hist(gentry_di, "skew_percentile_mean", "\nSkewness", facetvar = "low_avg_abund", min_s0 = 3),
+  plot_percentile_hist(gentry_di, "simpson_percentile_mean", "\nSimpson evenness", facetvar = "low_avg_abund"),
+  plot_percentile_hist(gentry_di, "shannon_percentile_mean", "\nShannon diversity", facetvar = "low_avg_abund")
+), ncol = 2,
+ left = textGrob("Number of communities", rot = 90, gp = gpar(fill = "black")),
+bottom = textGrob("Percentile rank of observed value relative to feasible set"), gp = gpar(fill = "white"))
+
+
+
+```
+
 
 # Comparison of FIA and comparably sized communities (Figure 4)
 
