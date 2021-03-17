@@ -1,7 +1,18 @@
 Figures and results for main manuscript
 ================
 Renata Diaz
-2021-03-16
+2021-03-17
+
+  - [Datasets by S and N (Figure 1)](#datasets-by-s-and-n-figure-1)
+  - [Illustrations of 95% interval (Figure
+    2)](#illustrations-of-95-interval-figure-2)
+  - [Dissimilarity (Supplement)](#dissimilarity-supplement)
+  - [Metric histograms by dataset (Figure
+    4)](#metric-histograms-by-dataset-figure-4)
+  - [Results table](#results-table)
+  - [Narrowness](#narrowness)
+  - [Comparison of FIA and comparably sized communities (Figure
+    4)](#comparison-of-fia-and-comparably-sized-communities-figure-4)
 
 # Datasets by S and N (Figure 1)
 
@@ -230,418 +241,74 @@ communities. See rov\_metric.md.
 
 ![](manuscript_main_rev_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
 
-<!-- # Breadth index by dataset (Figure 3) -->
-
-<!-- ```{r, fig.dim = c(7,7)} -->
-
-<!-- fig_3 <- gridExtra::grid.arrange(grobs = list( -->
-
-<!--   ggplot(filter(all_di, s0 > 2, nparts > 20), aes(x= skew_95_ratio_1t)) + -->
-
-<!--     geom_histogram() + -->
-
-<!--     theme_bw() + -->
-
-<!--     facet_wrap(vars(Dataset), scales = "free_y", ncol = 1) + -->
-
-<!--     xlab("") + -->
-
-<!--     ylab("") + -->
-
-<!--     ggtitle("Skewness") + -->
-
-<!--     xlim(0, 1), -->
-
-<!--   ggplot(filter(all_di, nparts > 20), aes(x = simpson_95_ratio_1t)) + -->
-
-<!--     geom_histogram() + -->
-
-<!--     theme_bw() + -->
-
-<!--     facet_wrap(vars(Dataset), scales = "free_y", ncol = 1) + -->
-
-<!--     xlab("") + -->
-
-<!--     ylab("") + -->
-
-<!--     ggtitle("Evenness") + -->
-
-<!--     xlim(0, 1) -->
-
-<!-- ), ncol = 2, -->
-
-<!-- top = textGrob("Figure 3", gp = gpar(fill = "white")), -->
-
-<!-- left = "Number of communities",  -->
-
-<!-- bottom = "Breadth index (ranges 0-1, with 1 being very broad)") -->
-
-<!-- plot(fig_3) -->
-
-<!-- ``` -->
-
-<!-- # Comparison of FIA and comparably sized communities (Figure 4) -->
-
-<!-- ```{r, fig.dim = c(7,7)} -->
-
-<!-- fia_max_s = max(filter(all_di, dat == "fia")$s0) -->
-
-<!-- fia_max_n = max(filter(all_di, dat == "fia")$n0) -->
-
-<!-- fia = filter(all_di, dat == "fia") -->
-
-<!-- small_di <- all_di %>% -->
-
-<!--   filter(s0 <= fia_max_s, -->
-
-<!--          n0 <= fia_max_n) %>% -->
-
-<!--   mutate(fia_yn = ifelse(dat == "fia", "fia", "other datasets"), -->
-
-<!--          right_corner = FALSE) -->
-
-<!-- for(i in 1:nrow(small_di)) { -->
-
-<!--   if(small_di$dat[i] != "fia") { -->
-
-<!--     fia_match_s0 = filter(fia, s0 >= small_di$s0[i]) -->
-
-<!--     max_n0_for_this_s0 = max(fia_match_s0$n0) -->
-
-<!--     small_di$right_corner[i] = small_di$n0[i] > max_n0_for_this_s0 -->
-
-<!--   } -->
-
-<!-- } -->
-
-<!-- small_di <- small_di %>% -->
-
-<!--   filter(!right_corner) -->
-
-<!-- not_fia <- filter(small_di, fia_yn != "fia") -->
-
-<!-- fia = filter(small_di, dat == "fia") -->
-
-<!-- small_di_s_n <- small_di %>% -->
-
-<!--   select(s0, n0) %>% -->
-
-<!--   distinct() %>% -->
-
-<!--   mutate(in_fia = FALSE, -->
-
-<!--          in_not_fia = FALSE) -->
-
-<!-- for(i in 1:nrow(small_di_s_n)) { -->
-
-<!--   this_s0 = small_di_s_n$s0[i] -->
-
-<!--   this_n0 = small_di_s_n$n0[i] -->
-
-<!--   fia_matches = filter(fia, s0 == this_s0, n0 == this_n0) -->
-
-<!--   not_fia_matches = filter(not_fia, s0 == this_s0, n0 == this_n0) -->
-
-<!--   small_di_s_n$in_fia[i] = nrow(fia_matches) > 0  -->
-
-<!--   small_di_s_n$in_not_fia[i] = nrow(not_fia_matches) > 0  -->
-
-<!-- } -->
-
-<!-- small_di_s_n <- filter(small_di_s_n, in_fia, in_not_fia) -->
-
-<!-- set.seed(1977) -->
-
-<!-- subsamples <- list() -->
-
-<!-- for(i in 1:nrow(small_di_s_n)) { -->
-
-<!--   this_s0 = small_di_s_n$s0[i] -->
-
-<!--   this_n0 = small_di_s_n$n0[i] -->
-
-<!--   fia_matches = filter(fia, s0 == this_s0, n0 == this_n0) -->
-
-<!--   not_fia_matches = filter(not_fia, s0 == this_s0, n0 == this_n0) -->
-
-<!--   n_to_draw = min(nrow(fia_matches), nrow(not_fia_matches)) -->
-
-<!--   fia_draw = sample.int(n = nrow(fia_matches), size = n_to_draw, replace = F) -->
-
-<!--   not_fia_draw = sample.int(n = nrow(not_fia_matches), size = n_to_draw, replace = F) -->
-
-<!--   subsamples[[i]] <- (bind_rows(fia_matches[fia_draw,], not_fia_matches[not_fia_draw, ])) -->
-
-<!-- } -->
-
-<!-- sub_di <- bind_rows(subsamples) %>% -->
-
-<!--   mutate(Dataset = ifelse(fia_yn == "fia", "FIA", "Other datasets")) -->
-
-<!-- simpson_ks <- filter(sub_di, nparts > 40) %>% -->
-
-<!--   select(simpson_95_ratio_1t, Dataset, simpson_percentile, s0, n0) %>%  -->
-
-<!--   group_by(Dataset, s0, n0) %>% -->
-
-<!--   mutate(pairing = dplyr::row_number()) %>% -->
-
-<!--   ungroup() %>% -->
-
-<!--   tidyr::pivot_wider(id_cols = c(s0, n0, pairing), names_from = Dataset, values_from = c(simpson_95_ratio_1t, simpson_percentile)) -->
-
-<!-- simpson_breadth <- ks.test(simpson_ks$simpson_95_ratio_1t_FIA, simpson_ks$`simpson_95_ratio_1t_Other datasets`) -->
-
-<!-- simpson_percent <- ks.test(simpson_ks$simpson_percentile_FIA, simpson_ks$`simpson_percentile_Other datasets`) -->
-
-<!-- simpson_breadth -->
-
-<!-- simpson_percent -->
-
-<!-- skewness_ks <- filter(sub_di, nparts > 40) %>% -->
-
-<!--   select(skew_95_ratio_1t, Dataset, skew_percentile, s0, n0) %>%  -->
-
-<!--   group_by(Dataset, s0, n0) %>% -->
-
-<!--   mutate(pairing = dplyr::row_number()) %>% -->
-
-<!--   ungroup() %>% -->
-
-<!--   tidyr::pivot_wider(id_cols = c(s0, n0, pairing), names_from = Dataset, values_from = c(skew_95_ratio_1t, skew_percentile)) -->
-
-<!-- skewness_breadth <- ks.test(skewness_ks$skew_95_ratio_1t_FIA, skewness_ks$`skew_95_ratio_1t_Other datasets`) -->
-
-<!-- skewness_percent <- ks.test(skewness_ks$skew_percentile_FIA, skewness_ks$`skew_percentile_Other datasets`) -->
-
-<!-- skewness_breadth -->
-
-<!-- skewness_percent -->
-
-<!-- fig_4 <- gridExtra::grid.arrange(grobs = list( -->
-
-<!--   ggplot(filter(sub_di, nparts > 20), aes(skew_95_ratio_1t)) + -->
-
-<!--     geom_histogram()+ -->
-
-<!--     theme_bw() + -->
-
-<!--     facet_wrap(vars(Dataset), scales = "free_y")  + -->
-
-<!--     xlab("Breadth index") + -->
-
-<!--     ylab("Number of communities") + -->
-
-<!--     ggtitle("Breadth index", subtitle = "Skewness"), -->
-
-<!--   ggplot(filter(sub_di, nparts > 20), aes(simpson_95_ratio_1t)) + -->
-
-<!--     geom_histogram()+ -->
-
-<!--     theme_bw() + -->
-
-<!--     facet_wrap(vars(Dataset), scales = "free_y")  + -->
-
-<!--     xlab("Breadth index") + -->
-
-<!--     ylab("") + -->
-
-<!--     ggtitle("", subtitle = "Evenness"), -->
-
-<!--   ggplot(filter(sub_di, nparts > 20), aes(skew_percentile_excl)) + -->
-
-<!--     geom_histogram()+ -->
-
-<!--     theme_bw() + -->
-
-<!--     facet_wrap(vars(Dataset), scales = "free_y")  + -->
-
-<!--     xlab("Percentile rank") + -->
-
-<!--     ylab("Number of communities") + -->
-
-<!--     ggtitle("Percentile rank", subtitle = "Skewness"), -->
-
-<!--   ggplot(filter(sub_di, nparts > 20), aes(simpson_percentile)) + -->
-
-<!--     geom_histogram()+ -->
-
-<!--     theme_bw() + -->
-
-<!--     facet_wrap(vars(Dataset), scales = "free_y")  + -->
-
-<!--     xlab("Percentile rank") + -->
-
-<!--     ylab("")+ -->
-
-<!--     ggtitle("", subtitle = "Evenness")), ncol = 2, top = textGrob("Figure 4", gp = gpar(fill = "white"))) -->
-
-<!-- plot(fig_4) -->
-
-<!-- ``` -->
-
-<!-- ```{r} -->
-
-<!-- pdf("figure_1.pdf", title = "Figure 1", bg = "white", paper = "letter", width = 6.5, height = 6.5) -->
-
-<!-- gridExtra::grid.arrange(grobs = breadth_plots, ncol = 2, top = textGrob("Figure 1", gp = gpar(fill = "white"))) -->
-
-<!-- dev.off() -->
-
-<!-- pdf("figure_2.pdf", title = "Figure 2", bg = "white", paper = "letter", width = 6.5, height = 6.5) -->
-
-<!--  gridExtra::grid.arrange(grobs = list( -->
-
-<!--   ggplot(filter(all_di, s0 > 2, nparts > 20), aes(skew_percentile_excl)) + -->
-
-<!--     geom_histogram(bins = 100) + -->
-
-<!--     geom_vline(xintercept = 95, color = "red") + -->
-
-<!--     theme_bw() + -->
-
-<!--     facet_wrap(vars(Dataset), scales = "free_y", ncol = 1) + ggtitle("Skewness") + -->
-
-<!--     xlab("") + -->
-
-<!--     ylab(""),# + -->
-
-<!--   #  xlab("Percentile rank of observed value relative to feasible set") + -->
-
-<!--     #ylab("Number of communities") , -->
-
-<!--   ggplot(filter(all_di, nparts > 20), aes(simpson_percentile)) +  -->
-
-<!--     geom_histogram(bins = 100) + -->
-
-<!--     geom_vline(xintercept = 5, color = "red") + -->
-
-<!--     theme_bw() + -->
-
-<!--     facet_wrap(vars(Dataset), scales = "free_y", ncol = 1) + ggtitle("Evenness") +  -->
-
-<!--     xlab("") + -->
-
-<!--     ylab("")#+ -->
-
-<!--     #xlab("Percentile rank of observed value relative to feasible set") + -->
-
-<!--   #  ylab("Number of communities") -->
-
-<!-- ), ncol = 2, -->
-
-<!-- top = textGrob("Figure 2", gp = gpar(fill = "white")), left = textGrob("Number of communities", rot = 90, gp = gpar(fill = "black")), -->
-
-<!-- bottom = textGrob("Percentile rank of observed value relative to feasible set"), gp = gpar(fill = "white")) -->
-
-<!--  dev.off() -->
-
-<!-- pdf("figure_3.pdf", title = "Figure 3", bg = "white", paper = "letter", width = 6.5, height = 6.5) -->
-
-<!-- gridExtra::grid.arrange(grobs = list( -->
-
-<!--   ggplot(filter(all_di, s0 > 2, nparts > 20), aes(x= skew_95_ratio_1t)) + -->
-
-<!--     geom_histogram() + -->
-
-<!--     theme_bw() + -->
-
-<!--     facet_wrap(vars(Dataset), scales = "free_y", ncol = 1) + -->
-
-<!--     xlab("") + -->
-
-<!--     ylab("") + -->
-
-<!--     ggtitle("Skewness") + -->
-
-<!--     xlim(0, 1), -->
-
-<!--   ggplot(filter(all_di, nparts > 20), aes(x = simpson_95_ratio_1t)) + -->
-
-<!--     geom_histogram() + -->
-
-<!--     theme_bw() + -->
-
-<!--     facet_wrap(vars(Dataset), scales = "free_y", ncol = 1) + -->
-
-<!--     xlab("") + -->
-
-<!--     ylab("") + -->
-
-<!--     ggtitle("Evenness") + -->
-
-<!--     xlim(0, 1) -->
-
-<!-- ), ncol = 2, -->
-
-<!-- top = textGrob("Figure 3", gp = gpar(fill = "white")), -->
-
-<!-- left = "Number of communities",  -->
-
-<!-- bottom = "Breadth index (ranges 0-1, with 1 being very broad)") -->
-
-<!-- dev.off() -->
-
-<!-- pdf("figure_4.pdf", title = "Figure 4", bg = "white", paper = "letter", width = 6.5, height = 6.5) -->
-
-<!--  gridExtra::grid.arrange(grobs = list( -->
-
-<!--   ggplot(filter(sub_di, nparts > 20), aes(skew_95_ratio_1t)) + -->
-
-<!--     geom_histogram()+ -->
-
-<!--     theme_bw() + -->
-
-<!--     facet_wrap(vars(Dataset), scales = "free_y")  + -->
-
-<!--     xlab("Breadth index") + -->
-
-<!--     ylab("Number of communities") + -->
-
-<!--     ggtitle("Breadth index", subtitle = "Skewness"), -->
-
-<!--   ggplot(filter(sub_di, nparts > 20), aes(simpson_95_ratio_1t)) + -->
-
-<!--     geom_histogram()+ -->
-
-<!--     theme_bw() + -->
-
-<!--     facet_wrap(vars(Dataset), scales = "free_y")  + -->
-
-<!--     xlab("Breadth index") + -->
-
-<!--     ylab("") + -->
-
-<!--     ggtitle("", subtitle = "Evenness"), -->
-
-<!--   ggplot(filter(sub_di, nparts > 20), aes(skew_percentile_excl)) + -->
-
-<!--     geom_histogram()+ -->
-
-<!--     theme_bw() + -->
-
-<!--     facet_wrap(vars(Dataset), scales = "free_y")  + -->
-
-<!--     xlab("Percentile rank") + -->
-
-<!--     ylab("Number of communities") + -->
-
-<!--     ggtitle("Percentile rank", subtitle = "Skewness"), -->
-
-<!--   ggplot(filter(sub_di, nparts > 20), aes(simpson_percentile)) + -->
-
-<!--     geom_histogram()+ -->
-
-<!--     theme_bw() + -->
-
-<!--     facet_wrap(vars(Dataset), scales = "free_y")  + -->
-
-<!--     xlab("Percentile rank") + -->
-
-<!--     ylab("")+ -->
-
-<!--     ggtitle("", subtitle = "Evenness")), ncol = 2, top = textGrob("Figure 4", gp = gpar(fill = "white"))) -->
-
-<!-- dev.off() -->
-
-<!-- ``` -->
+![](manuscript_main_rev_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
+
+# Comparison of FIA and comparably sized communities (Figure 4)
+
+    ## Warning in ks.test(fia_df[[compare_var]], other_df[[compare_var]]): p-value will
+    ## be approximate in the presence of ties
+    
+    ## Warning in ks.test(fia_df[[compare_var]], other_df[[compare_var]]): p-value will
+    ## be approximate in the presence of ties
+    
+    ## Warning in ks.test(fia_df[[compare_var]], other_df[[compare_var]]): p-value will
+    ## be approximate in the presence of ties
+    
+    ## Warning in ks.test(fia_df[[compare_var]], other_df[[compare_var]]): p-value will
+    ## be approximate in the presence of ties
+    
+    ## Warning in ks.test(fia_df[[compare_var]], other_df[[compare_var]]): p-value will
+    ## be approximate in the presence of ties
+
+<div class="kable-table">
+
+|     | var                        |         d |         p |
+| :-- | :------------------------- | --------: | --------: |
+| D…1 | simpson\_95\_ratio\_2t     | 0.0393939 | 0.9599607 |
+| D…2 | skew\_95\_ratio\_2t        | 0.0000000 | 1.0000000 |
+| D…3 | shannon\_95\_ratio\_2t     | 0.0424242 | 0.9277987 |
+| D…4 | nsingletons\_95\_ratio\_2t | 0.0333333 | 0.9930019 |
+| D…5 | sim\_pos\_from\_best       | 0.0268097 | 0.9993106 |
+
+</div>
+
+    ## Warning in ks.test(fia_df[[compare_var]], other_df[[compare_var]]): p-value will
+    ## be approximate in the presence of ties
+    
+    ## Warning in ks.test(fia_df[[compare_var]], other_df[[compare_var]]): p-value will
+    ## be approximate in the presence of ties
+    
+    ## Warning in ks.test(fia_df[[compare_var]], other_df[[compare_var]]): p-value will
+    ## be approximate in the presence of ties
+    
+    ## Warning in ks.test(fia_df[[compare_var]], other_df[[compare_var]]): p-value will
+    ## be approximate in the presence of ties
+    
+    ## Warning in ks.test(fia_df[[compare_var]], other_df[[compare_var]]): p-value will
+    ## be approximate in the presence of ties
+
+<div class="kable-table">
+
+|     | var                           |         d |         p |
+| :-- | :---------------------------- | --------: | --------: |
+| D…1 | simpson\_percentile           | 0.0575758 | 0.6447379 |
+| D…2 | skew\_percentile\_excl        | 0.0000000 | 1.0000000 |
+| D…3 | shannon\_percentile           | 0.0606061 | 0.5794869 |
+| D…4 | nsingletons\_percentile\_excl | 0.0363636 | 0.9812077 |
+| D…5 | real\_po\_percentile\_excl    | 0.0424242 | 0.9277987 |
+
+</div>
+
+![](manuscript_main_rev_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->![](manuscript_main_rev_files/figure-gfm/unnamed-chunk-9-2.png)<!-- -->
+
+    ## Joining, by = "Dataset"
+    ## Joining, by = "Dataset"
+
+<div class="kable-table">
+
+| Dataset        | High dissimilarity | High proportion of rare species | High skew     | Low Simpson  | Low Shannon  |
+| :------------- | :----------------- | :------------------------------ | :------------ | :----------- | :----------- |
+| FIA            | 17%; n = 373       | 4.8%; n = 330                   | 7%; n = 330   | 15%; n = 330 | 16%; n = 330 |
+| Other datasets | 17%; n = 373       | 6.1%; n = 330                   | 6.4%; n = 330 | 15%; n = 330 | 15%; n = 330 |
+
+</div>

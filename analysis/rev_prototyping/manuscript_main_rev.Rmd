@@ -5,6 +5,7 @@ date: "`r Sys.Date()`"
 output: 
     github_document:
        df_print: kable
+       toc: true
 ---
 
 ```{r setup, include=FALSE}
@@ -51,7 +52,7 @@ all_di <- all_di %>%
   group_by_all() %>%
   mutate(real_po_percentile_mean = mean(real_po_percentile, real_po_percentile_excl),
          skew_percentile_mean = mean(skew_percentile, skew_percentile_excl),
-        simpson_percentile_mean = mean(simpson_percentile,simpson_percentile_excl),
+         simpson_percentile_mean = mean(simpson_percentile,simpson_percentile_excl),
          shannon_percentile_mean = mean(shannon_percentile, shannon_percentile_excl),
          nsingletons_percentile_mean = mean(nsingletons_percentile, nsingletons_percentile_excl),) %>%
   ungroup()
@@ -212,7 +213,7 @@ plot_percentile_hist <- function(di_df, col_name, plot_name, tails = 2, facetvar
     mutate(response = (di_df[[col_name]]),
            facetvar = di_df[[facetvar]])
   
-
+  
   ggplot(filter(di_df, nparts > min_nparts, s0 >= min_s0), aes(response)) +
     geom_histogram(bins = 40, boundary = 100) +
     theme_bw() +
@@ -222,8 +223,8 @@ plot_percentile_hist <- function(di_df, col_name, plot_name, tails = 2, facetvar
     ggtitle( plot_name) +
     facet_wrap(vars(facetvar), ncol = 1, scales = "free_y")+ 
     theme(plot.title = element_text(size=10))
-    
-    
+  
+  
   
 }
 
@@ -240,7 +241,7 @@ ggplot(all_di, aes(sim_pos_from_best, real_po, color = `Observed \npercentile sc
   scale_color_viridis_d(end = .8, direction = -1) +
   xlab("Mean of elements from feasible set") +
   ylab("Observed value") +
- ggtitle("Dissimilarity to the central tendency") +  theme(legend.position = "bottom")#,
+  ggtitle("Dissimilarity to the central tendency") +  theme(legend.position = "bottom")#,
 # 
 # 
 # ggplot(filter(all_di, nparts < 10 ^ 50), aes(nparts, sim_pos_from_best, color = Dataset)) +
@@ -260,18 +261,18 @@ ggplot(all_di, aes(sim_pos_from_best, real_po, color = `Observed \npercentile sc
 
 # Metric histograms by dataset (Figure 4)
 
-```{r first hists, fig.dim = c(9,5)}
+```{r first hists, fig.dim = c(10,5)}
 
 
 
 fig_2 <- gridExtra::grid.arrange(grobs = list(
   
-plot_percentile_hist(all_di, "real_po_percentile_mean", "Dissimilarity to the \ncentral tendency", facetvar = "Dataset", tails = 1),
+  plot_percentile_hist(all_di, "real_po_percentile_mean", "Dissimilarity to the \ncentral tendency", facetvar = "Dataset", tails = 1),
   plot_percentile_hist(all_di, "nsingletons_percentile_mean", "\nNumber of rare species", facetvar = "Dataset"),
   plot_percentile_hist(all_di, "skew_percentile_mean", "\nSkewness", facetvar = "Dataset", min_s0 = 3),
-   plot_percentile_hist(all_di, "simpson_percentile_mean", "\nSimpson evenness", facetvar = "Dataset")#,
-  # plot_percentile_hist(all_di, "shannon_percentile_mean", "\nShannon diversity", facetvar = "Dataset")
-  ), ncol = 4,
+  plot_percentile_hist(all_di, "simpson_percentile_mean", "\nSimpson evenness", facetvar = "Dataset"),
+  plot_percentile_hist(all_di, "shannon_percentile_mean", "\nShannon diversity", facetvar = "Dataset")
+), ncol = 5,
 top = textGrob("Figure 2", gp = gpar(fill = "white")), left = textGrob("Number of communities", rot = 90, gp = gpar(fill = "black")),
 bottom = textGrob("Percentile rank of observed value relative to feasible set"), gp = gpar(fill = "white"))
 ```
@@ -290,7 +291,7 @@ diss_results <- all_di %>%
 
 skew_results <- all_di %>%
   filter(nparts > 40, s0 > 2) %>%
-   group_by(Dataset) %>%
+  group_by(Dataset) %>%
   summarize(high_skew = mean(skew_percentile_excl > 97.5),
             low_skew = mean(skew_percentile < 2.5),
             nsites = dplyr::n()) %>%
@@ -301,7 +302,7 @@ skew_results <- all_di %>%
 
 metric_results <- all_di %>%
   filter(nparts > 40) %>%
-   group_by(Dataset) %>%
+  group_by(Dataset) %>%
   summarize(high_simpson = mean(simpson_percentile_excl > 97.5),
             low_simpson = mean(simpson_percentile < 2.5),
             high_shannon = mean(shannon_percentile_excl > 97.5),
@@ -317,7 +318,7 @@ metric_results <- all_di %>%
          `High proportion of rare species` = paste0(signif(100 * high_nsingletons, 2), "%; n = ", nsites),
          `Low proportion of rare species` = paste0(signif(100 * low_nsingletons, 2), "%; n = ", nsites)) %>%
   select(-nsites)
-  
+
 all_results <- left_join(diss_results, skew_results) %>%
   left_join(metric_results)
 
@@ -342,8 +343,10 @@ plot_narrowness <- function(di_df, yvar, yvar_name) {
   
   if(grepl("sim_pos", yvar)) {
     min_nparts = 20
+    ylabel = "Mean dissimilarity"
   } else {
     min_nparts = 40
+    ylabel = "Breadth index"
   }
   
   di_df <- di_df %>%
@@ -353,13 +356,13 @@ plot_narrowness <- function(di_df, yvar, yvar_name) {
   
   
   ggplot(di_df, aes(nparts, response, color = Dataset)) +
-  geom_point(alpha = .3) +
-  geom_point(data = filter(di_df, s0 < 0)) +
-  scale_color_viridis_d(end = .9) +
-  xlab("") +
-  ylab("") +
-  scale_x_log10() +
-  ggtitle(yvar_name) + 
+    geom_point(alpha = .3) +
+    geom_point(data = filter(di_df, s0 < 0)) +
+    scale_color_viridis_d(end = .9) +
+    xlab("") +
+    ylab(ylabel) +
+    scale_x_log10() +
+    ggtitle(yvar_name) + 
     theme(legend.position = "none")+ 
     theme(plot.title = element_text(size=10))
 }
@@ -371,25 +374,25 @@ plot_narrowness_legend <- function(di_df) {
     distinct() %>%
     mutate(ymark = dplyr::row_number())
   
-    ggplot(legend_df, aes(1, ymark, color = Dataset)) +
-      geom_label(aes(x = 2, y = ymark, label = Dataset)) +
-      geom_point(size = 4) +
-  scale_color_viridis_d(end = .9) +
-  xlab("") +
-  ylab("") +
+  ggplot(legend_df, aes(1, ymark, color = Dataset)) +
+    geom_label(aes(x = 2, y = ymark, label = Dataset)) +
+    geom_point(size = 4) +
+    scale_color_viridis_d(end = .9) +
+    xlab("") +
+    ylab("") +
     theme(legend.position = "none") +
-      xlim(1, 3) + theme(
-        panel.grid.major.x = element_blank(),
-        panel.grid.minor.x = element_blank(),
-        panel.grid.major.y = element_blank(),
-        panel.grid.minor.y = element_blank(),
-        axis.text.x = element_blank(),
-        axis.ticks.x = element_blank(),
-        axis.text.y = element_blank(),
-        axis.ticks.y = element_blank()
-      ) +
-      ggtitle("Dataset")
-    
+    xlim(1, 3) + theme(
+      panel.grid.major.x = element_blank(),
+      panel.grid.minor.x = element_blank(),
+      panel.grid.major.y = element_blank(),
+      panel.grid.minor.y = element_blank(),
+      axis.text.x = element_blank(),
+      axis.ticks.x = element_blank(),
+      axis.text.y = element_blank(),
+      axis.ticks.y = element_blank()
+    ) +
+    ggtitle("Dataset")
+  
 }
 # 
 # gridExtra::grid.arrange(grobs = list(
@@ -403,284 +406,259 @@ plot_narrowness_legend <- function(di_df) {
 
 
 gridExtra::grid.arrange(grobs = list(
-  plot_narrowness(all_di, "sim_pos_from_best", "Dissimilarity \nto central tendency") + theme(legend.position = "bottom", legend.direction = "vertical" , legend.margin = margin(b = .5, r = 0, t = 0, l = 0, unit = "in")
-), gridExtra::grid.arrange(grobs = list(
-  plot_narrowness(all_di, "skew_95_ratio_2t", "\nSkewness"),
-  plot_narrowness(all_di, "simpson_95_ratio_2t", "\nSimpson evenness"),
-    plot_narrowness(all_di, "shannon_95_ratio_2t", "\nShannon diversity"),
-    plot_narrowness(all_di, "nsingletons_95_ratio_2t", "\nNumber of rare species")
-  ), ncol = 2)), ncol = 2, widths = c(2, 4))
+  plot_narrowness(all_di, "sim_pos_from_best", "Dissimilarity \nto central tendency") + ylab("Mean dissimilarity") + theme(legend.position = "bottom", legend.direction = "vertical" , legend.margin = margin(b = .25, r = 0, t = 0, l = 0, unit = "in")), 
+  gridExtra::grid.arrange(grobs = list(
+    plot_narrowness(all_di, "skew_95_ratio_2t", "\nSkewness"),
+    plot_narrowness(all_di, "simpson_95_ratio_2t", "\nSimpson evenness")+ ylab(""),
+    plot_narrowness(all_di, "nsingletons_95_ratio_2t", "\nNumber of rare species"),
+       plot_narrowness(all_di, "shannon_95_ratio_2t", "\nShannon diversity") + ylab("")
+  ), ncol = 2)), ncol = 2, widths = c( 2, 4), bottom = textGrob("Number of elements in the feasible set"))
 
 ```
 
-<!-- # Breadth index by dataset (Figure 3) -->
+```{r}
 
-<!-- ```{r, fig.dim = c(7,7)} -->
+plot_narrowness_hist <- function(di_df, col_name, plot_name, facetvar = "Dataset", min_s0 = 0) {
+  
+  if(grepl("sim_pos", col_name)) {
+    xvarname = "Mean dissimilarity"
+    min_nparts = 40
+  } else {
+    min_nparts = 20
+    xvarname = "Breadth index"
+  }
+  
+  di_df <- di_df %>%
+    mutate(response = (di_df[[col_name]]),
+           facetvar = di_df[[facetvar]])
+  
+  
+  ggplot(filter(di_df, nparts > min_nparts, s0 >= min_s0), aes(response)) +
+    geom_histogram(bins = 40, boundary = 100) +
+    theme_bw() +
+    ylab("") +
+    xlab(xvarname) +
+    ggtitle( plot_name) +
+    facet_wrap(vars(facetvar), ncol = 1, scales = "free_y")+ 
+    theme(plot.title = element_text(size=10))
+  
+}
 
-<!-- fig_3 <- gridExtra::grid.arrange(grobs = list( -->
-<!--   ggplot(filter(all_di, s0 > 2, nparts > 20), aes(x= skew_95_ratio_1t)) + -->
-<!--     geom_histogram() + -->
-<!--     theme_bw() + -->
-<!--     facet_wrap(vars(Dataset), scales = "free_y", ncol = 1) + -->
-<!--     xlab("") + -->
-<!--     ylab("") + -->
-<!--     ggtitle("Skewness") + -->
-<!--     xlim(0, 1), -->
-
-<!--   ggplot(filter(all_di, nparts > 20), aes(x = simpson_95_ratio_1t)) + -->
-<!--     geom_histogram() + -->
-<!--     theme_bw() + -->
-<!--     facet_wrap(vars(Dataset), scales = "free_y", ncol = 1) + -->
-<!--     xlab("") + -->
-<!--     ylab("") + -->
-<!--     ggtitle("Evenness") + -->
-<!--     xlim(0, 1) -->
-<!-- ), ncol = 2, -->
-<!-- top = textGrob("Figure 3", gp = gpar(fill = "white")), -->
-<!-- left = "Number of communities",  -->
-<!-- bottom = "Breadth index (ranges 0-1, with 1 being very broad)") -->
-
-<!-- plot(fig_3) -->
-
-<!-- ``` -->
-
-<!-- # Comparison of FIA and comparably sized communities (Figure 4) -->
-
-<!-- ```{r, fig.dim = c(7,7)} -->
-
-<!-- fia_max_s = max(filter(all_di, dat == "fia")$s0) -->
-<!-- fia_max_n = max(filter(all_di, dat == "fia")$n0) -->
-
-<!-- fia = filter(all_di, dat == "fia") -->
-
-<!-- small_di <- all_di %>% -->
-<!--   filter(s0 <= fia_max_s, -->
-<!--          n0 <= fia_max_n) %>% -->
-<!--   mutate(fia_yn = ifelse(dat == "fia", "fia", "other datasets"), -->
-<!--          right_corner = FALSE) -->
-
-<!-- for(i in 1:nrow(small_di)) { -->
-<!--   if(small_di$dat[i] != "fia") { -->
-<!--     fia_match_s0 = filter(fia, s0 >= small_di$s0[i]) -->
-
-<!--     max_n0_for_this_s0 = max(fia_match_s0$n0) -->
-
-<!--     small_di$right_corner[i] = small_di$n0[i] > max_n0_for_this_s0 -->
-
-<!--   } -->
-<!-- } -->
+```
 
 
-<!-- small_di <- small_di %>% -->
-<!--   filter(!right_corner) -->
-<!-- not_fia <- filter(small_di, fia_yn != "fia") -->
-<!-- fia = filter(small_di, dat == "fia") -->
-
-<!-- small_di_s_n <- small_di %>% -->
-<!--   select(s0, n0) %>% -->
-<!--   distinct() %>% -->
-<!--   mutate(in_fia = FALSE, -->
-<!--          in_not_fia = FALSE) -->
-
-<!-- for(i in 1:nrow(small_di_s_n)) { -->
-
-<!--   this_s0 = small_di_s_n$s0[i] -->
-<!--   this_n0 = small_di_s_n$n0[i] -->
-
-<!--   fia_matches = filter(fia, s0 == this_s0, n0 == this_n0) -->
-<!--   not_fia_matches = filter(not_fia, s0 == this_s0, n0 == this_n0) -->
-
-<!--   small_di_s_n$in_fia[i] = nrow(fia_matches) > 0  -->
-<!--   small_di_s_n$in_not_fia[i] = nrow(not_fia_matches) > 0  -->
+```{r, fig.dim = c(10,5)}
 
 
-<!-- } -->
-
-<!-- small_di_s_n <- filter(small_di_s_n, in_fia, in_not_fia) -->
-
-<!-- set.seed(1977) -->
-
-<!-- subsamples <- list() -->
-
-<!-- for(i in 1:nrow(small_di_s_n)) { -->
-
-<!--   this_s0 = small_di_s_n$s0[i] -->
-<!--   this_n0 = small_di_s_n$n0[i] -->
-
-<!--   fia_matches = filter(fia, s0 == this_s0, n0 == this_n0) -->
-
-<!--   not_fia_matches = filter(not_fia, s0 == this_s0, n0 == this_n0) -->
-
-<!--   n_to_draw = min(nrow(fia_matches), nrow(not_fia_matches)) -->
-
-<!--   fia_draw = sample.int(n = nrow(fia_matches), size = n_to_draw, replace = F) -->
-<!--   not_fia_draw = sample.int(n = nrow(not_fia_matches), size = n_to_draw, replace = F) -->
-
-<!--   subsamples[[i]] <- (bind_rows(fia_matches[fia_draw,], not_fia_matches[not_fia_draw, ])) -->
-
-<!-- } -->
-
-<!-- sub_di <- bind_rows(subsamples) %>% -->
-<!--   mutate(Dataset = ifelse(fia_yn == "fia", "FIA", "Other datasets")) -->
-
-<!-- simpson_ks <- filter(sub_di, nparts > 40) %>% -->
-<!--   select(simpson_95_ratio_1t, Dataset, simpson_percentile, s0, n0) %>%  -->
-<!--   group_by(Dataset, s0, n0) %>% -->
-<!--   mutate(pairing = dplyr::row_number()) %>% -->
-<!--   ungroup() %>% -->
-<!--   tidyr::pivot_wider(id_cols = c(s0, n0, pairing), names_from = Dataset, values_from = c(simpson_95_ratio_1t, simpson_percentile)) -->
-
-<!-- simpson_breadth <- ks.test(simpson_ks$simpson_95_ratio_1t_FIA, simpson_ks$`simpson_95_ratio_1t_Other datasets`) -->
-
-<!-- simpson_percent <- ks.test(simpson_ks$simpson_percentile_FIA, simpson_ks$`simpson_percentile_Other datasets`) -->
-<!-- simpson_breadth -->
-<!-- simpson_percent -->
-
-<!-- skewness_ks <- filter(sub_di, nparts > 40) %>% -->
-<!--   select(skew_95_ratio_1t, Dataset, skew_percentile, s0, n0) %>%  -->
-<!--   group_by(Dataset, s0, n0) %>% -->
-<!--   mutate(pairing = dplyr::row_number()) %>% -->
-<!--   ungroup() %>% -->
-<!--   tidyr::pivot_wider(id_cols = c(s0, n0, pairing), names_from = Dataset, values_from = c(skew_95_ratio_1t, skew_percentile)) -->
-
-<!-- skewness_breadth <- ks.test(skewness_ks$skew_95_ratio_1t_FIA, skewness_ks$`skew_95_ratio_1t_Other datasets`) -->
-
-<!-- skewness_percent <- ks.test(skewness_ks$skew_percentile_FIA, skewness_ks$`skew_percentile_Other datasets`) -->
-<!-- skewness_breadth -->
-<!-- skewness_percent -->
 
 
-<!-- fig_4 <- gridExtra::grid.arrange(grobs = list( -->
-<!--   ggplot(filter(sub_di, nparts > 20), aes(skew_95_ratio_1t)) + -->
-<!--     geom_histogram()+ -->
-<!--     theme_bw() + -->
-<!--     facet_wrap(vars(Dataset), scales = "free_y")  + -->
-<!--     xlab("Breadth index") + -->
-<!--     ylab("Number of communities") + -->
-<!--     ggtitle("Breadth index", subtitle = "Skewness"), -->
-
-<!--   ggplot(filter(sub_di, nparts > 20), aes(simpson_95_ratio_1t)) + -->
-<!--     geom_histogram()+ -->
-<!--     theme_bw() + -->
-<!--     facet_wrap(vars(Dataset), scales = "free_y")  + -->
-<!--     xlab("Breadth index") + -->
-<!--     ylab("") + -->
-<!--     ggtitle("", subtitle = "Evenness"), -->
-
-<!--   ggplot(filter(sub_di, nparts > 20), aes(skew_percentile_excl)) + -->
-<!--     geom_histogram()+ -->
-<!--     theme_bw() + -->
-<!--     facet_wrap(vars(Dataset), scales = "free_y")  + -->
-<!--     xlab("Percentile rank") + -->
-<!--     ylab("Number of communities") + -->
-<!--     ggtitle("Percentile rank", subtitle = "Skewness"), -->
+fig_2 <- gridExtra::grid.arrange(grobs = list(
+  
+  plot_narrowness_hist(all_di, "sim_pos_from_best", "Dissimilarity to the \ncentral tendency", facetvar = "Dataset"),
+  plot_narrowness_hist(all_di, "nsingletons_95_ratio_2t", "\nNumber of rare species", facetvar = "Dataset"),
+  plot_narrowness_hist(all_di, "skew_95_ratio_2t", "\nSkewness", facetvar = "Dataset", min_s0 = 3),
+  plot_narrowness_hist(all_di, "simpson_95_ratio_2t", "\nSimpson evenness", facetvar = "Dataset"),
+  plot_narrowness_hist(all_di, "shannon_95_ratio_2t", "\nShannon diversity", facetvar = "Dataset")
+), ncol = 5,
+ left = textGrob("Number of communities", rot = 90, gp = gpar(fill = "black")), gp = gpar(fill = "white"))
 
 
-<!--   ggplot(filter(sub_di, nparts > 20), aes(simpson_percentile)) + -->
-<!--     geom_histogram()+ -->
-<!--     theme_bw() + -->
-<!--     facet_wrap(vars(Dataset), scales = "free_y")  + -->
-<!--     xlab("Percentile rank") + -->
-<!--     ylab("")+ -->
-<!--     ggtitle("", subtitle = "Evenness")), ncol = 2, top = textGrob("Figure 4", gp = gpar(fill = "white"))) -->
-
-<!-- plot(fig_4) -->
-
-<!-- ``` -->
-
-<!-- ```{r} -->
-<!-- pdf("figure_1.pdf", title = "Figure 1", bg = "white", paper = "letter", width = 6.5, height = 6.5) -->
-<!-- gridExtra::grid.arrange(grobs = breadth_plots, ncol = 2, top = textGrob("Figure 1", gp = gpar(fill = "white"))) -->
-<!-- dev.off() -->
-
-<!-- pdf("figure_2.pdf", title = "Figure 2", bg = "white", paper = "letter", width = 6.5, height = 6.5) -->
-<!--  gridExtra::grid.arrange(grobs = list( -->
-
-<!--   ggplot(filter(all_di, s0 > 2, nparts > 20), aes(skew_percentile_excl)) + -->
-<!--     geom_histogram(bins = 100) + -->
-<!--     geom_vline(xintercept = 95, color = "red") + -->
-<!--     theme_bw() + -->
-<!--     facet_wrap(vars(Dataset), scales = "free_y", ncol = 1) + ggtitle("Skewness") + -->
-<!--     xlab("") + -->
-<!--     ylab(""),# + -->
-<!--   #  xlab("Percentile rank of observed value relative to feasible set") + -->
-<!--     #ylab("Number of communities") , -->
-
-<!--   ggplot(filter(all_di, nparts > 20), aes(simpson_percentile)) +  -->
-<!--     geom_histogram(bins = 100) + -->
-<!--     geom_vline(xintercept = 5, color = "red") + -->
-<!--     theme_bw() + -->
-<!--     facet_wrap(vars(Dataset), scales = "free_y", ncol = 1) + ggtitle("Evenness") +  -->
-<!--     xlab("") + -->
-<!--     ylab("")#+ -->
-<!--     #xlab("Percentile rank of observed value relative to feasible set") + -->
-<!--   #  ylab("Number of communities") -->
-<!-- ), ncol = 2, -->
-<!-- top = textGrob("Figure 2", gp = gpar(fill = "white")), left = textGrob("Number of communities", rot = 90, gp = gpar(fill = "black")), -->
-<!-- bottom = textGrob("Percentile rank of observed value relative to feasible set"), gp = gpar(fill = "white")) -->
-<!--  dev.off() -->
-
-<!-- pdf("figure_3.pdf", title = "Figure 3", bg = "white", paper = "letter", width = 6.5, height = 6.5) -->
-<!-- gridExtra::grid.arrange(grobs = list( -->
-<!--   ggplot(filter(all_di, s0 > 2, nparts > 20), aes(x= skew_95_ratio_1t)) + -->
-<!--     geom_histogram() + -->
-<!--     theme_bw() + -->
-<!--     facet_wrap(vars(Dataset), scales = "free_y", ncol = 1) + -->
-<!--     xlab("") + -->
-<!--     ylab("") + -->
-<!--     ggtitle("Skewness") + -->
-<!--     xlim(0, 1), -->
-
-<!--   ggplot(filter(all_di, nparts > 20), aes(x = simpson_95_ratio_1t)) + -->
-<!--     geom_histogram() + -->
-<!--     theme_bw() + -->
-<!--     facet_wrap(vars(Dataset), scales = "free_y", ncol = 1) + -->
-<!--     xlab("") + -->
-<!--     ylab("") + -->
-<!--     ggtitle("Evenness") + -->
-<!--     xlim(0, 1) -->
-<!-- ), ncol = 2, -->
-<!-- top = textGrob("Figure 3", gp = gpar(fill = "white")), -->
-<!-- left = "Number of communities",  -->
-<!-- bottom = "Breadth index (ranges 0-1, with 1 being very broad)") -->
-
-<!-- dev.off() -->
-
-<!-- pdf("figure_4.pdf", title = "Figure 4", bg = "white", paper = "letter", width = 6.5, height = 6.5) -->
-<!--  gridExtra::grid.arrange(grobs = list( -->
-<!--   ggplot(filter(sub_di, nparts > 20), aes(skew_95_ratio_1t)) + -->
-<!--     geom_histogram()+ -->
-<!--     theme_bw() + -->
-<!--     facet_wrap(vars(Dataset), scales = "free_y")  + -->
-<!--     xlab("Breadth index") + -->
-<!--     ylab("Number of communities") + -->
-<!--     ggtitle("Breadth index", subtitle = "Skewness"), -->
-
-<!--   ggplot(filter(sub_di, nparts > 20), aes(simpson_95_ratio_1t)) + -->
-<!--     geom_histogram()+ -->
-<!--     theme_bw() + -->
-<!--     facet_wrap(vars(Dataset), scales = "free_y")  + -->
-<!--     xlab("Breadth index") + -->
-<!--     ylab("") + -->
-<!--     ggtitle("", subtitle = "Evenness"), -->
-
-<!--   ggplot(filter(sub_di, nparts > 20), aes(skew_percentile_excl)) + -->
-<!--     geom_histogram()+ -->
-<!--     theme_bw() + -->
-<!--     facet_wrap(vars(Dataset), scales = "free_y")  + -->
-<!--     xlab("Percentile rank") + -->
-<!--     ylab("Number of communities") + -->
-<!--     ggtitle("Percentile rank", subtitle = "Skewness"), -->
+```
 
 
-<!--   ggplot(filter(sub_di, nparts > 20), aes(simpson_percentile)) + -->
-<!--     geom_histogram()+ -->
-<!--     theme_bw() + -->
-<!--     facet_wrap(vars(Dataset), scales = "free_y")  + -->
-<!--     xlab("Percentile rank") + -->
-<!--     ylab("")+ -->
-<!--     ggtitle("", subtitle = "Evenness")), ncol = 2, top = textGrob("Figure 4", gp = gpar(fill = "white"))) -->
-<!-- dev.off() -->
-<!-- ``` -->
+# Comparison of FIA and comparably sized communities (Figure 4)
+
+```{r, fig.dim = c(10, 5)}
+
+fia_max_s = max(filter(all_di, dat == "fia")$s0)
+fia_max_n = max(filter(all_di, dat == "fia")$n0)
+
+fia = filter(all_di, dat == "fia")
+
+small_di <- all_di %>%
+  filter(s0 <= fia_max_s,
+         n0 <= fia_max_n) %>%
+  mutate(fia_yn = ifelse(dat == "fia", "fia", "other datasets"),
+         right_corner = FALSE)
+
+for(i in 1:nrow(small_di)) {
+  if(small_di$dat[i] != "fia") {
+    fia_match_s0 = filter(fia, s0 >= small_di$s0[i])
+
+    max_n0_for_this_s0 = max(fia_match_s0$n0)
+
+    small_di$right_corner[i] = small_di$n0[i] > max_n0_for_this_s0
+
+  }
+}
 
 
+small_di <- small_di %>%
+  filter(!right_corner)
+not_fia <- filter(small_di, fia_yn != "fia")
+fia = filter(small_di, dat == "fia")
+
+small_di_s_n <- small_di %>%
+  select(s0, n0) %>%
+  distinct() %>%
+  mutate(in_fia = FALSE,
+         in_not_fia = FALSE)
+
+for(i in 1:nrow(small_di_s_n)) {
+
+  this_s0 = small_di_s_n$s0[i]
+  this_n0 = small_di_s_n$n0[i]
+
+  fia_matches = filter(fia, s0 == this_s0, n0 == this_n0)
+  not_fia_matches = filter(not_fia, s0 == this_s0, n0 == this_n0)
+
+  small_di_s_n$in_fia[i] = nrow(fia_matches) > 0
+  small_di_s_n$in_not_fia[i] = nrow(not_fia_matches) > 0
+
+
+}
+
+small_di_s_n <- filter(small_di_s_n, in_fia, in_not_fia)
+
+set.seed(1977)
+
+subsamples <- list()
+
+for(i in 1:nrow(small_di_s_n)) {
+
+  this_s0 = small_di_s_n$s0[i]
+  this_n0 = small_di_s_n$n0[i]
+
+  fia_matches = filter(fia, s0 == this_s0, n0 == this_n0)
+
+  not_fia_matches = filter(not_fia, s0 == this_s0, n0 == this_n0)
+
+  n_to_draw = min(nrow(fia_matches), nrow(not_fia_matches))
+
+  fia_draw = sample.int(n = nrow(fia_matches), size = n_to_draw, replace = F)
+  not_fia_draw = sample.int(n = nrow(not_fia_matches), size = n_to_draw, replace = F)
+
+  subsamples[[i]] <- (bind_rows(fia_matches[fia_draw,], not_fia_matches[not_fia_draw, ]))
+
+}
+
+sub_di <- bind_rows(subsamples) %>%
+  mutate(Dataset = ifelse(fia_yn == "fia", "FIA", "Other datasets"))
+
+fia_di <- filter(sub_di, fia_yn == "fia")
+other_di <- filter(sub_di, fia_yn != "fia")
+
+ks_compare <- function(fia_df, other_df, compare_var) {
+  
+  if(grepl("skew", compare_var)) {
+    fia_df <- filter(fia_df, s0 > 2)
+    other_df <- filter(fia_df, s0 >2)
+  }
+  
+  if(grepl("sim_pos", compare_var)) {
+    fia_df <- filter(fia_df, nparts > 20)
+    other_df <- filter(other_df, nparts > 20)
+  } else {
+      fia_df <- filter(fia_df, nparts > 40)
+    other_df <- filter(other_df, nparts > 40)
+  }
+  
+  kstest <- ks.test(fia_df[[compare_var]], other_df[[compare_var]])
+  
+  return(data.frame(
+    var = compare_var,
+    d = kstest$statistic,
+    p = kstest$p.value
+  ))
+}
+
+simpson_rat_ks <- ks_compare(fia_di, other_di, "simpson_95_ratio_2t")
+skew_rat_ks <- ks_compare(fia_di, other_di, "skew_95_ratio_2t")
+shannon_rat_ks <- ks_compare(fia_di, other_di, "shannon_95_ratio_2t")
+nsingletons_rat_ks <- ks_compare(fia_di, other_di, "nsingletons_95_ratio_2t")
+diss_rat_ks <- ks_compare(fia_di, other_di, "sim_pos_from_best")
+
+bind_rows(simpson_rat_ks, skew_rat_ks, shannon_rat_ks, nsingletons_rat_ks, diss_rat_ks)
+
+
+simpson_perc_ks <- ks_compare(fia_di, other_di, "simpson_percentile")
+skew_perc_ks <- ks_compare(fia_di, other_di, "skew_percentile_excl")
+shannon_perc_ks <- ks_compare(fia_di, other_di, "shannon_percentile")
+nsingletons_perc_ks <- ks_compare(fia_di, other_di, "nsingletons_percentile_excl")
+diss_perc_ks <- ks_compare(fia_di, other_di, "real_po_percentile_excl")
+
+bind_rows(simpson_perc_ks, skew_perc_ks, shannon_perc_ks, nsingletons_perc_ks, diss_perc_ks)
+
+
+fig_2 <- gridExtra::grid.arrange(grobs = list(
+  
+  plot_percentile_hist(sub_di, "real_po_percentile_mean", "Dissimilarity to the \ncentral tendency", facetvar = "Dataset", tails = 1),
+  plot_percentile_hist(sub_di, "nsingletons_percentile_mean", "\nNumber of rare species", facetvar = "Dataset"),
+  plot_percentile_hist(sub_di, "skew_percentile_mean", "\nSkewness", facetvar = "Dataset", min_s0 = 3),
+  plot_percentile_hist(sub_di, "simpson_percentile_mean", "\nSimpson evenness", facetvar = "Dataset"),
+  plot_percentile_hist(sub_di, "shannon_percentile_mean", "\nShannon diversity", facetvar = "Dataset")
+), ncol = 5,
+top = textGrob("Figure 2", gp = gpar(fill = "white")), left = textGrob("Number of communities", rot = 90, gp = gpar(fill = "black")),
+bottom = textGrob("Percentile rank of observed value relative to feasible set"), gp = gpar(fill = "white"))
+
+
+
+
+fig_2 <- gridExtra::grid.arrange(grobs = list(
+  
+  plot_narrowness_hist(sub_di, "sim_pos_from_best", "Dissimilarity to the \ncentral tendency", facetvar = "Dataset"),
+  plot_narrowness_hist(sub_di, "nsingletons_95_ratio_2t", "\nNumber of rare species", facetvar = "Dataset"),
+  plot_narrowness_hist(sub_di, "skew_95_ratio_2t", "\nSkewness", facetvar = "Dataset", min_s0 = 3),
+  plot_narrowness_hist(sub_di, "simpson_95_ratio_2t", "\nSimpson evenness", facetvar = "Dataset"),
+  plot_narrowness_hist(sub_di, "shannon_95_ratio_2t", "\nShannon diversity", facetvar = "Dataset")
+), ncol = 5,
+ left = textGrob("Number of communities", rot = 90, gp = gpar(fill = "black")), gp = gpar(fill = "white"))
+
+diss_results <- sub_di %>%
+  filter(nparts > 20) %>%
+  group_by(Dataset) %>%
+  summarize(high_diss = mean(real_po_percentile_excl > 95),
+            nsites = dplyr::n()) %>%
+  ungroup() %>%
+  mutate(`High dissimilarity` = paste0(signif(100 * high_diss, 2), "%; n = ", nsites)) %>%
+  select(-nsites)
+
+skew_results <- sub_di %>%
+  filter(nparts > 40, s0 > 2) %>%
+  group_by(Dataset) %>%
+  summarize(high_skew = mean(skew_percentile_excl > 97.5),
+            low_skew = mean(skew_percentile < 2.5),
+            nsites = dplyr::n()) %>%
+  ungroup() %>%
+  mutate(`High skew` = paste0(signif(100 * high_skew, 2), "%; n = ", nsites),
+         `Low skew` = paste0(signif(100 * low_skew, 2), "%; n = ", nsites)) %>%
+  select(-nsites)
+
+metric_results <- sub_di %>%
+  filter(nparts > 40) %>%
+  group_by(Dataset) %>%
+  summarize(high_simpson = mean(simpson_percentile_excl > 97.5),
+            low_simpson = mean(simpson_percentile < 2.5),
+            high_shannon = mean(shannon_percentile_excl > 97.5),
+            low_shannon = mean(shannon_percentile < 2.5),
+            high_nsingletons = mean(nsingletons_percentile_excl > 97.5),
+            low_nsingletons = mean(nsingletons_percentile < 2.5),
+            nsites = dplyr::n()) %>%
+  ungroup() %>%
+  mutate(`High Simpson` = paste0(signif(100 * high_simpson, 2), "%; n = ", nsites),
+         `Low Simpson` = paste0(signif(100 * low_simpson, 2), "%; n = ", nsites),
+         `High Shannon` = paste0(signif(100 * high_shannon, 2), "%; n = ", nsites),
+         `Low Shannon` = paste0(signif(100 * low_shannon, 2), "%; n = ", nsites),
+         `High proportion of rare species` = paste0(signif(100 * high_nsingletons, 2), "%; n = ", nsites),
+         `Low proportion of rare species` = paste0(signif(100 * low_nsingletons, 2), "%; n = ", nsites)) %>%
+  select(-nsites)
+
+all_results <- left_join(diss_results, skew_results) %>%
+  left_join(metric_results)
+
+cols1 <- c("Dataset", "High dissimilarity", "High proportion of rare species", "High skew", "Low Simpson", "Low Shannon")
+
+all_results %>%
+  select(cols1)
+
+```
