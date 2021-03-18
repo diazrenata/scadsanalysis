@@ -6,9 +6,9 @@ library(ggplot2)
 library(scadsanalysis)
 
 all_ct <- list()
-#datasets <- c("bbs",  "gentry", "fia_short", "mcdb", "misc_abund_short", "fia_small")
+datasets <- c("bbs",  "gentry", "fia_short", "mcdb", "misc_abund_short", "fia_small")
 #datasets <- c( "gentry", "mcdb", "misc_abund_short", "bbs")
-datasets <- c("bbs",  "gentry", "mcdb", "misc_abund_short", "fia_small")
+#datasets <- c("bbs",  "gentry", "mcdb", "misc_abund_short", "fia_small")
 
 
 for(i in 1:length(datasets)) {

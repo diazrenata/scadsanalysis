@@ -7,8 +7,8 @@ library(scadsanalysis)
 
 all_ct <- list()
 #datasets <- c("bbs",  "gentry", "fia_short", "mcdb", "misc_abund_short", "fia_small")
-# datasets <- c( "gentry-jk", "mcdb-jk", "bbs-jk","misc-jk", "fia_small-jk", "fia_short-jk" )
-datasets <- c( "gentry-jk",  "bbs-jk","fia_small-jk", "fia_short-jk" )
+ datasets <- c( "gentry-jk", "mcdb-jk", "bbs-jk","misc-jk", "fia_small-jk", "fia_short-jk" )
+#datasets <- c( "gentry-jk",  "bbs-jk","fia_small-jk", "fia_short-jk" )
 
 
 for(i in 1:length(datasets)) {
