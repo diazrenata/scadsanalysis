@@ -1,15 +1,9 @@
 Shannon diversity
 ================
 Renata Diaz
-2021-02-23
+2021-02-25
 
-    ## Warning: Removed 8 rows containing missing values (geom_bar).
-
-![](nsingletons_files/figure-gfm/unnamed-chunk-1-1.png)<!-- -->
-
-    ## Warning: Removed 8 rows containing missing values (geom_bar).
-
-![](nsingletons_files/figure-gfm/unnamed-chunk-1-2.png)<!-- -->
+![](nsingletons_files/figure-gfm/unnamed-chunk-1-1.png)<!-- -->![](nsingletons_files/figure-gfm/unnamed-chunk-1-2.png)<!-- -->
 
 ![](nsingletons_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->
 
@@ -20,9 +14,10 @@ Renata Diaz
 | dat         | singletons | prop\_high\_singles | prop\_high\_singles\_ex | prop\_low\_singles | prop\_low\_singles\_ex | nsites |
 | :---------- | :--------- | ------------------: | ----------------------: | -----------------: | ---------------------: | -----: |
 | bbs         | FALSE      |           0.1244140 |               0.0796971 |          0.0000000 |              0.0046881 |   2773 |
+| fia         | FALSE      |           0.1356860 |               0.0264542 |          0.0000000 |              0.0992573 |  18447 |
 | gentry      | FALSE      |           0.0446429 |               0.0178571 |          0.2991071 |              0.3169643 |    224 |
-| mcdb        | FALSE      |           0.4347181 |               0.1335312 |          0.0000000 |              0.3679525 |    674 |
-| misc\_abund | FALSE      |           0.4823748 |               0.3061224 |          0.0000000 |              0.1391466 |    539 |
+| mcdb        | FALSE      |           0.4710145 |               0.1630435 |          0.0000000 |              0.3695652 |    552 |
+| misc\_abund | FALSE      |           0.5121457 |               0.3340081 |          0.0000000 |              0.1376518 |    494 |
 
 </div>
 
@@ -65,10 +60,11 @@ all_di %>%
 
 | dat         | singletons | prop\_high\_singles | prop\_high\_singles\_ex | prop\_low\_singles | prop\_low\_singles\_ex | nsites |
 | :---------- | :--------- | ------------------: | ----------------------: | -----------------: | ---------------------: | -----: |
-| bbs         | FALSE      |           0.0000000 |                       0 |          0.0000000 |              0.0000000 |      1 |
-| gentry      | FALSE      |           0.0000000 |                       0 |          0.7093023 |              0.7325581 |     86 |
-| mcdb        | FALSE      |           0.2777778 |                       0 |          0.0000000 |              0.0740741 |     54 |
-| misc\_abund | FALSE      |           0.1250000 |                       0 |          0.0000000 |              0.0833333 |     48 |
+| bbs         | FALSE      |           0.0000000 |               0.0000000 |          0.0000000 |              0.0000000 |      1 |
+| fia         | FALSE      |           0.0204849 |               0.0026311 |          0.0000000 |              0.0041346 |   5321 |
+| gentry      | FALSE      |           0.0000000 |               0.0000000 |          0.7093023 |              0.7325581 |     86 |
+| mcdb        | FALSE      |           0.3000000 |               0.0000000 |          0.0000000 |              0.0000000 |     10 |
+| misc\_abund | FALSE      |           0.0000000 |               0.0000000 |          0.0000000 |              0.0000000 |     13 |
 
 </div>
 
@@ -91,30 +87,25 @@ all_di %>%
 | dat         | singletons | prop\_high\_singles | prop\_high\_singles\_ex | prop\_low\_singles | prop\_low\_singles\_ex | nsites |
 | :---------- | :--------- | ------------------: | ----------------------: | -----------------: | ---------------------: | -----: |
 | bbs         | FALSE      |           0.1645873 |               0.1060461 |                  0 |              0.0062380 |   2084 |
+| fia         | FALSE      |           0.4256804 |               0.0865318 |                  0 |              0.4996511 |   1433 |
 | gentry      | FALSE      |           0.4285714 |               0.1904762 |                  0 |              0.0952381 |     21 |
-| mcdb        | FALSE      |           0.5406824 |               0.2047244 |                  0 |              0.4540682 |    381 |
-| misc\_abund | FALSE      |           0.6608187 |               0.4385965 |                  0 |              0.1871345 |    342 |
+| mcdb        | FALSE      |           0.5506849 |               0.2136986 |                  0 |              0.4438356 |    365 |
+| misc\_abund | FALSE      |           0.6627566 |               0.4398827 |                  0 |              0.1847507 |    341 |
 
 </div>
 
-<!-- ```{r} -->
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 
-<!-- ggplot(filter(all_di, nsingletons >= nsingletons_95), aes(nsingletons_mean, nsingletons)) + -->
+![](nsingletons_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
 
-<!--   geom_point(alpha = .2) + -->
+<div class="kable-table">
 
-<!-- #  geom_line(aes(nsingletons_mean, nsingletons_mean)) + -->
+| dat         | mean\_singles\_change |   n |
+| :---------- | --------------------: | --: |
+| bbs         |             0.0667465 | 221 |
+| fia         |             0.2174023 | 488 |
+| gentry      |             0.1054487 |   4 |
+| mcdb        |             0.2015754 |  90 |
+| misc\_abund |             0.1607340 | 165 |
 
-<!--     geom_line(aes(nsingletons_95, nsingletons_95)) + -->
-
-<!--   facet_wrap(vars(dat), scales = "free") -->
-
-<!-- ggplot(filter(all_di, nsingletons >= nsingletons_95), aes(nsingletons, nsingletons-nsingletons_95)) + -->
-
-<!--   geom_point(alpha = .2) + -->
-
-<!-- #  geom_line(aes(nsingletons_mean, nsingletons_mean)) + -->
-
-<!--   facet_wrap(vars(dat), scales = "free") -->
-
-<!-- ``` -->
+</div>
