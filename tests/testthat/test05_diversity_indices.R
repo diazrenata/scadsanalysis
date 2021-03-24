@@ -197,6 +197,8 @@ test_that("pull_di works", {
   expect_equivalent(di_obs$skew_95_ratio_1t, (quantile(sampled_skew, probs = .95) - min(sampled_skew)) / (max(sampled_skew) - min(sampled_skew)))
   expect_equivalent(max(sampled_skew) - min(sampled_skew), di_obs$skew_range)
 
+  expect_equivalent(di_obs$skew_95_ratio_2t, (quantile(sampled_skew, probs = .975) - quantile(sampled_skew, probs = .025)) / (max(sampled_skew) - min(sampled_skew)))
+
 
   sampled_simpson <- dplyr::filter(di_many, source == "sampled")$simpson
 
@@ -204,6 +206,17 @@ test_that("pull_di works", {
   expect_equivalent(di_obs$simpson_5, quantile(sampled_simpson, probs = .05))
   expect_equivalent(di_obs$simpson_95_ratio_1t, (max(sampled_simpson) - quantile(sampled_simpson, probs = .05)) / (max(sampled_simpson) - min(sampled_simpson)))
   expect_equivalent(max(sampled_simpson) - min(sampled_simpson), di_obs$simpson_range)
+
+  expect_equivalent(di_obs$simpson_95_ratio_2t, (quantile(sampled_simpson, probs = .975) - quantile(sampled_simpson, probs = .025)) / (max(sampled_simpson) - min(sampled_simpson)))
+
+  sampled_shannon <- dplyr::filter(di_many, source == "sampled")$shannon
+
+  expect_equivalent(di_obs$shannon_max, max(sampled_shannon))
+  expect_equivalent(di_obs$shannon_5, quantile(sampled_shannon, probs = .05))
+  expect_equivalent(di_obs$shannon_95_ratio_1t, (max(sampled_shannon) - quantile(sampled_shannon, probs = .05)) / (max(sampled_shannon) - min(sampled_shannon)))
+
+  expect_equivalent(di_obs$shannon_95_ratio_2t, (quantile(sampled_shannon, probs = .975) - quantile(sampled_shannon, probs = .025)) / (max(sampled_shannon) - min(sampled_shannon)))
+  expect_equivalent(max(sampled_shannon) - min(sampled_shannon), di_obs$shannon_range)
 
   })
 
