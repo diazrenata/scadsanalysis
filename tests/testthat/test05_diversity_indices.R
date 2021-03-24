@@ -21,6 +21,8 @@ test_that("individual and site DIs work", {
   expect_true(di_one$shannon == vegan::diversity(one_sample$abund, index = "shannon"))
   expect_true(di_one$simpson == vegan::diversity(one_sample$abund, index = "simpson"))
   expect_true(all(di_one$skew_percentile == 100, di_one$shannon_percentile == 100, di_one$simpson_percentile ==100))
+  expect_true(di_one$nsingletons == sum(one_sample$abund == 1))
+
 
   di_many <- add_dis(fs_samples)
 
@@ -31,8 +33,47 @@ test_that("individual and site DIs work", {
   expect_true(di_many$skew_percentile[6] == 80)
   expect_true(di_many$shannon_percentile[6] == 0)
   expect_true(di_many$simpson_percentile[6] == 0)
+  expect_true(di_many$nsingletons_percentile[6] == 100)
+  expect_true(di_many$mean_po_comparison_percentile[6] == 100)
+  expect_true(di_many$skew_percentile_excl[6] == 80)
+  expect_true(di_many$shannon_percentile_excl[6] == 0)
+  expect_true(di_many$simpson_percentile_excl[6] == 0)
+  expect_true(di_many$nsingletons_percentile_excl[6] == 100)
+  expect_true(di_many$mean_po_comparison_percentile_excl[6] == 100)
 
-})
+
+  # make the "observed" one of the sims instead
+
+  fs_sim <- fs_samples %>%
+    dplyr::filter(sim == 2)
+
+
+  fs_samples_observed <- fs_samples %>%
+    dplyr::filter(source == "observed") %>%
+    dplyr::mutate(rank = fs_sim$rank,
+                  abund = fs_sim$abund)
+
+fs_samples <- fs_samples %>%
+  dplyr::filter(source != "observed") %>%
+  dplyr::bind_rows(fs_samples_observed)
+
+
+
+di_many <- add_dis(fs_samples)
+
+
+expect_true(di_many$skew_percentile[6] >= di_many$skew_percentile_excl[6])
+
+expect_true(di_many$simpson_percentile[6] >= di_many$simpson_percentile_excl[6])
+
+expect_true(di_many$shannon_percentile[6] >= di_many$shannon_percentile_excl[6])
+
+expect_true(di_many$nsingletons_percentile[6] >= di_many$nsingletons_percentile_excl[6])
+
+
+expect_true(di_many$mean_po_comparison_percentile[6] >= di_many$mean_po_comparison_percentile_excl[6])
+
+  })
 
 test_that("dataset DIs work", {
 

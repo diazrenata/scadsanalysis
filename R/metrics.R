@@ -472,7 +472,7 @@ po_central_tendency <- function(fs_df, fs_po_df) {
              ))
   }
 
-  ct_sim <- dplyr::filter(fs_po_df, mean_po_comparison == min(fs_po_df$mean_po_comparison))$focal_sim[1]
+  ct_sim <- dplyr::filter(fs_po_df, mean_po_comparison == min(dplyr::filter(fs_po_df, focal_sim > -99)$mean_po_comparison))$focal_sim[1]
 
   ct_pos <- compare_props_off_full(ct_sim, fs_df, ncomps = length(unique(fs_df$sim)) - 2) %>%
     dplyr::distinct()
