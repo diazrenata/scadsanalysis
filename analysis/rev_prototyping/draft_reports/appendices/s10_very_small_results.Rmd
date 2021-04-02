@@ -3,9 +3,9 @@ title: "Complete results for very small (<2000 possible SADs) communities"
 author: Renata Diaz
 date: "`r Sys.Date()`"
 output: 
-    # github_document:
-    #    df_print: kable
-    #    toc: true
+    github_document:
+       df_print: kable
+       toc: true
     word_document:
         df_print: kable
         toc: false
