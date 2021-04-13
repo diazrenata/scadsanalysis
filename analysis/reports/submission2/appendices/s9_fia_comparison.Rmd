@@ -3,12 +3,12 @@ title: "Comparison of FIA and equally-sized communities"
 author: Renata Diaz
 date: "`r Sys.Date()`"
 output: 
-    # github_document:
-    #    df_print: kable
-    #    toc: true
-    word_document:
-        df_print: kable
-        toc: false
+    github_document:
+       df_print: kable
+       toc: true
+    # word_document:
+    #     df_print: kable
+    #     toc: false
 ---
 
 ```{r setup, include=FALSE}
