@@ -40,4 +40,4 @@ for(i in 1:length(datasets)) {
 
 all_ct <- bind_rows(all_ct)
 
-write.csv(all_ct, here::here("analysis", "rev_prototyping", "all_ct.csv"), row.names = F)
+write.csv(all_ct, here::here("analysis", "reports", "submission2","all_ct.csv"), row.names = F)

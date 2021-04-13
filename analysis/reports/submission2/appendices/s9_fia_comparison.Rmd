@@ -1,0 +1,435 @@
+---
+title: "Comparison of FIA and equally-sized communities"
+author: Renata Diaz
+date: "`r Sys.Date()`"
+output: 
+    # github_document:
+    #    df_print: kable
+    #    toc: true
+    word_document:
+        df_print: kable
+        toc: false
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = F, warning  = F)
+library(drake)
+library(dplyr)
+library(ggplot2)
+library(grid)
+theme_set(theme_bw())
+
+all_di <- read.csv(here::here("analysis", "rev_prototyping", "all_di.csv"), stringsAsFactors = F)
+
+all_ct <-  read.csv(here::here("analysis", "rev_prototyping", "all_ct.csv"), stringsAsFactors = F)
+
+
+#fia_ct <- read.csv(here::here("fia_cts.csv"))
+
+#all_ct <- rbind(all_ct, fia_ct)
+all_ct <- all_ct %>%
+  mutate(dat = ifelse(grepl(dat, pattern = "fia"), "fia", dat),
+         dat = ifelse(dat == "misc_abund_short", "misc_abund", dat))
+
+all_di <- all_di %>%
+  mutate(log_nparts = log(gmp:::as.double.bigz(nparts)),
+         log_nsamples = log(nsamples),
+         log_s0 = log(s0),
+         log_n0 = log(n0)) %>%
+  filter(n0 != s0,
+         s0 != 1,
+         !singletons,
+         n0 != (s0 + 1)) %>%
+  mutate(dat = ifelse(grepl(dat, pattern = "fia"), "fia", dat),
+         dat = ifelse(dat == "misc_abund_short", "misc_abund", dat)) %>%
+  mutate(Dataset = dat,
+         Dataset = ifelse(Dataset == "fia", "FIA", Dataset),
+         Dataset = ifelse(Dataset == "bbs", "Breeding Bird Survey", Dataset),
+         Dataset = ifelse(Dataset == "mcdb", "Mammal Communities", Dataset),
+         Dataset = ifelse(Dataset == "gentry", "Gentry", Dataset),
+         Dataset = ifelse(Dataset == "misc_abund", "Misc. Abundance", Dataset)) %>%
+  filter(nparts > 20) %>%
+  left_join(all_ct) 
+
+all_di <- all_di %>%
+  group_by_all() %>%
+  mutate(real_po_percentile_mean = mean(real_po_percentile, real_po_percentile_excl),
+         skew_percentile_mean = mean(skew_percentile, skew_percentile_excl),
+         simpson_percentile_mean = mean(simpson_percentile,simpson_percentile_excl),
+         shannon_percentile_mean = mean(shannon_percentile, shannon_percentile_excl),
+         nsingletons_percentile_mean = mean(nsingletons_percentile, nsingletons_percentile_excl),) %>%
+  ungroup()
+
+all_di <- all_di %>%
+  mutate(in_fia = ifelse(Dataset == "FIA", "FIA", "Other datasets"))
+
+```
+
+```{r, fig.dim = c(3, 6)}
+plot_percentile_hist <- function(di_df, col_name, plot_name, tails = 2, facetvar = "Dataset", min_s0 = 0) {
+
+  if(tails == 2) {
+    cutoff_percentiles = c(2.5, 97.5)
+    min_nparts = 40
+  } else if (tails== 1) {
+    cutoff_percentiles = c(95)
+    min_nparts = 20
+  }
+
+  di_df <- di_df %>%
+    mutate(response = (di_df[[col_name]]),
+           facetvar = di_df[[facetvar]])
+
+
+  ggplot(filter(di_df, nparts > min_nparts, s0 >= min_s0), aes(response)) +
+    geom_histogram(bins = 40, boundary = 100) +
+    theme_bw() +
+    xlab("") +
+    ylab("") +
+    geom_vline(xintercept = cutoff_percentiles, color = "red") +
+    ggtitle( plot_name) +
+    facet_wrap(vars(facetvar), ncol = 1, scales = "free_y")+
+    theme(plot.title = element_text(size=10))
+
+
+
+}
+
+all_di <- all_di %>%
+  mutate(`Observed \npercentile score` = ifelse(real_po_percentile_excl > 95, "High (> 95)", "Less than 95"))
+
+```
+
+```{r, fig.dim = c(3, 6)}
+
+plot_narrowness <- function(di_df, yvar, yvar_name) {
+
+  if(grepl("sim_pos", yvar)) {
+    min_nparts = 20
+    ylabel = "Mean dissimilarity"
+  } else {
+    min_nparts = 40
+    ylabel = "Breadth index"
+  }
+
+  di_df <- di_df %>%
+    mutate(response = (di_df[[yvar]])) %>%
+    filter(nparts > min_nparts,
+           nparts < 10 ^ 50)
+
+
+  ggplot(di_df, aes(nparts, response, color = Dataset)) +
+    geom_point(data = filter(di_df, dat == "fia"), alpha = .1) +
+    geom_point(data = filter(di_df, dat != "fia"), alpha = .1) +
+    geom_point(data = filter(di_df, s0 < 0)) +
+    scale_color_viridis_d(end = .9) +
+    xlab("") +
+    ylab(ylabel) +
+    scale_x_log10() +
+    ggtitle(yvar_name) +
+    theme(legend.position = "none")+
+    theme(plot.title = element_text(size=10))
+}
+
+plot_narrowness_legend <- function(di_df) {
+
+  legend_df <- di_df %>%
+    select(Dataset) %>%
+    distinct() %>%
+    mutate(ymark = dplyr::row_number())
+
+  ggplot(legend_df, aes(1, ymark, color = Dataset)) +
+    geom_label(aes(x = 2, y = ymark, label = Dataset)) +
+    geom_point(size = 4) +
+    scale_color_viridis_d(end = .9) +
+    xlab("") +
+    ylab("") +
+    theme(legend.position = "none") +
+    xlim(1, 3) + theme(
+      panel.grid.major.x = element_blank(),
+      panel.grid.minor.x = element_blank(),
+      panel.grid.major.y = element_blank(),
+      panel.grid.minor.y = element_blank(),
+      axis.text.x = element_blank(),
+      axis.ticks.x = element_blank(),
+      axis.text.y = element_blank(),
+      axis.ticks.y = element_blank()
+    ) +
+    ggtitle("Dataset")
+
+}
+#
+# gridExtra::grid.arrange(grobs = list(
+#   plot_narrowness(all_di, "sim_pos_from_best", "Dissimilarity to central tendency"),
+#   plot_narrowness_legend(all_di)),
+#   ncol = 1)
+```
+
+```{r}
+
+plot_narrowness_hist <- function(di_df, col_name, plot_name, facetvar = "Dataset", min_s0 = 0) {
+
+  if(grepl("sim_pos", col_name)) {
+    xvarname = "Mean dissimilarity"
+    min_nparts = 40
+  } else {
+    min_nparts = 20
+    xvarname = "Breadth index"
+  }
+
+  di_df <- di_df %>%
+    mutate(response = (di_df[[col_name]]),
+           facetvar = di_df[[facetvar]])
+
+
+  ggplot(filter(di_df, nparts > min_nparts, s0 >= min_s0), aes(response)) +
+    geom_histogram(bins = 40, boundary = 100) +
+    theme_bw() +
+    ylab("") +
+    xlab(xvarname) +
+    ggtitle( plot_name) +
+    facet_wrap(vars(facetvar), ncol = 1, scales = "free_y")+
+    theme(plot.title = element_text(size=10))
+
+}
+
+```
+
+
+
+```{r, fig.dim = c(10, 5)}
+
+fia_max_s = max(filter(all_di, dat == "fia")$s0)
+fia_max_n = max(filter(all_di, dat == "fia")$n0)
+
+fia = filter(all_di, dat == "fia")
+
+small_di <- all_di %>%
+  filter(s0 <= fia_max_s,
+         n0 <= fia_max_n) %>%
+  mutate(fia_yn = ifelse(dat == "fia", "fia", "other datasets"),
+         right_corner = FALSE)
+
+for(i in 1:nrow(small_di)) {
+  if(small_di$dat[i] != "fia") {
+    fia_match_s0 = filter(fia, s0 >= small_di$s0[i])
+
+    max_n0_for_this_s0 = max(fia_match_s0$n0)
+
+    small_di$right_corner[i] = small_di$n0[i] > max_n0_for_this_s0
+
+  }
+}
+
+
+small_di <- small_di %>%
+  filter(!right_corner)
+not_fia <- filter(small_di, fia_yn != "fia")
+fia = filter(small_di, dat == "fia")
+
+small_di_s_n <- small_di %>%
+  select(s0, n0) %>%
+  distinct() %>%
+  mutate(in_fia = FALSE,
+         in_not_fia = FALSE)
+
+for(i in 1:nrow(small_di_s_n)) {
+
+  this_s0 = small_di_s_n$s0[i]
+  this_n0 = small_di_s_n$n0[i]
+
+  fia_matches = filter(fia, s0 == this_s0, n0 == this_n0)
+  not_fia_matches = filter(not_fia, s0 == this_s0, n0 == this_n0)
+
+  small_di_s_n$in_fia[i] = nrow(fia_matches) > 0
+  small_di_s_n$in_not_fia[i] = nrow(not_fia_matches) > 0
+
+
+}
+
+small_di_s_n <- filter(small_di_s_n, in_fia, in_not_fia)
+
+set.seed(1977)
+
+subsamples <- list()
+
+for(i in 1:nrow(small_di_s_n)) {
+
+  this_s0 = small_di_s_n$s0[i]
+  this_n0 = small_di_s_n$n0[i]
+
+  fia_matches = filter(fia, s0 == this_s0, n0 == this_n0)
+
+  not_fia_matches = filter(not_fia, s0 == this_s0, n0 == this_n0)
+
+  n_to_draw = min(nrow(fia_matches), nrow(not_fia_matches))
+
+  fia_draw = sample.int(n = nrow(fia_matches), size = n_to_draw, replace = F)
+  not_fia_draw = sample.int(n = nrow(not_fia_matches), size = n_to_draw, replace = F)
+
+  subsamples[[i]] <- (bind_rows(fia_matches[fia_draw,], not_fia_matches[not_fia_draw, ]))
+
+}
+
+sub_di <- bind_rows(subsamples) %>%
+  mutate(Dataset = ifelse(fia_yn == "fia", "FIA", "Other datasets"))
+
+fia_di <- filter(sub_di, fia_yn == "fia")
+other_di <- filter(sub_di, fia_yn != "fia")
+
+ks_compare <- function(fia_df, other_df, compare_var) {
+
+  if(grepl("skew", compare_var)) {
+    fia_df <- filter(fia_df, s0 > 2)
+    other_df <- filter(fia_df, s0 >2)
+  }
+
+  if(grepl("sim_pos", compare_var)) {
+    fia_df <- filter(fia_df, nparts > 20)
+    other_df <- filter(other_df, nparts > 20)
+  } else {
+      fia_df <- filter(fia_df, nparts > 40)
+    other_df <- filter(other_df, nparts > 40)
+  }
+
+  kstest <- ks.test(fia_df[[compare_var]], other_df[[compare_var]])
+
+  return(data.frame(
+    var = compare_var,
+    d = kstest$statistic,
+    p = kstest$p.value
+  ))
+}
+
+
+
+
+```
+
+
+We identified ~330 communities in FIA with exact matches, in terms of S and N, among communities from other datasets. We then compared the distributions of percentile scores and breadth indices of FIA communities to communities from other datasets, visually and using Kolmogorov-Smirnov tests. 
+
+## Percentile scores
+
+
+### Histograms
+
+```{r, fig.dim = c(8,4)}
+fig_2 <- gridExtra::grid.arrange(grobs = list(
+
+  plot_percentile_hist(sub_di, "real_po_percentile_mean", "Dissimilarity to the \ncentral tendency", facetvar = "Dataset", tails = 1),
+  plot_percentile_hist(sub_di, "nsingletons_percentile_mean", "\nNumber of rare species", facetvar = "Dataset"),
+  plot_percentile_hist(sub_di, "skew_percentile_mean", "\nSkewness", facetvar = "Dataset", min_s0 = 3),
+  plot_percentile_hist(sub_di, "simpson_percentile_mean", "\nSimpson evenness", facetvar = "Dataset"),
+  plot_percentile_hist(sub_di, "shannon_percentile_mean", "\nShannon diversity", facetvar = "Dataset")
+), ncol = 5,
+top = textGrob("Figure 2", gp = gpar(fill = "white")), left = textGrob("Number of communities", rot = 90, gp = gpar(fill = "black")),
+bottom = textGrob("Percentile rank of observed value relative to feasible set"), gp = gpar(fill = "white"))
+
+```
+
+### Proportions of extreme percentile scores
+
+```{r}
+
+diss_results <- sub_di %>%
+  filter(nparts > 20) %>%
+  group_by(Dataset) %>%
+  summarize(high_diss = mean(real_po_percentile_excl > 95),
+            nsites = dplyr::n()) %>%
+  ungroup() %>%
+  mutate(`High dissimilarity` = paste0(signif(100 * high_diss, 2), "%; n = ", nsites)) %>%
+  select(-nsites)
+
+skew_results <- sub_di %>%
+  filter(nparts > 40, s0 > 2) %>%
+  group_by(Dataset) %>%
+  summarize(high_skew = mean(skew_percentile_excl > 97.5),
+            low_skew = mean(skew_percentile < 2.5),
+            nsites = dplyr::n()) %>%
+  ungroup() %>%
+  mutate(`High skew` = paste0(signif(100 * high_skew, 2), "%; n = ", nsites),
+         `Low skew` = paste0(signif(100 * low_skew, 2), "%; n = ", nsites)) %>%
+  select(-nsites)
+
+metric_results <- sub_di %>%
+  filter(nparts > 40) %>%
+  group_by(Dataset) %>%
+  summarize(high_simpson = mean(simpson_percentile_excl > 97.5),
+            low_simpson = mean(simpson_percentile < 2.5),
+            high_shannon = mean(shannon_percentile_excl > 97.5),
+            low_shannon = mean(shannon_percentile < 2.5),
+            high_nsingletons = mean(nsingletons_percentile_excl > 97.5),
+            low_nsingletons = mean(nsingletons_percentile < 2.5),
+            nsites = dplyr::n()) %>%
+  ungroup() %>%
+  mutate(`High Simpson` = paste0(signif(100 * high_simpson, 2), "%; n = ", nsites),
+         `Low Simpson` = paste0(signif(100 * low_simpson, 2), "%; n = ", nsites),
+         `High Shannon` = paste0(signif(100 * high_shannon, 2), "%; n = ", nsites),
+         `Low Shannon` = paste0(signif(100 * low_shannon, 2), "%; n = ", nsites),
+         `High proportion of rare species` = paste0(signif(100 * high_nsingletons, 2), "%; n = ", nsites),
+         `Low proportion of rare species` = paste0(signif(100 * low_nsingletons, 2), "%; n = ", nsites)) %>%
+  select(-nsites)
+
+all_results <- left_join(diss_results, skew_results) %>%
+  left_join(metric_results)
+
+cols1 <- c("Dataset", "High dissimilarity", "High proportion of rare species", "High skew", "Low Simpson", "Low Shannon")
+
+all_results %>%
+  select(cols1)
+
+```
+### K-S test results
+
+```{r}
+simpson_perc_ks <- ks_compare(fia_di, other_di, "simpson_percentile")
+skew_perc_ks <- ks_compare(fia_di, other_di, "skew_percentile_excl")
+shannon_perc_ks <- ks_compare(fia_di, other_di, "shannon_percentile")
+nsingletons_perc_ks <- ks_compare(fia_di, other_di, "nsingletons_percentile_excl")
+diss_perc_ks <- ks_compare(fia_di, other_di, "real_po_percentile_excl")
+
+bind_rows(simpson_perc_ks, skew_perc_ks, shannon_perc_ks, nsingletons_perc_ks, diss_perc_ks) %>%
+  select(var, d, p) %>%
+  mutate(Variable = c("Simpson", "Skew", "Shannon", "Number of rare species", "Dissimilarity to central tendency")) %>%
+  select(Variable, d, p) %>%
+  rename(`K-S D` = d,
+         `p-value` = p) 
+
+
+```
+
+## Breadth indices
+
+### Histograms
+
+```{r, fig.dim = c(8,4)}
+fig_2 <- gridExtra::grid.arrange(grobs = list(
+
+  plot_narrowness_hist(sub_di, "sim_pos_from_best", "Dissimilarity to the \ncentral tendency", facetvar = "Dataset"),
+  plot_narrowness_hist(sub_di, "nsingletons_95_ratio_2t", "\nNumber of rare species", facetvar = "Dataset"),
+  plot_narrowness_hist(sub_di, "skew_95_ratio_2t", "\nSkewness", facetvar = "Dataset", min_s0 = 3),
+  plot_narrowness_hist(sub_di, "simpson_95_ratio_2t", "\nSimpson evenness", facetvar = "Dataset"),
+  plot_narrowness_hist(sub_di, "shannon_95_ratio_2t", "\nShannon diversity", facetvar = "Dataset")
+), ncol = 5,
+ left = textGrob("Number of communities", rot = 90, gp = gpar(fill = "black")), gp = gpar(fill = "white"))
+```
+
+### K-S test results
+
+```{r}
+
+simpson_rat_ks <- ks_compare(fia_di, other_di, "simpson_95_ratio_2t")
+skew_rat_ks <- ks_compare(fia_di, other_di, "skew_95_ratio_2t")
+shannon_rat_ks <- ks_compare(fia_di, other_di, "shannon_95_ratio_2t")
+nsingletons_rat_ks <- ks_compare(fia_di, other_di, "nsingletons_95_ratio_2t")
+diss_rat_ks <- ks_compare(fia_di, other_di, "sim_pos_from_best")
+
+bind_rows(simpson_rat_ks, skew_rat_ks, shannon_rat_ks, nsingletons_rat_ks, diss_rat_ks) %>%
+  select(var, d, p) %>%
+  mutate(Variable = c("Simpson", "Skew", "Shannon", "Number of rare species", "Dissimilarity to central tendency")) %>%
+  select(Variable, d, p) %>%
+  rename(`K-S D` = d,
+         `p-value` = p) 
+```
+

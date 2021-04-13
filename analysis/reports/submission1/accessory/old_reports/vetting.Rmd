@@ -1,0 +1,773 @@
+---
+title: "Shaking out the idiosyncracies"
+output: 
+  github_document
+params:
+  on_hpg: [FALSE]
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(drake)
+library(dplyr)
+library(ggplot2)
+library(scadsanalysis)
+
+if(params$on_hpg) {
+  
+  all_di <- list() 
+  datasets <- c("bbs", "fia_short", "gentry", "mcdb", "misc_abund_short", "portal_plants")
+  
+  #datasets <- c("fia", "gentry", "mcdb", "misc_abund_short", "portal_plants")
+  
+  for(i in 1:length(datasets)) {
+    
+    this_dataset = datasets[i]
+    if(this_dataset == "misc_abund_short") {
+      cache_loc = "miscabund"
+    } else if(this_dataset == "fia_short") {
+      
+      cache_loc = "fia"
+    } else {
+      cache_loc = this_dataset
+    }
+    
+    ## Set up the cache and config
+    db <- DBI::dbConnect(RSQLite::SQLite(), here::here("analysis", "drake", paste0("drake-cache-", cache_loc, ".sqlite")))
+    cache <- storr::storr_dbi("datatable", "keystable", db)
+    
+    all_di[[i]] <- readd(all_di_obs, cache = cache)
+    
+    all_di[[i]] <- filter(all_di[[i]], source == "observed")
+    
+    this_dat <- readd(paste0("dat_s_dat_", this_dataset), cache = cache, character_only = T)
+    sv <- get_statevars(this_dat)
+    all_di[[i]] <- left_join(all_di[[i]], sv, by = c("sim", "site", "source", "singletons", "dat"))
+    
+    
+    DBI::dbDisconnect(db)
+    rm(cache)
+    rm(db)
+  }
+  
+  
+  all_di <- bind_rows(all_di)
+  
+  write.csv(all_di, "all_di.csv", row.names = F)
+} else {
+  all_di <- read.csv(here::here("analysis", "reports", "all_di.csv"), stringsAsFactors = F)
+}
+```
+
+## Number of draws in feasible set
+
+For low values of S and N, we expect to get considerably fewer than 2500 unique draws from the feasible set. Small feasible sets present a couple of problems for this percentile approach:
+
+- In the limit of only one or a handful of possible forms, it's absurd to try and draw meaning from the form of the SAD. In a community of 10 species and 11 individuals, the important thing to understand is not why the SAD is 2-1-1-1-1-1 but why the community has 10 species and 11 individuals. 
+- Even when there are a few more possible forms, if there isn't much variation, the %ile statistic will be pretty coarse. 
+- I expect the central tendency/dominance by a particular *form* to be weaker when there are fewer possible forms, period. 
+- This one isn't necessarily a bug (and it applies to other aspects of S x N space), but I expect combinations of S and N that produce samples to have unusual feasible sets compared to most of S and N space. These are going to be communities with either very low S and N, period, or *very few* individuals relative to S. They will be forced to be more even than ones with more individuals. 
+
+It's not clear a priori what actual values of S and N will push us into small-community problems. Again, beyond the really small communities, it really depends on the ratio. Early on I just filtered out anything that gave fewer than 2000 unique draws. This has the advantage that we only end up comparing %ile values with reasonably comparable precision, but it might artificially exclude an important region on S*N space. 
+
+```{r draws v sn plots, fig.dim = c(4,4)}
+
+ggplot(data = all_di, aes(x = log(s0), y = log(n0), color = log(nsamples))) +
+  geom_point(data = filter(all_di, nsamples >= 2000), color = "grey", alpha = .25) +
+  geom_point(data = filter(all_di, nsamples <2000), alpha = .1) + 
+  theme_bw() +
+  scale_color_viridis_c(option = "plasma", end = .9)
+
+ggplot(data=all_di, aes(x = log(s0), y = log(n0), color = log(n0/s0))) +    geom_point(alpha = .5) + 
+  theme_bw() +
+  scale_color_viridis_c(option = "plasma", end = .9)
+# ggplot(data = all_di, aes(x = log(s0), y = log(n0), color = log(nsamples))) +
+#    geom_point(data = filter(all_di, nsamples <2000), alpha = .1) + 
+#  theme_bw() +
+#  scale_color_viridis_c(option = "plasma", end = .9)
+# 
+
+
+ggplot(data = all_di, aes(x = log(n0/s0), y = nsamples, color = log(s0))) +
+  geom_point(alpha = .1) +
+  theme_bw() +
+  geom_hline(yintercept = 2000, color = "black") +
+  scale_color_viridis_c(option = "plasma", end =.9)
+
+ggplot(data = all_di, aes(x = log(n0/s0), y = nsamples, color = log(n0))) +
+  geom_point(alpha = .1) +
+  theme_bw() +
+  geom_hline(yintercept = 2000, color = "black") +
+  scale_color_viridis_c(option = "plasma", end =.9)
+
+
+
+
+ggplot(data = filter(all_di, log(n0/s0) <= 2), aes(x = log(n0/s0), y = nsamples, color = log(s0))) +
+  geom_point(alpha = .1) +
+  theme_bw() +
+  geom_hline(yintercept = 2000, color = "black") +
+  scale_color_viridis_c(option = "plasma", end =.9)
+
+ggplot(data = filter(all_di, log(n0/s0) <= 2), aes(x = log(n0/s0), y = nsamples, color = log(n0))) +
+  geom_point(alpha = .1) +
+  theme_bw() +
+  geom_hline(yintercept = 2000, color = "black") +
+  scale_color_viridis_c(option = "plasma", end =.9)
+
+ggplot(data = all_di, aes(x = log(n0/s0))) +
+  geom_histogram(alpha = .3) +
+  geom_histogram(data = filter(all_di, nsamples <= 2000)) +
+  theme_bw()
+
+```
+
+In the first plot, the grey region is nsamples >= 2000. In the histogram, the light grey is all the samples and the bold is samples where nsamples <= 2000.
+
+Looking at log(n0/s0) vs. nsamples, 
+
+- the low-sampled points (bold in histogram) are for the most part down where n0/s0 is low. 
+- if S or N is very low, even having a high ratio doesn't help.
+- if S is very high (meaning N can also be fairly high, without having a very high ratio), even if the ratio is low, you might get good sampling.
+
+## Where the datasets fall
+
+```{r dataset space}
+ggplot(data = all_di, aes(x = log(s0), y = log(n0), color = dat)) + 
+  geom_point(alpha = .2) +
+  scale_color_viridis_d() +
+  theme_bw() +
+  geom_point(data = filter(all_di, dat == "I don't exist!")) # for a legend with alpha = 1
+
+ggplot(data = all_di, aes(x = nsamples)) +
+  geom_histogram() +
+  theme_bw()+
+  facet_wrap(vars(dat), scales = "free_y") +
+  geom_vline(xintercept = 2000)
+
+
+ggplot(data = all_di, aes(x = log(n0/s0))) +
+  geom_histogram(alpha = .3) +
+  geom_histogram(data = filter(all_di, nsamples <= 2000)) +
+  theme_bw()+
+  facet_wrap(vars(dat), scales = "free_y")
+```
+
+The datasets overlap but do occupy broadly different regions of S*N space. The arm - which is the weirdest region of the percentile values - is, unfortunately, 100% one dataset (Gentry).
+
+For the vast majority of S*N space here, I don't think we can really use dataset as a predictor of percentile, because of the way they occupy different parts of what we know to be a very important range of variation.
+
+We *could* narrow in on the region of maximum overlap/minimum variation and make comparison based on the sites only within that. 
+
+FIA, dramatically more than any other dataset, struggles to get even 2000 samples. 
+
+
+## Percentile value vs. range of variation of FS
+
+```{r Simpson rov, fig.dim=c(4,4)}
+
+ggplot(data = all_di, aes(x = log(s0), y = log(n0), color = simpson_mean)) +
+  geom_point(alpha = .07) +
+  theme_bw() +
+  scale_color_viridis_c(option = "plasma", end = .9) +
+  theme(legend.position = "top") +
+  ggtitle("Simpson mean")
+ggplot(data = all_di, aes(x = log(s0), y = log(n0), color = simpson_sd)) +
+  geom_point(alpha = .07) +
+  theme_bw() +
+  scale_color_viridis_c(option = "plasma", end = .9)+
+  theme(legend.position = "top") +
+  ggtitle("Simpson sd")
+ggplot(data = all_di, aes(x = log(s0), y = log(n0), color = simpson_range)) +
+  geom_point(alpha = .07) +
+  theme_bw() +
+  scale_color_viridis_c(option = "plasma", end = .9)+
+  theme(legend.position = "top") +
+  ggtitle("Simpson range")
+ggplot(data = all_di, aes(x = log(s0), y = log(n0), color = simpson_percentile)) +
+  geom_point(alpha = .07) +
+  theme_bw() +
+  scale_color_viridis_c(option = "plasma", end = .9, direction = -1)+
+  theme(legend.position = "top") +
+  ggtitle("Simpson percentile")
+
+
+ggplot(data = filter(all_di, nsamples >= 2000), aes(x = log(s0), y = log(n0), color = simpson_mean)) +
+  geom_point(alpha = .07) +
+  theme_bw() +
+  scale_color_viridis_c(option = "plasma", end = .9) +
+  theme(legend.position = "top") +
+  ggtitle("Simpson mean")
+ggplot(data = filter(all_di, nsamples >= 2000), aes(x = log(s0), y = log(n0), color = simpson_sd)) +
+  geom_point(alpha = .07) +
+  theme_bw() +
+  scale_color_viridis_c(option = "plasma", end = .9)+
+  theme(legend.position = "top") +
+  ggtitle("Simpson sd")
+ggplot(data = filter(all_di, nsamples >= 2000), aes(x = log(s0), y = log(n0), color = simpson_range)) +
+  geom_point(alpha = .07) +
+  theme_bw() +
+  scale_color_viridis_c(option = "plasma", end = .9)+
+  theme(legend.position = "top") +
+  ggtitle("Simpson range")
+ggplot(data = filter(all_di, nsamples >= 2000), aes(x = log(s0), y = log(n0), color = simpson_percentile)) +
+  geom_point(alpha = .07) +
+  theme_bw() +
+  scale_color_viridis_c(option = "plasma", end = .9, direction = -1)+
+  theme(legend.position = "top") +
+  ggtitle("Simpson percentile")
+
+ggplot(data = filter(all_di, nsamples >= 2000, singletons == F), aes(x = log(n0/s0), y = skew_percentile)) +
+  geom_point(alpha = .1) +
+  theme_bw()
+```
+
+So for Simpson's, the mean, sd, and range of values within the feasible set all clearly vary with S and N. There seems to be an edge situation with the percentiles. The really high values are all out along the arm and, to a lesser extent, where N/S is relatively small. This is *not* a region of pronounced variation in the FS characteristics. Also, there is variation that clearly does not map on to the gradients in the FS characteristics. 
+
+```{r skew rov, fig.dim=c(4,4)}
+
+ggplot(data = all_di, aes(x = log(s0), y = log(n0), color = skew_mean)) +
+  geom_point(alpha = .07) +
+  theme_bw() +
+  scale_color_viridis_c(option = "plasma", end = .9, direction = -1) +
+  theme(legend.position = "top") +
+  ggtitle("Skew mean")
+ggplot(data = all_di, aes(x = log(s0), y = log(n0), color = skew_sd)) +
+  geom_point(alpha = .07) +
+  theme_bw() +
+  scale_color_viridis_c(option = "plasma", end = .9, direction = -1)+
+  theme(legend.position = "top") +
+  ggtitle("Skew sd")
+ggplot(data = all_di, aes(x = log(s0), y = log(n0), color = skew_range)) +
+  geom_point(alpha = .07) +
+  theme_bw() +
+  scale_color_viridis_c(option = "plasma", end = .9, direction = -1)+
+  theme(legend.position = "top") +
+  ggtitle("Skew range")
+ggplot(data = all_di, aes(x = log(s0), y = log(n0), color = skew_percentile)) +
+  geom_point(alpha = .07) +
+  theme_bw() +
+  scale_color_viridis_c(option = "plasma", end = .9)+
+  theme(legend.position = "top") +
+  ggtitle("Skew percentile")
+
+
+ggplot(data = filter(all_di, nsamples >= 2000), aes(x = log(s0), y = log(n0), color = skew_mean)) +
+  geom_point(alpha = .07) +
+  theme_bw() +
+  scale_color_viridis_c(option = "plasma", end = .9, direction = -1) +
+  theme(legend.position = "top") +
+  ggtitle("Skew mean")
+ggplot(data = filter(all_di, nsamples >= 2000), aes(x = log(s0), y = log(n0), color = skew_sd)) +
+  geom_point(alpha = .07) +
+  theme_bw() +
+  scale_color_viridis_c(option = "plasma", end = .9, direction = -1)+
+  theme(legend.position = "top") +
+  ggtitle("Skew sd")
+ggplot(data = filter(all_di, nsamples >= 2000), aes(x = log(s0), y = log(n0), color = skew_range)) +
+  geom_point(alpha = .07) +
+  theme_bw() +
+  scale_color_viridis_c(option = "plasma", end = .9, direction = -1)+
+  theme(legend.position = "top") +
+  ggtitle("Skew range")
+ggplot(data = filter(all_di, nsamples >= 2000), aes(x = log(s0), y = log(n0), color = skew_percentile)) +
+  geom_point(alpha = .07) +
+  theme_bw() +
+  scale_color_viridis_c(option = "plasma", end = .9)+
+  theme(legend.position = "top") +
+  ggtitle("Skew percentile")
+
+ggplot(data = filter(all_di, nsamples >= 2000, singletons == F), aes(x = log(n0/s0), y = simpson_percentile)) +
+  geom_point(alpha = .1) +
+  theme_bw()
+```
+
+There are similar, if less strong, gradients in skewness over the range of S and N; it's particularly low up the low N/S arm. The percentile values are *not* as different in that arm than the rest of the space (unlike with Simpson's). The variation in skewness percentile doesn't appear to track the gradients in the characteristics of the feasible set. Maybe it does a little? But no argument that there's a lot of variation over and above.
+
+I feel like it might be *good* to find some way to test these statements quantitatively, but it's very tricky. Absolutely everything depends on S and N and moves in weird nonlinear ways. 
+
+
+
+These scatterplots are good for seeing where the variation is but not the density; there's a *lot* of points on top of each other down at 0/up at 100.
+
+## Overall percentile results
+
+```{r overall}
+
+ggplot(data = filter(all_di, nsamples >= 2000, singletons == FALSE), aes(x = skew_percentile)) +
+  geom_histogram(bins = 100, aes(y = stat(count / sum(count)))) +
+  theme_bw() +
+  geom_hline(yintercept = .01, linetype = 3)
+
+ggplot(data = filter(all_di, nsamples >= 2000, singletons == FALSE), aes(x = simpson_percentile)) +
+  geom_histogram(bins = 100, aes(y = stat(count / sum(count)))) +
+  theme_bw() +
+  geom_hline(yintercept = .01, linetype = 3)
+
+```
+
+Here, the dotted lines mark the 1%; at random, percentile values should be uniformly distributed with 1% per bin on these histograms. 
+
+Both Simpson's and skewness are disproportiately in the extremes: from about the 75th percentile on up for skewness, and maybe the 10th percentile and below for evenness.
+
+It's not ubiquitous! Often things are unremarkable compared to the feasible set. That said, *more often than we'd expect*, real distributions are highly skewed/highly uneven compared to their feasible sets. 
+
+```{r do fs chars predict perc, fig.dim = c(4,4)}
+ggplot(data = filter(all_di, nsamples >= 2000, singletons == FALSE), aes(x = simpson_range, y = simpson_percentile)) +
+  geom_point(alpha = .1) +
+  theme_bw()
+ggplot(data = filter(all_di, nsamples >= 2000, singletons == FALSE), aes(x = simpson_mean, y = simpson_percentile)) +
+  geom_point(alpha = .05) +
+  theme_bw()
+ggplot(data = filter(all_di, nsamples >= 2000, singletons == FALSE), aes(x = simpson_sd, y = simpson_percentile)) +
+  geom_point(alpha = .1) +
+  theme_bw()
+
+ggplot(data = filter(all_di, nsamples >= 2000, singletons == FALSE), aes(x = skew_range, y = skew_percentile)) +
+  geom_point(alpha = .1) +
+  theme_bw()
+ggplot(data = filter(all_di, nsamples >= 2000, singletons == FALSE), aes(x = skew_mean, y = skew_percentile)) +
+  geom_point(alpha = .05) +
+  theme_bw()
+ggplot(data = filter(all_di, nsamples >= 2000, singletons == FALSE), aes(x = skew_sd, y = skew_percentile)) +
+  geom_point(alpha = .1) +
+  theme_bw()
+```
+
+Effect of singletons
+
+```{r singletons overall}
+
+singletons_effect <- all_di %>%
+  select(dat, nsamples, site, singletons, skew_percentile, simpson_percentile) %>%
+  tidyr::pivot_wider(names_from = singletons, values_from = c(skew_percentile, simpson_percentile, nsamples)) %>%
+  mutate(skewdiff = skew_percentile_TRUE - skew_percentile_FALSE,
+         simpdiff= simpson_percentile_TRUE - simpson_percentile_FALSE) %>%
+  filter(nsamples_TRUE >= 2000, nsamples_FALSE >= 2000)
+
+ggplot(data = singletons_effect, aes(x = skew_percentile_FALSE, y = skew_percentile_TRUE)) +
+  geom_point(alpha = .2) +
+  theme_bw() +
+  geom_abline(intercept = 0, slope = 1, color = "green")
+
+ggplot(data = singletons_effect, aes(x = simpson_percentile_FALSE, y = simpson_percentile_TRUE)) +
+  geom_point(alpha = .2) +
+  theme_bw() +
+  geom_abline(intercept = 0, slope = 1, color = "green")
+
+```
+
+The rarefaction-inflated datasets are strongly // the raw vectors. They have more extreme skewness and evenness values, relative to their feasible sets, than the raw vectors. This is almost always true for evenness, with a little more noise in the skewness signal. But either way, very strong. 
+
+## Broken out by dataset
+
+```{r dataset, fig.dim = c(10,10)}
+
+make_dat_hist <- function(datname, varname, data) {
+  
+  if(varname == "skew") {
+    
+    dat_hist <- ggplot(data = filter(data, nsamples >= 2000, singletons == FALSE, dat == datname), aes(x = skew_percentile)) 
+  } else if (varname == "simpson") {
+    dat_hist <- ggplot(data = filter(data, nsamples >= 2000, singletons == FALSE, dat == datname), aes(x = simpson_percentile)) 
+  }
+  
+  dat_hist <- dat_hist +
+    geom_histogram(bins = 100, aes(y = stat(count / sum(count)))) +
+    theme_bw() +
+    geom_hline(yintercept = .01, linetype = 3) +
+    ggtitle(paste0(datname, ": ", varname))
+  
+  return(dat_hist)
+}
+
+simp_hists <- lapply(as.list(unique(all_di$dat)), FUN = make_dat_hist, varname = "simpson", data = all_di)
+
+skew_hists <- lapply(as.list(unique(all_di$dat)), FUN = make_dat_hist, varname = "skew", data = all_di)
+
+gridExtra::grid.arrange(grobs = simp_hists)
+
+gridExtra::grid.arrange(grobs = skew_hists)
+
+```
+
+
+Evennes is consistently more concentrated in the extremes than skewness. 
+
+Gentry has a weird U going on, where it has a lot of weirdly *low*/*high* values. All the others are concentrated as low (evenness) or high (skew). BBS and FIA have the most that are in the intermediate zone.
+
+```{r fs chars by dat, fig.dim = c(3,3)}
+ggplot(data = filter(all_di, nsamples >= 2000, singletons == FALSE), aes(x = dat, y = simpson_range)) +
+  geom_boxplot() +
+  theme_bw()
+ggplot(data = filter(all_di, nsamples >= 2000, singletons == FALSE), aes(x = dat, y = simpson_mean)) +
+  geom_boxplot() +
+  theme_bw()
+ggplot(data = filter(all_di, nsamples >= 2000, singletons == FALSE), aes(x = dat, y = simpson_sd)) +
+  geom_boxplot() +
+  theme_bw()
+ggplot(data = filter(all_di, nsamples >= 2000, singletons == FALSE), aes(x = dat, y = simpson_percentile)) +
+  geom_boxplot() +
+  theme_bw()
+# Removing low n/s
+ggplot(data = filter(all_di, nsamples >= 2000, singletons == FALSE, log(n0/s0) >= 1.5), aes(x = dat, y = simpson_range)) +
+  geom_boxplot() +
+  theme_bw()
+ggplot(data = filter(all_di, nsamples >= 2000, singletons == FALSE, log(n0/s0) >= 1.5), aes(x = dat, y = simpson_mean)) +
+  geom_boxplot() +
+  theme_bw()
+ggplot(data = filter(all_di, nsamples >= 2000, singletons == FALSE, log(n0/s0) >= 1.5), aes(x = dat, y = simpson_sd)) +
+  geom_boxplot() +
+  theme_bw()
+ggplot(data = filter(all_di, nsamples >= 2000, singletons == FALSE, log(n0/s0) >= 1.5), aes(x = dat, y = simpson_percentile)) +
+  geom_boxplot() +
+  theme_bw()
+
+ggplot(data = filter(all_di, nsamples >= 2000, singletons == FALSE), aes(x = dat, y = skew_range)) +
+  geom_boxplot() +
+  theme_bw()
+ggplot(data = filter(all_di, nsamples >= 2000, singletons == FALSE), aes(x = dat, y = skew_mean)) +
+  geom_boxplot() +
+  theme_bw()
+ggplot(data = filter(all_di, nsamples >= 2000, singletons == FALSE), aes(x = dat, y = skew_sd)) +
+  geom_boxplot() +
+  theme_bw()
+ggplot(data = filter(all_di, nsamples >= 2000, singletons == FALSE), aes(x = dat, y = skew_percentile)) +
+  geom_boxplot() +
+  theme_bw()
+# Removing low n/s
+ggplot(data = filter(all_di, nsamples >= 2000, singletons == FALSE, log(n0/s0) >= 1.5), aes(x = dat, y = skew_range)) +
+  geom_boxplot() +
+  theme_bw()
+ggplot(data = filter(all_di, nsamples >= 2000, singletons == FALSE, log(n0/s0) >= 1.5), aes(x = dat, y = skew_mean)) +
+  geom_boxplot() +
+  theme_bw()
+ggplot(data = filter(all_di, nsamples >= 2000, singletons == FALSE, log(n0/s0) >= 1.5), aes(x = dat, y = skew_sd)) +
+  geom_boxplot() +
+  theme_bw()
+ggplot(data = filter(all_di, nsamples >= 2000, singletons == FALSE, log(n0/s0) >= 1.5), aes(x = dat, y = skew_percentile)) +
+  geom_boxplot() +
+  theme_bw()
+```
+
+Effect of singletons
+
+```{r singletons dataset}
+
+singletons_effect <- all_di %>%
+  select(dat, nsamples, site, singletons, skew_percentile, simpson_percentile) %>%
+  tidyr::pivot_wider(names_from = singletons, values_from = c(skew_percentile, simpson_percentile, nsamples)) %>%
+  mutate(skewdiff = skew_percentile_TRUE - skew_percentile_FALSE,
+         simpdiff= simpson_percentile_TRUE - simpson_percentile_FALSE) %>%
+  filter(nsamples_TRUE >= 2000, nsamples_FALSE >= 2000)
+
+ggplot(data = singletons_effect, aes(x = skew_percentile_FALSE, y = skew_percentile_TRUE)) +
+  geom_point(alpha = .2) +
+  theme_bw() +
+  geom_abline(intercept = 0, slope = 1, color = "green") +
+  facet_wrap(vars(dat))
+
+ggplot(data = singletons_effect, aes(x = simpson_percentile_FALSE, y = simpson_percentile_TRUE)) +
+  geom_point(alpha = .2) +
+  theme_bw() +
+  geom_abline(intercept = 0, slope = 1, color = "green") +
+  facet_wrap(vars(dat))
+
+```
+
+There's some fuzz, most pronouncedly for BBS and FIA. Those are also the ones with 1) the most points and 2) the most fuzz/uniform-distributed percentile values. 
+
+
+# MACD
+
+```{r load macd}
+cache_loc = "macdb"
+
+## Set up the cache and config
+db <- DBI::dbConnect(RSQLite::SQLite(), here::here("analysis", "drake", paste0("drake-cache-", cache_loc, ".sqlite")))
+cache <- storr::storr_dbi("datatable", "keystable", db)
+
+all_di_macd <- readd(all_di_manip, cache = cache) 
+macd_dat <- readd(dat_s_dat_macdb, cache = cache)
+
+DBI::dbDisconnect(db)
+rm(cache)
+
+macd_dat <- macd_dat %>%
+  group_by(site, dat, singletons, sim, source) %>%
+  summarize(s0 = max(rank),
+            n0 = sum(abund)) %>%
+  ungroup()
+
+all_di_macd <- left_join(all_di_macd, macd_dat, by = c("site", "dat", "singletons", "sim", "source"))
+
+ggplot(data = all_di, aes(x = log(s0), y = log(n0))) + geom_point(alpha = .1) + geom_point(data = all_di_macd, aes(x = log(s0), y = log(n0)), color = "blue", alpha = .9) + theme_bw()
+
+
+ggplot(data = filter(all_di, nsamples >= 2000), aes(x = log(s0), y = log(n0))) + geom_point(alpha = .1) + geom_point(data = filter(all_di_macd, nsamples >= 2000), aes(x = log(s0), y = log(n0)), color = "blue", alpha = .9) + theme_bw()
+
+```
+
+Nsamples
+
+```{r macd overall}
+
+ggplot(data = all_di_macd, aes(x = nsamples)) +
+  geom_histogram(bins = 100) +
+  theme_bw() +
+  geom_vline(xintercept = 2000)
+
+all_di_macd <- filter(all_di_macd, nsamples >= 2000)
+
+ggplot(data = all_di_macd, aes(x = skew_percentile)) +
+  geom_histogram(bins = 100, aes(y = stat(count / sum(count)))) +
+  theme_bw() +
+  geom_hline(yintercept = .01, linetype = 3)
+
+ggplot(data = all_di_macd, aes(x = simpson_percentile)) +
+  geom_histogram(bins = 100, aes(y = stat(count / sum(count)))) +
+  theme_bw() +
+  geom_hline(yintercept = .01, linetype = 3)
+```
+
+By treatment - overall
+
+```{r macd trtmt overall}
+
+
+ggplot(data = all_di_macd, aes(x = skew_percentile)) +
+  geom_histogram(bins = 100) +
+  theme_bw() +
+  facet_wrap(vars(dat), scales = "free_y")
+
+ggplot(data = all_di_macd, aes(x = simpson_percentile)) +
+  geom_histogram(bins = 100) +
+  theme_bw() +
+  facet_wrap(vars(dat), scales = "free_y")
+
+```
+
+
+```{r macd ctrlcomp}
+
+macd_comparisons <- read.csv(here::here("working-data", "macdb_data", "orderedcomparisons.csv"), header = F, stringsAsFactors = F)
+
+colnames(macd_comparisons) <- c("studyID", "control", "site")
+macd_comparisons <- macd_comparisons %>%
+  mutate(site = as.character(site), control = as.character(control))
+
+cc_di <- all_di_macd %>%
+  filter(singletons == FALSE, treatment == "comparison") %>%
+  left_join(macd_comparisons, by = c("studyID", "site")) %>%
+  select(dat, site, skew_percentile, simpson_percentile, studyID, control) %>%
+  rename(comparison = site) %>%
+  mutate(ctrl_skew_percentile = NA,
+         ctrl_simpson_percentile = NA)
+
+for(i in 1:nrow(cc_di)) {
+  
+  control_row <- filter(all_di_macd, site == cc_di$control[i], singletons == F) %>%
+    unique()
+  if(nrow(control_row) >0 ) {
+    cc_di$ctrl_simpson_percentile[i] <- control_row$simpson_percentile
+    cc_di$ctrl_skew_percentile[i] <- control_row$skew_percentile
+  }
+}
+
+cc_di <- cc_di %>%
+  mutate(simpson_change = simpson_percentile - ctrl_simpson_percentile,
+         skew_change = skew_percentile - ctrl_skew_percentile)
+
+ggplot(data = cc_di, aes(x = skew_percentile, y = ctrl_skew_percentile)) +
+  geom_point(alpha = .5) +
+  #  xlim(0, 100) +
+  # ylim(0, 100) +
+  theme_bw() +
+  geom_abline(intercept = 0, slope = 1, color = "green")
+
+ggplot(data = cc_di, aes(x = simpson_percentile, y = ctrl_skew_percentile)) +
+  geom_point(alpha = .5) +
+  xlim(0, 100) +
+  ylim(0, 100) +
+  theme_bw() +
+  geom_abline(intercept = 0, slope = 1, color = "green")
+
+
+ggplot(data = cc_di, aes(x = simpson_change)) +
+  geom_histogram() +
+  theme_bw()
+
+ggplot(data = cc_di, aes(x = skew_change)) +
+  geom_histogram() +
+  theme_bw()
+
+ggplot(data = cc_di, aes(x = ctrl_simpson_percentile, y = simpson_change)) +
+  geom_point(alpha = .3) +
+  geom_hline(yintercept = 0) +
+  theme_bw()
+
+
+ggplot(data = cc_di, aes(x = ctrl_skew_percentile, y = skew_change)) +
+  geom_point(alpha = .3) +
+  geom_hline(yintercept = 0) +
+  theme_bw()
+
+
+print(t.test(cc_di$skew_percentile, cc_di$ctrl_skew_percentile, paired = T)
+)
+print(t.test(cc_di$simpson_percentile, cc_di$ctrl_simpson_percentile, paired = T)
+)
+
+print(wilcox.test(cc_di$skew_percentile, cc_di$ctrl_skew_percentile, paired = T))
+print(wilcox.test(cc_di$simpson_percentile, cc_di$ctrl_simpson_percentile, paired = T))
+
+```
+
+Change is going to be bounded at 100 and 0: you can't go up or down from there. (Another argument for increasing the number of samples?)
+
+
+
+# Portal plant manips
+
+```{r load pp}
+cache_loc = "portal_plants_manip"
+
+## Set up the cache and config
+db <- DBI::dbConnect(RSQLite::SQLite(), here::here("analysis", "drake", paste0("drake-cache-", cache_loc, ".sqlite")))
+cache <- storr::storr_dbi("datatable", "keystable", db)
+
+all_di_p<- readd(all_di_manip, cache = cache) 
+
+DBI::dbDisconnect(db)
+rm(cache)
+```
+
+Nsamples, singletons
+
+```{r pp overall}
+
+ggplot(data = all_di_p, aes(x = nsamples)) +
+  geom_histogram(bins = 100) +
+  theme_bw() +
+  geom_vline(xintercept = 2000)
+
+all_di_p <- filter(all_di_p, nsamples >= 2000)
+
+ggplot(data = all_di_p, aes(x = skew_percentile)) +
+  geom_histogram(bins = 100, aes(y = stat(count / sum(count)))) +
+  theme_bw() +
+  geom_hline(yintercept = .01, linetype = 3)
+
+ggplot(data = all_di_p, aes(x = simpson_percentile)) +
+  geom_histogram(bins = 100, aes(y = stat(count / sum(count)))) +
+  theme_bw() +
+  geom_hline(yintercept = .01, linetype = 3)
+
+pp_singletons_effect <- all_di_p %>%
+  select(singletons, skew_percentile, simpson_percentile, year, plot, treatment, season) %>%
+  tidyr::pivot_wider(names_from = singletons, values_from = c("skew_percentile", "simpson_percentile"))
+
+ggplot(data = pp_singletons_effect, aes(x = skew_percentile_FALSE, y  = skew_percentile_TRUE)) +
+  geom_point(alpha = .1) +
+  geom_abline(intercept = 0, slope = 1, color = "green") +
+  theme_bw()
+
+
+ggplot(data = pp_singletons_effect, aes(x = simpson_percentile_FALSE, y  = simpson_percentile_TRUE)) +
+  geom_point(alpha = .1) +
+  geom_abline(intercept = 0, slope = 1, color = "green") +
+  theme_bw()
+```
+
+By treatment, season
+
+```{r portal trtmt}
+ggplot(data = filter(all_di_p, singletons == F), aes(x = skew_percentile)) +
+  geom_histogram(bins = 100) +
+  theme_bw() +
+  facet_wrap(vars(season, treatment), scales = "free_y")
+
+ggplot(data = filter(all_di_p, singletons == F), aes(x = treatment, y = skew_percentile)) +
+  geom_boxplot() +
+  theme_bw() +
+  facet_wrap(vars(season))
+
+ggplot(data = filter(all_di_p, singletons == F), aes(x = simpson_percentile)) +
+  geom_histogram(bins = 100) +
+  theme_bw() +
+  facet_wrap(vars(season, treatment), scales = "free_y")
+
+ggplot(data = filter(all_di_p, singletons == F), aes(x = treatment, y = simpson_percentile)) +
+  geom_boxplot() +
+  theme_bw() +
+  facet_wrap(vars(season))
+```
+
+By year
+
+```{r plants year, fig.height = 25, fig.width = 5}
+
+ggplot(data = filter(all_di_p, singletons == F), aes(x = treatment, y = skew_percentile)) +
+  geom_boxplot() +
+  theme_bw() +
+  facet_grid(rows = vars(year), cols = vars(season), scales = "free_y")
+ggplot(data = filter(all_di_p, singletons == F), aes(x = treatment, y = simpson_percentile)) +
+  geom_boxplot() +
+  theme_bw() +
+  facet_grid(rows = vars(year), cols = vars(season), scales = "free_y")
+```
+
+
+Trying median
+
+```{r pp median, fig.width = 12, fig.height = 12}
+
+pp_median <- all_di_p %>%
+  filter(singletons == F) %>%
+  group_by(season, year, treatment) %>%
+  summarize(skew_percentile = median(skew_percentile),
+            simpson_percentile = median(simpson_percentile)) %>%
+  ungroup() %>%
+  tidyr::pivot_wider(names_from = treatment, values_from = c(skew_percentile, simpson_percentile))
+
+sk_x <- ggplot(data = pp_median, aes(x = skew_percentile_control, y = skew_percentile_exclosure)) +
+  geom_point(alpha = .5) +
+  facet_wrap(vars(season)) +
+  theme_bw() +
+  ggtitle("Skew Ctrl v Exclosure") +
+  geom_abline(intercept = 0, slope = 1, color = "green") +
+  xlim(40, 100) +
+  ylim(40, 100)
+
+sk_r <- ggplot(data = pp_median, aes(x = skew_percentile_control, y = skew_percentile_removal)) +
+  geom_point(alpha = .5) +
+  facet_wrap(vars(season)) +
+  theme_bw() +
+  ggtitle("Skew Ctrl v Removal") +
+  geom_abline(intercept = 0, slope = 1, color = "green") +
+  xlim(40, 100) +
+  ylim(40, 100)
+
+gridExtra::grid.arrange(grobs = list(sk_x, sk_r), nrow = 2)
+
+
+sp_x <- ggplot(data = pp_median, aes(x = simpson_percentile_control, y = simpson_percentile_exclosure)) +
+  geom_point(alpha = .5) +
+  facet_wrap(vars(season)) +
+  theme_bw() +
+  ggtitle("Simpson Ctrl v Exclosure") +
+  geom_abline(intercept = 0, slope = 1, color = "green") +
+  xlim(0, 40) +
+  ylim(0, 40)
+
+sp_r <- ggplot(data = pp_median, aes(x = simpson_percentile_control, y = simpson_percentile_removal)) +
+  geom_point(alpha = .5) +
+  facet_wrap(vars(season)) +
+  theme_bw() +
+  ggtitle("Simpson Ctrl v Removal") +
+  geom_abline(intercept = 0, slope = 1, color = "green") +
+  xlim(0, 40) +
+  ylim(0, 40)
+
+gridExtra::grid.arrange(grobs = list(sp_x, sp_r), nrow = 2)
+```

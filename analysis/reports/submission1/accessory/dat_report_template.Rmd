@@ -1,0 +1,154 @@
+---
+title: "Dataset-level report"
+output: 
+  github_document
+params:
+  dataset_name: ["mcdb"]
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(drake)
+library(dplyr)
+library(ggplot2)
+library(scadsanalysis)
+
+this_dataset <- params$dataset_name
+
+if(this_dataset == "misc_abund_short") {
+  cache_loc = "miscabund"
+} else if (this_dataset == "fia_short") {
+  cache_loc = "fia" 
+} else {
+  cache_loc = this_dataset
+}
+
+## Set up the cache and config
+db <- DBI::dbConnect(RSQLite::SQLite(), here::here("analysis", "drake", paste0("drake-cache-", cache_loc, ".sqlite")))
+cache <- storr::storr_dbi("datatable", "keystable", db)
+
+dat <- readd(paste0("dat_s_dat_", this_dataset), cache = cache, character_only = T) 
+
+all_di <- readd(all_di_obs, cache = cache)
+
+
+```
+# This dataset is `r this_dataset`.
+
+## State variables and change with singletons
+
+Here is a plot of the distribution of S and N in this dataset, and S and N if we estimate the true number of species.
+
+```{r statevars}
+
+sv <- get_statevars(dat)
+
+statevars_plot <- ggplot(data = sv, aes(x = s0, y = n0, color = singletons)) +
+  geom_point(alpha = .5) +
+  theme_bw() +
+  facet_wrap(vars(singletons)) +
+  scale_color_viridis_d(end = .5) +
+  ggtitle("State variables")
+
+statevars_plot
+```
+
+Here is a plot of how many species were added to each dataset by estimating the true number of species.
+
+```{r sv change}
+sv_singles <- filter(sv, singletons == TRUE) %>%
+  select(-singletons) %>%
+  rename(singletons_s0 = s0,
+         singletons_n0 = n0)
+
+sv_change <- filter(sv, singletons == FALSE) %>%
+  select(-singletons) %>%
+  left_join(sv_singles, by = c("site", "dat", "sim", "source")) %>%
+  mutate(s0_change = singletons_s0 - s0,
+         n0_change = singletons_n0 - n0) %>%
+  select(-singletons_s0, -singletons_n0)
+
+sv_change_plot <- ggplot(data = sv_change, aes(x = s0, y = n0, color = log(s0_change))) +
+  geom_point(alpha = .5) +
+  theme_bw() +
+  scale_color_viridis_c(option = "plasma", end = .75, direction = -1) +
+  ggtitle("State variable change")
+
+sv_change_plot
+```
+
+## Number of samples achieved
+
+```{r number of samples}
+# 
+# site_samples <- all_di %>%
+#   left_join(select(sv, -source, -sim), by = c("site", "singletons"))
+```
+
+#### The maximum number of samples achieved is `r max(all_di$nsamples)`.
+
+```{r plot nb samples}
+samples_hist <- ggplot(data = all_di, aes(x = nsamples)) +
+  geom_histogram(binwidth = 10) +
+  theme_bw() +
+  facet_wrap(vars(singletons), nrow = 1) +
+  ggtitle("Number of samples achieved")  +
+  xlim(c(-11, max(all_di$nsamples) + 11))
+
+samples_hist
+
+sv_samples_plot <- ggplot(data = all_di, aes(x = s0, y = n0, color = nsamples)) +
+  geom_point(alpha = .5) +
+  theme_bw() +
+  facet_wrap(vars(singletons), nrow = 1) +
+  scale_color_viridis_c(option = "magma", end = .75, limits = c(0, max(all_di$nsamples))) +
+  ggtitle("Number of samples achieved by state variables")
+sv_samples_plot
+
+```
+
+## Position (%ile) of empirical SADs within FS
+
+```{r empirical positions}
+
+skew_plot <- ggplot(data = filter(all_di, source == "observed"), aes(x= singletons, y = skew_percentile)) +
+  geom_boxplot() +
+  theme_bw() +
+  ggtitle("Skewness percentile") +
+  ylim(0, 100)
+
+simpson_plot <- ggplot(data = filter(all_di, source == "observed"), aes(x= singletons, y = simpson_percentile)) +
+  geom_boxplot() +
+  theme_bw() +
+  ggtitle("Simpson percentile") +
+  ylim(0, 100)
+
+gridExtra::grid.arrange(grobs = list(skew_plot, simpson_plot), ncol = 2)
+```
+
+
+Here is a heatmap of an observed + sampled FS:
+
+```{r example heatmap}
+
+a_fs_name <- cached(cache = cache)[ which(substr(cached(cache = cache), 0, 3) == "fs_")[1]]
+
+fs_samples <- readd(a_fs_name, cache = cache, character_only = TRUE)
+
+fs_heatmap <- ggplot(data = fs_samples, aes(x = rank, y = abund, group = sim, color = source)) +
+  geom_line(alpha = .01) +
+  geom_line(data = filter(fs_samples, source == "observed")) +
+  theme_bw() +
+  scale_color_viridis_d(end = .8) +
+  ggtitle(a_fs_name)
+
+fs_heatmap
+
+```
+
+
+```{r cleanup}
+
+DBI::dbDisconnect(db)
+rm(cache)
+```

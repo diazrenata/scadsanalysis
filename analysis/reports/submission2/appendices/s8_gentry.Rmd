@@ -1,0 +1,235 @@
+---
+title: "Unusual Gentry communities"
+author: Renata Diaz
+date: "`r Sys.Date()`"
+output: 
+    # github_document:
+    #    df_print: kable
+    #    toc: true
+    word_document:
+        df_print: kable
+        toc: false
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(drake)
+library(dplyr)
+library(ggplot2)
+library(grid)
+theme_set(theme_bw())
+
+all_di <- read.csv(here::here("analysis", "rev_prototyping", "all_di.csv"), stringsAsFactors = F)
+
+all_ct <-  read.csv(here::here("analysis", "rev_prototyping", "all_ct.csv"), stringsAsFactors = F)
+
+
+#fia_ct <- read.csv(here::here("fia_cts.csv"))
+
+#all_ct <- rbind(all_ct, fia_ct)
+all_ct <- all_ct %>%
+  mutate(dat = ifelse(grepl(dat, pattern = "fia"), "fia", dat),
+         dat = ifelse(dat == "misc_abund_short", "misc_abund", dat))
+
+all_di <- all_di %>%
+  mutate(log_nparts = log(gmp:::as.double.bigz(nparts)),
+         log_nsamples = log(nsamples),
+         log_s0 = log(s0),
+         log_n0 = log(n0)) %>%
+  filter(n0 != s0,
+         s0 != 1,
+         !singletons,
+         n0 != (s0 + 1)) %>%
+  mutate(dat = ifelse(grepl(dat, pattern = "fia"), "fia", dat),
+         dat = ifelse(dat == "misc_abund_short", "misc_abund", dat)) %>%
+  mutate(Dataset = dat,
+         Dataset = ifelse(Dataset == "fia", "FIA", Dataset),
+         Dataset = ifelse(Dataset == "bbs", "Breeding Bird Survey", Dataset),
+         Dataset = ifelse(Dataset == "mcdb", "Mammal Communities", Dataset),
+         Dataset = ifelse(Dataset == "gentry", "Gentry", Dataset),
+         Dataset = ifelse(Dataset == "misc_abund", "Misc. Abundance", Dataset)) %>%
+  filter(nparts > 20) %>%
+  left_join(all_ct) 
+
+all_di <- all_di %>%
+  group_by_all() %>%
+  mutate(real_po_percentile_mean = mean(real_po_percentile, real_po_percentile_excl),
+         skew_percentile_mean = mean(skew_percentile, skew_percentile_excl),
+         simpson_percentile_mean = mean(simpson_percentile,simpson_percentile_excl),
+         shannon_percentile_mean = mean(shannon_percentile, shannon_percentile_excl),
+         nsingletons_percentile_mean = mean(nsingletons_percentile, nsingletons_percentile_excl),) %>%
+  ungroup()
+
+all_di <- all_di %>%
+  mutate(in_fia = ifelse(Dataset == "FIA", "FIA", "Other datasets"))
+
+```
+
+
+```{r, fig.dim = c(3, 6)}
+plot_percentile_hist <- function(di_df, col_name, plot_name, tails = 2, facetvar = "Dataset", min_s0 = 0) {
+
+  if(tails == 2) {
+    cutoff_percentiles = c(2.5, 97.5)
+    min_nparts = 40
+  } else if (tails== 1) {
+    cutoff_percentiles = c(95)
+    min_nparts = 20
+  }
+
+  di_df <- di_df %>%
+    mutate(response = (di_df[[col_name]]),
+           facetvar = di_df[[facetvar]])
+
+
+  ggplot(filter(di_df, nparts > min_nparts, s0 >= min_s0), aes(response)) +
+    geom_histogram(bins = 40, boundary = 100) +
+    theme_bw() +
+    xlab("") +
+    ylab("") +
+    geom_vline(xintercept = cutoff_percentiles, color = "red") +
+    ggtitle( plot_name) +
+    facet_wrap(vars(facetvar), ncol = 1, scales = "free_y")+
+    theme(plot.title = element_text(size=10))
+
+
+
+}
+
+all_di <- all_di %>%
+  mutate(`Observed \npercentile score` = ifelse(real_po_percentile_excl > 95, "High (> 95)", "Less than 95"))
+
+```
+
+```{r, fig.dim = c(3, 6)}
+
+plot_narrowness <- function(di_df, yvar, yvar_name) {
+
+  if(grepl("sim_pos", yvar)) {
+    min_nparts = 20
+    ylabel = "Mean dissimilarity"
+  } else {
+    min_nparts = 40
+    ylabel = "Breadth index"
+  }
+
+  di_df <- di_df %>%
+    mutate(response = (di_df[[yvar]])) %>%
+    filter(nparts > min_nparts,
+           nparts < 10 ^ 50)
+
+
+  ggplot(di_df, aes(nparts, response, color = Dataset)) +
+    geom_point(data = filter(di_df, dat == "fia"), alpha = .1) +
+    geom_point(data = filter(di_df, dat != "fia"), alpha = .1) +
+    geom_point(data = filter(di_df, s0 < 0)) +
+    scale_color_viridis_d(end = .9) +
+    xlab("") +
+    ylab(ylabel) +
+    scale_x_log10() +
+    ggtitle(yvar_name) +
+    theme(legend.position = "none")+
+    theme(plot.title = element_text(size=10))
+}
+
+plot_narrowness_legend <- function(di_df) {
+
+  legend_df <- di_df %>%
+    select(Dataset) %>%
+    distinct() %>%
+    mutate(ymark = dplyr::row_number())
+
+  ggplot(legend_df, aes(1, ymark, color = Dataset)) +
+    geom_label(aes(x = 2, y = ymark, label = Dataset)) +
+    geom_point(size = 4) +
+    scale_color_viridis_d(end = .9) +
+    xlab("") +
+    ylab("") +
+    theme(legend.position = "none") +
+    xlim(1, 3) + theme(
+      panel.grid.major.x = element_blank(),
+      panel.grid.minor.x = element_blank(),
+      panel.grid.major.y = element_blank(),
+      panel.grid.minor.y = element_blank(),
+      axis.text.x = element_blank(),
+      axis.ticks.x = element_blank(),
+      axis.text.y = element_blank(),
+      axis.ticks.y = element_blank()
+    ) +
+    ggtitle("Dataset")
+
+}
+#
+# gridExtra::grid.arrange(grobs = list(
+#   plot_narrowness(all_di, "sim_pos_from_best", "Dissimilarity to central tendency"),
+#   plot_narrowness_legend(all_di)),
+#   ncol = 1)
+```
+
+```{r}
+
+plot_narrowness_hist <- function(di_df, col_name, plot_name, facetvar = "Dataset", min_s0 = 0) {
+
+  if(grepl("sim_pos", col_name)) {
+    xvarname = "Mean dissimilarity"
+    min_nparts = 40
+  } else {
+    min_nparts = 20
+    xvarname = "Breadth index"
+  }
+
+  di_df <- di_df %>%
+    mutate(response = (di_df[[col_name]]),
+           facetvar = di_df[[facetvar]])
+
+
+  ggplot(filter(di_df, nparts > min_nparts, s0 >= min_s0), aes(response)) +
+    geom_histogram(bins = 40, boundary = 100) +
+    theme_bw() +
+    ylab("") +
+    xlab(xvarname) +
+    ggtitle( plot_name) +
+    facet_wrap(vars(facetvar), ncol = 1, scales = "free_y")+
+    theme(plot.title = element_text(size=10))
+
+}
+
+```
+
+
+
+The Gentry communities are extreme relative to hte other datasets (in grey), in that they have high species richness and low abundance. Of these, the most extreme communities have extremely low average abundance (e.g. N/S < 3).
+
+```{r, fig.dim = c(7,7)}
+
+gentry_di <- filter(all_di, Dataset == "Gentry")
+
+gentry_di <- gentry_di %>%
+  mutate(low_avg_abund = ifelse(n0/s0 < 3, "N:S < 3", "N:S > 3")) %>%
+  mutate(`Low average \nabundance` = low_avg_abund)
+
+ggplot(gentry_di, aes(s0, n0, color = `Low average \nabundance`)) +
+  geom_point(data = all_di, inherit.aes = F, aes(s0, n0), color = "grey", alpha = .1) +  geom_point() +
+scale_x_log10() + scale_y_log10() + xlab("Species richness (S); note log scale") + ylab("Total abundance (N); note log scale") + ggtitle("Gentry communities", subtitle = "(in color)")
+
+```
+
+
+These low-average-abundance communities account for most of the signal of extreme values in the unusual direction for various metrics - that is, a **low** number of rare species and **low** skewness, and **high** Shannon and Simpson evenness. Gentry communities with average abundance > 3 tend to show the signal in the same direction as most other communities.
+
+
+```{r, fig.dim = c(7,7)}
+fig_2 <- gridExtra::grid.arrange(grobs = list(
+
+  plot_percentile_hist(gentry_di, "nsingletons_percentile_mean", "\nNumber of rare species", facetvar = "low_avg_abund"),
+  plot_percentile_hist(gentry_di, "skew_percentile_mean", "\nSkewness", facetvar = "low_avg_abund", min_s0 = 3),
+  plot_percentile_hist(gentry_di, "simpson_percentile_mean", "\nSimpson evenness", facetvar = "low_avg_abund"),
+  plot_percentile_hist(gentry_di, "shannon_percentile_mean", "\nShannon diversity", facetvar = "low_avg_abund")
+), ncol = 2,
+ left = textGrob("Number of communities", rot = 90, gp = gpar(fill = "black")),
+bottom = textGrob("Percentile rank of observed value relative to feasible set"), gp = gpar(fill = "white"))
+
+
+
+```
+
