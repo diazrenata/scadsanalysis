@@ -5,6 +5,8 @@
 #' - calculates the percentile rank for each diversity metric for every sample. The observed percentile rank is calculated against the distribution of sampled values for each metric.
 #'
 #' @param fs_samples_df df of all samples - observed and sampled - with column for abundance, *for a single site*. Output of `sample_fs` or `sample_fs_wrapper`
+#' @param sim_props_off Not used but kept in function definition so as not to invalidate drake targets
+#' @param props_comparison result of running compare_props_off on fs_samples_df.
 #'
 #' @return data frame with summary statistic values and percentile scores for each metric, for every sampled and observed SAD
 #' @export
