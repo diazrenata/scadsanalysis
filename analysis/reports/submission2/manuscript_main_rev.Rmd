@@ -16,14 +16,11 @@ library(ggplot2)
 library(grid)
 theme_set(theme_bw())
 
-all_di <- read.csv(here::here("analysis", "rev_prototyping", "all_di.csv"), stringsAsFactors = F)
+all_di <- read.csv(here::here("analysis", "reports", "submission2", "all_di.csv"), stringsAsFactors = F)
 
-all_ct <-  read.csv(here::here("analysis", "rev_prototyping", "all_ct.csv"), stringsAsFactors = F)
+all_ct <-  read.csv(here::here("analysis",  "reports", "submission2","all_ct.csv"), stringsAsFactors = F)
 
 
-#fia_ct <- read.csv(here::here("fia_cts.csv"))
-
-#all_ct <- rbind(all_ct, fia_ct)
 all_ct <- all_ct %>%
   mutate(dat = ifelse(grepl(dat, pattern = "fia"), "fia", dat),
          dat = ifelse(dat == "misc_abund_short", "misc_abund", dat))

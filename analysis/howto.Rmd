@@ -1,22 +1,42 @@
 ---
 title: "How to run"
-output: github_document
+output: 
+    github_document:
+       df_print: kable
+       toc: true
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-# Installations
+# To explore results
 
-You will need to download and install hte package for this research compendium, as well as packages to run the analytical workflow and optionally HPC. 
+Re-running the whole sampling analysis takes at least a week and requires a supercomputer. If you would like to just load the results from the analysis for exploration:
+
+- Clone or download `diazrenata/scadsanalysis` or the Zenodo archive.
+- Run the snippet in `analysis/helper_scripts/load_results_for_exploring.R`. 
+- This will give you a dataframe called `all_di`. This is the main dataframe for results. It has a lot of columns, descriptions for which are [below](#all_di_cols). 
+
+If you would like to re-create the figures for the manuscript, you can re-render the reports in `analysis/reports/submission2`. `manuscript_main_rev.Rmd` is the figures and tables in the main text, and the reports in the `appendices` folder render each of the supplementary documents. 
+
+# To re-run the analyses
+
+The full analytical pipeline can be replicated by installing `scadsanalysis` as an R package and running a series of scripts. It requires large amounts of memory and storage (terabytes), and needs parallelization to run in a reasonable amount of time. We run it on the UF HiPerGator, and you'd need to change the settings to work with a different cluster.
+
+For those interested in replicating a subset of the analyses with less compute, we have included instructions for running a subset locally.
+
+## Installations
+ 
+
+You will need to download and install the package for this research compendium, as well as packages to run the analytical workflow and optionally HPC. 
 
 ```{r install packages, echo = T, eval  = F}
-devtools::install_github("diazrenata/scadsanalysis@clean-and-tests")
+remotes::install_github("diazrenata/scadsanalysis")
 install.packages("drake")
 install.packages("DBI")
 install.packages("storr")
-install.packages("clustermq")
+install.packages("clustermq") # Only if you are running on HPC
 
 ```
 
@@ -25,23 +45,60 @@ library(scadsanalysis)
 
 ```
 
-# Download and prep data
+## Download and prep data
+
+To download and prep the main datasets:
 
 ```{r download data, echo = T, eval = F}
 download_data()
 ```
 
-# Get the p tables
 
-Either copy from directory, or run `analysis/helper_scripts/ptables_plan.R`. RMD runs this on a HPC cluster using `submit_p_pipeline.sbatch`. These are very large files.
+To subsample the main datasets (subsampling was added after the core analyses were completed), render `analysis/helper_scripts/jacknife.Rmd`. You may need to create a directory called `analysis/rev_prototyping/jacknifed_datasets`. 
 
-# Run plans
+## Get the p tables
 
-Either source one of the pipelines directory or run via sbatch. Running directly is going to take a lot of CPU.
+For sampling, you will need tables listing the number of possible SADs for combinations of S and N. This analysis uses 3 tables covering different swaths of SxN space. The first two can be created by running `analysis/helper_scripts/make_p_wide.R` and `analysis/helper_scripts/make_p_mamm.R`, and the largest one by running `analysis/helper_scripts/ptables_plan.R` (RMD ran this on a HPC cluster using `submit_p_pipeline.sbatch`). The files are too large for GitHub, but will be uploaded to Zenodo and made available for download there.
+
+To run a subset locally, you can just run `analysis/helper_scripts/make_p_mamm.R` or download `masterp_mamm.Rds` to the `analysis` directory. 
+
+## Run plans
+
+Each dataset is run in its own (identical) pipeline, and we collect the results at the end. Either source one of the pipelines directly or run via sbatch. Running one of the pipeline files locally is not recommended. 
+
+To run on the HiperGator, ssh in and run:
+
+`sbatch submit_bbs_pipeline.sbatch`, substituting whatever dataset name you want to run. 
+
+Running on a different HPC cluster would take some setup. On the HiPerGator, we're using `drake` and SQLite caches to manage the pipelines, and `clustermq` to handle parallelization with the SLURM scheduler.
+
+To run a subset locally, you can run `mcdb_pipeline_demo.R`. This will run the pipeline on the first 100 communities in the Mammal Community Database. It takes [time] on a MacBook Air with 8GB memory and creates a [size] cache file. 
 
 
-# Collect all_di
+## Collect results
 
-Run `analysis/helper_scripts/make_all_di.R` to collect the results from each of the pipelines into one dataframe.
+Run `analysis/helper_scripts/make_all_di.R`, `analysis/helper_scripts/make_all_di_jk.R`, `analysis/helper_scripts/make_all_ct.R` and `analysis/helper_scripts/make_all_ct_jk.R` to collect the results from each of the pipelines into dataframes. If you ran the pipelines on a HPC cluster, run these scripts and copy the .csvs they create (currently stored at `analysis/reports/submission2/all_di.csv`, `all_di_jk.csv`, etc) to your local computer for viewing.
 
-# Render manuscript-level reports
+For the local subset, you can run `analysis/helper_scripts/make_all_di_demo.R`. This will create the analogous results files for just the subset you ran. 
+
+If you want to explore the results (and not re-run the actual analyses) these files are stored in GitHub/Zenodo at the paths above. You can just download the archive and work from these .csvs. 
+
+## Render reports
+
+RMarkdown files for generating all of the figures and tables in the manuscript & supplements are at `analysis/reports/submission2`. `manuscript_main_rev.Rmd` renders the figures in the main text, and the .Rmd files in `analysis/reports/submission2/appendices` renders each of the supplementary documents. Once you have run the `make_all_X` scripts, or downloaded the results files, you can render any of these reports. 
+
+To load the results for further exploration, you can start from the code in `analysis/helper_scripts/load_results_for_exploring.R`. This is the same setup snippet as begins the .Rmd files. 
+
+<a id="all_di_cols"></a> 
+
+### all_di columns
+
+`all_di` will be your main dataframe for exploring. It has a lot of columns, here is what they mean:
+
+```{r}
+
+column_descriptions <- read.csv(here::here("analysis", "reports", "submission2", "all_di_columns.csv" ))
+
+column_descriptions
+
+```
