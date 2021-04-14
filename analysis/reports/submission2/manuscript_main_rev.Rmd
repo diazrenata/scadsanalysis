@@ -874,13 +874,13 @@ gridExtra::grid.arrange(grobs = list(nhist, phist), nrow = 2, top = textGrob("Di
 
 
 
-all_di_with_resamples <- read.csv(here::here("analysis", "rev_prototyping", "all_di.csv"))
+all_di_with_resamples <- read.csv(here::here("analysis", "reports", "submission2", "all_di.csv"))
 
-jk_di_full <- read.csv(here::here("analysis", "rev_prototyping", "all_di_jk.csv"))
+jk_di_full <- read.csv(here::here("analysis", "reports", "submission2", "all_di_jk.csv"))
 
-all_ct_with_resamples <- read.csv(here::here("analysis", "rev_prototyping", "all_ct.csv"))
+all_ct_with_resamples <- read.csv(here::here("analysis", "reports", "submission2", "all_ct.csv"))
 
-jk_ct <- read.csv(here::here("analysis", "rev_prototyping", "all_ct_jk.csv"))
+jk_ct <- read.csv(here::here("analysis", "reports", "submission2", "all_ct_jk.csv"))
 
 jk_di_full <- left_join(jk_di_full, jk_ct)
 
