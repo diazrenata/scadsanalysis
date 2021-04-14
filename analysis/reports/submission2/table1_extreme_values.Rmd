@@ -1,11 +1,11 @@
 ---
-title: "Proportions of extreme values the unusual direction"
+title: "Proportions of extreme values the usual direction"
 author: Renata Diaz
 date: "`r Sys.Date()`"
 output: 
-    # github_document:
-    #    df_print: kable
-    #    toc: true
+    github_document:
+       df_print: kable
+       toc: true
     word_document:
         df_print: kable
         toc: false
