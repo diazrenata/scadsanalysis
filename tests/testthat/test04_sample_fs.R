@@ -8,9 +8,7 @@ test_that("sampling fs works", {
 
   sv <- get_statevars(dat)
 
-  p_table <- readRDS(here::here("masterp_mamm.Rds"))
-
-  fs_samples <- sample_fs_wrapper(dat, site_name = "1001", singletonsyn = F, n_samples = 2, p_table = p_table, seed = 1)
+  fs_samples <- sample_fs_wrapper(dat, site_name = "1001", singletonsyn = F, n_samples = 2, p_table = NULL, seed = 1)
 
   expect_true(ncol(fs_samples) == 10)
   expect_true(all(
