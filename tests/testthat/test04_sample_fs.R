@@ -8,7 +8,7 @@ test_that("sampling fs works", {
 
   sv <- get_statevars(dat)
 
-  p_table <- readRDS(here::here("analysis", "masterp_mamm.Rds"))
+  p_table <- readRDS(here::here("masterp_mamm.Rds"))
 
   fs_samples <- sample_fs_wrapper(dat, site_name = "1001", singletonsyn = F, n_samples = 2, p_table = p_table, seed = 1)
 
@@ -52,7 +52,7 @@ test_that("sampling edge case fxns work", {
 
   dat <- NULL
 
-  p_table <- readRDS(here::here("analysis", "masterp_mamm.Rds"))
+  p_table <- readRDS(here::here("masterp_mamm.Rds"))
   expect_true(is.na(sample_fs_wrapper(dat, "1002", FALSE, 10, p_table = p_table)))
   expect_true(is.na(sample_fs(dat, nsamples = 10, p_table = p_table)))
 
