@@ -11,4 +11,4 @@ Instructions for running the whole analysis, or loading the results of the analy
 The preprint is posted [here](https://www.biorxiv.org/content/10.1101/2021.01.18.427126v1).
 
 
-[![Build Status](https://travis-ci.com/diazrenata/scadsanalysis.svg)](https://travis-ci.com/diazrenata/scadsanalysis) [![codecov](https://codecov.io/gh/diazrenata/scadsanalysis/branch/feb-rev/graph/badge.svg)](https://codecov.io/gh/diazrenata/scadsanalysis)
+[![Build Status](https://travis-ci.com/diazrenata/scadsanalysis.svg?branch=feb-rev)](https://travis-ci.com/diazrenata/scadsanalysis) [![codecov](https://codecov.io/gh/diazrenata/scadsanalysis/branch/feb-rev/graph/badge.svg)](https://codecov.io/gh/diazrenata/scadsanalysis)
