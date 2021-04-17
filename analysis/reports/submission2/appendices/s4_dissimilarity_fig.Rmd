@@ -1,14 +1,15 @@
 ---
-title: "Dissimilarity of FS vs. actual"
-author: Renata Diaz
+title: "Figure S4"
+#author: Renata Diaz
 date: "`r Sys.Date()`"
 output: 
     # github_document:
     #    df_print: kable
     #    toc: true
-    word_document:
+   word_document:
         df_print: kable
         toc: false
+        reference_docx: style_reference.docx
 ---
 
 ```{r setup, include=FALSE}
@@ -101,6 +102,8 @@ all_di <- all_di %>%
 
 ```
 
+
+
 ```{r, fig.dim = c(7,7)}
 ggplot(all_di, aes(sim_pos_from_best, real_po, color = `Observed \npercentile score`)) +
   geom_point(alpha = .3) +
@@ -127,4 +130,4 @@ ggplot(all_di, aes(sim_pos_from_best, real_po, color = `Observed \npercentile sc
 
 ```
 
-**Figure S4**. Observed SADs are often much more dissimilar to the central tendency of their feasible sets (y-axis) than the mean dissimilarity of samples from the feasible set and the central tendency (x-axis). Dissimilarity can range from 0-1. The black line is the 1:1 line. Of observed SADs that are more disssimilar to the central tendency than are 95% of samples from the feasible set (green points), the absolute increase in dissimlarity ranges from .04 to .6. These observed SADs are from 1.4 to 9.7 times more dissimilar to the central tendency than the maen of samples from the feasible set. 
+**Figure S4**. Dissimilarity of observed and sampled SADs to the central tendency of the feasible set. Observed SADs are often much more dissimilar to the central tendency of their feasible sets (y-axis) than the mean dissimilarity of samples from the feasible set and the central tendency (x-axis). Dissimilarity can range from 0-1. The black line is the 1:1 line. Of observed SADs that are more disssimilar to the central tendency than are 95% of samples from the feasible set (green points), the absolute increase in dissimlarity ranges from .04 to .6. These observed SADs are from 1.4 to 9.7 times more dissimilar to the central tendency than the maen of samples from the feasible set. 

@@ -1,14 +1,15 @@
 ---
-title: "Complete results of resampling"
-author: Renata Diaz
+title: "Appendix A7: Complete results of resampling"
+#author: Renata Diaz
 date: "`r Sys.Date()`"
 output: 
     # github_document:
     #    df_print: kable
     #    toc: true
-    word_document:
+   word_document:
         df_print: kable
         toc: false
+        reference_docx: style_reference.docx
 ---
 
 ```{r setup, include=FALSE}
@@ -197,7 +198,6 @@ plot_narrowness_hist <- function(di_df, col_name, plot_name, facetvar = "Dataset
 ```
 
 
-# Resampling
 
 ```{r}
 
@@ -357,12 +357,12 @@ rs_results_long <- left_join(rs_results_long, metric_names)
 #   xlab("")
 ```
 
-# Percentile histograms
+## Percentile histograms
 
-## Subsampling
+### Subsampling
 
 
-```{r, fig.dim = c(10,5)}
+```{r, fig.dim = c(8,8)}
 
 all_di_with_resamples <- all_di_with_resamples %>%
   group_by_all() %>%
@@ -382,14 +382,14 @@ fig_2 <- gridExtra::grid.arrange(grobs = list(
   plot_percentile_hist(filter(all_di_with_resamples, resampling == "Subsampling"), "skew_percentile_mean", "\nSkewness", facetvar = "Dataset", min_s0 = 3),
   plot_percentile_hist(filter(all_di_with_resamples, resampling == "Subsampling"), "simpson_percentile_mean", "\nSimpson evenness", facetvar = "Dataset"),
   plot_percentile_hist(filter(all_di_with_resamples, resampling == "Subsampling"), "shannon_percentile_mean", "\nShannon diversity", facetvar = "Dataset")
-), ncol = 5,
+), ncol = 3,
 top = textGrob("Subsampling results", gp = gpar(fill = "white")), left = textGrob("Number of communities", rot = 90, gp = gpar(fill = "black")),
 bottom = textGrob("Percentile rank of observed value relative to feasible set"), gp = gpar(fill = "white"))
 ```
 
-## Adjusting for rare species
+### Adjusting for rare species
 
-```{r, fig.dim = c(10,5)}
+```{r, fig.dim = c(8,8)}
 
 fig_2 <- gridExtra::grid.arrange(grobs = list(
 
@@ -398,17 +398,17 @@ fig_2 <- gridExtra::grid.arrange(grobs = list(
   plot_percentile_hist(filter(all_di_with_resamples, resampling == "Rare species"), "skew_percentile_mean", "\nSkewness", facetvar = "Dataset", min_s0 = 3),
   plot_percentile_hist(filter(all_di_with_resamples, resampling == "Rare species"), "simpson_percentile_mean", "\nSimpson evenness", facetvar = "Dataset"),
   plot_percentile_hist(filter(all_di_with_resamples, resampling == "Rare species"), "shannon_percentile_mean", "\nShannon diversity", facetvar = "Dataset")
-), ncol = 5,
+), ncol =3,
 top = textGrob("Adjusted for rare species results", gp = gpar(fill = "white")), left = textGrob("Number of communities", rot = 90, gp = gpar(fill = "black")),
 bottom = textGrob("Percentile rank of observed value relative to feasible set"), gp = gpar(fill = "white"))
 ```
 
 
-# Summary of effects on proportion of extreme values
+## Summary of effects on proportion of extreme values
 
-## Usual direction
+### Usual direction
 
-```{r}
+```{r, fig.dim = c(8,6)}
 gridExtra::grid.arrange(grobs = list(
   ggplot(filter(rs_results_long, !grepl("Misc", Dataset), !weird_dir), aes(metric_desc, value, color = `Resampling scheme`)) +
   geom_point() +
@@ -427,9 +427,9 @@ gridExtra::grid.arrange(grobs = list(
   theme(legend.position = "bottom", legend.direction = "vertical" , legend.margin = margin(b = .3, r = 0, t = 0, l = 0, unit = "in"), axis.text.x = element_text(angle = 90))), ncol = 2, widths = c( 4,2), bottom = textGrob("Metric"))
 ```
 
-## Unusual direction
+### Unusual direction
 
-```{r}
+```{r, fig.dim = c(8,6)}
 gridExtra::grid.arrange(grobs = list(
   ggplot(filter(rs_results_long, !grepl("Misc", Dataset), weird_dir), aes(metric_desc, value, color = `Resampling scheme`)) +
   geom_point() +
@@ -449,9 +449,9 @@ gridExtra::grid.arrange(grobs = list(
 
 ```
 
-# Table of proportions of extreme values
+## Table of proportions of extreme values
 
-## Usual direction
+### Usual direction
 
 ```{r}
 
@@ -461,7 +461,7 @@ rs_results_desc %>%
 
 ```
 
-## Unusual direction
+### Unusual direction
 
 ```{r}
 rs_results_desc %>%

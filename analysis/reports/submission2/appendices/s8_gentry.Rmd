@@ -6,9 +6,10 @@ output:
     # github_document:
     #    df_print: kable
     #    toc: true
-    word_document:
+   word_document:
         df_print: kable
         toc: false
+        reference_docx: style_reference.docx
 ---
 
 ```{r setup, include=FALSE}
@@ -200,7 +201,7 @@ plot_narrowness_hist <- function(di_df, col_name, plot_name, facetvar = "Dataset
 
 The Gentry communities are extreme relative to hte other datasets (in grey), in that they have high species richness and low abundance. Of these, the most extreme communities have extremely low average abundance (e.g. N/S < 3).
 
-```{r, fig.dim = c(7,7)}
+```{r, fig.dim = c(4,4)}
 
 gentry_di <- filter(all_di, Dataset == "Gentry")
 
@@ -210,12 +211,14 @@ gentry_di <- gentry_di %>%
 
 ggplot(gentry_di, aes(s0, n0, color = `Low average \nabundance`)) +
   geom_point(data = all_di, inherit.aes = F, aes(s0, n0), color = "grey", alpha = .1) +  geom_point() +
-scale_x_log10() + scale_y_log10() + xlab("Species richness (S); note log scale") + ylab("Total abundance (N); note log scale") + ggtitle("Gentry communities", subtitle = "(in color)")
+scale_x_log10() + scale_y_log10() + xlab("Species richness (S); note log scale") + ylab("Total abundance (N); note log scale") + ggtitle("Gentry communities", subtitle = "(in color)") + theme(legend.position = "bottom")
 
 ```
 
+This figure shows all of the communities across all our datasets in terms of S and N. Gentry communities are in color, color coded by whether they have low average abundance (N/S < 3). 
 
-These low-average-abundance communities account for most of the signal of extreme values in the unusual direction for various metrics - that is, a **low** number of rare species and **low** skewness, and **high** Shannon and Simpson evenness. Gentry communities with average abundance > 3 tend to show the signal in the same direction as most other communities.
+
+These low-average-abundance communities - the red dots in the plot above - account for most of the signal of extreme values in the unusual direction for various metrics - that is, a **low** number of rare species and **low** skewness, and **high** Shannon and Simpson evenness. Gentry communities with average abundance > 3 tend to show the signal in the same direction as most other communities. 
 
 
 ```{r, fig.dim = c(7,7)}

@@ -1,15 +1,18 @@
 ---
-title: "Complete results for very small (<2000 possible SADs) communities"
-author: Renata Diaz
+title: "Appendix A10: Complete results for very small communities"
+# author: Renata Diaz
 date: "`r Sys.Date()`"
 output: 
-    github_document:
-       df_print: kable
-       toc: true
+    # github_document:
+    #    df_print: kable
+    #    toc: true
     word_document:
         df_print: kable
         toc: false
+        reference_docx: style_reference.docx
 ---
+
+We compare the results for very small communities (fewer than 2000 possible SADs in the feasible set) to larger communities within each dataset. 
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
@@ -198,8 +201,9 @@ plot_narrowness_hist <- function(di_df, col_name, plot_name, facetvar = "Dataset
 ```
 
 
+Only three of our datasets - Mammal Communities, Misc. Abundance, and FIA - have appreciable numbers of very small communities. We use 2000 possible SADs as a cutoff because it splits these datasets into reasonably large subsets of both "large" and "small" communities. 
 
-# Proportions of extreme values 
+Proportions of communities in these datasets with fewer than 2000 possible SADs:
 
 ```{r, fig.dim = c(6,8)}
 
@@ -248,17 +252,39 @@ all_results <- left_join(diss_results, skew_results) %>%
   left_join(metric_results)
 
 cols1 <- c("Dataset", "Number of elements", "High dissimilarity", "High proportion of rare species", "High skew", "Low Simpson", "Low Shannon")
+
+
+cols2 <- c("Dataset", "Number of elements", "Low proportion of rare species", "Low skew", "High Simpson", "High Shannon")
 all_di %>%
   filter(dat %in% c("fia", "mcdb", "misc_abund")) %>%
   group_by(Dataset) %>%
-  summarize(`Proportion with nparts < 2000` = mean(nparts < 2000))
+  summarize(`Proportion with < 2000 possible SADs` = mean(nparts < 2000))
+```
 
+
+## Proportions of communities with extreme percentile scores
+
+The proportions of communities with >/< 2000 possible SADs with extreme percentile scores for each dataset.
+
+For dissimilarity, approximately 5% of communities would have extreme scores by chance. For all other metrics, this would be approximately 2.5%.
+
+In the direction of effects usually seen:
+
+```{r}
 all_results %>%
   filter(Dataset %in% c("FIA", "Mammal Communities", "Misc. Abundance")) %>%
   select(cols1)
 ```
 
-# Distributions of breadth indices and percentile scores
+In the opposite direction:
+
+```{r}
+all_results %>%
+  filter(Dataset %in% c("FIA", "Mammal Communities", "Misc. Abundance")) %>%
+  select(cols2)
+```
+
+## Plots of breadth indices and percentile scores
 
 
 Breadth indices (top) and percentile scores (bottom) for communities with fewer than 2000 possible SADs, or more than 2000 possible SADs, from FIA, Mammal Community, and Misc. Abundance datasets.

@@ -1,14 +1,15 @@
 ---
-title: "Proportions of extreme values the usual direction"
-author: Renata Diaz
+title: "Table 1"
+#author: Renata Diaz
 date: "`r Sys.Date()`"
 output: 
-    github_document:
-       df_print: kable
-       toc: true
-    # word_document:
-    #     df_print: kable
-    #     toc: false
+    # github_document:
+    #    df_print: kable
+    #    toc: true
+    word_document:
+        df_print: kable
+        toc: false
+        reference_docx: style_reference.docx
 ---
 
 ```{r setup, include=FALSE}
@@ -122,4 +123,4 @@ all_results %>%
 
 ```
 
-**Table 1.** Proportions of extreme values for percentile scores for observed SADs compared to samples from the feasible set. For dissimilarity, this is the proportion of percentile scores >95; by chance, ~5% of scores should be in this extreme. For all other metrics, this is the proportion <2.5 or >97.5; by chance ~2.5% of scores should be in either extreme. n refers to the number of communities included for each dataset for each metric. 
+**Table 1.** Proportions of extreme values for percentile scores for observed SADs compared to samples from the feasible set. For dissimilarity, this is the proportion of percentile scores >95; by chance, ~5% of scores should be in this extreme. For all other metrics, this is the proportion <2.5 or >97.5; by chance ~2.5% of scores should be in either extreme. n refers to the number of communities included for each dataset for each metric. The proportions shown are for the directions of effects observed for most datasets; for the opposite-direction effects, see Table S5.
