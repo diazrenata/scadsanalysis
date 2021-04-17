@@ -72,7 +72,7 @@ To run on the HiperGator, ssh in and run:
 
 Running on a different HPC cluster would take some setup. On the HiPerGator, we're using `drake` and SQLite caches to manage the pipelines, and `clustermq` to handle parallelization with the SLURM scheduler.
 
-To run a subset locally, you can run `mcdb_pipeline_demo.R`. This will run the pipeline on the first 100 communities in the Mammal Community Database. It takes [time] on a MacBook Air with 8GB memory and creates a [size] cache file. 
+To run a subset locally, you can run `mcdb_pipeline_demo.R`. This will run the pipeline on the first 50 communities in the Mammal Community Database, drawing up to 200 samples from each feasible set. It takes about 20 minutes on a MacBook Air with 8GB memory and creates a 51 MB cache file. 
 
 
 ## Collect results

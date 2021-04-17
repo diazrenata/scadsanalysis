@@ -6,9 +6,9 @@ output:
     github_document:
        df_print: kable
        toc: true
-    word_document:
-        df_print: kable
-        toc: false
+    # word_document:
+    #     df_print: kable
+    #     toc: false
 ---
 
 ```{r setup, include=FALSE}
