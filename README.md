@@ -4,7 +4,7 @@ Research compendium comparing species abundance distributions to statistical bas
 
 ## To replicate these analyses
 
-Instructions for running the whole analysis, or loading the results of the analysis for further explanation, are [here](https://github.com/diazrenata/scadsanalysis/blob/feb-rev/analysis/howto.md).
+Instructions for running the whole analysis, or loading the results of the analysis for further explanation, are [here](https://github.com/diazrenata/scadsanalysis/blob/master/analysis/howto.md).
 
 ## Preprint
 
