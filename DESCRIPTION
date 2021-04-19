@@ -21,7 +21,6 @@ Imports:
     entropy,
     feasiblesads,
     here,
-    portalr,
     purrr,
     reshape2,
     rmarkdown,
@@ -31,5 +30,4 @@ Imports:
 Suggests:
     testthat
 Remotes: 
-    diazrenata/feasiblesads,
-    weecology/portalr
+    diazrenata/feasiblesads

@@ -50,20 +50,20 @@ test_that("sampling edge case fxns work", {
 
   dat <- NULL
 
-  expect_true(is.na(sample_fs_wrapper(dat, "1002", FALSE, 10, NULL)))
+  expect_true(is.na(sample_fs_wrapper(dat, "1002", FALSE, 10, p_table = NULL)))
   expect_true(is.na(sample_fs(dat, nsamples = 10, p_table = NULL)))
 
   dat <- load_dataset("mcdb")
   dat <- dat %>%
     dplyr::filter(site == "I am not a site")
 
-  expect_true(is.na(sample_fs_wrapper(dat, "1002", FALSE, 10, NULL)))
+  expect_true(is.na(sample_fs_wrapper(dat, "1002", FALSE, 10, p_table = NULL)))
   expect_true(is.na(sample_fs(dat, nsamples = 10, p_table = NULL)))
 
   dat <- load_dataset("mcdb")
   dat <- dat %>%
     dplyr::filter(site == "1003")
-  expect_true(is.na(sample_fs_wrapper(dat, "1002", FALSE, 10, NULL)))
+  expect_true(is.na(sample_fs_wrapper(dat, "1002", FALSE, 10, p_table = NULL)))
 
   expect_true(is.data.frame(sample_fs_wrapper(dat, site_name = "1003", singletonsyn =  FALSE, n_samples = 10, p_table = NULL)))
 

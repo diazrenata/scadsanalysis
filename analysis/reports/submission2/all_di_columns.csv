@@ -1,0 +1,87 @@
+﻿column,definition,format
+sim,"Which draw from the sampled feasible set (1-4000), or -99 (for the observed SAD). For the final results dataframes, all values are -99. ",Int
+source,"Whether the SAD is “sampled” or “observed”. For these dataframes, all values are “observed”.",Character
+dat,Which dataset (in terms of the different dataset pipelines). Note that fia_short and fia_small are both FIA but have different values here.,Character
+site,Which community (they are called sites in the data files) within each dataset.,Int
+singletons,Whether the SAD is the raw SAD (FALSE) or the SAD adjusted for undersampling of rare species ( TRUE),Logical
+s0,The number of species in the community,Int
+n0,The number of individuals in the community,Int
+nparts,The number of possible SADs with s0 and n0 (the number of elements in the feasible set),bigInt
+skew,Skewness of the observed SAD,Numeric
+shannon,Shannon's index of the observed SAD,Numeric
+simpson,Simpson's evenness of the observed SAD,Numeric
+nsingletons,Number of species with abundance = 1 in the observed SAD,Numeric
+mean_po_comparison,NOT USED. The mean dissimilarity of the observed SAD to elements of the FS. Use real_po instead,Numeric
+n_po_comparisons,NOT USED. Number of dissimilarity comparisons achieved between elements of the FS. Use ncomparisons instead.,Numeric
+skew_percentile,Percentile score of observed skewness relative to sampled values. Defined as the % of sampled values LESS THAN OR EQUAL TO observed.,Numeric
+shannon_percentile,Percentile score of observed Shannon relative to sampled values. Defined as the % of sampled values LESS THAN OR EQUAL TO observed.,Numeric
+simpson_percentile,Percentile score of observed Simpson relative to sampled values. Defined as the % of sampled values LESS THAN OR EQUAL TO observed.,Numeric
+skew_percentile_excl,Percentile score of observed skewness relative to sampled values. Defined as the % of sampled values LESS THAN observed.,Numeric
+simpson_percentile_excl,Percentile score of observed Shannon relative to sampled values. Defined as the % of sampled values LESS THAN observed.,Numeric
+shannon_percentile_excl,Percentile score of observed Simpson relative to sampled values. Defined as the % of sampled values LESS THAN observed.,Numeric
+nsingletons_percentile,Percentile score of observed number of species with abundance = 1 relative to sampled values. Defined as the % of sampled values LESS THAN OR EQUAL TO observed.,Numeric
+nsingletons_percentile_excl,Percentile score of observed number of species with abundance = 1 relative to sampled values. Defined as the % of sampled values LESS THAN observed.,Numeric
+mean_po_comparison_percentile,NOT USED. Percentile score of dissimilarity of the observed SAD to the feasible set relative to sampled values. Defined as the % of sampled values LESS THAN OR EQUAL TO observed.,Numeric
+mean_po_comparison_percentile_excl,NOT USED. Percentile score of observed dissimilarity of the observed SAD to the feasible set relative to sampled values. Defined as the % of sampled values LESS THAN observed.,Numeric
+mean_po_comparison_sims,NOT USED. The mean dissimilarity of sampled SAD to elements of the FS. Use sim_pos_from_best instead,Numeric
+skew_range,Range of skewness values in the sampled feasible set,Numeric
+simpson_range,Range of Simpson values in the sampled feasible set. ,Numeric
+nsamples,"Number of unique draws from the feasible set achieved. Usually 4000, but smaller for small communities.",Numeric
+skew_unique,Number of unique skewness values in the sampled feasible set,Numeric
+simpson_unique,Number of unique simpson values in the sampled feasible set,Numeric
+shannon_unique,Number of unique Shannon values in the sampled feasible set,Numeric
+skew_2p5,.025 quantile of skewness values in the sampled feasible set,Numeric
+skew_97p5,.975 quantile of skewness values in the sampled feasible set,Numeric
+skew_95,.95 quantile of skewness values in the sampled feasible set,Numeric
+skew_min,Minimum skewness value in the sampled feasible set,Numeric
+simpson_max,Maximum Simpson's value in the sampled feasible set,Numeric
+shannon_min,Minimum Shannon value in the sampled feasible set,Numeric
+shannon_2p5,.025 quantile of Shanon values in the sampled feasible set,Numeric
+shannon_97p5,.975 quantile of Shanon values in the sampled feasible set,Numeric
+shannon_max,.95 quantile of Shanon values in the sampled feasible set,Numeric
+shannon_5,.05 quantile of Shanon values in the sampled feasible set,Numeric
+shannon_range,Range of Shanon values in the sampled feasible set,Numeric
+simpson_2p5,.025 quantile of Simpson values in the sampled feasible set,Numeric
+simpson_5,.05 quantile of Simpson values in the sampled feasible set,Numeric
+simpson_97p5,.975 quantile of Simpson values in the sampled feasible set,Numeric
+mean_po_comparison_95,NOT USED. .95 quantile of sampled SADs dissimilarity to other samples in the FS. ,Numeric
+mean_po_comparison_min,NOT USED. Min of sampled SADs dissimilarity to other samples in the FS. ,Numeric
+mean_po_comparison_max,NOT USED.  Max of sampled SADs dissimilarity to other samples in the FS. ,Numeric
+nsingletons_mean,Mean number of species with abund =1 in the sampled feasible set,Numeric
+nsingletons_95,.95 quantile of number of species with abund = 1 in the sampled feasible set,Numeric
+nsingletons_median,Median number of species with abund = 1 in the sampled feasible set,Numeric
+nsingletons_min,Minimum number of species with abund = 1 in the sampled feasible set,Numeric
+nsingletons_max,Maximum number of species with abund = 1 in the sampled feasible set,Numeric
+nsingletons_2p5,.025 quantile number of species with abund = 1 in the sampled feasible set,Numeric
+nsingletons_97p5,.975 quantile number of species with abund = 1 in the sampled feasible set,Numeric
+skew_95_ratio_2t,2 tailed breadth index for skewness in the sampled feasible set. (.975 quantile - .025 quantile) / (max - min),Numeric
+simpson_95_ratio_2t,2 tailed breadth index for simpson in the sampled feasible set. (.975 quantile - .025 quantile) / (max - min),Numeric
+skew_95_ratio_1t,1 tailed breadth index for skewness in the sampled feasible set. (.95 quantile - min) / (max - min),Numeric
+simpson_95_ratio_1t,1 tailed breadth index for simpson in the sampled feasible set. (max - .05 quantile) / (max - min),Numeric
+shannon_95_ratio_2t,2 tailed breadth index for Shannon in the sampled feasible set. (.975 quantile - .025 quantile) / (max - min),Numeric
+shannon_95_ratio_1t,1 tailed breadth index for Shannon in the sampled feasible set. (max - .05 quantile) / (max - min),Numeric
+mean_po_comparison_95_ratio_1t,NOT USED. Breadth index for proportion off of elements of the sampled feasible set to each other. (.95 quantile - min) / (max - min),Numeric
+nsingletons_95_ratio_1t,1 tailed breadth index for number of species with abund = 1 in the sampled feasible set. (.95 quantile - min) / (max - min),Numeric
+nsingletons_95_ratio_2t,2 tailed breadth index for number of species with abund = 1 in the sampled feasible set. (.975 quantile - .025 quantile) / (max - min),Numeric
+log_nparts,log number of possible SADs with s0 and n0,Numeric
+log_nsamples,log number of unique draws achieved from feasible set,Numeric
+log_s0,log number of species,Numeric
+log_n0,log number of individuals,Numeric
+Dataset,"Name of dataset, properly capitalized and with fia_short and fia_small combined back into FIA",Character
+real_po,Dissimilarity score comparing observed SAD to the central tendency of the feasible set,Numeric
+real_r2,R2 comparing observed SAD to the central tendency of the feasible set,Numeric
+best_po_sim,Which draw from the sampled feasible set is estimated to be the central tendency,Numeric
+sim_pos_from_best,Mean dissimilarity score comparing samples of the feasible set to its central tendency,Numeric
+sim_r2_from_best,R2 comparing samples of the feasible set to its central tendency,Numeric
+sim_r2_from_best_median,Median r2 comparing samples of the feasible set to its central tendency,Numeric
+ncomparisons,"Number of comparisons achieved comparing samples of the feasible set to the central tendency. Usually 3999, but may be smaller for smaller feasible sets.",Numeric
+real_po_percentile,"Percentile score of dissimilarity between observed SAD and the central tendency of the feasible set, compared to dissimilarity scores comparing samples from the feasible set to the central tendency. Defined as % of sampled values LESS THAN OR EQUAL TO observed value.",Numeric
+real_po_percentile_excl,"Percentile score of dissimilarity between observed SAD and the central tendency of the feasible set, compared to dissimilarity scores comparing samples from the feasible set to the central tendency. Defined as % of sampled values LESS THAN observed value.",Numeric
+real_r2_percentile,"Percentile score of r2 between observed SAD and the central tendency of the feasible set, compared to r2 scores comparing samples from the feasible set to the central tendency. Defined as % of sampled values LESS THAN OR EQUAL TO observed value.",Numeric
+real_r2_percentile_excl,"Percentile score of r2 between observed SAD and the central tendency of the feasible set, compared to r2 scores comparing samples from the feasible set to the central tendency. Defined as % of sampled values LESS THAN observed value.",Numeric
+real_po_percentile_mean,Mean of real_po_percentile and real_po_percentile_excl. Used for plotting.,Numeric
+skew_percentile_mean,Mean of skew_percentile and skew_percentile_excl. Used for plotting.,Numeric
+simpson_percentile_mean,Mean of simpson_percentile and simpson_percentile_excl. Used for plotting.,Numeric
+shannon_percentile_mean,Mean of shannon_percentile and shannon_percentile_excl. Used for plotting.,Numeric
+nsingletons_percentile_mean,Mean of nsingletons_percentile and nsingletons_percentile_excl. Used for plotting.,Numeric
+in_fia,Whether or not this community is part of the FIA dataset. ,Logical

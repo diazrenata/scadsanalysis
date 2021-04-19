@@ -1,0 +1,751 @@
+---
+title: "Figures and results for main manuscript"
+author: Renata Diaz
+date: "`r Sys.Date()`"
+output: 
+    github_document:
+       df_print: kable
+       toc: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(drake)
+library(dplyr)
+library(ggplot2)
+library(grid)
+theme_set(theme_bw())
+
+all_di <- read.csv(here::here("analysis", "reports", "submission2", "all_di.csv"), stringsAsFactors = F)
+
+all_ct <-  read.csv(here::here("analysis",  "reports", "submission2","all_ct.csv"), stringsAsFactors = F)
+
+
+all_ct <- all_ct %>%
+  mutate(dat = ifelse(grepl(dat, pattern = "fia"), "fia", dat),
+         dat = ifelse(dat == "misc_abund_short", "misc_abund", dat))
+
+all_di <- all_di %>%
+  mutate(log_nparts = log(gmp:::as.double.bigz(nparts)),
+         log_nsamples = log(nsamples),
+         log_s0 = log(s0),
+         log_n0 = log(n0)) %>%
+  filter(n0 != s0,
+         s0 != 1,
+         !singletons,
+         n0 != (s0 + 1)) %>%
+  mutate(dat = ifelse(grepl(dat, pattern = "fia"), "fia", dat),
+         dat = ifelse(dat == "misc_abund_short", "misc_abund", dat)) %>%
+  mutate(Dataset = dat,
+         Dataset = ifelse(Dataset == "fia", "FIA", Dataset),
+         Dataset = ifelse(Dataset == "bbs", "Breeding Bird Survey", Dataset),
+         Dataset = ifelse(Dataset == "mcdb", "Mammal Communities", Dataset),
+         Dataset = ifelse(Dataset == "gentry", "Gentry", Dataset),
+         Dataset = ifelse(Dataset == "misc_abund", "Misc. Abundance", Dataset)) %>%
+  filter(nparts > 20) %>%
+  left_join(all_ct) 
+
+all_di <- all_di %>%
+  group_by_all() %>%
+  mutate(real_po_percentile_mean = mean(real_po_percentile, real_po_percentile_excl),
+         skew_percentile_mean = mean(skew_percentile, skew_percentile_excl),
+         simpson_percentile_mean = mean(simpson_percentile,simpson_percentile_excl),
+         shannon_percentile_mean = mean(shannon_percentile, shannon_percentile_excl),
+         nsingletons_percentile_mean = mean(nsingletons_percentile, nsingletons_percentile_excl),) %>%
+  ungroup()
+
+all_di <- all_di %>%
+  mutate(in_fia = ifelse(Dataset == "FIA", "FIA", "Other datasets"))
+
+```
+
+# Datasets by S and N (Figure 1)
+
+```{r f1, fig.dim = c(7,5)}
+
+fig1 <- ggplot(all_di, aes(x = s0, y = n0, color = Dataset)) +
+   geom_point(data = filter(all_di, dat == "fia"), alpha = .1) +
+   geom_point(data = filter(all_di, dat != "fia"), alpha = .2) +
+     geom_point(data = filter(all_di, dat == "points for legend"), alpha = 1) +
+
+  theme_bw() +
+  scale_color_viridis_d(end = .9) +
+  ggtitle("Communities by S and N") +
+  xlab("Species richness (S); note log scale") +
+  ylab("Total abundance (N); note log scale") +
+  scale_x_log10() +
+  scale_y_log10() 
+
+
+fig1_with_top = gridExtra::grid.arrange(grobs = list(fig1), 
+top = textGrob("Figure 1"))
+
+# 
+# pdf("figure_1.pdf", bg = "white", paper = "letter", width = 6.5, height = 6.5)
+# gridExtra::grid.arrange(grobs = list(fig1), 
+# top = textGrob("Figure 1"))
+# dev.off()
+
+ggsave("figure_1.pdf", plot = fig1_with_top, device = "pdf", width = 6.5, height = 6.5, units = "in")
+
+
+```
+
+# Illustrations of 95% interval (Figure 2)
+
+To show the 95% interval, we need to load the distribution of shape metric values from the samples from the feasible set for a few communities. See rov_metric.md.
+
+```{r f2, fig.dim = c(7,7)}
+library(drake)
+
+db <- DBI::dbConnect(RSQLite::SQLite(), here::here("analysis", "drake", "drake-cache-net.sqlite"))
+cache <- storr::storr_dbi("datatable", "keystable", db)
+cache$del(key = "lock", namespace = "session")
+
+net_summary <- readd(all_di_summary, cache = cache)
+
+net_summary <- net_summary %>%
+  mutate(log_nparts = log(gmp:::as.double.bigz(nparts)))
+
+example_fs <- readd(fs_s_44_n_13360, cache = cache)
+
+example_di <- readd(di_fs_s_44_n_13360, cache =cache)
+
+example_fs <- example_fs %>%
+  left_join(example_di) %>%
+  left_join(net_summary)
+
+example_fs2 <- readd(fs_s_13_n_315, cache = cache)
+
+example_di2 <- readd(di_fs_s_13_n_315, cache =cache)
+
+example_fs2 <- example_fs2 %>%
+  left_join(example_di2) %>%
+  left_join(net_summary)
+
+
+
+example_fs3 <- readd(fs_s_4_n_34, cache = cache)
+
+example_di3 <- readd(di_fs_s_4_n_34, cache =cache)
+
+example_fs3 <- example_fs3 %>%
+  left_join(example_di3) %>%
+  left_join(net_summary)
+
+
+breadth_plots <- list(
+
+  ggplot(example_fs3, aes(rank, abund, group = sim, color = skew)) +
+    geom_line(alpha = .25) +
+    theme_bw() +
+    scale_color_viridis_c(option = "plasma", end = .8) +
+    ggtitle("Small community", subtitle = paste0("S = ", (example_fs3$s0), "; N = ", (example_fs3$n0[1]))) +
+    theme(legend.position = "right") +
+    xlab("Rank") +
+    ylab("Abundance"),
+
+  ggplot(example_fs3, aes(skew)) +
+  #  geom_density() +
+    geom_histogram(bins = 50) +
+    theme_bw() +
+    geom_vline(xintercept = c(example_fs3$skew_97p5[1], example_fs3$skew_2p5[1]), color = "red") +
+    ggtitle("", subtitle = paste0("Breadth index: ", round((example_fs3$skew_95_ratio_2t[1]), 2))) +
+    xlab("Skewness") +
+    ylab("Count"),
+
+  ggplot(example_fs2, aes(rank, abund, group = sim, color = skew)) +
+    geom_line(alpha = .1) +
+    theme_bw() +
+    scale_color_viridis_c(option = "plasma", end = .8) +
+    ggtitle("Medium community", subtitle = paste0("S = ", (example_fs2$s0), "; N = ", (example_fs2$n0[1]))) +
+    theme(legend.position = "right")+
+    xlab("Rank") +
+    ylab("Abundance") +
+    ylim(0, 200), # Remove 3 sads that make the axes too big to be interpretable
+
+  ggplot(example_fs2, aes(skew)) +
+  #  geom_density() +
+    geom_histogram(bins = 50) +
+    theme_bw() +
+    geom_vline(xintercept = c(example_fs2$skew_97p5[1], example_fs2$skew_2p5[1]), color = "red") +
+    ggtitle("", subtitle =  paste0("Breadth index: ", round((example_fs2$skew_95_ratio_1t[1]), 2)))+
+    xlab("Skewness") +
+    ylab("Count"),
+
+
+  ggplot(example_fs, aes(rank, abund, group = sim, color = skew)) +
+    geom_line(alpha = .1) +
+    theme_bw() +
+    scale_color_viridis_c(option = "plasma", end = .8) +
+    ggtitle("Large community", subtitle = paste0("S = ", (example_fs$s0), "; N = ", (example_fs$n0[1]))) +
+    theme(legend.position = "right") +
+    ylim(0, 4000) + # Remove a very few very very uneven SADs that make the scale too big to be interpretable
+    theme(axis.text.y = element_text(size = 6, angle = 60))+
+    xlab("Rank") +
+    ylab("Abundance"),
+
+  ggplot(example_fs, aes(skew)) +
+   # geom_density() +
+    geom_histogram(bins = 50) +
+    theme_bw() +
+    geom_vline(xintercept = c(example_fs$skew_97p5[1], example_fs$skew_2p5[1]), color = "red") +
+    ggtitle("", subtitle =  paste0("Breadth index: ", round((example_fs$skew_95_ratio_1t[1]), 2)))+
+    xlab("Skewness") +
+    ylab("Count")
+
+)
+
+fig_2 <- gridExtra::grid.arrange(grobs = breadth_plots, ncol = 2, top = textGrob("Figure 2", gp = gpar(fill = "white")))
+
+ggsave("figure_2.pdf", plot = fig_2, device = "pdf", width = 8, height = 8, units = "in")
+
+signif(as.numeric(example_di$nparts), digits = 2)
+(as.numeric(example_di2$nparts))
+as.numeric(example_di3$nparts)
+
+DBI::dbDisconnect(db)
+rm(cache)
+rm(db)
+```
+
+# Dissimilarity (Supplement)
+
+```{r, fig.dim = c(3, 6)}
+plot_percentile_hist <- function(di_df, col_name, plot_name, tails = 2, facetvar = "Dataset", min_s0 = 0) {
+
+  if(tails == 2) {
+    cutoff_percentiles = c(2.5, 97.5)
+    min_nparts = 40
+  } else if (tails== 1) {
+    cutoff_percentiles = c(95)
+    min_nparts = 20
+  }
+
+  di_df <- di_df %>%
+    mutate(response = (di_df[[col_name]]),
+           facetvar = di_df[[facetvar]])
+
+
+  ggplot(filter(di_df, nparts > min_nparts, s0 >= min_s0), aes(response)) +
+    geom_histogram(bins = 40, boundary = 100) +
+    theme_bw() +
+    xlab("") +
+    ylab("") +
+    geom_vline(xintercept = cutoff_percentiles, color = "red") +
+    ggtitle( plot_name) +
+    facet_wrap(vars(facetvar), ncol = 1, scales = "free_y")+
+    theme(plot.title = element_text(size=10))
+
+
+
+}
+
+all_di <- all_di %>%
+  mutate(`Observed \npercentile score` = ifelse(real_po_percentile_excl > 95, "High (> 95)", "Less than 95"))
+
+```
+
+
+
+# Metric histograms by dataset (Figure 3)
+
+```{r f3, fig.dim = c(11,5)}
+
+
+
+fig_3 <- gridExtra::grid.arrange(grobs = list(
+
+  plot_percentile_hist(all_di, "real_po_percentile_mean", "Dissimilarity to the \ncentral tendency", facetvar = "Dataset", tails = 1),
+  plot_percentile_hist(all_di, "nsingletons_percentile_mean", "\nProportion of rare species", facetvar = "Dataset"),
+  plot_percentile_hist(all_di, "skew_percentile_mean", "\nSkewness", facetvar = "Dataset", min_s0 = 3),
+  plot_percentile_hist(all_di, "simpson_percentile_mean", "\nSimpson evenness", facetvar = "Dataset"),
+  plot_percentile_hist(all_di, "shannon_percentile_mean", "\nShannon diversity", facetvar = "Dataset")
+), ncol = 3,
+top = textGrob("Figure 3", gp = gpar(fill = "white")), left = textGrob("Number of communities", rot = 90, gp = gpar(fill = "black")),
+bottom = textGrob("Percentile rank of observed value relative to feasible set"), gp = gpar(fill = "white"))
+
+# 
+# 
+# pdf("figure_3.pdf", bg = "white", paper = "letter", width = 8, height = 4)
+# gridExtra::grid.arrange(grobs = list(fig_3), 
+# top = textGrob("Figure 3"))
+# dev.off()
+
+fig_3
+
+ggsave("figure_3.pdf", plot = fig_3, device = "pdf", width = 8, height = 8, units = "in")
+
+```
+
+# Results table
+
+```{r t1}
+diss_results <- all_di %>%
+  filter(nparts > 20) %>%
+  group_by(Dataset) %>%
+  summarize(high_diss = mean(real_po_percentile_excl > 95),
+            nsites = dplyr::n()) %>%
+  ungroup() %>%
+  mutate(`High dissimilarity` = paste0(signif(100 * high_diss, 2), "%; n = ", nsites)) %>%
+  select(-nsites)
+
+skew_results <- all_di %>%
+  filter(nparts > 40, s0 > 2) %>%
+  group_by(Dataset) %>%
+  summarize(high_skew = mean(skew_percentile_excl > 97.5),
+            low_skew = mean(skew_percentile < 2.5),
+            nsites = dplyr::n()) %>%
+  ungroup() %>%
+  mutate(`High skew` = paste0(signif(100 * high_skew, 2), "%; n = ", nsites),
+         `Low skew` = paste0(signif(100 * low_skew, 2), "%; n = ", nsites)) %>%
+  select(-nsites)
+
+metric_results <- all_di %>%
+  filter(nparts > 40) %>%
+  group_by(Dataset) %>%
+  summarize(high_simpson = mean(simpson_percentile_excl > 97.5),
+            low_simpson = mean(simpson_percentile < 2.5),
+            high_shannon = mean(shannon_percentile_excl > 97.5),
+            low_shannon = mean(shannon_percentile < 2.5),
+            high_nsingletons = mean(nsingletons_percentile_excl > 97.5),
+            low_nsingletons = mean(nsingletons_percentile < 2.5),
+            nsites = dplyr::n()) %>%
+  ungroup() %>%
+  mutate(`High Simpson` = paste0(signif(100 * high_simpson, 2), "%; n = ", nsites),
+         `Low Simpson` = paste0(signif(100 * low_simpson, 2), "%; n = ", nsites),
+         `High Shannon` = paste0(signif(100 * high_shannon, 2), "%; n = ", nsites),
+         `Low Shannon` = paste0(signif(100 * low_shannon, 2), "%; n = ", nsites),
+         `High proportion of rare species` = paste0(signif(100 * high_nsingletons, 2), "%; n = ", nsites),
+         `Low proportion of rare species` = paste0(signif(100 * low_nsingletons, 2), "%; n = ", nsites)) %>%
+  select(-nsites)
+
+all_results <- left_join(diss_results, skew_results) %>%
+  left_join(metric_results)
+
+cols1 <- c("Dataset", "High dissimilarity", "High proportion of rare species", "High skew", "Low Simpson", "Low Shannon")
+
+all_results %>%
+  select(cols1)
+
+
+cols2 <- c("Dataset", "Low proportion of rare species", "Low skew", "High Simpson", "High Shannon")
+
+all_results %>%
+  select(cols2)
+
+```
+
+# Narrowness
+
+```{r, fig.dim = c(3, 6)}
+
+plot_narrowness <- function(di_df, yvar, yvar_name) {
+
+  if(grepl("sim_pos", yvar)) {
+    min_nparts = 20
+    ylabel = "Mean dissimilarity"
+  } else {
+    min_nparts = 40
+    ylabel = "Breadth index"
+  }
+
+  di_df <- di_df %>%
+    mutate(response = (di_df[[yvar]])) %>%
+    filter(nparts > min_nparts,
+           nparts < 10 ^ 50)
+
+
+  ggplot(di_df, aes(nparts, response, color = Dataset)) +
+    geom_point(data = filter(di_df, dat == "fia"), alpha = .1) +
+    geom_point(data = filter(di_df, dat != "fia"), alpha = .1) +
+    geom_point(data = filter(di_df, s0 < 0)) +
+    scale_color_viridis_d(end = .9) +
+    xlab("") +
+    ylab(ylabel) +
+    scale_x_log10() +
+    ggtitle(yvar_name) +
+    theme(legend.position = "none")+
+    theme(plot.title = element_text(size=10))
+}
+
+plot_narrowness_legend <- function(di_df) {
+
+  legend_df <- di_df %>%
+    select(Dataset) %>%
+    distinct() %>%
+    mutate(ymark = dplyr::row_number())
+
+  ggplot(legend_df, aes(1, ymark, color = Dataset)) +
+    geom_label(aes(x = 2, y = ymark, label = Dataset)) +
+    geom_point(size = 4) +
+    scale_color_viridis_d(end = .9) +
+    xlab("") +
+    ylab("") +
+    theme(legend.position = "none") +
+    xlim(1, 3) + theme(
+      panel.grid.major.x = element_blank(),
+      panel.grid.minor.x = element_blank(),
+      panel.grid.major.y = element_blank(),
+      panel.grid.minor.y = element_blank(),
+      axis.text.x = element_blank(),
+      axis.ticks.x = element_blank(),
+      axis.text.y = element_blank(),
+      axis.ticks.y = element_blank()
+    ) +
+    ggtitle("Dataset")
+
+}
+
+```
+
+```{r f4, fig.dim = c(7,4)}
+
+
+
+fig_4 <- gridExtra::grid.arrange(grobs = list(
+  plot_narrowness(all_di, "sim_pos_from_best", "Dissimilarity \nto central tendency") + ylab("Mean dissimilarity") + theme(legend.position = "bottom", legend.direction = "vertical" , legend.margin = margin(b = .25, r = 0, t = 0, l = 0, unit = "in")),
+  gridExtra::grid.arrange(grobs = list(
+    plot_narrowness(all_di, "skew_95_ratio_2t", "\nSkewness"),
+    plot_narrowness(all_di, "simpson_95_ratio_2t", "\nSimpson evenness")+ ylab(""),
+    plot_narrowness(all_di, "nsingletons_95_ratio_2t", "\nProportion of rare species"),
+       plot_narrowness(all_di, "shannon_95_ratio_2t", "\nShannon diversity") + ylab("")
+  ), ncol = 2)), ncol = 2, widths = c( 2, 4), bottom = textGrob("Number of elements in the feasible set"), top = textGrob("Figure 4"))
+
+
+fig_4
+# 
+# pdf("figure_4.pdf", bg = "white", paper = "letter", width = 8, height = 5)
+# fig_4
+# dev.set(dev.next())
+# while (!is.null(dev.list()))  dev.off()
+
+ggsave("figure_4.pdf", plot = fig_4, device = "pdf", width = 8, height = 5, units = "in")
+```
+
+```{r}
+
+plot_narrowness_hist <- function(di_df, col_name, plot_name, facetvar = "Dataset", min_s0 = 0) {
+
+  if(grepl("sim_pos", col_name)) {
+    xvarname = "Mean dissimilarity"
+    min_nparts = 40
+  } else {
+    min_nparts = 20
+    xvarname = "Breadth index"
+  }
+
+  di_df <- di_df %>%
+    mutate(response = (di_df[[col_name]]),
+           facetvar = di_df[[facetvar]])
+
+
+  ggplot(filter(di_df, nparts > min_nparts, s0 >= min_s0), aes(response)) +
+    geom_histogram(bins = 40, boundary = 100) +
+    theme_bw() +
+    ylab("") +
+    xlab(xvarname) +
+    ggtitle( plot_name) +
+    facet_wrap(vars(facetvar), ncol = 1, scales = "free_y")+
+    theme(plot.title = element_text(size=10))
+
+}
+
+```
+
+
+
+# Very small communities
+
+```{r f6, fig.dim = c(6,8)}
+
+all_di <- all_di %>%
+  mutate( `Number of elements` = ifelse(nparts < 2000, "Less than 2000", "More than 2000"))
+diss_results <- all_di %>%
+  filter(nparts > 20) %>%
+  group_by(Dataset,  `Number of elements` ) %>%
+  summarize(high_diss = mean(real_po_percentile_excl > 95),
+            nsites = dplyr::n()) %>%
+  ungroup() %>%
+  mutate(`High dissimilarity` = paste0(signif(100 * high_diss, 2), "%; n = ", nsites)) %>%
+  select(-nsites)
+
+skew_results <- all_di %>%
+  filter(nparts > 40, s0 > 2) %>%
+  group_by(Dataset,  `Number of elements` ) %>%
+  summarize(high_skew = mean(skew_percentile_excl > 97.5),
+            low_skew = mean(skew_percentile < 2.5),
+            nsites = dplyr::n()) %>%
+  ungroup() %>%
+  mutate(`High skew` = paste0(signif(100 * high_skew, 2), "%; n = ", nsites),
+         `Low skew` = paste0(signif(100 * low_skew, 2), "%; n = ", nsites)) %>%
+  select(-nsites)
+
+metric_results <- all_di %>%
+  filter(nparts > 40) %>%
+  group_by(Dataset,  `Number of elements` ) %>%
+  summarize(high_simpson = mean(simpson_percentile_excl > 97.5),
+            low_simpson = mean(simpson_percentile < 2.5),
+            high_shannon = mean(shannon_percentile_excl > 97.5),
+            low_shannon = mean(shannon_percentile < 2.5),
+            high_nsingletons = mean(nsingletons_percentile_excl > 97.5),
+            low_nsingletons = mean(nsingletons_percentile < 2.5),
+            nsites = dplyr::n()) %>%
+  ungroup() %>%
+  mutate(`High Simpson` = paste0(signif(100 * high_simpson, 2), "%; n = ", nsites),
+         `Low Simpson` = paste0(signif(100 * low_simpson, 2), "%; n = ", nsites),
+         `High Shannon` = paste0(signif(100 * high_shannon, 2), "%; n = ", nsites),
+         `Low Shannon` = paste0(signif(100 * low_shannon, 2), "%; n = ", nsites),
+         `High proportion of rare species` = paste0(signif(100 * high_nsingletons, 2), "%; n = ", nsites),
+         `Low proportion of rare species` = paste0(signif(100 * low_nsingletons, 2), "%; n = ", nsites)) %>%
+  select(-nsites)
+
+all_results <- left_join(diss_results, skew_results) %>%
+  left_join(metric_results)
+
+cols1 <- c("Dataset", "Number of elements", "High dissimilarity", "High proportion of rare species", "High skew", "Low Simpson", "Low Shannon")
+
+all_results %>%
+  select(cols1)
+
+all_di %>%
+  filter(dat %in% c("fia", "mcdb", "misc_abund")) %>%
+  group_by(Dataset) %>%
+  summarize(`Proportion with nparts < 2000` = mean(nparts < 2000))
+
+nhist <- plot_narrowness_hist(filter(all_di, dat %in% c("fia", "mcdb", "misc_abund")), "skew_95_ratio_2t", "Skewness") +
+  facet_wrap(vars(`Number of elements`, Dataset), scales = "free_y", nrow = 2, ncol = 3) +
+  xlab("Breadth index") +
+  ylab("Number of communities") +
+  ggtitle("Skewness")
+
+phist <- plot_percentile_hist(filter(all_di, dat %in% c("fia", "mcdb", "misc_abund")), "skew_percentile_mean", "Skewness") +
+  facet_wrap(vars(`Number of elements`, Dataset), scales = "free_y", nrow = 2, ncol = 3) +
+  xlab("Percentile rank of observed value relative to feasible set") +
+  ylab("Number of communities") +
+  ggtitle("Skewness")
+
+fig_6 <- gridExtra::grid.arrange(grobs = list(nhist, phist), nrow = 2, top = textGrob("Figure 6"))
+
+fig_6
+
+ggsave("figure_6.pdf", plot = fig_6, device = "pdf", width = 6, height = 8, units = "in")
+
+```
+
+# Resampling
+
+```{r}
+
+
+
+
+all_di_with_resamples <- read.csv(here::here("analysis", "reports", "submission2", "all_di.csv"))
+
+jk_di_full <- read.csv(here::here("analysis", "reports", "submission2", "all_di_jk.csv"))
+
+all_ct_with_resamples <- read.csv(here::here("analysis", "reports", "submission2", "all_ct.csv"))
+
+jk_ct <- read.csv(here::here("analysis", "reports", "submission2", "all_ct_jk.csv"))
+
+jk_di_full <- left_join(jk_di_full, jk_ct)
+
+all_di_with_resamples <- left_join(all_di_with_resamples, all_ct_with_resamples)
+
+jk_di <- jk_di_full %>%
+  group_by_all() %>%
+  mutate(site_source = unlist(strsplit(site, "_")[[1]][[1]])) %>%
+  ungroup() %>%
+  select(dat, site, site_source, s0, n0, skew_percentile_excl,skew_percentile, simpson_percentile, simpson_percentile_excl, shannon_percentile, shannon_percentile_excl, nsingletons_percentile, nsingletons_percentile_excl, real_po_percentile, real_po_percentile_excl, sim_pos_from_best, skew_95_ratio_2t, simpson_95_ratio_2t, shannon_95_ratio_2t, nparts)
+
+skewcols <- colnames(jk_di)[ grepl("skew", colnames(jk_di))]
+
+jk_di[ which(jk_di$s0 < 3), skewcols] <- NA
+
+jk_di_means <- jk_di %>%
+  filter(n0 != s0,
+         s0 != 1,
+         n0 != (s0 + 1)) %>%
+  group_by(dat, site_source) %>%
+  mutate(njks = dplyr::n(),
+         njks_skew = sum(!is.na(skew_percentile)))%>%
+  summarise_at(vars(-group_cols(), -site), mean, na.rm =  T) %>%
+  mutate(resampling = "Subsampling") %>%
+  mutate(site = as.numeric(site_source)) %>%
+#  select(-site_source) %>%
+  mutate(dat = ifelse(grepl(dat, pattern = "fia"), "fia", dat),
+         dat = ifelse(dat == "misc_abund_short", "misc_abund", dat)) %>%
+  mutate(Dataset = dat,
+         Dataset = ifelse(Dataset == "fia", "FIA", Dataset),
+         Dataset = ifelse(Dataset == "bbs", "Breeding Bird Survey", Dataset),
+         Dataset = ifelse(Dataset == "mcdb", "Mammal Communities", Dataset),
+         Dataset = ifelse(Dataset == "gentry", "Gentry", Dataset),
+         Dataset = ifelse(Dataset == "misc_abund", "Misc. Abundance", Dataset)) %>%
+  filter(nparts > 20,
+         njks == 10) %>%
+  ungroup()
+
+jk_di[ which(jk_di$njks_skew < 10), skewcols] <- NA
+
+
+skewcols <- colnames(all_di_with_resamples[ which(grepl("skew", colnames(all_di_with_resamples)))])
+
+all_di_with_resamples[ which(all_di_with_resamples$s0 < 3), skewcols] <- NA
+
+all_di_with_resamples <- all_di_with_resamples %>%
+  mutate(log_nparts = log(gmp:::as.double.bigz(nparts)),
+         log_nsamples = log(nsamples),
+         log_s0 = log(s0),
+         log_n0 = log(n0)) %>%
+  filter(n0 != s0,
+         s0 != 1,
+       #  !singletons,
+         n0 != (s0 + 1)) %>%
+  mutate(dat = ifelse(grepl(dat, pattern = "fia"), "fia", dat),
+         dat = ifelse(dat == "misc_abund_short", "misc_abund", dat)) %>%
+  mutate(Dataset = dat,
+         Dataset = ifelse(Dataset == "fia", "FIA", Dataset),
+         Dataset = ifelse(Dataset == "bbs", "Breeding Bird Survey", Dataset),
+         Dataset = ifelse(Dataset == "mcdb", "Mammal Communities", Dataset),
+         Dataset = ifelse(Dataset == "gentry", "Gentry", Dataset),
+         Dataset = ifelse(Dataset == "misc_abund", "Misc. Abundance", Dataset)) %>%
+  filter(nparts > 20) %>%
+  mutate(resampling = ifelse(singletons, "Rare species", "Raw")) %>%
+  bind_rows(jk_di_means)
+
+metric_rs_results <- all_di_with_resamples %>%
+  group_by(Dataset, resampling) %>%
+  summarize(
+    skew_high = mean(skew_percentile_excl > 97.5, na.rm = T),
+    skew_low = mean(skew_percentile < 2.5, na.rm = T),
+    even_high = mean(simpson_percentile_excl > 97.5, na.rm = T),
+    even_low = mean(simpson_percentile < 2.5, na.rm = T),
+    shannon_high = mean(shannon_percentile_excl > 97.5, na.rm = T),
+    shannon_low = mean(shannon_percentile < 2.5, na.rm = T),
+    nsingletons_high = mean(nsingletons_percentile_excl > 97.5, na.rm = T),
+    nsingletons_low = mean(nsingletons_percentile < 2.5, na.rm = T),
+    nskew = sum(!is.na(skew_percentile)),
+    nother = dplyr::n()
+  ) %>%
+  ungroup()
+
+
+diss_rs_results <- all_di_with_resamples %>%
+  filter(nparts > 40) %>%
+  group_by(Dataset, resampling) %>%
+  summarize(dissimilarity_high = mean(real_po_percentile_excl > 95, na.rm = T),
+            ndiss = sum(!is.na(real_po_percentile_excl))) %>%
+  ungroup()
+
+
+rs_results <- left_join(metric_rs_results, diss_rs_results)
+
+#metric_cols <- colnames(rs_results [ grepl("_", colnames(rs_results))])
+
+as.perc <- function(x) {
+  return((signif(100 * x, digits = 2)))
+}
+
+rs_results_desc <- rs_results %>%
+  mutate(`High dissimilarity` = paste0(as.perc(dissimilarity_high), "%; n =", ndiss),
+         `High proportion of rare species` = paste0(as.perc(nsingletons_high), "%; n =", nother),
+         `High skew` = paste0(as.perc(skew_high), "%; n = ", nskew),
+         `Low Simpson` = paste0(as.perc(even_low), "%; n = ", nother),
+         `Low Shannon` = paste0(as.perc(shannon_low), "%; n = ", nother),
+         `Low proportion of rare species` = paste0(as.perc(nsingletons_low), "%; n =", nother),
+         `Low skew` = paste0(as.perc(skew_low), "%; n = ", nskew),
+         `High Simpson` = paste0(as.perc(even_high), "%; n = ", nother),
+         `High Shannon` = paste0(as.perc(shannon_high), "%; n = ", nother),
+         `Resampling scheme` = ordered(resampling, levels = c("Raw", "Subsampling", "Rare species"))) %>%
+  arrange(Dataset, `Resampling scheme`)
+
+
+cols1 <- c("Dataset", "Resampling scheme", "High dissimilarity", "High proportion of rare species", "High skew", "Low Simpson", "Low Shannon")
+
+cols2 <- c("Dataset","Resampling scheme",  "Low proportion of rare species", "Low skew", "High Simpson", "High Shannon")
+
+rs_results_desc %>%
+  select(cols1)
+
+
+rs_results_desc %>%
+  select(cols2)
+```
+```{r f5, fig.dim = c(6,4)}
+rs_results_long <- rs_results %>%
+  tidyr::pivot_longer((-c("Dataset","resampling")), names_to = "metric", values_to = "value") %>%
+  filter(grepl("_", metric)) %>%
+  mutate(ometric = ordered(metric, levels = c("skew_high", "skew_low", "even_low", "even_high", "shannon_low", "shannon_high", "nsingletons_high", "nsingletons_low", "dissimilarity_high")),
+         ometric2 = ordered(metric, levels = c("dissimilarity_high",  "nsingletons_high", "skew_high",  "even_low",  "shannon_low",  "nsingletons_low","skew_low","even_high","shannon_high"))) %>%
+  mutate(weird_dir = as.numeric(ometric2) > 5,
+         percentile_cutoff = ifelse(grepl("diss", metric), .05, .025),`Resampling scheme` = ordered(resampling, levels = c("Raw", "Subsampling", "Rare species")))
+
+metric_names <- rs_results_long %>%
+  select(ometric2) %>%
+  distinct() %>%
+  arrange(ometric2) %>%
+  mutate(metric_desc =(c("High dissimilarity", "High proportion \nof rare species", "High skew", "Low Simpson", "Low Shannon", "Low proportion \nof rare species", "Low skew", "High Simpson", "High Shannon"))) %>%
+  mutate(metric_desc = ordered(metric_desc))
+
+
+rs_results_long <- left_join(rs_results_long, metric_names)
+#
+# ggplot(filter(rs_results_long, !weird_dir), aes(metric_desc, value, color = `Resampling scheme`)) +
+#   geom_point() +
+#   facet_wrap(vars(Dataset), scales = "fixed", ncol = 1) +
+#   geom_point(aes(y = percentile_cutoff), shape = 95, color = "black", size = 10) +
+#   scale_color_viridis_d(end = .8) +
+#   ylab("Proportion of extreme observed values") +
+#   xlab("")
+
+fig_5 <- gridExtra::grid.arrange(grobs = list(
+  ggplot(filter(rs_results_long, !grepl("Misc", Dataset), !weird_dir), aes(metric_desc, value, color = `Resampling scheme`)) +
+  geom_point() +
+  facet_wrap(vars(Dataset), scales = "fixed", ncol =2) +
+  geom_point(aes(y = percentile_cutoff), shape = 95, color = "black", size = 10) +
+  scale_color_viridis_d(end = .8) +
+  ylab("Proportion of extreme observed values") +ylim(0, .7) +
+  xlab("") + theme(legend.position = "none", axis.text.x = element_text(angle = 90)) ,
+  ggplot(filter(rs_results_long, grepl("Misc", Dataset), !weird_dir), aes(metric_desc, value, color = `Resampling scheme`)) +
+  geom_point() +
+  facet_wrap(vars(Dataset), scales = "fixed", ncol = 2) +
+  geom_point(aes(y = percentile_cutoff), shape = 95, color = "black", size = 10) +
+  scale_color_viridis_d(end = .8) +
+  ylab("") +
+  xlab("") + ylim(0, .7) +
+  theme(legend.position = "bottom", legend.direction = "vertical" , legend.margin = margin(b = .3, r = 0, t = 0, l = 0, unit = "in"), axis.text.x = element_text(angle = 90))), ncol = 2, widths = c( 4,2), bottom = textGrob("Metric"), top = textGrob("Figure 5"))
+
+#fig_5
+
+
+
+ggsave("figure_5.pdf", device = "pdf", plot = fig_5, width = 6, height = 5, units = "in")
+# 
+# pdf("figure_5.pdf", bg = "white", paper = "letter", width = 6, height = 5)
+# fig_5
+# dev.set(dev.next())
+# while (!is.null(dev.list()))  dev.off()
+# 
+
+# 
+# gridExtra::grid.arrange(grobs = list(
+#   ggplot(filter(rs_results_long, !grepl("Misc", Dataset), weird_dir), aes(metric_desc, value, color = `Resampling scheme`)) +
+#   geom_point() +
+#   facet_wrap(vars(Dataset), scales = "fixed", ncol =2) +
+#   geom_point(aes(y = percentile_cutoff), shape = 95, color = "black", size = 10) +
+#   scale_color_viridis_d(end = .8) +
+#   ylab("Proportion of extreme observed values") +ylim(0, .7) +
+#   xlab("") + theme(legend.position = "none", axis.text.x = element_text(angle = 90)) ,
+#   ggplot(filter(rs_results_long, grepl("Misc", Dataset), weird_dir), aes(metric_desc, value, color = `Resampling scheme`)) +
+#   geom_point() +
+#   facet_wrap(vars(Dataset), scales = "fixed", ncol = 2) +
+#   geom_point(aes(y = percentile_cutoff), shape = 95, color = "black", size = 10) +
+#   scale_color_viridis_d(end = .8) +
+#   ylab("") +
+#   xlab("") + ylim(0, .7) +
+#   theme(legend.position = "bottom", legend.direction = "vertical" , legend.margin = margin(b = .3, r = 0, t = 0, l = 0, unit = "in"), axis.text.x = element_text(angle = 90))), ncol = 2, widths = c( 4,2), bottom = textGrob("Metric"))
+
+```
+
+
+

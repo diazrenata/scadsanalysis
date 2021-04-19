@@ -7,6 +7,7 @@ library(scadsanalysis)
 
 all_di <- list()
 datasets <- c("bbs",  "gentry", "fia_short", "mcdb", "misc_abund_short", "fia_small")
+#datasets <- c( "gentry", "mcdb", "misc_abund_short", "bbs")
 
 
 
@@ -39,4 +40,4 @@ for(i in 1:length(datasets)) {
 
 all_di <- bind_rows(all_di)
 
-write.csv(all_di, here::here("analysis", "reports", "all_di.csv"), row.names = F)
+write.csv(all_di, here::here("analysis", "reports", "submission2", "all_di.csv"), row.names = F)

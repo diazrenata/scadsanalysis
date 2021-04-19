@@ -1,0 +1,187 @@
+---
+title: "Jackknife"
+author: Renata Diaz
+date: "`r Sys.Date()`"
+output: 
+    github_document:
+       df_print: kable
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(drake)
+library(dplyr)
+library(ggplot2)
+library(grid)
+theme_set(theme_bw())
+library(scadsanalysis)
+
+```
+```{r}
+mcdb <- load_dataset("mcdb")
+
+mcdb_sv <- get_statevars(mcdb)
+
+a_site <- filter(mcdb, site == 1270)
+```
+
+Using community 1270 from MCDB because with S = 8, N = 542 it's not miniscule but it's small enough that things will run easily locally. Results might be on the small end.
+
+```{r}
+
+```
+```{r, echo = T}
+
+make_ind_pool_species <- function(a_vect) {
+  
+  rep(a_vect[1], times = a_vect[2])
+  
+}
+
+sample_ind_pool <- function(ind_pool, nind_to_sample) {
+ species = sample(ind_pool, size = nind_to_sample, replace = FALSE)
+ 
+ return(data.frame(species = species))
+}
+
+jacknife <- function(site_df, prop_of_ind = .6, nsims = 10) {
+  
+  nind <- sum(site_df$abund)
+  
+  nind_to_sample <- ceiling(prop_of_ind * nind)
+  
+  nspp <- nrow(site_df)
+  
+  ind_pool_mat <- as.matrix(dplyr::select(site_df, rank, abund))
+
+  ind_pool <- unlist(apply(ind_pool_mat, MARGIN = 1, FUN = make_ind_pool_species))
+
+  sampled_ind <- replicate(n = nsims, expr = sample_ind_pool(ind_pool, nind_to_sample), simplify = F)
+  
+  sampled_ind = unique(sampled_ind)
+  
+# 
+#   sampled_ind <- rmultinom(n = nsims, size = nind_to_sample, prob = site_df$abund)
+  
+  sampled_ind_df <- dplyr::bind_rows(sampled_ind, .id = "sim") %>%
+    dplyr::group_by(sim, species) %>%
+    dplyr::summarize(abund = dplyr::n()) %>%
+    dplyr::ungroup() %>%
+    dplyr::filter(abund > 0) %>%
+    dplyr::select(-species) %>%
+    dplyr::group_by(sim) %>%
+    dplyr::arrange(abund) %>%
+    dplyr::mutate(rank = dplyr::row_number()) %>%
+    dplyr::ungroup() %>%
+    dplyr::arrange(sim, rank)
+
+  site_df_identifiers <- site_df %>%
+    select(dat, site, singletons, source) %>%
+    distinct()
+  
+  sampled_ind_df <- sampled_ind_df %>%
+    cbind(site_df_identifiers) %>%
+    dplyr::mutate(site = paste0(site, "_jacknife_", sim)) %>%
+    dplyr::mutate(sim = -99)
+  
+  return(sampled_ind_df)
+  
+  }
+
+set.seed(1977)
+
+a_site_jk <- jacknife(a_site)
+
+```
+
+```{r, fig.dim= c(4,3)}
+
+ggplot(a_site, aes(rank, abund)) +
+  geom_point() +
+  geom_line() +
+  ggtitle("Actual")
+
+
+ggplot(a_site_jk, aes(rank, abund, group = site)) +
+  geom_line(alpha = .3) +
+  geom_point(alpha = .3) +
+  ggtitle("Resamples")
+
+```
+```{r}
+
+jacknife_whole_dataset <- function(dataset, prop_of_ind = .6, nsims = 10) {
+  
+  sites_list <- unique(dataset$site)
+  
+  all_sites <- lapply(sites_list, FUN = function(which_site, whole_dataset) return(dplyr::filter(whole_dataset, site == which_site)), whole_dataset = dataset)
+  
+  all_jacknifes <- lapply(all_sites, FUN = jacknife, prop_of_ind = prop_of_ind, nsims = nsims)
+  
+  all_jacknifes <- dplyr::bind_rows(all_jacknifes)
+  
+  return(all_jacknifes)
+}
+
+mcdb_jacknifes <- jacknife_whole_dataset(mcdb)
+
+write.csv(mcdb_jacknifes, here::here("analysis", "rev_prototyping", "jacknifed_datasets", "mcdb_jk.csv"), row.names = F)
+
+misc <- load_dataset("misc_abund_short")
+
+misc_jacknifes <- jacknife_whole_dataset(misc)
+
+write.csv(misc_jacknifes, here::here("analysis", "rev_prototyping", "jacknifed_datasets", "misc_jk.csv"), row.names = F)
+
+
+bbs <- load_dataset("bbs")
+
+bbs_jacknifes <- jacknife_whole_dataset(bbs)
+
+write.csv(bbs_jacknifes, here::here("analysis", "rev_prototyping", "jacknifed_datasets", "bbs_jk.csv"), row.names = F)
+
+
+gentry <- load_dataset("gentry")
+
+gentry_jacknifes <- jacknife_whole_dataset(gentry)
+
+write.csv(gentry_jacknifes, here::here("analysis", "rev_prototyping", "jacknifed_datasets", "gentry_jk.csv"), row.names = F)
+
+
+fia <- load_dataset("fia_short")
+
+fia_sites <- list_sites("fia_short")
+
+fia_to_jk <- sample(fia_sites$site, size = nrow(fia_sites), replace = F)
+
+fia_to_jk <- fia_to_jk[1:1000]
+
+fia <- filter(fia, site %in% fia_to_jk)
+
+fia_jacknives <-jacknife_whole_dataset(fia)
+
+write.csv(fia_jacknives, here::here("analysis", "rev_prototyping", "jacknifed_datasets", "fia_jk.csv"), row.names = F)
+
+
+fia_small <- load_dataset("fia_small")
+
+fia_small_sites <- list_sites("fia_small")
+
+fia_small_to_jk <- sample(fia_small_sites$site, size = nrow(fia_small_sites), replace = F)
+
+fia_small_to_jk <- fia_small_to_jk[1:1000]
+
+
+
+fia_small <- filter(fia_small, site %in% fia_small_to_jk)
+
+
+fia_small_jacknives <-jacknife_whole_dataset(fia_small)
+
+write.csv(fia_small_jacknives, here::here("analysis", "rev_prototyping", "jacknifed_datasets", "fia_small_jk.csv"), row.names = F)
+
+
+
+
+
+```

@@ -26,13 +26,21 @@ dat_plan <- drake_plan(
   fs = target(sample_fs_wrapper(dataset = dat_s_dat_fia_small, site_name = s, singletonsyn = singletons, n_samples = ndraws, p_table = tall_p, seed = !!sample.int(10^6, size = 1)),
                    transform = cross(s = !!sites_list$site,
                                      singletons = !!c(TRUE, FALSE))),
-  di = target(add_dis(fs),
-              transform = map(fs)),
+ # fs_diffs = target(get_fs_diffs(fs),
+  #                  transform = map(fs)),
+  fs_pc = target(compare_props_fs(fs),
+                 transform = map(fs)),
+  di = target(add_dis(fs, props_comparison = fs_pc),
+              transform = map(fs, fs_pc)),
   di_obs = target(pull_di(di),
                   transform = map(di)),
   di_obs_s = target(dplyr::bind_rows(di_obs),
                     transform = combine(di_obs, .by = singletons)),
-  all_di_obs = target(dplyr::bind_rows(di_obs_s_TRUE, di_obs_s_FALSE))
+  all_di_obs = target(dplyr::bind_rows(di_obs_s_TRUE, di_obs_s_FALSE)),
+ cts = target(po_central_tendency(fs, fs_pc),
+              transform = map(fs, fs_pc)),
+ all_cts = target(dplyr::bind_rows(cts),
+                  transform = combine(cts))
 )
 
 all <- dat_plan
@@ -42,35 +50,32 @@ db <- DBI::dbConnect(RSQLite::SQLite(), here::here("analysis", "drake", "drake-c
 cache <- storr::storr_dbi("datatable", "keystable", db)
 cache$del(key = "lock", namespace = "session")
 
-## View the graph of the plan
-if (interactive())
-{
-  config <- drake_config(all, cache = cache)
-  sankey_drake_graph(config, build_times = "none")  # requires "networkD3" package
-  vis_drake_graph(config, build_times = "none")     # requires "visNetwork" package
-}
-
 ## Run the pipeline
 nodename <- Sys.info()["nodename"]
-if(grepl("ufhpc", nodename)) {
-  print("I know I am on the HiPerGator!")
-  library(clustermq)
-  options(clustermq.scheduler = "slurm", clustermq.template = here::here("slurm_clustermq.tmpl"))
-  ## Run the pipeline parallelized for HiPerGator
-  make(all,
-       force = TRUE,
-       cache = cache,
-       cache_log_file = here::here("analysis", "drake", "cache_log_fia_small.txt"),
-       verbose = 2,
-       parallelism = "clustermq",
-       jobs = 20,
-       caching = "master", memory_strategy = "autoclean") # Important for DBI caches!
-} else {
-  library(clustermq)
-  options(clustermq.scheduler = "multicore")
+# if(grepl("ufhpc", nodename)) {
+#   print("I know I am on the HiPerGator!")
+#   library(clustermq)
+#   options(clustermq.scheduler = "slurm", clustermq.template = here::here("slurm_clustermq.tmpl"))
+#   ## Run the pipeline parallelized for HiPerGator
+#   make(all,
+#        force = TRUE,
+#        cache = cache,
+#        cache_log_file = here::here("analysis", "drake", "cache_log_fia_small.txt"),
+#        verbose = 1,
+#        parallelism = "clustermq",
+#        jobs = 25,
+#        caching = "master",
+#        memory_strategy = "autoclean",
+#        garbage_collection = TRUE) # Important for DBI caches!
+# } else {
+#   library(clustermq)
+#   options(clustermq.scheduler = "multicore")
   # Run the pipeline on multiple local cores
-  system.time(make(all, cache = cache, cache_log_file = here::here("analysis", "drake", "cache_log_fia_small.txt"), parallelism = "clustermq", jobs = 2))
-}
+  system.time(make(all, cache = cache, cache_log_file = here::here("analysis", "drake", "cache_log_fia_small.txt"), verbose = 1, memory_strategy = "autoclean"))
+# }
+
+#system.time(make(all, cache = cache, cache_log_file = here::here("analysis", "drake", "cache_log_fia_small.txt")))
+
 
 DBI::dbDisconnect(db)
 rm(cache)

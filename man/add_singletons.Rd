@@ -8,6 +8,8 @@ add_singletons(dat, use_max = F)
 }
 \arguments{
 \item{dat}{dataframe with columns \code{rank}, \code{abund}, \code{site}, \code{dat}, \code{singletons}, \code{sim}, and \code{source}. This is the format you will get if you use \code{load_dataset} and filter to a single site}
+
+\item{use_max}{use estimated richness + standard error? Defaults F, but T is used in pipelines.}
 }
 \value{
 dataframe with additional records for estimated rare species

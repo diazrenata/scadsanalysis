@@ -1,0 +1,215 @@
+---
+title: "Effects of rarefaction"
+author: Renata Diaz
+date: "`r Sys.Date()`"
+output: 
+    github_document:
+       df_print: kable
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(drake)
+library(dplyr)
+library(ggplot2)
+library(scadsanalysis)
+
+knitr::opts_chunk$set(fig.width=4, fig.height=3, warning = FALSE, message = FALSE) 
+
+theme_set(theme_bw())
+
+all_di <- read.csv(here::here("analysis", "rev_prototyping", "all_di.csv"), stringsAsFactors = F)
+
+all_di <- all_di %>%
+  mutate(log_nparts = log(gmp:::as.double.bigz(nparts)),
+         log_nsamples = log(nsamples),
+         log_s0 = log(s0),
+         log_n0 = log(n0)) %>%
+  filter(n0 != s0,
+         s0 != 1,
+         n0 != (s0 + 1)) %>%
+  mutate(dat = ifelse(grepl(dat, pattern = "fia"), "fia", dat),
+         dat = ifelse(dat == "misc_abund_short", "misc_abund", dat)) %>%
+  mutate(Dataset = dat,
+         Dataset = ifelse(Dataset == "fia", "FIA", Dataset),
+         Dataset = ifelse(Dataset == "bbs", "Breeding Bird Survey", Dataset),
+         Dataset = ifelse(Dataset == "mcdb", "Mammal Communities", Dataset),
+         Dataset = ifelse(Dataset == "gentry", "Gentry", Dataset),
+         Dataset = ifelse(Dataset == "misc_abund", "Misc. Abundance", Dataset))
+```
+
+It is often not possible to exhaustively sample all the species and individuals present in a real system. Therefore empirical observations of SADs may be missing species and individuals that are part of the true distribution. 
+
+We explored whether our results change if we adjust for for the species and individuals that might be missed via sampling. We used species richness estimators to estimate the true number of species for a community given the observed SAD, and re-ran our analytical pipeline on SADs adjusted to match the estimated richness.
+
+### Adjusting for rarefaction
+
+For an observed SAD, we take the estimated species richness from the bias-corrected Chao and ACE estimators (as implemented in `vegan::estimateR`) as the estimated "true" number of species in the community. To err on the side of overestimating the number of species missed via sampling, we used the estimated mean + 1 standard deviation as the estimate for each estimator. We take the mean of these two estimates, rounded up to the next integer, as the estimated true richness for that community. We adjusted the raw SAD to match this estimated richness by adding the appropriate number of species with an abundance of 1 individual each. We reason that species that are missed during sampling are likely to be rare, so adding them as rare species is appropriate. This also allows us to explore the effects of rarefaction while making the smallest possible changes to S and N. 
+
+```{r show an observed vector and adjusted for singletons}
+
+dat <- load_dataset("mcdb")
+dat <- dat %>%
+  dplyr::filter(site == "1010") 
+
+dat$rank <- nrow(dat):1
+
+dats <- add_singletons(dat, use_max = T) 
+
+dats$rank <- nrow(dats):1
+
+dat_combined <- bind_rows(dat, dats) %>%
+  mutate(adjusted = ifelse(singletons, "adjustment", "raw"))
+
+ggplot(dat_combined, aes(x = rank, y = abund, color =adjusted)) +
+  geom_point() +
+  geom_point(data = filter(dat_combined, !singletons)) + 
+  geom_line() +
+  theme_bw() +
+  scale_color_viridis_d(end = .8, direction = -1) +
+  theme(legend.position = "top") +
+  ggtitle("Raw and adjusted SADs")
+
+```
+
+The green points are the species we added to match the estimated species richness for the raw SAD (purple points).
+
+
+### Adjusted vs. raw results
+
+```{r skew}
+
+adjusted_comparison <- all_di %>%
+  select(dat, site, singletons, s0, n0, skew_percentile_excl, simpson_percentile, shannon_percentile, nsingletons_percentile_excl, nsingletons_percentile, mean_po_comparison_percentile, log_nparts) %>%
+  tidyr::pivot_wider(id_cols = c(dat, site), names_from = singletons, values_from = c(s0, n0, skew_percentile_excl, simpson_percentile, shannon_percentile, nsingletons_percentile_excl, nsingletons_percentile, mean_po_comparison_percentile, log_nparts))
+
+
+
+overall_results <- adjusted_comparison %>%
+  filter(s0_FALSE > 2, log_nparts_TRUE > log(20), log_nparts_FALSE > log(20)) %>%
+  mutate(high_skew_raw = skew_percentile_excl_FALSE > 95,
+         high_skew_adjusted = skew_percentile_excl_TRUE > 95,
+         low_even_raw = simpson_percentile_FALSE < 5,
+         low_even_adjusted = simpson_percentile_TRUE < 5,
+         low_shannon_raw = shannon_percentile_FALSE <5,
+         low_shannon_adjusted = shannon_percentile_TRUE < 5,
+         high_singletons_raw = nsingletons_percentile_excl_FALSE > 95,
+         high_singletons_adjusted = nsingletons_percentile_excl_TRUE > 95,
+         low_singletons_raw = nsingletons_percentile_FALSE < 5,
+         low_singletons_adjusted = nsingletons_percentile_TRUE < 5,
+         high_po_raw = mean_po_comparison_percentile_FALSE > 95,
+         high_po_adjusted = mean_po_comparison_percentile_TRUE > 95)
+
+summary_vars <- colnames(overall_results)[ c(which(grepl("raw", colnames(overall_results))), which(grepl("adjusted", colnames(overall_results))))]
+
+overall_results <- overall_results %>%
+  group_by(dat) %>%
+  summarize_at(summary_vars, mean)
+
+overall_results_long <- overall_results %>%
+  tidyr::pivot_longer(-dat, names_to = "varname", values_to = "proportion") %>%
+  group_by_all() %>%
+  mutate(direction = unlist(strsplit(varname, "_"))[[1]],
+         metric = unlist(strsplit(varname, "_"))[[2]],
+         adjusted = unlist(strsplit(varname, "_"))[[3]]) %>%
+  ungroup() %>%
+  mutate(dir_metric = paste(direction, metric, sep= "_"))
+
+# overall_simpson_results <- adjusted_comparison %>%
+#    filter(log_nparts_TRUE > log(20), log_nparts_FALSE > log(20)) %>%
+#   mutate(low_simpson_raw = simpson_percentile_FALSE < 5,
+#          low_simpson_adjusted = simpson_percentile_TRUE < 5) %>%
+#   group_by(dat) %>%
+#   summarize(proportion_simpson_low_raw = mean(low_simpson_raw),
+#             proportion_simpson_low_adjusted = mean(low_simpson_adjusted),
+#             nsites_simpson = dplyr::n())
+# 
+# overall_results <- left_join(overall_skew_results, overall_simpson_results)
+
+
+
+ggplot(filter(adjusted_comparison, s0_FALSE > 2, log_nparts_TRUE > log(20), log_nparts_FALSE > 20), aes(skew_percentile_excl_FALSE, skew_percentile_excl_TRUE)) +
+  geom_point(alpha = .1) +
+  theme_bw() +
+  geom_abline(intercept = 0, slope = 1, color = "green")
+
+
+ggplot(filter(adjusted_comparison, s0_FALSE > 2, log_nparts_TRUE > 20, log_nparts_FALSE > log(20)), aes(skew_percentile_excl_FALSE, skew_percentile_excl_TRUE)) +
+  geom_point(alpha = .1) +
+  theme_bw() +
+  geom_abline(intercept = 0, slope = 1, color = "green") +
+  facet_wrap(vars(dat)) 
+
+
+
+ggplot(filter(adjusted_comparison, log_nparts_TRUE > log(20), log_nparts_FALSE > log(20)), aes(simpson_percentile_FALSE, simpson_percentile_TRUE)) +
+  geom_point(alpha = .1) +
+  theme_bw() +
+  geom_abline(intercept = 0, slope = 1, color = "green")
+
+
+ggplot(filter(adjusted_comparison, log_nparts_TRUE > log(20), log_nparts_FALSE > log(20)), aes(simpson_percentile_FALSE, simpson_percentile_TRUE)) +
+  geom_point(alpha = .1) +
+  theme_bw() +
+  geom_abline(intercept = 0, slope = 1, color = "green") +
+  facet_wrap(vars(dat)) 
+
+
+
+ggplot(filter(adjusted_comparison, log_nparts_TRUE > log(20), log_nparts_FALSE > log(20)), aes(shannon_percentile_FALSE, shannon_percentile_TRUE)) +
+  geom_point(alpha = .1) +
+  theme_bw() +
+  geom_abline(intercept = 0, slope = 1, color = "green")
+
+
+ggplot(filter(adjusted_comparison, log_nparts_TRUE > log(20), log_nparts_FALSE > log(20)), aes(shannon_percentile_FALSE, shannon_percentile_TRUE)) +
+  geom_point(alpha = .1) +
+  theme_bw() +
+  geom_abline(intercept = 0, slope = 1, color = "green") +
+  facet_wrap(vars(dat))
+
+
+ggplot(filter(adjusted_comparison, log_nparts_TRUE > log(20), log_nparts_FALSE > log(20)), aes(nsingletons_percentile_excl_FALSE, nsingletons_percentile_excl_TRUE)) +
+  geom_point(alpha = .1) +
+  theme_bw() +
+  geom_abline(intercept = 0, slope = 1, color = "green")
+
+
+ggplot(filter(adjusted_comparison, log_nparts_TRUE > log(20), log_nparts_FALSE > log(20)), aes(nsingletons_percentile_excl_FALSE, nsingletons_percentile_excl_TRUE)) +
+  geom_point(alpha = .1) +
+  theme_bw() +
+  geom_abline(intercept = 0, slope = 1, color = "green") +
+  facet_wrap(vars(dat)) 
+
+
+ggplot(filter(adjusted_comparison, log_nparts_TRUE > log(20), log_nparts_FALSE > log(20)), aes(mean_po_comparison_percentile_FALSE, mean_po_comparison_percentile_TRUE)) +
+  geom_point(alpha = .1) +
+  theme_bw() +
+  geom_abline(intercept = 0, slope = 1, color = "green")
+
+
+ggplot(filter(adjusted_comparison, log_nparts_TRUE > log(20), log_nparts_FALSE > log(20)), aes(mean_po_comparison_percentile_FALSE, mean_po_comparison_percentile_TRUE)) +
+  geom_point(alpha = .1) +
+  theme_bw() +
+  geom_abline(intercept = 0, slope = 1, color = "green") +
+  facet_wrap(vars(dat)) 
+```
+
+```{r, fig.dim = c(8,8)}
+
+
+overall_results
+ggplot(overall_results_long, aes(adjusted, proportion, color = adjusted)) +
+  geom_point() +
+  facet_grid(cols = vars(dir_metric), rows = vars(dat), scales = "free", switch = "y") +
+  theme(legend.position = "top")
+
+```
+
+
+
+In all cases, adjusting for rarefaction increases the proportion of extreme values. Most adjusted SADs have more extreme values than their non-adjusted counterparts.
+
+This makes sense given that we add species at low abundance (and are more likely to fail to observe rare species). Adding rare species would tend to increase skewness and decrease evenness.
+
+If anything, missing species due to the limitations on empirical sampling causes us to **underestimate** the extreme-ness of observed SADs relative to their feasible sets. 

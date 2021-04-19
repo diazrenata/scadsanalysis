@@ -1,5 +1,7 @@
 codecov:
   require_ci_to_pass: no
+  notify:
+    wait_for_ci: false
 
 coverage:
   precision: 2
@@ -26,4 +28,3 @@ comment:
 
 ignore:
   - "R/download_data.R"
-  - "R/self_similarity_metrics.R"
