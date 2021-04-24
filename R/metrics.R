@@ -491,6 +491,7 @@ po_central_tendency <- function(fs_df, fs_po_df) {
       real_r2 = real_rsq,
       best_po_sim = ct_sim,
       sim_pos_from_best = mean(ct_pos$prop_off),
+      sim_pos_from_best_95 = quantile(ct_pos$prop_off, probs = .95, na.rm = T),
       sim_r2_from_best = mean(ct_pos$rsq),
       sim_r2_from_best_median = median(ct_pos$rsq),
       ncomparisons = nrow(ct_pos),
