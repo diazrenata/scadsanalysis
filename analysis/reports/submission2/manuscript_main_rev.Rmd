@@ -43,7 +43,10 @@ all_di <- all_di %>%
          Dataset = ifelse(Dataset == "gentry", "Gentry", Dataset),
          Dataset = ifelse(Dataset == "misc_abund", "Misc. Abundance", Dataset)) %>%
   filter(nparts > 20) %>%
-  left_join(all_ct) 
+  left_join(all_ct) %>%
+  mutate(Dataset_short = ifelse(Dataset == "FIA", "FIA", 
+                                ifelse(Dataset == "Breeding Bird Survey", "BBS", 
+                                       ifelse(Dataset == "Mammal Communities", "Mammals", ifelse(Dataset == "Gentry", "Gentry", "Misc.")))))
 
 all_di <- all_di %>%
   group_by_all() %>%
@@ -330,7 +333,7 @@ all_results %>%
 
 ```{r, fig.dim = c(3, 6)}
 
-plot_narrowness <- function(di_df, yvar, yvar_name) {
+plot_narrowness <- function(di_df, yvar, yvar_name, use_short = T) {
 
   if(grepl("sim_pos", yvar)) {
     min_nparts = 20
@@ -345,6 +348,10 @@ plot_narrowness <- function(di_df, yvar, yvar_name) {
     filter(nparts > min_nparts,
            nparts < 10 ^ 50)
 
+  if(use_short) {
+    di_df <- di_df %>%
+      mutate(Dataset = Dataset_short)
+  }
 
   ggplot(di_df, aes(nparts, response, color = Dataset)) +
     geom_point(data = filter(di_df, dat == "fia"), alpha = .1) +
@@ -357,36 +364,9 @@ plot_narrowness <- function(di_df, yvar, yvar_name) {
     ggtitle(yvar_name) +
     theme(legend.position = "none")+
     theme(plot.title = element_text(size=10)) +
-    theme(legend.text = element_text(size = 7), plot.margin = unit(c(0, 10, 0, 0), units = "mm"), axis.text = element_text(size = 7))
+    theme(legend.text = element_text(size = 8), plot.margin = unit(c(0, 10, 0, 0), units = "mm"), axis.text = element_text(size = 7))
 }
 
-plot_narrowness_legend <- function(di_df) {
-
-  legend_df <- di_df %>%
-    select(Dataset) %>%
-    distinct() %>%
-    mutate(ymark = dplyr::row_number())
-
-  ggplot(legend_df, aes(1, ymark, color = Dataset)) +
-    geom_text(aes(x = 2, y = ymark, label = Dataset)) +
-    geom_point(size = 4) +
-    scale_color_viridis_d(end = .9) +
-    xlab("") +
-    ylab("") +
-    theme(legend.position = "none") +
-    xlim(1, 3) + theme(
-      panel.grid.major.x = element_blank(),
-      panel.grid.minor.x = element_blank(),
-      panel.grid.major.y = element_blank(),
-      panel.grid.minor.y = element_blank(),
-      axis.text.x = element_blank(),
-      axis.ticks.x = element_blank(),
-      axis.text.y = element_blank(),
-      axis.ticks.y = element_blank()
-    ) +
-    ggtitle("Dataset")
-
-}
 
 ```
 
@@ -404,11 +384,11 @@ plot_narrowness_legend <- function(di_df) {
 #   ), ncol = 2)), ncol = 2, widths = c( 2, 4),bottom = textGrob("Number of elements in the feasible set"))
 
 fig_4 <- gridExtra::grid.arrange(grobs = list(
-  plot_narrowness(all_di, "sim_pos_from_best_95", "Dissimilarity") + ylab("Dissimilarity \n95th percentile") + theme(legend.position = c(.65, .8), legend.justification = "center", legend.direction = "horizontal", legend.background = element_blank(), legend.key = element_blank(), legend.key.size = unit(.25, units = "mm"), legend.title = element_text(size =7)),
+  plot_narrowness(all_di, "sim_pos_from_best_95", "Dissimilarity") + ylab("Dissimilarity \n95th percentile"),
     plot_narrowness(all_di, "skew_95_ratio_2t", "Skewness") + ylab("\nBreadth index"),
     plot_narrowness(all_di, "simpson_95_ratio_2t", "Simpson evenness")+ ylab("\nBreadth index"),
     plot_narrowness(all_di, "nsingletons_95_ratio_2t", "Proportion of rare species")+ ylab("\nBreadth index"),
-       plot_narrowness(all_di, "shannon_95_ratio_2t", "Shannon diversity")+ ylab("\nBreadth index")), ncol = 1, bottom = textGrob("Number of elements in the feasible set"))
+       plot_narrowness(all_di, "shannon_95_ratio_2t", "Shannon diversity")+ ylab("\nBreadth index")+ theme(legend.position = "bottom", legend.direction = "horizontal", legend.key = element_blank(), legend.margin = margin(-.3,0,0,0, unit = "in"),legend.key.size = unit(.25, units = "mm"), legend.title = element_text(size = 8))), ncol = 1, bottom = textGrob("Number of elements in the feasible set"))
 
 
 #fig_4
@@ -418,7 +398,7 @@ fig_4 <- gridExtra::grid.arrange(grobs = list(
 # dev.set(dev.next())
 # while (!is.null(dev.list()))  dev.off()
 
-ggsave("figure_4.pdf", plot = fig_4, device = "pdf", width = 180, height = 180, dpi = 800, units = "mm")
+ggsave("figure_4.pdf", plot = fig_4, device = "pdf", width = 80, height = 180, dpi = 800, units = "mm")
 ```
 
 ```{r}
