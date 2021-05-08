@@ -194,7 +194,7 @@ breadth_plots <- list(
 
 fig_2 <- gridExtra::grid.arrange(grobs = breadth_plots, ncol = 2)
 
-ggsave("figure_2.pdf", plot = fig_2, device = "pdf", width = 180, height = 180, dpi = 800, units = "mm")
+ggsave("figure_2.pdf", plot = fig_2, device = "pdf", width = 180, height = 120, dpi = 800, units = "mm")
 # 
 signif(as.numeric(example_di$nparts), digits = 2)[1]
 (as.numeric(example_di2$nparts))[1]
@@ -436,7 +436,36 @@ plot_narrowness_hist <- function(di_df, col_name, plot_name, facetvar = "Dataset
 # Very small communities
 
 ```{r f6, fig.dim = c(6,8)}
+plot_percentile_hist_small <- function(di_df, col_name, plot_name, tails = 2, facetvar = "Dataset", min_s0 = 0) {
 
+  if(tails == 2) {
+    cutoff_percentiles = c(2.5, 97.5)
+    min_nparts = 40
+  } else if (tails== 1) {
+    cutoff_percentiles = c(95)
+    min_nparts = 20
+  }
+
+  di_df <- di_df %>%
+    mutate(response = (di_df[[col_name]]),
+           facetvar = di_df[[facetvar]])
+
+
+  ggplot(filter(di_df, nparts > min_nparts, s0 >= min_s0), aes(response)) +
+    geom_histogram(bins = 40, boundary = 100) +
+    theme_bw() +
+    xlab("") +
+    ylab("") +
+    geom_vline(xintercept = cutoff_percentiles, color = "red") +
+    ggtitle( plot_name) +
+    #geom_text(data = distinct(select(di_df, Dataset)), aes(x = 45, y = 100, label = Dataset)) +
+    facet_wrap(vars(facetvar), ncol = 1, scales = "free_y")+
+    theme(plot.title = element_text(size=9), axis.text = element_text(size = 6), strip.text = element_text(size = 7), strip.placement = "inside") +
+    scale_y_continuous(n.breaks = 3)
+
+
+
+}
 all_di <- all_di %>%
   mutate( `Number of elements` = ifelse(nparts < 2000, "Less than 2000", "More than 2000"))
 diss_results <- all_di %>%
@@ -491,24 +520,24 @@ all_di %>%
   group_by(Dataset) %>%
   summarize(`Proportion with nparts < 2000` = mean(nparts < 2000))
 
-nhist <- plot_narrowness_hist(filter(all_di, dat %in% c("fia", "mcdb", "misc_abund")), "skew_95_ratio_2t", "Skewness") +
-  facet_wrap(vars(`Number of elements`, Dataset), scales = "free_y", nrow = 2, ncol = 3) +
+nhist <- plot_narrowness_hist(filter(all_di, dat %in% c("fia", "mcdb")), "skew_95_ratio_2t", "Skewness") +
+  facet_wrap(vars(`Number of elements`, Dataset_short), scales = "free_y", nrow = 2, ncol = 2) +
   xlab("Breadth index") +
   ylab("Number of communities") +
-  ggtitle("Skewness") + theme(plot.margin = unit(c(5,5,5,5), units = "mm"))
+  ggtitle("Skewness") + theme(plot.margin = unit(c(0,5,0,2), units = "mm"), axis.text = element_text(size = 6) ,strip.text = element_text(size = 7), strip.placement = "inside") 
 
 
-phist <- plot_percentile_hist(filter(all_di, dat %in% c("fia", "mcdb", "misc_abund")), "skew_percentile_mean", "Skewness") +
-  facet_wrap(vars(`Number of elements`, Dataset), scales = "free_y", nrow = 2, ncol = 3) +
-  xlab("Percentile rank of observed value relative to feasible set") +
+phist <- plot_percentile_hist_small(filter(all_di, dat %in% c("fia", "mcdb")), "skew_percentile_mean", "Skewness")  +
+  facet_wrap(vars(`Number of elements`, Dataset_short), scales = "free_y", nrow = 2, ncol = 2) +
+  xlab("Percentile rank of observed value \nrelative to feasible set") +
   ylab("Number of communities") +
-  ggtitle("Skewness")+ theme(plot.margin = unit(c(5,5,5,5), units = "mm"))
+  ggtitle("Skewness")+ theme(plot.margin = unit(c(0,5,5,2), units = "mm"), plot.title = element_text(size = 10))
 
 fig_6 <- gridExtra::grid.arrange(grobs = list(nhist, phist), nrow = 2)
 
 fig_6
 
-ggsave("figure_6.pdf", plot = fig_6, device = "pdf", width = 180, height = 180, dpi = 800, units = "mm")
+ggsave("figure_6.pdf", plot = fig_6, device = "pdf", width = 80, height = 150, dpi = 800, units = "mm")
 
 ```
 

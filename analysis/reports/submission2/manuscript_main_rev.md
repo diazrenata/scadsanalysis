@@ -149,7 +149,7 @@ communities. See rov\_metric.md.
 
 </div>
 
-    ## Warning: Removed 14 rows containing non-finite values (stat_bin).
+    ## Warning: Removed 12 rows containing non-finite values (stat_bin).
 
 ![](manuscript_main_rev_files/figure-gfm/f6-1.png)<!-- -->
 
