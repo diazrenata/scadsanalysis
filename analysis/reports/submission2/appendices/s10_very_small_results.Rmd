@@ -175,8 +175,8 @@ plot_narrowness_legend <- function(di_df) {
 plot_narrowness_hist <- function(di_df, col_name, plot_name, facetvar = "Dataset", min_s0 = 0) {
 
   if(grepl("sim_pos", col_name)) {
-    xvarname = "Mean dissimilarity"
-    min_nparts = 40
+xvarname = "95th percentile \nof dissimilarity scores"
+min_nparts = 40
   } else {
     min_nparts = 20
     xvarname = "Breadth index"
@@ -205,7 +205,7 @@ Only three of our datasets - Mammal Communities, Misc. Abundance, and FIA - have
 
 Proportions of communities in these datasets with fewer than 2000 possible SADs:
 
-```{r, fig.dim = c(6,8)}
+```{r, fig.dim = c(5,6)}
 
 all_di <- all_di %>%
   mutate( `Number of elements` = ifelse(nparts < 2000, "Less than 2000", "More than 2000"))
@@ -290,7 +290,7 @@ all_results %>%
 Breadth indices (top) and percentile scores (bottom) for communities with fewer than 2000 possible SADs, or more than 2000 possible SADs, from FIA, Mammal Community, and Misc. Abundance datasets.
 
 
-```{r, fig.dim = c(6,8)}
+```{r, fig.dim = c(5,6)}
 
 nhist <- plot_narrowness_hist(filter(all_di, dat %in% c("fia", "mcdb", "misc_abund")), "sim_pos_from_best_95", "Dissimilarity to the central tendency") +
   facet_wrap(vars(`Number of elements`, Dataset), scales = "free_y", nrow = 2, ncol = 3) +

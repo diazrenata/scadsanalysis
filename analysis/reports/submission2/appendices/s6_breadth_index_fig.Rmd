@@ -136,11 +136,11 @@ plot_narrowness_legend <- function(di_df) {
 plot_narrowness_hist <- function(di_df, col_name, plot_name, facetvar = "Dataset", min_s0 = 0) {
 
   if(grepl("sim_pos", col_name)) {
-    xvarname = "Mean dissimilarity"
+    xvarname = "95th percentile \nof dissimilarity scores"
     min_nparts = 40
   } else {
     min_nparts = 20
-    xvarname = "Breadth index"
+    xvarname = "Breadth index \n"
   }
 
   di_df <- di_df %>%
@@ -162,7 +162,7 @@ plot_narrowness_hist <- function(di_df, col_name, plot_name, facetvar = "Dataset
 ```
 
 
-```{r, fig.dim = c(10,5)}
+```{r, fig.dim = c(10,5.5)}
 
 
 
@@ -181,4 +181,4 @@ fig_2 <- gridExtra::grid.arrange(grobs = list(
 ```
 
 
-**Figure S6**. Partially because of the uneven distribution of S and N among the different datasets, the narrowness of the feasible sets - defined either as the 95th percentile of scores for the dissimilarity of samples from the feasible set to the central tendency of the feasible set, or using a breadth index for specific metrics - varies among different datasets. In particular, the FIA dataset, and subsets of the Mammal Community and Miscellaneous Abundance databases, often have highly variable, broadly-defined statistical baselines derived from the feasible set. 
+**Figure S6**. Partially because of the uneven distribution of S and N among the different datasets, the narrowness of the feasible sets - defined either as the 95th percentile of scores for the dissimilarity of samples from the feasible set compared to the central tendency of the feasible set, or using a breadth index for specific metrics - varies among different datasets. In particular, the FIA dataset, and subsets of the Mammal Community and Miscellaneous Abundance databases, often have highly variable, broadly-defined statistical baselines derived from the feasible set. 

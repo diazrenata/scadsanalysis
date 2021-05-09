@@ -1,7 +1,7 @@
 Figures and results for main manuscript
 ================
 Renata Diaz
-2021-05-08
+2021-05-09
 
   - [Datasets by S and N (Figure 1)](#datasets-by-s-and-n-figure-1)
   - [Illustrations of 95% interval (Figure
@@ -124,18 +124,18 @@ communities. See rov\_metric.md.
 
 <div class="kable-table">
 
-| Dataset              | Number of elements | High dissimilarity | High proportion of rare species | High skew       | Low Simpson     | Low Shannon     |
-| :------------------- | :----------------- | :----------------- | :------------------------------ | :-------------- | :-------------- | :-------------- |
-| Breeding Bird Survey | Less than 2000     | 0%; n = 1          | 0%; n = 1                       | 0%; n = 1       | 0%; n = 1       | 0%; n = 1       |
-| Breeding Bird Survey | More than 2000     | 23%; n = 2772      | 4.5%; n = 2772                  | 9%; n = 2772    | 21%; n = 2772   | 23%; n = 2772   |
-| FIA                  | Less than 2000     | 5.3%; n = 12553    | 1.2%; n = 11516                 | 1.2%; n = 11516 | 3.9%; n = 11516 | 3.6%; n = 11516 |
-| FIA                  | More than 2000     | 11%; n = 5894      | 1.7%; n = 5894                  | 6%; n = 5894    | 9.5%; n = 5894  | 9%; n = 5894    |
-| Gentry               | Less than 2000     | 0%; n = 1          | NA                              | NA              | NA              | NA              |
-| Gentry               | More than 2000     | 34%; n = 223       | 0.9%; n = 223                   | 11%; n = 223    | 9.9%; n = 223   | 7.6%; n = 223   |
-| Mammal Communities   | Less than 2000     | 12%; n = 193       | 4.6%; n = 152                   | 1.4%; n = 146   | 12%; n = 152    | 12%; n = 152    |
-| Mammal Communities   | More than 2000     | 42%; n = 359       | 16%; n = 359                    | 17%; n = 359    | 35%; n = 359    | 38%; n = 359    |
-| Misc. Abundance      | Less than 2000     | 11%; n = 38        | 6.7%; n = 30                    | 7.1%; n = 28    | 10%; n = 30     | 10%; n = 30     |
-| Misc. Abundance      | More than 2000     | 63%; n = 456       | 29%; n = 456                    | 29%; n = 456    | 56%; n = 456    | 59%; n = 456    |
+| Dataset              | Number of elements           | High dissimilarity | High proportion of rare species | High skew       | Low Simpson     | Low Shannon     |
+| :------------------- | :--------------------------- | :----------------- | :------------------------------ | :-------------- | :-------------- | :-------------- |
+| Breeding Bird Survey | Less than 2000 possible SADs | 0%; n = 1          | 0%; n = 1                       | 0%; n = 1       | 0%; n = 1       | 0%; n = 1       |
+| Breeding Bird Survey | More than 2000 possible SADs | 23%; n = 2772      | 4.5%; n = 2772                  | 9%; n = 2772    | 21%; n = 2772   | 23%; n = 2772   |
+| FIA                  | Less than 2000 possible SADs | 5.3%; n = 12553    | 1.2%; n = 11516                 | 1.2%; n = 11516 | 3.9%; n = 11516 | 3.6%; n = 11516 |
+| FIA                  | More than 2000 possible SADs | 11%; n = 5894      | 1.7%; n = 5894                  | 6%; n = 5894    | 9.5%; n = 5894  | 9%; n = 5894    |
+| Gentry               | Less than 2000 possible SADs | 0%; n = 1          | NA                              | NA              | NA              | NA              |
+| Gentry               | More than 2000 possible SADs | 34%; n = 223       | 0.9%; n = 223                   | 11%; n = 223    | 9.9%; n = 223   | 7.6%; n = 223   |
+| Mammal Communities   | Less than 2000 possible SADs | 12%; n = 193       | 4.6%; n = 152                   | 1.4%; n = 146   | 12%; n = 152    | 12%; n = 152    |
+| Mammal Communities   | More than 2000 possible SADs | 42%; n = 359       | 16%; n = 359                    | 17%; n = 359    | 35%; n = 359    | 38%; n = 359    |
+| Misc. Abundance      | Less than 2000 possible SADs | 11%; n = 38        | 6.7%; n = 30                    | 7.1%; n = 28    | 10%; n = 30     | 10%; n = 30     |
+| Misc. Abundance      | More than 2000 possible SADs | 63%; n = 456       | 29%; n = 456                    | 29%; n = 456    | 56%; n = 456    | 59%; n = 456    |
 
 </div>
 
@@ -149,7 +149,7 @@ communities. See rov\_metric.md.
 
 </div>
 
-    ## Warning: Removed 12 rows containing non-finite values (stat_bin).
+    ## Warning: Removed 14 rows containing non-finite values (stat_bin).
 
 ![](manuscript_main_rev_files/figure-gfm/f6-1.png)<!-- -->
 
