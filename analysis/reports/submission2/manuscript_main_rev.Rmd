@@ -82,7 +82,7 @@ fig1 <- ggplot(all_di, aes(x = s0, y = n0, color = Dataset)) +
 
 
 
-ggsave("figure_1.pdf", plot = fig1, device = "pdf", width = 80, height = 80, units = "mm")
+ggsave("figure_1.pdf", plot = fig1, device = "pdf", width = 80, height = 80, units = "mm", dpi = 800)
 
 
 ```
