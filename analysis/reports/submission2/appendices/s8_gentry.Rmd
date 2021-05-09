@@ -1,6 +1,6 @@
 ---
 title: "Unusual Gentry communities"
-author: Renata Diaz
+#author: Renata Diaz
 date: "`r Sys.Date()`"
 output: 
     # github_document:
@@ -199,7 +199,7 @@ plot_narrowness_hist <- function(di_df, col_name, plot_name, facetvar = "Dataset
 
 
 
-The Gentry communities are extreme relative to hte other datasets (in grey), in that they have high species richness and low abundance. Of these, the most extreme communities have extremely low average abundance (e.g. N/S < 3).
+The Gentry communities are extreme relative to the other datasets (in grey), in that they have high species richness and low abundance. Of these, the most extreme communities have extremely low average abundance (e.g. N/S < 3).
 
 ```{r, fig.dim = c(4,4)}
 
@@ -211,14 +211,14 @@ gentry_di <- gentry_di %>%
 
 ggplot(gentry_di, aes(s0, n0, color = `Low average \nabundance`)) +
   geom_point(data = all_di, inherit.aes = F, aes(s0, n0), color = "grey", alpha = .1) +  geom_point() +
-scale_x_log10() + scale_y_log10() + xlab("Species richness (S); note log scale") + ylab("Total abundance (N); note log scale") + ggtitle("Gentry communities", subtitle = "(in color)") + theme(legend.position = "bottom")
+scale_x_log10() + scale_y_log10() + xlab("Species richness (S); note log scale") + ylab("Total abundance (N); note log scale") + ggtitle("Gentry communities", subtitle = "(in color)") + theme(legend.position = "bottom") + scale_color_viridis_d(end = .8)
 
 ```
 
 This figure shows all of the communities across all our datasets in terms of S and N. Gentry communities are in color, color coded by whether they have low average abundance (N/S < 3). 
 
 
-These low-average-abundance communities - the red dots in the plot above - account for most of the signal of extreme values in the unusual direction for various metrics - that is, a **low** number of rare species and **low** skewness, and **high** Shannon and Simpson evenness. Gentry communities with average abundance > 3 tend to show the signal in the same direction as most other communities. 
+These low-average-abundance communities - the dark purple dots in the plot above - account for most of the signal of extreme values in the unusual direction for various metrics - that is, a **low** number of rare species and **low** skewness, and **high** Shannon and Simpson evenness. Gentry communities with average abundance > 3 tend to show the signal in the same direction as most other communities. 
 
 
 ```{r, fig.dim = c(7,7)}
@@ -236,3 +236,21 @@ bottom = textGrob("Percentile rank of observed value relative to feasible set"),
 
 ```
 
+
+These low-average abundance communities have unusual statistical baselines. For example, samples from these feasible sets have a very high proportion of rare species:
+
+```{r, fig.dim = c(4.5,4)}
+
+
+all_di <- all_di %>%
+  mutate(`Average proportion of rare species \nin the feasible set` = nsingletons_mean / s0)
+
+ggplot(all_di, aes(s0, n0, color = `Average proportion of rare species \nin the feasible set`)) +
+  geom_point(alpha = .4) +
+scale_x_log10() + 
+  scale_y_log10() + 
+  scale_color_viridis_c(option = "plasma", end = .8) +
+  xlab("Species richness (S); note log scale") + ylab("Total abundance (N); note log scale") + 
+  theme(legend.position = "bottom", plot.margin =unit(c(4,4,4,4), units = "mm"))
+
+```

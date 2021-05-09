@@ -104,13 +104,13 @@ all_di <- all_di %>%
 
 
 
-```{r, fig.dim = c(7,7)}
-ggplot(all_di, aes(sim_pos_from_best, real_po, color = `Observed \npercentile score`)) +
-  geom_point(alpha = .3) +
+```{r, fig.dim = c(7,5)}
+ggplot(all_di, aes(sim_pos_from_best, real_po)) +
+  geom_point(alpha = .05) +
   geom_point(data = filter(all_di, s0 < 0)) +
   geom_abline(slope = 1, intercept = 0) +
   scale_color_viridis_d(end = .8, direction = -1) +
-  xlab("Mean of elements from feasible set") +
+  xlab("95th percentile for elements from feasible set") +
   ylab("Observed value") +
   ggtitle("Dissimilarity to the central tendency") +  theme(legend.position = "bottom")+
   facet_wrap(vars(Dataset))
@@ -127,7 +127,7 @@ ggplot(all_di, aes(sim_pos_from_best, real_po, color = `Observed \npercentile sc
 #   ggtitle("Over the size of the feasible set")
 # ), ncol = 1,
 #top = textGrob("Dissimilarity to central tendency"))
-
+increase <- all_di %>% filter(real_po_percentile_excl > 95) %>% mutate(difference = real_po - sim_pos_from_best_95, ratio = real_po / sim_pos_from_best_95)
 ```
 
-**Figure S4**. Dissimilarity of observed and sampled SADs to the central tendency of the feasible set. Observed SADs are often much more dissimilar to the central tendency of their feasible sets (y-axis) than the mean dissimilarity of samples from the feasible set and the central tendency (x-axis). Dissimilarity can range from 0-1. The black line is the 1:1 line. Of observed SADs that are more disssimilar to the central tendency than are 95% of samples from the feasible set (green points), the absolute increase in dissimlarity ranges from .04 to .6. These observed SADs are from 1.4 to 9.7 times more dissimilar to the central tendency than the maen of samples from the feasible set. 
+**Figure S4**. Dissimilarity of observed and sampled SADs to the central tendency of the feasible set. Observed SADs are often much more dissimilar to the central tendency of their feasible sets (y-axis) than the 95th percentile dissimilarity of samples from the feasible set and the central tendency (x-axis). Dissimilarity can range from 0-1. The black line is the 1:1 line. Of observed SADs that are more disssimilar to the central tendency than are 95% of samples from the feasible set, the absolute increase in dissimlarity ranges from ```r round(min(increase$difference), 4)``` to ```r round(max(increase$difference), 3)```. These observed SADs are from ```r round(min(increase$ratio), 3)``` to ```r round(max(increase$ratio), 2)``` times more dissimilar to the central tendency than the 95th percentile of dissimilarity scores for samples from the feasible set. 

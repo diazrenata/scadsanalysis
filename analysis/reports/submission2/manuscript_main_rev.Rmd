@@ -43,7 +43,10 @@ all_di <- all_di %>%
          Dataset = ifelse(Dataset == "gentry", "Gentry", Dataset),
          Dataset = ifelse(Dataset == "misc_abund", "Misc. Abundance", Dataset)) %>%
   filter(nparts > 20) %>%
-  left_join(all_ct) 
+  left_join(all_ct) %>%
+  mutate(Dataset_short = ifelse(Dataset == "FIA", "FIA", 
+                                ifelse(Dataset == "Breeding Bird Survey", "BBS", 
+                                       ifelse(Dataset == "Mammal Communities", "Mammals", ifelse(Dataset == "Gentry", "Gentry", "Misc.")))))
 
 all_di <- all_di %>%
   group_by_all() %>%
@@ -74,19 +77,12 @@ fig1 <- ggplot(all_di, aes(x = s0, y = n0, color = Dataset)) +
   xlab("Species richness (S); note log scale") +
   ylab("Total abundance (N); note log scale") +
   scale_x_log10() +
-  scale_y_log10() 
+  scale_y_log10()  +
+  theme(legend.position = c(.3,.8), legend.justification = "center", legend.background = element_blank(), legend.text	= element_text(size = 8), legend.title = element_text(size = 9), legend.key.size = unit(2, units = "mm"), axis.text = element_text(size = 7))
 
 
-fig1_with_top = gridExtra::grid.arrange(grobs = list(fig1), 
-top = textGrob("Figure 1"))
 
-# 
-# pdf("figure_1.pdf", bg = "white", paper = "letter", width = 6.5, height = 6.5)
-# gridExtra::grid.arrange(grobs = list(fig1), 
-# top = textGrob("Figure 1"))
-# dev.off()
-
-ggsave("figure_1.pdf", plot = fig1_with_top, device = "pdf", width = 6.5, height = 6.5, units = "in")
+ggsave("figure_1.pdf", plot = fig1, device = "pdf", width = 80, height = 80, units = "mm", dpi = 800)
 
 
 ```
@@ -196,13 +192,13 @@ breadth_plots <- list(
 
 )
 
-fig_2 <- gridExtra::grid.arrange(grobs = breadth_plots, ncol = 2, top = textGrob("Figure 2", gp = gpar(fill = "white")))
+fig_2 <- gridExtra::grid.arrange(grobs = breadth_plots, ncol = 2)
 
-ggsave("figure_2.pdf", plot = fig_2, device = "pdf", width = 8, height = 8, units = "in")
-
-signif(as.numeric(example_di$nparts), digits = 2)
-(as.numeric(example_di2$nparts))
-as.numeric(example_di3$nparts)
+ggsave("figure_2.pdf", plot = fig_2, device = "pdf", width = 180, height = 120, dpi = 800, units = "mm")
+# 
+signif(as.numeric(example_di$nparts), digits = 2)[1]
+(as.numeric(example_di2$nparts))[1]
+as.numeric(example_di3$nparts)[1]
 
 DBI::dbDisconnect(db)
 rm(cache)
@@ -235,7 +231,8 @@ plot_percentile_hist <- function(di_df, col_name, plot_name, tails = 2, facetvar
     geom_vline(xintercept = cutoff_percentiles, color = "red") +
     ggtitle( plot_name) +
     facet_wrap(vars(facetvar), ncol = 1, scales = "free_y")+
-    theme(plot.title = element_text(size=10))
+    theme(plot.title = element_text(size=9), plot.margin=unit(c(1, 0, -5, -1), units = "mm"), axis.text = element_text(size = 6), strip.text = element_text(size = 7), strip.placement = "inside") +
+    scale_y_continuous(n.breaks = 3)
 
 
 
@@ -256,25 +253,20 @@ all_di <- all_di %>%
 
 fig_3 <- gridExtra::grid.arrange(grobs = list(
 
-  plot_percentile_hist(all_di, "real_po_percentile_mean", "Dissimilarity to the \ncentral tendency", facetvar = "Dataset", tails = 1),
-  plot_percentile_hist(all_di, "nsingletons_percentile_mean", "\nProportion of rare species", facetvar = "Dataset"),
-  plot_percentile_hist(all_di, "skew_percentile_mean", "\nSkewness", facetvar = "Dataset", min_s0 = 3),
-  plot_percentile_hist(all_di, "simpson_percentile_mean", "\nSimpson evenness", facetvar = "Dataset"),
-  plot_percentile_hist(all_di, "shannon_percentile_mean", "\nShannon diversity", facetvar = "Dataset")
-), ncol = 3,
-top = textGrob("Figure 3", gp = gpar(fill = "white")), left = textGrob("Number of communities", rot = 90, gp = gpar(fill = "black")),
-bottom = textGrob("Percentile rank of observed value relative to feasible set"), gp = gpar(fill = "white"))
+  plot_percentile_hist(all_di, "real_po_percentile_mean", "Dissimilarity", facetvar = "Dataset", tails = 1),
+  plot_percentile_hist(all_di, "nsingletons_percentile_mean", "Proportion of rare species", facetvar = "Dataset"),
+  plot_percentile_hist(all_di, "skew_percentile_mean", "Skewness", facetvar = "Dataset", min_s0 = 3) + theme(plot.margin =unit(c(1, 3, -5, -1), units = "mm")),
+  plot_percentile_hist(all_di, "simpson_percentile_mean", "Simpson evenness", facetvar = "Dataset"),
+  plot_percentile_hist(all_di, "shannon_percentile_mean", "Shannon diversity", facetvar = "Dataset")
+), ncol = 3, 
+left = textGrob("Number of communities", rot = 90, gp = gpar(fill = "black")),
+bottom = textGrob("Percentile rank of observed value relative to feasible set"), 
+gp = gpar(fill = "white"))
 
-# 
-# 
-# pdf("figure_3.pdf", bg = "white", paper = "letter", width = 8, height = 4)
-# gridExtra::grid.arrange(grobs = list(fig_3), 
-# top = textGrob("Figure 3"))
-# dev.off()
 
 fig_3
 
-ggsave("figure_3.pdf", plot = fig_3, device = "pdf", width = 8, height = 8, units = "in")
+ggsave("figure_3.pdf", plot = fig_3, device = "pdf", width = 180, height = 180, dpi = 800, units = "mm")
 
 ```
 
@@ -340,7 +332,7 @@ all_results %>%
 
 ```{r, fig.dim = c(3, 6)}
 
-plot_narrowness <- function(di_df, yvar, yvar_name) {
+plot_narrowness <- function(di_df, yvar, yvar_name, use_short = T) {
 
   if(grepl("sim_pos", yvar)) {
     min_nparts = 20
@@ -355,6 +347,10 @@ plot_narrowness <- function(di_df, yvar, yvar_name) {
     filter(nparts > min_nparts,
            nparts < 10 ^ 50)
 
+  if(use_short) {
+    di_df <- di_df %>%
+      mutate(Dataset = Dataset_short)
+  }
 
   ggplot(di_df, aes(nparts, response, color = Dataset)) +
     geom_point(data = filter(di_df, dat == "fia"), alpha = .1) +
@@ -366,61 +362,42 @@ plot_narrowness <- function(di_df, yvar, yvar_name) {
     scale_x_log10() +
     ggtitle(yvar_name) +
     theme(legend.position = "none")+
-    theme(plot.title = element_text(size=10))
+    theme(plot.title = element_text(size=10)) +
+    theme(legend.text = element_text(size = 8), plot.margin = unit(c(0, 10, 0, 2), units = "mm"), axis.text = element_text(size = 7))
 }
 
-plot_narrowness_legend <- function(di_df) {
-
-  legend_df <- di_df %>%
-    select(Dataset) %>%
-    distinct() %>%
-    mutate(ymark = dplyr::row_number())
-
-  ggplot(legend_df, aes(1, ymark, color = Dataset)) +
-    geom_label(aes(x = 2, y = ymark, label = Dataset)) +
-    geom_point(size = 4) +
-    scale_color_viridis_d(end = .9) +
-    xlab("") +
-    ylab("") +
-    theme(legend.position = "none") +
-    xlim(1, 3) + theme(
-      panel.grid.major.x = element_blank(),
-      panel.grid.minor.x = element_blank(),
-      panel.grid.major.y = element_blank(),
-      panel.grid.minor.y = element_blank(),
-      axis.text.x = element_blank(),
-      axis.ticks.x = element_blank(),
-      axis.text.y = element_blank(),
-      axis.ticks.y = element_blank()
-    ) +
-    ggtitle("Dataset")
-
-}
 
 ```
 
 ```{r f4, fig.dim = c(7,4)}
 
 
+# 
+# fig_4 <- gridExtra::grid.arrange(grobs = list(
+#   plot_narrowness(all_di, "sim_pos_from_best_95", "Dissimilarity \nto central tendency") + ylab("Dissimilarity \n95th percentile") + theme(legend.position = "bottom", legend.direction = "vertical" , legend.margin = margin(b = 40, r = 0, t = 10, l = 0, unit = "mm")),
+#   gridExtra::grid.arrange(grobs = list(
+#     plot_narrowness(all_di, "skew_95_ratio_2t", "\nSkewness"),
+#     plot_narrowness(all_di, "simpson_95_ratio_2t", "\nSimpson evenness")+ ylab(""),
+#     plot_narrowness(all_di, "nsingletons_95_ratio_2t", "\nProportion of rare species"),
+#        plot_narrowness(all_di, "shannon_95_ratio_2t", "\nShannon diversity") + ylab("")
+#   ), ncol = 2)), ncol = 2, widths = c( 2, 4),bottom = textGrob("Number of elements in the feasible set"))
 
 fig_4 <- gridExtra::grid.arrange(grobs = list(
-  plot_narrowness(all_di, "sim_pos_from_best", "Dissimilarity \nto central tendency") + ylab("Mean dissimilarity") + theme(legend.position = "bottom", legend.direction = "vertical" , legend.margin = margin(b = .25, r = 0, t = 0, l = 0, unit = "in")),
-  gridExtra::grid.arrange(grobs = list(
-    plot_narrowness(all_di, "skew_95_ratio_2t", "\nSkewness"),
-    plot_narrowness(all_di, "simpson_95_ratio_2t", "\nSimpson evenness")+ ylab(""),
-    plot_narrowness(all_di, "nsingletons_95_ratio_2t", "\nProportion of rare species"),
-       plot_narrowness(all_di, "shannon_95_ratio_2t", "\nShannon diversity") + ylab("")
-  ), ncol = 2)), ncol = 2, widths = c( 2, 4), bottom = textGrob("Number of elements in the feasible set"), top = textGrob("Figure 4"))
+  plot_narrowness(all_di, "sim_pos_from_best_95", "Dissimilarity") + ylab("Dissimilarity \n95th percentile") + theme(plot.margin =unit(c(1, 10, 0, 2), units = "mm") ),
+    plot_narrowness(all_di, "skew_95_ratio_2t", "Skewness") + ylab("\nBreadth index"),
+    plot_narrowness(all_di, "simpson_95_ratio_2t", "Simpson evenness")+ ylab("\nBreadth index"),
+    plot_narrowness(all_di, "nsingletons_95_ratio_2t", "Proportion of rare species")+ ylab("\nBreadth index"),
+       plot_narrowness(all_di, "shannon_95_ratio_2t", "Shannon diversity")+ ylab("\nBreadth index")+ theme(legend.position = "bottom", legend.direction = "horizontal", legend.key = element_blank(), legend.margin = margin(-.3,0,0,0, unit = "in"),legend.key.size = unit(.25, units = "mm"), legend.title = element_text(size = 8))), ncol = 1, bottom = textGrob("Number of elements in the feasible set"))
 
 
-fig_4
+#fig_4
 # 
 # pdf("figure_4.pdf", bg = "white", paper = "letter", width = 8, height = 5)
 # fig_4
 # dev.set(dev.next())
 # while (!is.null(dev.list()))  dev.off()
 
-ggsave("figure_4.pdf", plot = fig_4, device = "pdf", width = 8, height = 5, units = "in")
+ggsave("figure_4.pdf", plot = fig_4, device = "pdf", width = 80, height = 180, dpi = 800, units = "mm")
 ```
 
 ```{r}
@@ -458,9 +435,38 @@ plot_narrowness_hist <- function(di_df, col_name, plot_name, facetvar = "Dataset
 # Very small communities
 
 ```{r f6, fig.dim = c(6,8)}
+plot_percentile_hist_small <- function(di_df, col_name, plot_name, tails = 2, facetvar = "Dataset", min_s0 = 0) {
 
+  if(tails == 2) {
+    cutoff_percentiles = c(2.5, 97.5)
+    min_nparts = 40
+  } else if (tails== 1) {
+    cutoff_percentiles = c(95)
+    min_nparts = 20
+  }
+
+  di_df <- di_df %>%
+    mutate(response = (di_df[[col_name]]),
+           facetvar = di_df[[facetvar]])
+
+
+  ggplot(filter(di_df, nparts > min_nparts, s0 >= min_s0), aes(response)) +
+    geom_histogram(bins = 40, boundary = 100) +
+    theme_bw() +
+    xlab("") +
+    ylab("") +
+    geom_vline(xintercept = cutoff_percentiles, color = "red") +
+    ggtitle( plot_name) +
+    #geom_text(data = distinct(select(di_df, Dataset)), aes(x = 45, y = 100, label = Dataset)) +
+    facet_wrap(vars(facetvar), ncol = 1, scales = "free_y")+
+    theme(plot.title = element_text(size=9), axis.text = element_text(size = 6), strip.text = element_text(size = 7), strip.placement = "inside") +
+    scale_y_continuous(n.breaks = 3)
+
+
+
+}
 all_di <- all_di %>%
-  mutate( `Number of elements` = ifelse(nparts < 2000, "Less than 2000", "More than 2000"))
+  mutate( `Number of elements` = ifelse(nparts < 2000, "Less than 2000 possible SADs", "More than 2000 possible SADs"))
 diss_results <- all_di %>%
   filter(nparts > 20) %>%
   group_by(Dataset,  `Number of elements` ) %>%
@@ -517,19 +523,20 @@ nhist <- plot_narrowness_hist(filter(all_di, dat %in% c("fia", "mcdb", "misc_abu
   facet_wrap(vars(`Number of elements`, Dataset), scales = "free_y", nrow = 2, ncol = 3) +
   xlab("Breadth index") +
   ylab("Number of communities") +
-  ggtitle("Skewness")
+  ggtitle("Skewness") + theme(plot.margin = unit(c(0,5,0,2), units = "mm"), axis.text = element_text(size = 6) ,strip.text = element_text(size = 7), strip.placement = "inside") 
 
-phist <- plot_percentile_hist(filter(all_di, dat %in% c("fia", "mcdb", "misc_abund")), "skew_percentile_mean", "Skewness") +
+
+phist <- plot_percentile_hist_small(filter(all_di, dat %in% c("fia", "mcdb", "misc_abund")), "skew_percentile_mean", "Skewness")  +
   facet_wrap(vars(`Number of elements`, Dataset), scales = "free_y", nrow = 2, ncol = 3) +
-  xlab("Percentile rank of observed value relative to feasible set") +
+  xlab("Percentile rank of observed value \nrelative to feasible set") +
   ylab("Number of communities") +
-  ggtitle("Skewness")
+  ggtitle("Skewness")+ theme(plot.margin = unit(c(0,5,5,2), units = "mm"), plot.title = element_text(size = 10))
 
-fig_6 <- gridExtra::grid.arrange(grobs = list(nhist, phist), nrow = 2, top = textGrob("Figure 6"))
+fig_6 <- gridExtra::grid.arrange(grobs = list(nhist, phist), nrow = 2)
 
 fig_6
 
-ggsave("figure_6.pdf", plot = fig_6, device = "pdf", width = 6, height = 8, units = "in")
+ggsave("figure_6.pdf", plot = fig_6, device = "pdf", width = 180, height = 150, dpi = 800, units = "mm")
 
 ```
 
@@ -688,38 +695,24 @@ metric_names <- rs_results_long %>%
   mutate(metric_desc = ordered(metric_desc))
 
 
-rs_results_long <- left_join(rs_results_long, metric_names)
-#
-# ggplot(filter(rs_results_long, !weird_dir), aes(metric_desc, value, color = `Resampling scheme`)) +
-#   geom_point() +
-#   facet_wrap(vars(Dataset), scales = "fixed", ncol = 1) +
-#   geom_point(aes(y = percentile_cutoff), shape = 95, color = "black", size = 10) +
-#   scale_color_viridis_d(end = .8) +
-#   ylab("Proportion of extreme observed values") +
-#   xlab("")
+rs_results_long <- left_join(rs_results_long, metric_names) %>%
+  mutate(Dataset_short = ifelse(Dataset == "FIA", "FIA", 
+                                ifelse(Dataset == "Breeding Bird Survey", "BBS", 
+                                       ifelse(Dataset == "Mammal Communities", "Mammals", ifelse(Dataset == "Gentry", "Gentry", "Misc.")))))
 
 fig_5 <- gridExtra::grid.arrange(grobs = list(
-  ggplot(filter(rs_results_long, !grepl("Misc", Dataset), !weird_dir), aes(metric_desc, value, color = `Resampling scheme`)) +
+  ggplot(filter(rs_results_long, !weird_dir), aes(metric_desc, value, color = `Resampling scheme`)) +
   geom_point() +
-  facet_wrap(vars(Dataset), scales = "fixed", ncol =2) +
+  facet_wrap(vars(Dataset_short), scales = "fixed", ncol =5) +
   geom_point(aes(y = percentile_cutoff), shape = 95, color = "black", size = 10) +
-  scale_color_viridis_d(end = .8) +
-  ylab("Proportion of extreme observed values") +ylim(0, .7) +
-  xlab("") + theme(legend.position = "none", axis.text.x = element_text(angle = 90)) ,
-  ggplot(filter(rs_results_long, grepl("Misc", Dataset), !weird_dir), aes(metric_desc, value, color = `Resampling scheme`)) +
-  geom_point() +
-  facet_wrap(vars(Dataset), scales = "fixed", ncol = 2) +
-  geom_point(aes(y = percentile_cutoff), shape = 95, color = "black", size = 10) +
-  scale_color_viridis_d(end = .8) +
-  ylab("") +
-  xlab("") + ylim(0, .7) +
-  theme(legend.position = "bottom", legend.direction = "vertical" , legend.margin = margin(b = .3, r = 0, t = 0, l = 0, unit = "in"), axis.text.x = element_text(angle = 90))), ncol = 2, widths = c( 4,2), bottom = textGrob("Metric"), top = textGrob("Figure 5"))
-
-#fig_5
+  scale_color_viridis_d(end = .8, option = "plasma") +
+  ylab("Proportion of extreme \nobserved values") + xlab("") +ylim(0, .7) + theme(legend.position = "bottom", axis.text.x = element_text(angle = 90), plot.margin = unit(c(5, 5, 2, 2), units = "mm"))))
 
 
 
-ggsave("figure_5.pdf", device = "pdf", plot = fig_5, width = 6, height = 5, units = "in")
+
+ggsave("figure_5.pdf", device = "pdf", plot = fig_5, width = 180, height =
+80, dpi = 800, units = "mm")
 # 
 # pdf("figure_5.pdf", bg = "white", paper = "letter", width = 6, height = 5)
 # fig_5

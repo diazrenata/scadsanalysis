@@ -68,7 +68,7 @@ all_di <- all_di %>%
 
 ```{r, fig.dim = c(3, 6)}
 plot_percentile_hist <- function(di_df, col_name, plot_name, tails = 2, facetvar = "Dataset", min_s0 = 0) {
-
+  
   if(tails == 2) {
     cutoff_percentiles = c(2.5, 97.5)
     min_nparts = 40
@@ -76,12 +76,12 @@ plot_percentile_hist <- function(di_df, col_name, plot_name, tails = 2, facetvar
     cutoff_percentiles = c(95)
     min_nparts = 20
   }
-
+  
   di_df <- di_df %>%
     mutate(response = (di_df[[col_name]]),
            facetvar = di_df[[facetvar]])
-
-
+  
+  
   ggplot(filter(di_df, nparts > min_nparts, s0 >= min_s0), aes(response)) +
     geom_histogram(bins = 40, boundary = 100) +
     theme_bw() +
@@ -91,9 +91,9 @@ plot_percentile_hist <- function(di_df, col_name, plot_name, tails = 2, facetvar
     ggtitle( plot_name) +
     facet_wrap(vars(facetvar), ncol = 1, scales = "free_y")+
     theme(plot.title = element_text(size=10))
-
-
-
+  
+  
+  
 }
 
 all_di <- all_di %>%
@@ -104,7 +104,7 @@ all_di <- all_di %>%
 ```{r, fig.dim = c(3, 6)}
 
 plot_narrowness <- function(di_df, yvar, yvar_name) {
-
+  
   if(grepl("sim_pos", yvar)) {
     min_nparts = 20
     ylabel = "Mean dissimilarity"
@@ -112,13 +112,13 @@ plot_narrowness <- function(di_df, yvar, yvar_name) {
     min_nparts = 40
     ylabel = "Breadth index"
   }
-
+  
   di_df <- di_df %>%
     mutate(response = (di_df[[yvar]])) %>%
     filter(nparts > min_nparts,
            nparts < 10 ^ 50)
-
-
+  
+  
   ggplot(di_df, aes(nparts, response, color = Dataset)) +
     geom_point(data = filter(di_df, dat == "fia"), alpha = .1) +
     geom_point(data = filter(di_df, dat != "fia"), alpha = .1) +
@@ -133,12 +133,12 @@ plot_narrowness <- function(di_df, yvar, yvar_name) {
 }
 
 plot_narrowness_legend <- function(di_df) {
-
+  
   legend_df <- di_df %>%
     select(Dataset) %>%
     distinct() %>%
     mutate(ymark = dplyr::row_number())
-
+  
   ggplot(legend_df, aes(1, ymark, color = Dataset)) +
     geom_label(aes(x = 2, y = ymark, label = Dataset)) +
     geom_point(size = 4) +
@@ -157,7 +157,7 @@ plot_narrowness_legend <- function(di_df) {
       axis.ticks.y = element_blank()
     ) +
     ggtitle("Dataset")
-
+  
 }
 #
 # gridExtra::grid.arrange(grobs = list(
@@ -169,20 +169,20 @@ plot_narrowness_legend <- function(di_df) {
 ```{r}
 
 plot_narrowness_hist <- function(di_df, col_name, plot_name, facetvar = "Dataset", min_s0 = 0) {
-
+  
   if(grepl("sim_pos", col_name)) {
-    xvarname = "Mean dissimilarity"
+    xvarname = "95th percentile \nof dissimilarity scores"    
     min_nparts = 40
   } else {
     min_nparts = 20
     xvarname = "Breadth index"
   }
-
+  
   di_df <- di_df %>%
     mutate(response = (di_df[[col_name]]),
            facetvar = di_df[[facetvar]])
-
-
+  
+  
   ggplot(filter(di_df, nparts > min_nparts, s0 >= min_s0), aes(response)) +
     geom_histogram(bins = 40, boundary = 100) +
     theme_bw() +
@@ -191,7 +191,7 @@ plot_narrowness_hist <- function(di_df, col_name, plot_name, facetvar = "Dataset
     ggtitle( plot_name) +
     facet_wrap(vars(facetvar), ncol = 1, scales = "free_y")+
     theme(plot.title = element_text(size=10))
-
+  
 }
 
 ```
@@ -214,11 +214,11 @@ small_di <- all_di %>%
 for(i in 1:nrow(small_di)) {
   if(small_di$dat[i] != "fia") {
     fia_match_s0 = filter(fia, s0 >= small_di$s0[i])
-
+    
     max_n0_for_this_s0 = max(fia_match_s0$n0)
-
+    
     small_di$right_corner[i] = small_di$n0[i] > max_n0_for_this_s0
-
+    
   }
 }
 
@@ -235,17 +235,17 @@ small_di_s_n <- small_di %>%
          in_not_fia = FALSE)
 
 for(i in 1:nrow(small_di_s_n)) {
-
+  
   this_s0 = small_di_s_n$s0[i]
   this_n0 = small_di_s_n$n0[i]
-
+  
   fia_matches = filter(fia, s0 == this_s0, n0 == this_n0)
   not_fia_matches = filter(not_fia, s0 == this_s0, n0 == this_n0)
-
+  
   small_di_s_n$in_fia[i] = nrow(fia_matches) > 0
   small_di_s_n$in_not_fia[i] = nrow(not_fia_matches) > 0
-
-
+  
+  
 }
 
 small_di_s_n <- filter(small_di_s_n, in_fia, in_not_fia)
@@ -255,21 +255,21 @@ set.seed(1977)
 subsamples <- list()
 
 for(i in 1:nrow(small_di_s_n)) {
-
+  
   this_s0 = small_di_s_n$s0[i]
   this_n0 = small_di_s_n$n0[i]
-
+  
   fia_matches = filter(fia, s0 == this_s0, n0 == this_n0)
-
+  
   not_fia_matches = filter(not_fia, s0 == this_s0, n0 == this_n0)
-
+  
   n_to_draw = min(nrow(fia_matches), nrow(not_fia_matches))
-
+  
   fia_draw = sample.int(n = nrow(fia_matches), size = n_to_draw, replace = F)
   not_fia_draw = sample.int(n = nrow(not_fia_matches), size = n_to_draw, replace = F)
-
+  
   subsamples[[i]] <- (bind_rows(fia_matches[fia_draw,], not_fia_matches[not_fia_draw, ]))
-
+  
 }
 
 sub_di <- bind_rows(subsamples) %>%
@@ -279,22 +279,22 @@ fia_di <- filter(sub_di, fia_yn == "fia")
 other_di <- filter(sub_di, fia_yn != "fia")
 
 ks_compare <- function(fia_df, other_df, compare_var) {
-
+  
   if(grepl("skew", compare_var)) {
     fia_df <- filter(fia_df, s0 > 2)
     other_df <- filter(fia_df, s0 >2)
   }
-
+  
   if(grepl("sim_pos", compare_var)) {
     fia_df <- filter(fia_df, nparts > 20)
     other_df <- filter(other_df, nparts > 20)
   } else {
-      fia_df <- filter(fia_df, nparts > 40)
+    fia_df <- filter(fia_df, nparts > 40)
     other_df <- filter(other_df, nparts > 40)
   }
-
+  
   kstest <- ks.test(fia_df[[compare_var]], other_df[[compare_var]])
-
+  
   return(data.frame(
     var = compare_var,
     d = kstest$statistic,
@@ -315,16 +315,16 @@ We identified ~330 communities in FIA with exact matches, in terms of S and N, a
 
 ### Histograms
 
-```{r, fig.dim = c(8,4)}
+```{r, fig.dim = c(8,8)}
 fig_2 <- gridExtra::grid.arrange(grobs = list(
-
+  
   plot_percentile_hist(sub_di, "real_po_percentile_mean", "Dissimilarity to the \ncentral tendency", facetvar = "Dataset", tails = 1),
   plot_percentile_hist(sub_di, "nsingletons_percentile_mean", "\nNumber of rare species", facetvar = "Dataset"),
   plot_percentile_hist(sub_di, "skew_percentile_mean", "\nSkewness", facetvar = "Dataset", min_s0 = 3),
   plot_percentile_hist(sub_di, "simpson_percentile_mean", "\nSimpson evenness", facetvar = "Dataset"),
   plot_percentile_hist(sub_di, "shannon_percentile_mean", "\nShannon diversity", facetvar = "Dataset")
-), ncol = 5,
-top = textGrob("Figure 2", gp = gpar(fill = "white")), left = textGrob("Number of communities", rot = 90, gp = gpar(fill = "black")),
+), ncol = 3,
+left = textGrob("Number of communities", rot = 90, gp = gpar(fill = "black")),
 bottom = textGrob("Percentile rank of observed value relative to feasible set"), gp = gpar(fill = "white"))
 
 ```
@@ -404,16 +404,16 @@ bind_rows(simpson_perc_ks, skew_perc_ks, shannon_perc_ks, nsingletons_perc_ks, d
 
 ### Histograms
 
-```{r, fig.dim = c(8,4)}
+```{r, fig.dim = c(8,8)}
 fig_2 <- gridExtra::grid.arrange(grobs = list(
-
-  plot_narrowness_hist(sub_di, "sim_pos_from_best", "Dissimilarity to the \ncentral tendency", facetvar = "Dataset"),
+  
+  plot_narrowness_hist(sub_di, "sim_pos_from_best_95", "Dissimilarity to the \ncentral tendency", facetvar = "Dataset"),
   plot_narrowness_hist(sub_di, "nsingletons_95_ratio_2t", "\nNumber of rare species", facetvar = "Dataset"),
   plot_narrowness_hist(sub_di, "skew_95_ratio_2t", "\nSkewness", facetvar = "Dataset", min_s0 = 3),
   plot_narrowness_hist(sub_di, "simpson_95_ratio_2t", "\nSimpson evenness", facetvar = "Dataset"),
   plot_narrowness_hist(sub_di, "shannon_95_ratio_2t", "\nShannon diversity", facetvar = "Dataset")
-), ncol = 5,
- left = textGrob("Number of communities", rot = 90, gp = gpar(fill = "black")), gp = gpar(fill = "white"))
+), ncol = 3,
+left = textGrob("Number of communities", rot = 90, gp = gpar(fill = "black")), gp = gpar(fill = "white"))
 ```
 
 ### K-S test results
@@ -424,7 +424,7 @@ simpson_rat_ks <- ks_compare(fia_di, other_di, "simpson_95_ratio_2t")
 skew_rat_ks <- ks_compare(fia_di, other_di, "skew_95_ratio_2t")
 shannon_rat_ks <- ks_compare(fia_di, other_di, "shannon_95_ratio_2t")
 nsingletons_rat_ks <- ks_compare(fia_di, other_di, "nsingletons_95_ratio_2t")
-diss_rat_ks <- ks_compare(fia_di, other_di, "sim_pos_from_best")
+diss_rat_ks <- ks_compare(fia_di, other_di, "sim_pos_from_best_95")
 
 bind_rows(simpson_rat_ks, skew_rat_ks, shannon_rat_ks, nsingletons_rat_ks, diss_rat_ks) %>%
   select(var, d, p) %>%
